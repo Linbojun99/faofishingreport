@@ -134,6 +134,7 @@ country_species <- function(area_data, country_name, rank_range = c(1, 10),plot=
 
       bps <- c(min(country_data$Year), breakpoints(bp)$breakpoints + min(country_data$Year), max(country_data$Year))
 
+
       start_years <- bps[-length(bps)]
       end_years <- bps[-1] - 1
 
@@ -152,6 +153,7 @@ country_species <- function(area_data, country_name, rank_range = c(1, 10),plot=
     }
 
     return(list(coefs_data = coefs_data, bps = bps))
+
   }
 
   # 获取所有独特的物种名
@@ -166,6 +168,7 @@ country_species <- function(area_data, country_name, rank_range = c(1, 10),plot=
 
 
     # 提取和合并结果为一个数据框
+
   coefs_data_list <- lapply(results, `[[`, "coefs_data")
   coefs_data <- do.call(rbind, coefs_data_list)
 
@@ -198,6 +201,7 @@ country_species <- function(area_data, country_name, rank_range = c(1, 10),plot=
         legend.box = "horizontal")
     # 更改文件名以匹配排名数据
     filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", country_name), "_species_ranked_total.pptx")
+
     eoffice::topptx(figure=p1, filename = filename, width=12, height=8)
 
 
@@ -226,6 +230,7 @@ country_species <- function(area_data, country_name, rank_range = c(1, 10),plot=
       ggplot2::guides(color = ggplot2::guide_legend(nrow = 2))
 
     filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", country_name), "_species_ranked.pptx")
+
     eoffice::topptx(figure=p2, filename = filename, width=12, height=8)
 
 
@@ -265,6 +270,7 @@ country_species <- function(area_data, country_name, rank_range = c(1, 10),plot=
       #ggplot2::ggsave(filename = "figures/area_country_wrap.png", plot = p2, dpi = 600)
       filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", country_name), "_species_ranked_wrap.pptx")
       eoffice::topptx(figure=p3,filename = filename, width = 12, height = 8)
+
     }
     else{
       p3<-ggplot2::ggplot() +
@@ -293,6 +299,7 @@ country_species <- function(area_data, country_name, rank_range = c(1, 10),plot=
           axis.text.x = ggplot2::element_text(size=12,angle = 60, hjust = 1))+
         ggplot2::guides(color = ggplot2::guide_legend(nrow = 2))
       filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", country_name), "_species_ranked_wrap.pptx")
+
       eoffice::topptx(figure=p3, filename = filename, width=12, height=8)
 
     }
@@ -316,6 +323,7 @@ country_species <- function(area_data, country_name, rank_range = c(1, 10),plot=
         x = NULL
       )
     filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", country_name), "_species_pie_selected.pptx")
+
     eoffice::topptx(figure=p4, filename = filename, width=12, height=8)
   }
 
@@ -412,7 +420,7 @@ country_species <- function(area_data, country_name, rank_range = c(1, 10),plot=
   # 输出结果
   print(final_data)
   if (table) {
-    filename <- paste0(gsub("[[:punct:][:space:]]", "_", country_name), "_species_ranked_table.csv")
+    filename <- paste0(gsub("[[:punct:][:space:]]", "_", country_name), "_country_ranked_table.csv")
     write.csv(final_data, file = paste0("tables/", filename), row.names = FALSE)
   }
 

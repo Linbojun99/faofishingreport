@@ -188,6 +188,7 @@ fishing_area_species <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
 
 
 
+
   get_bp_coefs <- function(species_name, data, h_value ) {
     country_data <- data[data$ASFIS.species..Name. == species_name, ]
     country_data <- country_data[order(country_data$Year), ]  # Ensure data is sorted by year
@@ -248,6 +249,7 @@ fishing_area_species <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
 
   # 应用函数到每一个物种
   results <- lapply(unique_species, get_bp_coefs, data = plot_data,h_value)
+
 
   # 提取和合并结果为一个数据框
   coefs_data_list <- lapply(results, `[[`, "coefs_data")

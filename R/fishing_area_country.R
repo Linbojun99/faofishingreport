@@ -57,6 +57,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
                                  facet_ncol = 2,
                                  h_value=0.15) {
 
+
   #area_country
   area_country <- area_data %>%
     dplyr::group_by(Year,Country..Name.) %>%
@@ -188,6 +189,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
 
 
   get_bp_coefs <- function(country_name, data,h_value) {
+
     country_data <- data[data$Country..Name. == country_name, ]
 
     # 检查数据连续性
@@ -200,6 +202,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
 
     if (length(ts_data) > 1) {
       bp <- breakpoints(ts_data ~ 1,h_value)
+
       coefs <- coef(bp)
 
       bps <- c(min(years), breakpoints(bp)$breakpoints + min(years), max(years))
@@ -228,6 +231,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
   unique_country <- unique(plot_data$Country..Name.)
 
   results <- lapply(unique_country, get_bp_coefs, data = plot_data,h_value)
+
 
   # 提取和合并有效结果为一个数据框
   coefs_data_list <- lapply(results, `[[`, "coefs_data")

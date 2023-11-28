@@ -13,6 +13,7 @@
 #' @param h_value The minimum segment size, which must be greater than the
 #'        number of regressors. For the model `ts_data ~ 1`, this means `h_value`
 #'        should be greater than 1. The default value is 0.15.
+
 #' @export
 #'
 #' @examples
@@ -125,6 +126,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
 
 
   get_bp_coefs <- function(country_name, data,h_value) {
+
     country_data <- data[data$Country..Name. == country_name, ]
 
     # 检查数据连续性
@@ -137,6 +139,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
 
     if (length(ts_data) > 1) {
       bp <- breakpoints(ts_data ~ 1,h_value)
+
       coefs <- coef(bp)
 
       bps <- c(min(years), breakpoints(bp)$breakpoints + min(years), max(years))
@@ -167,6 +170,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
 
   # 应用函数到每一个国家
   results <- lapply(unique_country, get_bp_coefs, data = species_country_ranked[species_country_ranked$Tonnes>0,],h_value)
+
 
   # 提取和合并结果为一个数据框
   coefs_data_list <- lapply(results, `[[`, "coefs_data")
@@ -265,8 +269,12 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
           axis.text.x = ggplot2::element_text(angle = 60, hjust = 1))+
         guides(color = ggplot2::guide_legend(nrow = 2))
       #ggplot2::ggsave(filename = "figures/area_country_wrap.png", plot = p2, dpi = 600)
+<<<<<<< HEAD
       filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_wrap.pptx")
       eoffice::topptx(figure=p3,filename = filename, width = 12, height = 8)
+=======
+      eoffice::topptx(figure=p2,filename = "figures/area_country_wrap.pptx", width = 12, height = 8)
+>>>>>>> 7ddd308 (Updated commit)
     }
     else{
     p3<-ggplot2::ggplot() +
@@ -295,6 +303,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
         axis.text.x = ggplot2::element_text(size=12,angle = 60, hjust = 1))+
       ggplot2::guides(color = ggplot2::guide_legend(nrow = 2))
     filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_wrap.pptx")
+
     eoffice::topptx(figure=p3, filename = filename, width=12, height=8)
 
 }
