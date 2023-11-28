@@ -31,7 +31,8 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' FAO34 <- fishing_area_data(area_name="Atlantic, Eastern Central", plot = TRUE,timeseries_analysis=TRUE)
+#' Firstly, data preparing and loading.
+#' FAO34 <- fishing_area_data(area_name="Atlantic, Eastern Central", plot = TRUE, timeseries_analysis=TRUE)
 #' }
 fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
                               area_color1 = "grey80", area_alpha = 0.7,
@@ -282,5 +283,5 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
 
      }
 
-  return(area_data)
+  return(list(area_data=area_data,coefs_data=coefs_data,act_world_map=act_world_map))
 }

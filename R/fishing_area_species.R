@@ -10,7 +10,7 @@
 #' @param line_width A numeric value specifying the line width. Default is 1.5.
 #' @param point_size A numeric value specifying the point size. Default is 1.8.
 #' @param point_alpha A numeric value specifying the point alpha. Default is 0.7.
-#' @param point_shape A numeric or character value specifying the shape of the points. Default is 1. See \code{\link[ggplot2]{geom_point}} for available shapes.
+#' @param point_shape A numeric or character value specifying the shape of the points. Default is 1.
 #' @param line_alpha A numeric value specifying the line alpha. Default is 0.7.
 #' @param axis_text_size A numeric value specifying the size of the axis text. Default is 10.
 #' @param axis_title_size A numeric value specifying the size of the axis title. Default is 10.
@@ -32,7 +32,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' fishing_area_species(FAO34, c(1, 10), plot=TRUE,table=TRUE) #area_data=Fao34
+#' fishing_area_species(FAO34[["area_data"]], c(1, 10), plot=TRUE,table=TRUE) #area_data=Fao34
 #' }
 fishing_area_species <- function(area_data, rank_range = c(1, 10), plot = TRUE, table=TRUE,timeseries_analysis=TRUE,
                                  line_width = 1.5,
@@ -48,7 +48,7 @@ fishing_area_species <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
                                  strip_text_face = "bold", smooth_method = "loess",
                                  smooth_linetype = "dashed",
                                  line_linewidth = 1.5,
-                                 text_hjust = 0.8,
+                                 text_hjust = 0.9,
                                  text_vjust = -4,
                                  text_size = 4.5,
                                  text_color = "black",
@@ -183,29 +183,29 @@ fishing_area_species <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
     dplyr::left_join(recent_production_wide, by = "ASFIS.species..Name.") %>%
     dplyr::left_join(percentage_of_total_species_ranked, by = "ASFIS.species..Name.")
 
-  # 输出结果
-  print(final_data)
-  if (table) {
-    write.csv(final_data, file = "tables/species_ranked_table.csv", row.names = FALSE)
-  }
+
 
   get_bp_coefs <- function(species_name, data) {
-    years <- unique(data$Year)
-    start_year1 <- min(years)
-    end_year1 <- max(years)
+    country_data <- data[data$ASFIS.species..Name. == species_name, ]
 
-    ts_data1 <- ts(data[data$ASFIS.species..Name. == species_name, "Tonnes"], start = start_year1)
+    # 检查数据连续性
+    years <- country_data$Year
+    if (length(years) > 1 && any(diff(years) != 1)) {
+      warning(paste("Data for", species_name, "is not continuous. Breakpoint analysis may be inaccurate."))
+    }
 
-    if (length(ts_data1) > 0) {
-      bp <- breakpoints(ts_data1 ~ 1)
+    ts_data <- ts(country_data$Tonnes, start = min(years))
+
+    if (length(ts_data) > 1) {
+      bp <- breakpoints(ts_data ~ 1)
       coefs <- coef(bp)
 
-      bps <- c(start_year1, breakpoints(bp)$breakpoints + start_year1, end_year1)
+      bps <- c(min(years), breakpoints(bp)$breakpoints + min(years), max(years))
 
       start_years <- bps[-length(bps)]
       end_years <- bps[-1] - 1
 
-      if(length(coefs) == length(start_years)) {
+      if (length(coefs) == length(start_years)) {
         coefs_data <- data.frame(
           ASFIS.species..Name. = species_name,
           start_year = start_years,
@@ -217,24 +217,29 @@ fishing_area_species <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
       }
     } else {
       coefs_data <- NULL
-      bps <- NULL
     }
 
     list(coefs_data = coefs_data, bps = bps)
   }
-
-  # 获取所有独特的鱼种名
+  # 获取所有独特的物种名
   unique_species <- unique(plot_data$ASFIS.species..Name.)
 
-  # 应用函数到每一个鱼种
+  # 应用函数到每一个物种
   results <- lapply(unique_species, get_bp_coefs, data = plot_data)
 
   # 提取和合并结果为一个数据框
   coefs_data_list <- lapply(results, `[[`, "coefs_data")
   coefs_data <- do.call(rbind, coefs_data_list)
-
+  # 现在，你可以使用coefs_data来创建分面图
   # 现在，你可以使用coefs_data来创建分面图
 
+  # 输出结果
+  print(final_data)
+  if (table) {
+    write.csv(final_data, file = "tables/species_ranked_table.csv", row.names = FALSE)
+    write.csv(coefs_data, file = "tables/species_coefs_data.csv", row.names = FALSE)
+
+  }
   if (plot) {
     # Replace plot_data_Top10 with plot_data in your plotting code
     p1 <- ggplot2::ggplot(plot_data, ggplot2::aes(x = Year, y = Tonnes/1e6, color = ASFIS.species..Name., group = ASFIS.species..Name.)) +
@@ -258,13 +263,13 @@ fishing_area_species <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
       ggplot2::guides(color = ggplot2::guide_legend(nrow = 2))
 
 
-    ggplot2::ggsave(filename = "figures/area_species.png", plot = p1, dpi = 600)
+    #ggplot2::ggsave(filename = "figures/area_species.png", plot = p1, dpi = 600)
     eoffice::topptx(figure=p1,filename = "figures/area_species.pptx", width = 12, height = 6)
 
     if(timeseries_analysis){
     p2 <- ggplot2::ggplot() +
-      ggplot2:: geom_smooth(plot_data, mapping=ggplot2::aes(x=Year,y = Tonnes, color = ASFIS.species..Name.), method = "lm", se = FALSE, linetype = "dashed",linewidth=1) +
-      ggplot2::geom_line(plot_data, mapping=ggplot2::aes(x = Year, y = Tonnes, color = ASFIS.species..Name., group = ASFIS.species..Name.),linewidth=1.5) +
+      ggplot2:: geom_smooth(plot_data, mapping=ggplot2::aes(x=Year,y = Tonnes/1e6, color = ASFIS.species..Name.), method = "lm", se = FALSE, linetype = "dashed",linewidth=1) +
+      ggplot2::geom_line(plot_data, mapping=ggplot2::aes(x = Year, y = Tonnes/1e6, color = ASFIS.species..Name., group = ASFIS.species..Name.),linewidth=1.5) +
       ggplot2::geom_text(data = area_species_Total %>%
                            dplyr::filter(ASFIS.species..Name. %in% selected_species$ASFIS.species..Name.) %>%
                            dplyr::ungroup() %>%
@@ -272,13 +277,13 @@ fishing_area_species <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
                          ggplot2::aes(x = 1957, y = 0, label = paste0(round(Percentage, 2), "%")),
                          hjust = text_hjust, vjust = text_vjust, size = text_size, color = text_color) +
       ggplot2::geom_segment(data = coefs_data,
-                            ggplot2::aes(x = start_year, xend = end_year, y = intercept, yend = intercept),
-                   color = "black",linetype="solid",size=1.5,alpha=0.5) +
+                            ggplot2::aes(x = start_year, xend = end_year, y = intercept/1e6, yend = intercept/1e6),
+                            color = "black",linetype="solid",size=1.5,alpha=0.5) +
       ggplot2::geom_vline(data = coefs_data, ggplot2::aes(xintercept = start_year, group = ASFIS.species..Name.), linetype = "dashed", color = "black",linewidth=1) +
       ggplot2::theme_bw() +
       ggsci::scale_color_npg()+
       ggplot2::facet_wrap(~ASFIS.species..Name.,ncol=2,scales = "free_y")+
-      ggplot2::labs(x = "Year", y = "Tonnes") +
+      ggplot2::labs(x = "Year", y = "Million Tonnes") +
       ggplot2::scale_x_continuous(breaks = seq(1950,2021,5),expand = c(0,0))+
       ggplot2::scale_y_continuous()+
       ggplot2::theme(
@@ -292,8 +297,8 @@ fishing_area_species <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
         legend.box = "horizontal",
         axis.text.x = ggplot2::element_text(angle = 60, hjust = 1))+
       guides(color = ggplot2::guide_legend(nrow = 2))
-    ggplot2::ggsave(filename = "figures/area_species_wrap.png", plot = p2, dpi = 600)
-    eoffice::topptx(figure=p2,filename = "figures/area_species_wrap.pptx", width = 12, height = 6)
+    #ggplot2::ggsave(filename = "figures/area_species_wrap.png", plot = p2, dpi = 600)
+    eoffice::topptx(figure=p2,filename = "figures/area_species_wrap.pptx", width = 12, height = 8)
     }
 else{
   p3 <- ggplot2::ggplot() +
@@ -325,8 +330,8 @@ else{
       axis.text.x = ggplot2::element_text(size=12,angle = 60, hjust = 1))+
     ggplot2::guides(color = ggplot2::guide_legend(nrow = 2))
 
-  ggplot2::ggsave(filename = "figures/area_species_wrap.png", plot = p3, dpi = 600)
-  eoffice::topptx(figure=p3,filename = "figures/area_species_wrap.pptx", width = 12, height = 6)
+  #ggplot2::ggsave(filename = "figures/area_species_wrap.png", plot = p3, dpi = 600)
+  eoffice::topptx(figure=p3,filename = "figures/area_species_wrap.pptx", width = 12, height = 8)
 
 }
       }

@@ -20,3 +20,14 @@ Imports:
     forcats,
     tidyverse,
     strucchange
+Depends:
+    dplyr,
+    ggplot2,
+    magrittr,
+    eoffice,
+    metR,
+    ggsci,
+    RColorBrewer,
+    forcats,
+    tidyverse,
+    strucchange
