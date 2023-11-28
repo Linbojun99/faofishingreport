@@ -26,13 +26,15 @@
 #' @param text_size A numeric value specifying the size of the text geom. Default is 4.5.
 #' @param text_color A character string specifying the color of the text geom. Default is "black".
 #' @param facet_ncol A numeric value specifying the number of columns to be used in facet_wrap. Default is 2.
-#'
+#' @param h_value The minimum segment size, which must be greater than the
+#'        number of regressors. For the model `ts_data ~ 1`, this means `h_value`
+#'        should be greater than 1. The default value is 0.15.
 #' @return NULL. The function saves the generated plots to the specified directory if plot = TRUE.
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' fishing_area_species(FAO34[["area_data"]], c(1, 10), plot=TRUE,table=TRUE) #area_data=Fao34
+#' fishing_area_species(FAO34[["area_data"]], c(1, 10), plot=TRUE,table=TRUE,h_value = 0.15) #area_data=Fao34
 #' }
 fishing_area_species <- function(area_data, rank_range = c(1, 10), plot = TRUE, table=TRUE,timeseries_analysis=TRUE,
                                  line_width = 1.5,
@@ -52,7 +54,8 @@ fishing_area_species <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
                                  text_vjust = -4,
                                  text_size = 4.5,
                                  text_color = "black",
-                                 facet_ncol = 2) {
+                                 facet_ncol = 2,
+                                 h_value = 0.15) {
 
   #area_species
   area_species <- area_data %>%
@@ -185,22 +188,41 @@ fishing_area_species <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
 
 
 
-  get_bp_coefs <- function(species_name, data) {
+  get_bp_coefs <- function(species_name, data, h_value ) {
     country_data <- data[data$ASFIS.species..Name. == species_name, ]
+    country_data <- country_data[order(country_data$Year), ]  # Ensure data is sorted by year
 
-    # 检查数据连续性
+    # Find the longest continuous sequence of years
     years <- country_data$Year
-    if (length(years) > 1 && any(diff(years) != 1)) {
-      warning(paste("Data for", species_name, "is not continuous. Breakpoint analysis may be inaccurate."))
+    diff_years <- diff(years)
+    breaks <- which(diff_years != 1)
+
+    if (length(breaks) == 0) {
+      seq_start <- 1
+      seq_end <- length(years)
+    } else {
+      longest_seq_end <- which.max(c(breaks, length(years) + 1) - c(0, breaks))
+      seq_start <- ifelse(longest_seq_end == 1, 1, breaks[longest_seq_end - 1] + 1)
+      seq_end <- ifelse(longest_seq_end == length(breaks) + 1, length(years), breaks[longest_seq_end])
     }
 
-    ts_data <- ts(country_data$Tonnes, start = min(years))
+    if (is.na(seq_end) || is.nan(seq_end)) {
+      seq_end <- length(years)
+    }
 
-    if (length(ts_data) > 1) {
-      bp <- breakpoints(ts_data ~ 1)
+    # Use the continuous segment of data
+    country_data_continuous <- country_data[seq_start:seq_end, ]
+    years_continuous <- country_data_continuous$Year
+
+    # Create the time series object with continuous data only
+    ts_data <- ts(country_data_continuous$Tonnes, start = min(years_continuous))
+
+    # Ensure there's enough data for breakpoint analysis
+    if (length(ts_data) > h_value) {
+      bp <- breakpoints(ts_data ~ 1, h = h_value)
       coefs <- coef(bp)
 
-      bps <- c(min(years), breakpoints(bp)$breakpoints + min(years), max(years))
+      bps <- c(min(years_continuous), breakpoints(bp)$breakpoints + min(years_continuous) - 1, max(years_continuous))
 
       start_years <- bps[-length(bps)]
       end_years <- bps[-1] - 1
@@ -219,13 +241,13 @@ fishing_area_species <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
       coefs_data <- NULL
     }
 
-    list(coefs_data = coefs_data, bps = bps)
+    return(list(coefs_data = coefs_data, bps = bps))
   }
   # 获取所有独特的物种名
   unique_species <- unique(plot_data$ASFIS.species..Name.)
 
   # 应用函数到每一个物种
-  results <- lapply(unique_species, get_bp_coefs, data = plot_data)
+  results <- lapply(unique_species, get_bp_coefs, data = plot_data,h_value)
 
   # 提取和合并结果为一个数据框
   coefs_data_list <- lapply(results, `[[`, "coefs_data")

@@ -27,6 +27,9 @@
 #' @param axis_title_size_map The size of the axis title text in the map plot. Default is 14.
 #' @param axis_text_size_map The size of the axis text in the map plot. Default is 12.
 #' @param legend_text_size_map The size of the legend text in the map plot. Default is 12.
+#' @param min_segment_size The minimum segment size, which must be greater than the
+#'        number of regressors. For the model `ts_data ~ 1`, this means `min_segment_size`
+#'        should be greater than 1. The default value is 5.
 #' @return A data frame containing data for the specified fishing area.
 #' @export
 #' @examples

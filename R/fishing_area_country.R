@@ -26,13 +26,15 @@
 #' @param text_size A numeric value specifying the size of the text geom. Default is 4.5.
 #' @param text_color A character string specifying the color of the text geom. Default is "black".
 #' @param facet_ncol A numeric value specifying the number of columns to be used in facet_wrap. Default is 2.
-#'
+#' @param h_value The minimum segment size, which must be greater than the
+#'        number of regressors. For the model `ts_data ~ 1`, this means `h_value`
+#'        should be greater than 1. The default value is 0.15.
 #' @return NULL. The function saves the generated plots to the specified directory if plot = TRUE.
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' fishing_area_country(FAO34[["area_data"]], c(1, 10), plot=TRUE,table=TRUE) #area_data=Fao34
+#' fishing_area_country(FAO34[["area_data"]], c(1, 10), plot=TRUE,table=TRUE,h_value=0.15) #area_data=Fao34
 #' }
 fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, table=TRUE,timeseries_analysis=TRUE,
                                  line_width = 1.5,
@@ -52,7 +54,8 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
                                  text_vjust = -4,
                                  text_size = 4.5,
                                  text_color = "black",
-                                 facet_ncol = 2) {
+                                 facet_ncol = 2,
+                                 h_value=0.15) {
 
   #area_country
   area_country <- area_data %>%
@@ -184,7 +187,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
     dplyr::left_join(percentage_of_total_country_ranked, by = "Country..Name.")
 
 
-  get_bp_coefs <- function(country_name, data) {
+  get_bp_coefs <- function(country_name, data,h_value) {
     country_data <- data[data$Country..Name. == country_name, ]
 
     # 检查数据连续性
@@ -196,7 +199,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
     ts_data <- ts(country_data$Tonnes, start = min(years))
 
     if (length(ts_data) > 1) {
-      bp <- breakpoints(ts_data ~ 1)
+      bp <- breakpoints(ts_data ~ 1,h_value)
       coefs <- coef(bp)
 
       bps <- c(min(years), breakpoints(bp)$breakpoints + min(years), max(years))
@@ -224,7 +227,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
   # 假设 unique_country 是一个包含国家名称的向量
   unique_country <- unique(plot_data$Country..Name.)
 
-  results <- lapply(unique_country, get_bp_coefs, data = plot_data)
+  results <- lapply(unique_country, get_bp_coefs, data = plot_data,h_value)
 
   # 提取和合并有效结果为一个数据框
   coefs_data_list <- lapply(results, `[[`, "coefs_data")

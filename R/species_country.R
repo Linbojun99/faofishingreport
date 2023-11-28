@@ -10,13 +10,16 @@
 #' @param plot A logical value indicating whether to generate and save plots.
 #' @param table A logical value indicating whether to generate and save tables
 #' @param timeseries_analysis A logical value indicating whether to analysis timeseries.
+#' @param h_value The minimum segment size, which must be greater than the
+#'        number of regressors. For the model `ts_data ~ 1`, this means `h_value`
+#'        should be greater than 1. The default value is 0.15.
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' species_country(FAO34[["area_data"]], species_name = "European pilchard(=Sardine)",c(1, 10), plot=TRUE,table=TRUE) #area_data=Fao34
+#' species_country(FAO34[["area_data"]], species_name = "European pilchard(=Sardine)",c(1, 10), plot=TRUE,table=TRUE,h_value = 0.15) #area_data=Fao34
 #' }
-species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=TRUE,table=TRUE,timeseries_analysis=TRUE) {
+species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=TRUE,table=TRUE,timeseries_analysis=TRUE,h_value = 0.15) {
 
   options(scipen=999,digits=2)
 
@@ -121,7 +124,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
 
 
 
-  get_bp_coefs <- function(country_name, data) {
+  get_bp_coefs <- function(country_name, data,h_value) {
     country_data <- data[data$Country..Name. == country_name, ]
 
     # 检查数据连续性
@@ -133,7 +136,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
     ts_data <- ts(country_data$Tonnes, start = min(years))
 
     if (length(ts_data) > 1) {
-      bp <- breakpoints(ts_data ~ 1)
+      bp <- breakpoints(ts_data ~ 1,h_value)
       coefs <- coef(bp)
 
       bps <- c(min(years), breakpoints(bp)$breakpoints + min(years), max(years))
@@ -163,7 +166,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
   unique_country <- unique(species_country_ranked[species_country_ranked$Tonnes>0,]$Country..Name.)
 
   # 应用函数到每一个国家
-  results <- lapply(unique_country, get_bp_coefs, data = species_country_ranked[species_country_ranked$Tonnes>0,])
+  results <- lapply(unique_country, get_bp_coefs, data = species_country_ranked[species_country_ranked$Tonnes>0,],h_value)
 
   # 提取和合并结果为一个数据框
   coefs_data_list <- lapply(results, `[[`, "coefs_data")
@@ -262,7 +265,8 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
           axis.text.x = ggplot2::element_text(angle = 60, hjust = 1))+
         guides(color = ggplot2::guide_legend(nrow = 2))
       #ggplot2::ggsave(filename = "figures/area_country_wrap.png", plot = p2, dpi = 600)
-      eoffice::topptx(figure=p2,filename = "figures/area_country_wrap.pptx", width = 12, height = 8)
+      filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_wrap.pptx")
+      eoffice::topptx(figure=p3,filename = filename, width = 12, height = 8)
     }
     else{
     p3<-ggplot2::ggplot() +
@@ -290,7 +294,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
         legend.box = "horizontal",
         axis.text.x = ggplot2::element_text(size=12,angle = 60, hjust = 1))+
       ggplot2::guides(color = ggplot2::guide_legend(nrow = 2))
-    filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_facet.pptx")
+    filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_wrap.pptx")
     eoffice::topptx(figure=p3, filename = filename, width=12, height=8)
 
 }
