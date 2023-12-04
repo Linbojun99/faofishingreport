@@ -269,12 +269,9 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
           axis.text.x = ggplot2::element_text(angle = 60, hjust = 1))+
         guides(color = ggplot2::guide_legend(nrow = 2))
       #ggplot2::ggsave(filename = "figures/area_country_wrap.png", plot = p2, dpi = 600)
-<<<<<<< HEAD
       filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_wrap.pptx")
       eoffice::topptx(figure=p3,filename = filename, width = 12, height = 8)
-=======
-      eoffice::topptx(figure=p2,filename = "figures/area_country_wrap.pptx", width = 12, height = 8)
->>>>>>> 7ddd308 (Updated commit)
+
     }
     else{
     p3<-ggplot2::ggplot() +
