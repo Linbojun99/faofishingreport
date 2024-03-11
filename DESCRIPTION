@@ -19,7 +19,8 @@ Imports:
     RColorBrewer,
     forcats,
     tidyverse,
-    strucchange
+    strucchange,
+    ggrepel
 Depends:
     dplyr,
     ggplot2,
@@ -30,4 +31,5 @@ Depends:
     RColorBrewer,
     forcats,
     tidyverse,
-    strucchange
+    strucchange,
+    ggrepel

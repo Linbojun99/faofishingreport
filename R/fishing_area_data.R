@@ -30,6 +30,7 @@
 #' @param min_segment_size The minimum segment size, which must be greater than the
 #'        number of regressors. For the model `ts_data ~ 1`, this means `min_segment_size`
 #'        should be greater than 1. The default value is 5.
+#' @param ZH A logical value to Chinese. Default is "FALSE"
 #' @return A data frame containing data for the specified fishing area.
 #' @export
 #' @examples
@@ -54,7 +55,8 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
                               fill_scale = "deep-orange",
                               axis_title_size_map = 14,
                               axis_text_size_map = 12,
-                              legend_text_size_map = 12) {
+                              legend_text_size_map = 12,
+                              ZH=FALSE) {
   data_path <- system.file("extdata", "Global_Production_long.rda", package="faofishingreport")
   load(data_path, envir = .GlobalEnv)
   data <- Global_Production_long
@@ -101,14 +103,30 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
   coefs_data <- do.call(rbind, coefs_data)
 
 
-
+  #draw set
+  ylab="Million Tonnes"
+  xlab2="Percentage of Total Production"
+  xlab="Year"
+  legendtext="Country..Name."
+  Other="Other"
+  if(ZH){
+    ylab="百万吨"
+    xlab="年"
+    xlab2="捕捞产量占比"
+    legendtext="国家"
+    Other=""}
 
   if (plot) {
     # Create figures directory if it doesn't exist
     if (!dir.exists("figures")) {
       dir.create("figures")
     }
-
+    if (!dir.exists("figures/pptx")) {
+      dir.create("figures/pptx")
+    }
+    if (!dir.exists("figures/png")) {
+      dir.create("figures/png")
+    }
 
 
     if(timeseries_analysis){
@@ -131,9 +149,9 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
           axis.title.x = ggplot2::element_text(size=axis_text_size,face = axis_text_face),
           axis.title.y = ggplot2::element_text(size=axis_text_size,face = axis_text_face),
           legend.position = "bottom") +
-        ggplot2::labs(y="Million Tonne")
-      ggplot2::ggsave(filename = "figures/fishing_trend.png", plot = p1, dpi=600,width = 12, height = 6)
-      eoffice::topptx(figure=p1,filename = "figures/fishing_trend.pptx",devsize = TRUE)
+        ggplot2::labs(y=ylab)
+      ggplot2::ggsave(filename = "figures/png/fishing_trend.png", plot = p1, dpi=600,width = 12, height = 6)
+      eoffice::topptx(figure=p1,filename = "figures/pptx/fishing_trend.pptx",devsize = TRUE)
             coefs_data<-tibble::as_tibble(coefs_data)
             print(paste("Mutation point detection:",coefs_data))
   }
@@ -153,10 +171,10 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
         axis.title.x = ggplot2::element_text(size=axis_text_size,face = axis_text_face),
         axis.title.y = ggplot2::element_text(size=axis_text_size,face = axis_text_face),
         legend.position = "bottom") +
-      ggplot2::labs(y="Million Tonne")
+      ggplot2::labs(y=ylab)
 
-    ggplot2::ggsave(filename = "figures/fishing_trend.png", plot = p1, dpi=600,width = 12, height = 6)
-    eoffice::topptx(figure=p1,filename = "figures/fishing_trend.pptx",devsize = TRUE)
+    ggplot2::ggsave(filename = "figures/png/fishing_trend.png", plot = p1, dpi=600,width = 12, height = 6)
+    eoffice::topptx(figure=p1,filename = "figures/pptx/fishing_trend.pptx",devsize = TRUE)
 }
     # Percentage calculations
     Global_production_total <- dplyr::group_by(Global_Production_long, Year) %>%
@@ -184,7 +202,7 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
       ggplot2::geom_point(data=merged_data, mapping=ggplot2::aes(x = Year, y = Percentage_area),
                           size=point_size) +
       ggplot2::theme_bw() +
-      ggplot2::labs(y = "Percentage of Total Production", x = "Year") +
+      ggplot2::labs(y = xlab2, x = xlab) +
       ggplot2::theme(axis.text.x = ggplot2::element_text(size=axis_text_size),
                      legend.position = "none") +
       ggplot2::scale_x_continuous(breaks = seq(1950,2021,5), expand = c(0,0)) +
@@ -198,9 +216,9 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
                      axis.title.y = ggplot2::element_text(size=axis_title_size, face = axis_title_face),
                      legend.box = "horizontal")
 
-    ggplot2::ggsave(filename = "figures/fishing_percentage.png", plot = percentage_plot, dpi=600, width = 12, height = 6)
+    ggplot2::ggsave(filename = "figures/png/fishing_percentage.png", plot = percentage_plot, dpi=600, width = 12, height = 6)
 
-    eoffice::topptx(figure=percentage_plot,filename = "figures/fishing_percentage.pptx", devsize = TRUE)
+    eoffice::topptx(figure=percentage_plot,filename = "figures/pptx/fishing_percentage.pptx", devsize = TRUE)
 
     # 地图绘制代码
     # 创建一个命名的替换规则向量
@@ -265,7 +283,7 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
                             colour = polygon_color) +
       ggplot2::coord_sf() +
       ggsci::scale_fill_material(fill_scale, na.value = "grey90") +
-      ggplot2::labs(fill="Million Tonnes") +
+      ggplot2::labs(fill=ylab) +
       metR::scale_x_longitude() +
       metR::scale_y_latitude() +
       ggplot2::theme_minimal() +
@@ -281,8 +299,8 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
         legend.position = "bottom",
         legend.box = "horizontal")
 
-    ggplot2::ggsave(filename = "figures/area_country_map.png", plot = map_plot, dpi=600, width = 12, height = 6)
-    eoffice::topptx(figure = map_plot,filename = "figures/area_country_map.pptx", width=12, height=6)
+    ggplot2::ggsave(filename = "figures/png/area_country_map.png", plot = map_plot, dpi=600, width = 12, height = 6)
+    eoffice::topptx(figure = map_plot,filename = "figures/pptx/area_country_map.pptx", width=12, height=6)
 
      }
 

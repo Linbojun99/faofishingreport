@@ -249,6 +249,16 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
 
   }
   if (plot) {
+
+
+    if (!dir.exists("figures/png/area")) {
+      dir.create("figures/png/area")
+    }
+
+    if (!dir.exists("figures/pptx/area")) {
+      dir.create("figures/pptx/area")
+    }
+
     # Replace plot_data_Top10 with plot_data in your plotting code
     p1 <- ggplot2::ggplot(plot_data, ggplot2::aes(x = Year, y = Tonnes/1e6, color = Country..Name., group = Country..Name.)) +
       ggplot2::geom_point(alpha=point_alpha, shape=point_shape, size=point_size) +
@@ -271,8 +281,8 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
       ggplot2::guides(color = ggplot2::guide_legend(nrow = 2))
 
 
-    #ggplot2::ggsave(filename = "figures/area_country.png", plot = p1, dpi = 600)
-    eoffice::topptx(figure=p1,filename = "figures/area_country.pptx", width = 12, height = 6)
+    ggplot2::ggsave(filename = "figures/png/area/area_country.png", plot = p1, dpi = 600, width = 12, height = 6)
+    eoffice::topptx(figure=p1,filename = "figures/pptx/area/area_country.pptx", width = 12, height = 6)
 
     if(timeseries_analysis){
       p2 <- ggplot2::ggplot() +
@@ -305,8 +315,8 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
           legend.box = "horizontal",
           axis.text.x = ggplot2::element_text(angle = 60, hjust = 1))+
         guides(color = ggplot2::guide_legend(nrow = 2))
-      #ggplot2::ggsave(filename = "figures/area_country_wrap.png", plot = p2, dpi = 600)
-      eoffice::topptx(figure=p2,filename = "figures/area_country_wrap.pptx", width = 12, height = 8)
+      ggplot2::ggsave(filename = "figures/png/area/area_country_wrap.png", plot = p2, dpi = 600, width = 12, height = 8)
+      eoffice::topptx(figure=p2,filename = "figures/pptx/area/area_country_wrap.pptx", width = 12, height = 8)
     }
     else{
       p3 <- ggplot2::ggplot() +
@@ -338,8 +348,8 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
           axis.text.x = ggplot2::element_text(size=12,angle = 60, hjust = 1))+
         ggplot2::guides(color = ggplot2::guide_legend(nrow = 2))
 
-      #ggplot2::ggsave(filename = "figures/area_country_wrap.png", plot = p3, dpi = 600)
-      eoffice::topptx(figure=p3,filename = "figures/area_country_wrap.pptx", width = 12, height = 8)
+      ggplot2::ggsave(filename = "figures/png/area/area_country_wrap.png", plot = p3, dpi = 600, width = 12, height = 8)
+      eoffice::topptx(figure=p3,filename = "figures/pptx/area/area_country_wrap.pptx", width = 12, height = 8)
 
     }
   }

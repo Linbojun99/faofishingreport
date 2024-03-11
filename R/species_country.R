@@ -13,21 +13,65 @@
 #' @param h_value The minimum segment size, which must be greater than the
 #'        number of regressors. For the model `ts_data ~ 1`, this means `h_value`
 #'        should be greater than 1. The default value is 0.15.
-
+#' @param polygon_color The color of the borders of the polygons in the map plot. Default is "grey90".
+#' @param fill_scale The color scale for filling polygons in the map plot. Default is "deep-orange".
+#' @param axis_title_size_map The size of the axis title text in the map plot. Default is 14.
+#' @param axis_text_size_map The size of the axis text in the map plot. Default is 12.
+#' @param legend_text_size_map The size of the legend text in the map plot. Default is 12.
+#' @param axis_title_face The font face of the axis title. Default is "bold".
+#' @param strip_text_face The font face of the strip text. Default is "bold".
+#' @param axis_text_size The size of the axis text. Default is 10.
+#' @param axis_title_size The size of the axis title text. Default is 12.
+#' @param strip_text_size The size of the strip text. Default is 12.
+#' @param ZH A logical value to Chinese. Default is "FALSE"
 #' @export
 #'
 #' @examples
 #' \dontrun{
 #' species_country(FAO34[["area_data"]], species_name = "European pilchard(=Sardine)",c(1, 10), plot=TRUE,table=TRUE,h_value = 0.15) #area_data=Fao34
 #' }
-species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=TRUE,table=TRUE,timeseries_analysis=TRUE,h_value = 0.15) {
+species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=TRUE,table=TRUE,timeseries_analysis=TRUE,h_value = 0.15,
+                            polygon_color="grey90",fill_scale="deep-orange",
+                            axis_title_face="bold",
+                            axis_title_size_map = 14,
+                            axis_text_size_map = 12,
+                            legend_text_size_map = 12,
+                            strip_text_face = "bold",
+                            axis_text_size = 10, axis_title_size = 12,
+                            strip_text_size = 12,ZH = FALSE) {
+
 
   options(scipen=999,digits=2)
 
+#draw set
+  ylab="Million Tonnes"
+  xlab2="Percentage of Total Production"
+  xlab="Year"
+  legendtext="Country..Name."
+  Other="Other"
+  Othernei="Other nei"
+if(ZH){
+  ylab="百万吨"
+  xlab="年"
+  xlab2="捕捞产量占比"
+  legendtext="国家"
+  Other="其余国家"
+  Othernei="未分类的国家"
+}
+
+  data_path <- system.file("extdata", "countries_name_data.rda", package="faofishingreport")
+  load(data_path, envir = .GlobalEnv)
+  colnames(name_mapping)[1]<-"Country..Name."
+  colnames(name_mapping)[7]<-"Short..name.ZH"
+
+
+
+  # 如果ZH为TRUE，使用提供的替换规则来更新Country..Name.
 
 
   species_data <- area_data %>%
     dplyr::filter(ASFIS.species..Name. == species_name)
+
 
   species_data <- species_data %>%
     dplyr::group_by(Year, Country..Name.) %>%
@@ -36,6 +80,122 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
   species_country_total <- species_data %>%
     dplyr::group_by(Country..Name.) %>%
     dplyr::summarise(country_production=sum(Production,na.rm = T))
+
+
+  species_country_total$Country..Name. <- as.factor(species_country_total$Country..Name.)
+
+  total_species_country <- sum(species_country_total$country_production)
+  species_country_total <- species_country_total %>%
+    dplyr::mutate(percentage_country=(country_production/total_species_country)*100)
+
+  #####map
+
+  # 地图绘制代码
+  # 创建一个命名的替换规则向量
+  replace_rules <- c(
+    "Cape Verde" = "Cabo Verde",
+    "Curacao" = "Cura?ao",
+    "Netherlands" = "Netherlands (Kingdom of the)",
+    "Democratic Republic of the Congo" = "Congo, Dem. Rep. of the",
+    "Republic of Congo" = "Congo",
+    "North Korea" = "Korea, Dem. People's Rep",
+    "South Korea" = "Korea, Republic of",
+    "Russia" = "Russian Federation",
+    "Vietnam" = "Viet Nam",
+    "Laos" = "Lao People's Democratic Republic",
+    "Moldova" = "Republic of Moldova",
+    "Czech Republic" = "Czechia",
+    "Ivory Coast" = "C?te d'Ivoire",
+    "UK" = "United Kingdom",
+    "Syria" = "Syrian Arab Republic",
+    "Guam" = "Guam (USA)",
+    "New Caledonia" = "New Caledonia (France)",
+    "Martinique" = "Martinique (France)",
+    "Mayotte" = "Mayotte (France)",
+    "Saint Pierre and Miquelon" = "Saint Pierre & Miquelon (France)",
+    "Bermuda" = "Bermuda (UK)",
+    "Saint Helena" = "Saint Helena (UK)",
+    "Turks and Caicos Islands" = "Turks & Caicos Isl. (UK)",
+    "Virgin Islands" = "British Virgin Isl. (UK)",
+    "Northern Mariana Islands" = "North Marianas (USA)",
+    "Niue" = "Niue (New Zealand)",
+    "Taiwan" = "Taiwan Province of China",
+    "USA" = "United States of America",
+    "Saint Vincent" = "Saint Vincent/Grenadines",
+    "Saint Kitts" = "Saint Kitts and Nevis"
+  )
+
+  # 应用替换规则
+
+  worldMap <- ggplot2::map_data("world") %>%
+    dplyr::filter(region != "Antarctica") %>%
+    dplyr::rename(country = region) %>%
+    dplyr::mutate(country = dplyr::recode(country, !!!replace_rules))
+
+
+
+
+
+  worldMap %>%
+    dplyr::left_join(species_country_total, by = c("country" = "Country..Name.")) -> act_world_map
+
+  map_plot <- ggplot2::ggplot() +
+    ggplot2::geom_polygon(act_world_map,
+                          mapping=ggplot2::aes(x = long, y = lat, group = group,
+                                               fill= country_production/1e6),
+                          colour = polygon_color) +
+    ggplot2::coord_sf() +
+    ggsci::scale_fill_material(fill_scale, na.value = "grey90") +
+    ggplot2::labs(fill=ylab) +
+    metR::scale_x_longitude() +
+    metR::scale_y_latitude() +
+    ggplot2::theme_minimal() +
+    ggplot2::theme(
+      panel.grid.minor.x = ggplot2::element_blank(),
+      strip.background = ggplot2::element_rect(fill = "white", colour = "black"),
+      strip.text = ggplot2::element_text(face = strip_text_face, size=strip_text_size),
+      axis.title.x = ggplot2::element_text(size=axis_title_size_map, face = axis_title_face),
+      axis.title.y = ggplot2::element_text(size=axis_title_size_map, face = axis_title_face),
+      axis.text.y = ggplot2::element_text(size=axis_text_size_map),
+      axis.text.x = ggplot2::element_text(size=axis_text_size_map),
+      legend.text = ggplot2::element_text(size=legend_text_size_map),
+      legend.position = "bottom",
+      legend.box = "horizontal",
+      text = ggplot2::element_text(family = "Songti SC"))
+
+
+
+  filename <- paste0("figures/pptx/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_map.pptx")
+  eoffice::topptx(figure=map_plot,filename = filename, width = 12, height = 6)
+  filename <- paste0("figures/png/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_map.png")
+  ggsave(plot=map_plot,filename = filename,dpi=600, width=12, height=6)
+
+  ###
+
+
+  if (ZH) {
+    # 假设name_mapping是一个数据框，它包含两列：Country..Name.和Short name ZH
+    # name_mapping <- data.frame(Country..Name. = c("USA", "China"), Short name ZH = c("美国", "中国"))
+
+    # 读取替换规则数据框
+
+    # 应用替换规则
+    species_data <- left_join(species_data, name_mapping, by = "Country..Name.")
+    species_data<-species_data[,-2]
+    colnames(species_data)[8]<-"Country..Name."
+    ylab="百万吨"
+    xlab="年"
+    xlab2="捕捞产量占比"
+    legendtext="国家"
+    Othernei="未分类的国家"
+    Other="其余国家"
+  }
+
+
+  species_country_total <- species_data %>%
+    dplyr::group_by(Country..Name.) %>%
+    dplyr::summarise(country_production=sum(Production,na.rm = T))
+
 
   species_country_total$Country..Name. <- as.factor(species_country_total$Country..Name.)
 
@@ -69,6 +229,9 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
     dplyr::ungroup() %>%
     dplyr::mutate(Country..Name. = factor(Country..Name., levels = unique(Country..Name.[order(-Total_Tonnes)])))
 
+  species_data <- species_data %>%
+    mutate(Country..Name. = replace(Country..Name., Country..Name. == Othernei, Other))
+
   # 计算每年每个国家的总量和占比
   species_pie <- species_data %>%
     dplyr::group_by(Year, `Country..Name.`) %>%
@@ -77,11 +240,12 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
     dplyr::mutate(total_tonnes = sum(Tonnes),
                   percentage = (Tonnes / total_tonnes) * 100) %>%
     dplyr::arrange(Year, desc(Tonnes)) %>%
-    dplyr::mutate(`Country..Name.` = dplyr::if_else(percentage > 5, `Country..Name.`, "Other")) %>%
+    dplyr::mutate(`Country..Name.` = dplyr::if_else(percentage > 5, `Country..Name.`, Other)) %>%
     dplyr::group_by(Year, `Country..Name.`) %>%
     dplyr::summarise(Tonnes = sum(Tonnes), percentage = sum(percentage), .groups = 'drop')
 
-
+  species_pie <- species_pie %>%
+    mutate(Country..Name. = replace(Country..Name., Country..Name. == Othernei, Other))
   # 计算每年每个物种的总量和占比，并识别每年的前10名物种
   species_data <- species_data %>%
     dplyr::mutate(Decade = dplyr::case_when(
@@ -102,9 +266,26 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
     dplyr::mutate(total_tonnes = sum(Tonnes),
                   percentage = (Tonnes / total_tonnes) * 100) %>%
     dplyr:: arrange(Decade, desc(Tonnes)) %>%
-    dplyr:: mutate(`Country..Name.` = dplyr::if_else(percentage > 5, `Country..Name.`, "Other")) %>%
+    dplyr:: mutate(`Country..Name.` = dplyr::if_else(percentage > 5, `Country..Name.`, Other)) %>%
     dplyr::group_by(Decade, `Country..Name.`) %>%
     dplyr::summarise(Tonnes = sum(Tonnes), percentage = sum(percentage), .groups = 'drop')
+
+
+  species_pie <- species_pie %>%
+    group_by(Decade) %>%
+    mutate(Rank = rank(-Tonnes, ties.method = "first")) %>%
+    ungroup() %>%
+    mutate(`Country..Name.` = if_else(Rank <= 4, as.character(`Country..Name.`), Other)) %>%
+    group_by(Decade, `Country..Name.`) %>%
+    summarise(Tonnes = sum(Tonnes), .groups = 'drop') %>%
+    mutate(percentage = (Tonnes / sum(Tonnes)) * 100) %>%
+    arrange(Decade, desc(Tonnes))
+
+  # 重新计算百分比，因为合并为 "Other" 后总吨位可能会改变
+  species_pie <- species_pie %>%
+    group_by(Decade) %>%
+    mutate(percentage = (Tonnes / sum(Tonnes)) * 100) %>%
+    ungroup()
 
   # 筛选特定的年份，你可以根据需要更改
   selected_decades <- c("1950s", "1960s", "1970s", "1980s", "1990s", "2000s", "2010s",
@@ -124,52 +305,63 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
 
 
 
-
-  get_bp_coefs <- function(country_name, data,h_value) {
-
+  get_bp_coefs <- function(country_name, data, h_value) {
     country_data <- data[data$Country..Name. == country_name, ]
+
+    # 初始化状态信息
+    status_message <- NULL
 
     # 检查数据连续性
     years <- country_data$Year
     if (length(years) > 1 && any(diff(years) != 1)) {
-      warning(paste("Data for", country_name, "is not continuous. Breakpoint analysis may be inaccurate."))
+      status_message <- paste("Data for", country_name, "is not continuous. Breakpoint analysis may be inaccurate.")
     }
 
     ts_data <- ts(country_data$Tonnes, start = min(years))
+    coefs_data <- NULL # 初始化为空
+    bps <- NULL # 初始化为空
 
     if (length(ts_data) > 1) {
-      bp <- breakpoints(ts_data ~ 1,h_value)
+      # 使用 tryCatch 来处理可能的错误
+      analysis_result <- tryCatch({
+        bp <- breakpoints(ts_data ~ 1, h = h_value)
+        coefs <- coef(bp)
 
-      coefs <- coef(bp)
+        bps <- c(min(years), breakpoints(bp)$breakpoints + min(years) - 1, max(years))
 
-      bps <- c(min(years), breakpoints(bp)$breakpoints + min(years), max(years))
+        start_years <- bps[-length(bps)]
+        end_years <- bps[-1]
 
-      start_years <- bps[-length(bps)]
-      end_years <- bps[-1] - 1
+        if (length(coefs) == length(start_years)) {
+          coefs_data <- data.frame(
+            Country..Name. = country_name,
+            start_year = start_years,
+            end_year = end_years,
+            intercept = as.numeric(coefs)
+          )
+        }
 
-      if (length(coefs) == length(start_years)) {
-        coefs_data <- data.frame(
-          Country..Name. = country_name,
-          start_year = start_years,
-          end_year = end_years,
-          intercept = as.numeric(coefs)
-        )
-      } else {
-        coefs_data <- NULL
-      }
+        return(list(coefs_data = coefs_data, bps = bps, status_message = status_message))
+      }, error = function(e) {
+        return(list(coefs_data = NULL, bps = NULL, status_message = paste("Error in processing", country_name, ":", e$message)))
+      })
+
+      return(analysis_result)
     } else {
-      coefs_data <- NULL
+      return(list(coefs_data = coefs_data, bps = bps, status_message = status_message))
     }
-
-    list(coefs_data = coefs_data, bps = bps)
   }
 
+  # 应用改进的函数
+  unique_country <- unique(species_country_ranked[species_country_ranked$Tonnes > 0,]$Country..Name.)
+  results <- lapply(unique_country, get_bp_coefs, data = species_country_ranked[species_country_ranked$Tonnes > 0, ], h_value = 0.15)
 
-  # 获取所有独特的国家名
-  unique_country <- unique(species_country_ranked[species_country_ranked$Tonnes>0,]$Country..Name.)
-
-  # 应用函数到每一个国家
-  results <- lapply(unique_country, get_bp_coefs, data = species_country_ranked[species_country_ranked$Tonnes>0,],h_value)
+  # 汇总并显示所有的状态信息
+  status_messages <- lapply(results, function(x) x$status_message)
+  status_messages <- Filter(Negate(is.null), status_messages) # 移除空消息
+  if (length(status_messages) > 0) {
+    cat(paste(status_messages, collapse = "\n"))
+  }
 
 
   # 提取和合并结果为一个数据框
@@ -180,6 +372,25 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
 
   if(plot){
 
+    if (!dir.exists("figures")) {
+      dir.create("figures")
+    }
+
+    if (!dir.exists("figures/png")) {
+      dir.create("figures/png")
+    }
+
+    if (!dir.exists("figures/pptx")) {
+      dir.create("figures/pptx")
+    }
+    if (!dir.exists("figures/png/species")) {
+      dir.create("figures/png/species")
+    }
+
+    if (!dir.exists("figures/pptx/species")) {
+      dir.create("figures/pptx/species")
+    }
+
   p1<-ggplot2::ggplot() +
     ggplot2::geom_bar(data = species_country_ranked_total,mapping=ggplot2::aes(y=forcats::fct_reorder(Country..Name., country_production), x=country_production/1e6, fill=Country..Name.), stat="identity") +
     ggplot2::geom_text(data=species_country_ranked_total,
@@ -188,7 +399,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
                           label=sprintf("%.2f%%",percentage_country)),
               hjust=-0.1,size=4.5) +
     ggplot2::theme_bw()+
-    ggplot2::labs(x="Million tonnes",y="Counrty")+
+    ggplot2::labs(x=ylab,y=legendtext)+
     ggsci::scale_fill_npg()+
     ggplot2:: scale_x_continuous(expand = c(0,0), limits = c(0, max_value))+
     ggplot2:: theme(
@@ -201,11 +412,14 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
       axis.text.y = ggplot2::element_text(size=12),
       legend.text= ggplot2::element_text(size=12),
       legend.position = "none",
-      legend.box = "horizontal")
-    # 更改文件名以匹配排名数据
-  filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_total.pptx")
-  eoffice::topptx(figure=p1, filename = filename, width=12, height=8)
+      legend.box = "horizontal",
+      text = ggplot2::element_text(family = "Songti SC")) # 使用中文字体
 
+    # 更改文件名以匹配排名数据
+  filename <- paste0("figures/pptx/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_total.pptx")
+  eoffice::topptx(figure=p1, filename = filename, width=12, height=8)
+  filename <- paste0("figures/png/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_total.png")
+  ggsave(plot=p1,filename = filename,dpi=600, width=12, height=8)
 
 
 
@@ -215,7 +429,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
       ggplot2::geom_line(linewidth=1.5,alpha=0.7) +
       ggplot2::theme_bw() +
       ggsci::scale_color_npg()+
-      ggplot2::labs( x = "Year", y = "Million Tonnes") +
+      ggplot2::labs( x = xlab, y = ylab,color=legendtext) +
       ggplot2::scale_x_continuous(breaks = seq(1950,2021,5),expand = c(0,0))+
       ggplot2::scale_y_continuous(expand = c(0,0))+
       ggplot2::theme(
@@ -228,11 +442,14 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
         axis.text.y = ggplot2::element_text(size=12),
         legend.text=ggplot2::element_text(size=12),
         legend.position = "bottom",
-        legend.box = "horizontal")+
+        legend.box = "horizontal",
+        text = ggplot2::element_text(family = "Songti SC"))+ # 使用中文字体
       ggplot2::guides(color = ggplot2::guide_legend(nrow = 2))
 
-    filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked.pptx")
+    filename <- paste0("figures/pptx/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked.pptx")
     eoffice::topptx(figure=p2, filename = filename, width=12, height=8)
+    filename <- paste0("figures/png/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked.png")
+    ggsave(plot=p2,filename = filename,dpi=600, width=12, height=8)
 
 
 
@@ -254,7 +471,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
         ggplot2::theme_bw() +
         ggsci::scale_color_npg()+
         ggplot2::facet_wrap(~Country..Name.,ncol=2,scales = "free_y")+
-        ggplot2::labs(x = "Year", y = "Million Tonnes") +
+        ggplot2::labs(x = xlab, y = ylab, color=legendtext) +
         ggplot2::scale_x_continuous(breaks = seq(1950,2021,5),expand = c(0,0))+
         ggplot2::scale_y_continuous()+
         ggplot2::theme(
@@ -266,12 +483,14 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
           axis.title.y = ggplot2::element_text(size=10,face = 'bold'),
           legend.position = "bottom",
           legend.box = "horizontal",
-          axis.text.x = ggplot2::element_text(angle = 60, hjust = 1))+
+          axis.text.x = ggplot2::element_text(angle = 60, hjust = 1),
+          text = ggplot2::element_text(family = "Songti SC"))+
         guides(color = ggplot2::guide_legend(nrow = 2))
       #ggplot2::ggsave(filename = "figures/area_country_wrap.png", plot = p2, dpi = 600)
-      filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_wrap.pptx")
+      filename <- paste0("figures/pptx/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_wrap.pptx")
       eoffice::topptx(figure=p3,filename = filename, width = 12, height = 8)
-
+      filename <- paste0("figures/png/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_wrap.png")
+      ggsave(plot=p3,filename = filename,dpi=600, width=12, height=8)
     }
     else{
     p3<-ggplot2::ggplot() +
@@ -284,7 +503,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
                 hjust = 0.9, vjust = -4, size = 4.5, color = "black") +
       ggplot2::theme_bw() +
       ggsci::scale_color_npg()+
-      ggplot2::labs( x = "Year", y = "Million Tonnes") +
+      ggplot2::labs( x = xlab, y = ylab,color=legendtext) +
       ggplot2::scale_x_continuous(breaks = seq(1950,2021,5),expand = c(0,0))+
       ggplot2::scale_y_continuous()+
       ggplot2::facet_wrap(~Country..Name.,ncol=2,scale="free_y")+
@@ -297,11 +516,16 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
         axis.text.y = ggplot2::element_text(size=12),
         legend.position = "bottom",
         legend.box = "horizontal",
-        axis.text.x = ggplot2::element_text(size=12,angle = 60, hjust = 1))+
+        axis.text.x = ggplot2::element_text(size=12,angle = 60, hjust = 1),
+        text = ggplot2::element_text(family = "Songti SC"))+
       ggplot2::guides(color = ggplot2::guide_legend(nrow = 2))
-    filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_wrap.pptx")
+    filename <- paste0("figures/pptx/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_wrap.pptx")
 
     eoffice::topptx(figure=p3, filename = filename, width=12, height=8)
+
+    filename <- paste0("figures/png/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_wrap.png")
+
+    ggsave(plot=p3,filename = filename,dpi=600, width=12, height=8)
 
 }
 
@@ -309,8 +533,8 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
       p4<-ggplot2::ggplot(species_pie_selected[species_pie_selected$Tonnes>0,],ggplot2:: aes(x = "", y = percentage, fill = `Country..Name.`)) +
       ggplot2::geom_bar(stat="identity", width=1,color="black") +
       ggplot2::coord_polar("y") +
-      ggplot2::geom_text(ggplot2::aes(label=sprintf("%.2f%%",percentage)),position = ggplot2::position_stack(vjust = 0.5))+
-      #scale_fill_manual(values = color_palette) + # 使用自定义调色板
+        ggplot2::geom_text(ggplot2::aes(label = sprintf("%.2f%%", percentage)), position = position_stack(vjust = 0.5), size=3, color = "white") + # 使用 position_stack 调整文本位置
+        #scale_fill_manual(values = color_palette) + # 使用自定义调色板
       ggplot2::facet_wrap(~Decade) +
       ggplot2::theme_minimal() +
       ggplot2::theme(axis.text.x  = ggplot2::element_blank(),
@@ -318,13 +542,18 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
             strip.text = ggplot2::element_text(face = 'bold',size=14),
             axis.title.x = ggplot2::element_text(size=14,face = 'bold'),
             axis.title.y = ggplot2::element_text(size=14,face = 'bold'),
-            legend.text=ggplot2::element_text(size=12)) +
+            legend.text=ggplot2::element_text(size=12),
+            text = ggplot2::element_text(family = "Songti SC")) +
       ggplot2::labs(
-        y = "Percentage of Total Production",
-        x = NULL
+        y = xlab2,
+        x = NULL,
+        fill=legendtext
       )
-    filename <- paste0("figures/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_pie_selected.pptx")
+    filename <- paste0("figures/pptx/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_pie_selected.pptx")
     eoffice::topptx(figure=p4, filename = filename, width=12, height=8)
+    filename <- paste0("figures/png/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_pie_selected.png")
+    ggsave(plot=p4,filename = filename,dpi=600, width=12, height=8)
+
 }
 
 
@@ -425,7 +654,11 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
     }
 
 
-
+if(timeseries_analysis)
+  {return(list(species_country_ranked,coefs_data))
+}
+else{
   return(species_country_ranked)
 }
+  }
 
