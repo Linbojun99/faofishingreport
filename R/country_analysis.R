@@ -590,7 +590,9 @@ country_analysis <- function(country_name, rank_range = c(1, 10),plot=TRUE,table
     country_species_area_total <- country_species_area_total %>%
       arrange(desc(total_species_production), ASFIS.species..Name.)
 
-    data_path <- system.file("extdata", "FAO_AREAS_CWP.shp", package="faofishingreport")
+    shapefile_path <- system.file("extdata", "FAO_AREAS_CWP.shp", package="faofishingreport")
+    shapefile_path <- "~/Library/CloudStorage/OneDrive-共用文件庫－onedrive/Oceanic Fisheries Ecosystem Laboratory/FAO_AREAS_CWP/FAO_AREAS_CWP.shp"
+
     fao_areas <- st_read(shapefile_path)
 
     fao_areas_filtered <- fao_areas%>%

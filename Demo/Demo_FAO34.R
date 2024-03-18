@@ -7,7 +7,7 @@ library(faofishingreport)
 setwd()#工作空间
 
 #加载数据 FAO34渔区  Atlantic, Eastern Central
-FAO34 <- fishing_area_data(area_name="Atlantic, Eastern Central", plot = TRUE,timeseries_analysis=TRUE,ZH=TRUE)
+FAO34 <- fishing_area_data(area_name="Atlantic, Eastern Central", plot = T,timeseries_analysis=TRUE,ZH=TRUE)
 
 
 
@@ -18,14 +18,14 @@ FAO34_species<-fishing_area_species(FAO34[["area_data"]], c(1, 10), plot=TRUE,ta
 
 
 ###FAO34渔区的捕捞国家 fishing_area_country
-FAO34_country<-fishing_area_country(FAO34[["area_data"]], c(31, 40), plot=TRUE,table=TRUE,timeseries_analysis=TRUE) #area_data=Fao34
+FAO34_country<-fishing_area_country(FAO34[["area_data"]], c(1, 10), plot=TRUE,table=TRUE,timeseries_analysis=TRUE) #area_data=Fao34
 
 ###主要捕捞物种的捕捞国家 species_country
 #European pilchard(=Sardine)
-sardine=species_country(FAO34[["area_data"]], species_name = "European pilchard(=Sardine)",c(1, 10), plot=TRUE,table=TRUE) #area_data=Fao34
+sardine=species_country(FAO34[["area_data"]], species_name = "European pilchard(=Sardine)",c(1, 10), plot=TRUE,table=TRUE,ZH=TRUE) #area_data=Fao34
 
 #Jack and horse mackerels nei
-Jack=species_country(FAO34[["area_data"]], species_name = "Jack and horse mackerels nei",c(1, 10), plot=TRUE,table=TRUE,h_value=5) #area_data=Fao34
+Jack=species_country(FAO34[["area_data"]], species_name = "Jack and horse mackerels nei",c(1, 10), plot=TRUE,table=TRUE,h_value=5,ZH=TRUE) #area_data=Fao34
 
 #Round sardinella
 Rsardine=species_country(FAO34[["area_data"]], species_name = "Round sardinella",c(1, 10), plot=TRUE,table=TRUE,ZH=TRUE) #area_data=Fao34
