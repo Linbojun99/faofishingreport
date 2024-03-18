@@ -1,7 +1,10 @@
 #Example:FAO Fishing Area 34  "Atlantic, Eastern Central"
 #Data preparing and loading
 library(faofishingreport)
-
+library(rnaturalearth)
+library(sf)
+library(rnaturalearth)
+library(rnaturalearthdata)
 #环境目录设置
 #setwd("/Users/linbojun/Library/CloudStorage/OneDrive-共用文件庫－onedrive/Oceanic Fisheries Ecosystem Laboratory/FAO34/38")
 setwd()#工作空间
