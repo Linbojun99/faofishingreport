@@ -27,6 +27,18 @@ copy_figure("species/European_pilchard__Sardine__country_ranked_wrap.png", "read
 fao_settings(map_projection = "robinson", map_center = 180, map_palette = "YlOrRd")
 quiet(country_analysis("Morocco"))
 copy_figure("country/Moroccofishing_area_map.png", "readme-area-map.png")
+fao_settings(reset = TRUE)
+fao_settings(dpi = 90)
+
+# Mean temperature of the catch, with the FishBase traits bundled with the package
+quiet(mean_temperature_catch(FAO34$area_data, version = "builtin", data_dir = work_dir))
+copy_figure("summary/Atlantic__Eastern_Central_mtc.png", "readme-mtc.png")
+
+# CMSY++ Kobe plot of the ten main species (needs JAGS: cmsy_setup())
+quiet(cmsy <- cmsy_area(FAO34$area_data, top = 10, lang = "en", out_dir = file.path(work_dir, "cmsy"),
+                        charts = "kobe_all", forecast = FALSE, silent = TRUE))
+file.copy(file.path(cmsy$dir, "figures", "summary", "kobe_all.png"),
+          file.path(package_root, "man", "figures", "readme-cmsy-kobe.png"), overwrite = TRUE)
 
 setwd(package_root)
 message("README figures updated in man/figures/")

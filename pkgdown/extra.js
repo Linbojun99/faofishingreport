@@ -19,6 +19,10 @@
     "📈 Composition, stock status and trends": "📈 类群结构、资源状态与趋势",
     "🔍 Data quality, diversity and fleets": "🔍 数据质量、多样性与船队",
     "🌡️ Sea temperature and catch temperature": "🌡️ 海表温度与渔获平均温度",
+    "🔬 Shocks, collapses, synchrony and fleets": "🔬 渔获骤变、渔业崩溃、同步性与远洋捕捞",
+    "🐠 FishBase and SeaLifeBase traits": "🐠 FishBase 与 SeaLifeBase 物种特征",
+    "📉 CMSY++ stock assessment": "📉 CMSY++ 资源评估",
+    "📝 Assessment report in Word": "📝 一键生成 Word 评估报告",
     "🎨 Customise charts and maps": "🎨 自定义图表与地图",
     "On this page": "本页目录",
     "Developed by": "开发者",
@@ -116,6 +120,9 @@
     "🐟 Species and countries": "🐟 物种与国家",
     "📊 Summary analyses": "📊 汇总分析",
     "📝 Reports": "📝 报告",
+    "🔬 Literature-based analyses": "🔬 文献方法分析",
+    "🌡️ FishBase and temperature": "🌡️ FishBase 与温度",
+    "📉 CMSY++ stock assessment": "📉 CMSY++ 资源评估",
     "🎨 Settings and language": "🎨 设置与语言"
   };
 

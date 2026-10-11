@@ -38,12 +38,18 @@ navbar:
         href: articles/species-countries.html
       - text: "📈 Composition, stock status and trends"
         href: articles/status-trends.html
-      - text: "📉 CMSY++ stock assessment"
-        href: articles/cmsy.html
-      - text: "🌡️ Sea temperature and catch temperature"
-        href: articles/sst-mtc.html
       - text: "🔍 Data quality, diversity and fleets"
         href: articles/quality-diversity-fleets.html
+      - text: "🔬 Shocks, collapses, synchrony and fleets"
+        href: articles/literature-analyses.html
+      - text: "🌡️ Sea temperature and catch temperature"
+        href: articles/sst-mtc.html
+      - text: "🐠 FishBase and SeaLifeBase traits"
+        href: articles/fishbase.html
+      - text: "📉 CMSY++ stock assessment"
+        href: articles/cmsy.html
+      - text: "📝 Assessment report in Word"
+        href: articles/report.html
       - text: "🎨 Customise charts and maps"
         href: articles/customise.html
     lang:
@@ -148,9 +154,12 @@ articles:
   - articles/fishing-areas
   - articles/species-countries
   - articles/status-trends
-  - articles/cmsy
-  - articles/sst-mtc
   - articles/quality-diversity-fleets
+  - articles/literature-analyses
+  - articles/sst-mtc
+  - articles/fishbase
+  - articles/cmsy
+  - articles/report
   - articles/customise
 - title: "中文文档"
   contents:
@@ -160,9 +169,12 @@ articles:
   - articles/zh/fishing-areas
   - articles/zh/species-countries
   - articles/zh/status-trends
-  - articles/zh/cmsy
-  - articles/zh/sst-mtc
   - articles/zh/quality-diversity-fleets
+  - articles/zh/literature-analyses
+  - articles/zh/sst-mtc
+  - articles/zh/fishbase
+  - articles/zh/cmsy
+  - articles/zh/report
   - articles/zh/customise
 
 news:
