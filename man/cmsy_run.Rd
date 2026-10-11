@@ -56,7 +56,7 @@ before the run. Default is FALSE, as in CMSY++; the user guide prefers setting
 \code{StartYear} or the start B/k prior (\code{stb.low}, \code{stb.hi}) in \code{\link[=cmsy_input]{cmsy_input()}}.}
 
 \item{settings}{Optional named list of CMSY++ settings that replace its defaults, e.g.
-\code{list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000)}. See \code{\link[=cmsy_defaults]{cmsy_defaults()}} for the
+\code{list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000)}. See \code{\link[=cmsy_defaults]{cmsy_defaults()}} for the
 settings, their defaults and what they do. Default is no change: CMSY++ runs with its own
 defaults. The settings used are saved in \code{settings_used.csv} of the run folder and in
 \code{result$settings}.}
@@ -73,7 +73,8 @@ run. If TRUE, nothing is printed. The default can be changed for the session wit
 \code{fao_settings(silent = TRUE)}.}
 
 \item{timeout}{Maximum time for one stock, in seconds; a stock still running after it is
-reported as failed. Default is 3600.}
+stopped and reported as "timeout" (or "partial" if its main analysis had finished).
+Default is 3600.}
 }
 \value{
 Invisibly, a list of class \code{cmsy_result} with \code{summary} (one row per stock: reference
@@ -82,7 +83,14 @@ links to their sources), \code{series} (by year: catch, predicted catch, B/k, bi
 B/Bmsy, F and F/Fmsy, with 95\% limits), \code{kobe} (the last-year draws), \code{details}
 (per stock: posterior draws of r, k and B/k, the priors, retrospective runs), \code{logs},
 \code{sources} (the versions of CMSY++, JAGS, R and the data) and \code{changes} (the changes
-made to the CMSY++ code). The summary is saved in \verb{tables/cmsy/}.
+made to the CMSY++ code). The summary is saved in \verb{tables/cmsy/}. Its \code{run_status} is
+"ok" when the run of the stock finished without error, "partial" when the main analysis
+saved its results but a later step (the retrospective analysis or a chart) failed or ran
+out of time, and "failed" or "timeout" when there are no results; \code{exit} says how the
+run ended. The other functions use the results of "ok" and "partial" stocks. A
+finished run is not a validated assessment: the B/k priors suggested by the neural
+network "may not be appropriate for your stock" (CMSY++ user guide), so check them
+stock by stock (see \code{\link[=cmsy_input]{cmsy_input()}} for setting your own).
 }
 \description{
 This function runs the CMSY++ code bundled with the package (\verb{CMSY++16.R}, January 2021, see
@@ -119,9 +127,9 @@ head(result$series)                                # catch, B/k, biomass, B/Bmsy
 result <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE,
                    plots = c("analysis", "management", "kobe", "prior_posterior", "retrospective"))
 
-# Changed CMSY++ settings (see cmsy_defaults()): longer chains and a larger process error
+# Changed CMSY++ settings (see cmsy_defaults()): longer chains and a larger catch error
 result <- cmsy_run(input, stocks = "GRB_34", seed = 1,
-                   settings = list(n.iter = 100000, n.burnin = 50000, sigmaR = 0.15))
+                   settings = list(n.iter = 100000, n.burnin = 50000, CV.C = 0.2))
 result$settings[result$settings$changed, c("setting", "cmsy_default", "used")]
 
 # The ten main stocks, four at a time, without progress bar or messages

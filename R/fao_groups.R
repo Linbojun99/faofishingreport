@@ -33,7 +33,7 @@ fao_build_group_table <- function(capture, lookup = fao_lookup_tables()) {
   ct <- capture$countries
   country <- data.frame(
     name_en = fao_country_names(ct$UN_Code, ct, lookup),
-    iso3 = ct$ISO3_Code,
+    iso3 = ct$ISO3_Code, un_code = as.character(ct$UN_Code),
     continent_en = ct$Continent_Group_En, continent_zh = ct$Continent_Group_Cn,
     region_en = ct$GeoRegion_Group_En, region_zh = ct$GeoRegion_Group_Cn,
     income_en = ct$EcoClass_Group_En, income_zh = zh_of("income", ct$EcoClass_Group_En),

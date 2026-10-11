@@ -38,12 +38,13 @@
 #'        run. If TRUE, nothing is printed. The default can be changed for the session with
 #'        `fao_settings(silent = TRUE)`.
 #' @param settings Optional named list of CMSY++ settings that replace its defaults, e.g.
-#'        `list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000)`. See [cmsy_defaults()] for the
+#'        `list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000)`. See [cmsy_defaults()] for the
 #'        settings, their defaults and what they do. Default is no change: CMSY++ runs with its own
 #'        defaults. The settings used are saved in `settings_used.csv` of the run folder and in
 #'        `result$settings`.
 #' @param timeout Maximum time for one stock, in seconds; a stock still running after it is
-#'        reported as failed. Default is 3600.
+#'        stopped and reported as "timeout" (or "partial" if its main analysis had finished).
+#'        Default is 3600.
 #' @param auto_start A logical value. When the mean (smoothed) catch of the first three years is
 #'        below a third of the maximum, the start year is before 2000 and no start B/k prior is
 #'        given, CMSY++ warns that the start biomass is ambiguous (depleted or unexploited) and
@@ -59,7 +60,14 @@
 #'         B/Bmsy, F and F/Fmsy, with 95% limits), `kobe` (the last-year draws), `details`
 #'         (per stock: posterior draws of r, k and B/k, the priors, retrospective runs), `logs`,
 #'         `sources` (the versions of CMSY++, JAGS, R and the data) and `changes` (the changes
-#'         made to the CMSY++ code). The summary is saved in `tables/cmsy/`.
+#'         made to the CMSY++ code). The summary is saved in `tables/cmsy/`. Its `run_status` is
+#'         "ok" when the run of the stock finished without error, "partial" when the main analysis
+#'         saved its results but a later step (the retrospective analysis or a chart) failed or ran
+#'         out of time, and "failed" or "timeout" when there are no results; `exit` says how the
+#'         run ended. The other functions use the results of "ok" and "partial" stocks. A
+#'         finished run is not a validated assessment: the B/k priors suggested by the neural
+#'         network "may not be appropriate for your stock" (CMSY++ user guide), so check them
+#'         stock by stock (see [cmsy_input()] for setting your own).
 #' @references
 #' Froese, R., Winker, H., Coro, G., et al. (2023). New developments in the analysis of catch
 #' time series as the basis for fish stock assessments: the CMSY++ method. Acta Ichthyologica et
@@ -84,9 +92,9 @@
 #' result <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE,
 #'                    plots = c("analysis", "management", "kobe", "prior_posterior", "retrospective"))
 #'
-#' # Changed CMSY++ settings (see cmsy_defaults()): longer chains and a larger process error
+#' # Changed CMSY++ settings (see cmsy_defaults()): longer chains and a larger catch error
 #' result <- cmsy_run(input, stocks = "GRB_34", seed = 1,
-#'                    settings = list(n.iter = 100000, n.burnin = 50000, sigmaR = 0.15))
+#'                    settings = list(n.iter = 100000, n.burnin = 50000, CV.C = 0.2))
 #' result$settings[result$settings$changed, c("setting", "cmsy_default", "used")]
 #'
 #' # The ten main stocks, four at a time, without progress bar or messages
@@ -118,6 +126,14 @@ cmsy_run <- function(input, stocks = NULL, out_dir = "cmsy", parallel = NULL,
 
   stocks <- if (is.null(stocks)) input$id$Stock else cmsy_quietly(cmsy_match_stocks(stocks, input$stocks), silent)
   if (length(stocks) == 0) stop("No stocks to run.", call. = FALSE)
+  # the input may have been changed by hand: one row per stock, one catch per stock and year, valid
+  # priors, and one folder per stock
+  cmsy_check_priors(input$id, input$catch)
+  folders <- cmsy_safe_name(stocks)
+  if (anyDuplicated(folders)) {
+    stop("Stocks ", paste(stocks[folders %in% folders[duplicated(folders)]], collapse = ", "),
+         " would share a folder; give them identifiers that differ in letters, digits, '.', '-' or '_'.", call. = FALSE)
+  }
 
   run_dir <- file.path(out_dir, input$name)
   dir.create(run_dir, recursive = TRUE, showWarnings = FALSE)
@@ -134,12 +150,13 @@ cmsy_run <- function(input, stocks = NULL, out_dir = "cmsy", parallel = NULL,
     file.copy(cmsy_file("ffnn.bin"), file.path(dir, "ffnn.bin"))
     utils::write.csv(input$catch[input$catch$Stock == stock, ], file.path(dir, "catch.csv"), row.names = FALSE, na = "NA")
     id <- input$id[input$id$Stock == stock, ]
-    if (auto_start) id$StartYear <- cmsy_auto_start(input$catch[input$catch$Stock == stock, ], id)
+    if (auto_start) id$StartYear <- cmsy_auto_start(input$catch[input$catch$Stock == stock, ], id, used_settings$bw)
     utils::write.csv(id, file.path(dir, "id.csv"), row.names = FALSE, na = "NA")
     writeLines(cmsy_settings_code(stock, sys, plots, seed, used_settings), file.path(dir, "cmsy_settings.R"))
     # done.txt tells cmsy_run() that the stock has finished, and how
     # Output and messages go to log.txt from within R, which works the same on every system
     writeLines(c(paste0("setwd(", deparse(dir), ")"),
+                 "writeLines(as.character(Sys.getpid()), \"pid.txt\")",
                  "local({",
                  "  log <- file(\"log.txt\", open = \"wt\")",
                  "  sink(log)",
@@ -177,10 +194,12 @@ cmsy_run <- function(input, stocks = NULL, out_dir = "cmsy", parallel = NULL,
     if (!is.null(result$series)) fao_write_csv(result$series, file.path("tables", "cmsy", paste0(input$name, "_series.csv")))
     fao_write_csv(result$sources, file.path("tables", "cmsy", paste0(input$name, "_sources.csv")))
   }
-  ok <- sum(result$summary$run_status == "ok")
+  status <- result$summary$run_status
   if (!silent) {
-    message("CMSY++ finished: ", ok, " of ", nrow(result$summary), " stocks", if (ok < nrow(result$summary))
-      " (see $summary$run_status and the log.txt file of each stock)", ".")
+    message("CMSY++ finished: ", sum(status == "ok"), " of ", length(status), " stocks completed",
+            if (any(status == "partial")) paste0(", ", sum(status == "partial"), " with the main analysis only"),
+            if (any(!status %in% c("ok", "partial"))) paste0(", ", sum(!status %in% c("ok", "partial")), " failed or timed out"),
+            if (any(status != "ok")) " (see $summary$run_status, $summary$exit and the log.txt file of each stock)", ".")
   }
   invisible(result)
 }
@@ -211,6 +230,7 @@ cmsy_run_jobs <- function(jobs, rscript, parallel, timeout, silent) {
     for (r in running[done]) {
       done_file <- file.path(jobs[[r$i]]$dir, "done.txt")
       exit <- if (file.exists(done_file)) readLines(done_file, warn = FALSE)[1] else paste("timeout after", timeout, "s")
+      if (!file.exists(done_file)) cmsy_stop_process(jobs[[r$i]]$dir)
       results[[r$i]] <- list(stock = jobs[[r$i]]$stock, exit = exit,
                              seconds = as.numeric(difftime(Sys.time(), r$start, units = "secs")))
       finished <- finished + 1
@@ -380,8 +400,10 @@ cmsy_extra_saver <- function() {
     start.yr.new = v("start.yr.new"),
     prior.r = v("prior.r"), prior.k = v("prior.k"), prior.msy = v("prior.msy"), MSY.pr = v("MSY.pr"),
     startbio = v("startbio"), intbio = v("intbio"), int.yr = int.yr, endbio = v("endbio"),
-    expert = c(r = !is.na(v("r.low")), start = !is.na(v("stb.low")), int = !is.na(v("intb.low")),
-               end = !is.na(v("endb.low"))),
+    # a prior is the user's when both bounds are given, the only case in which CMSY++16.R uses it
+    expert = vapply(list(r = c("r.low", "r.hi"), start = c("stb.low", "stb.hi"), int = c("intb.low", "intb.hi"),
+                         end = c("endb.low", "endb.hi")),
+                    function(bounds) { x <- c(v(bounds[1]), v(bounds[2])); length(x) == 2 && !anyNA(x) }, logical(1)),
     prior_logn = c(mean_log_r = v("mean.log.r"), sd_log_r = v("sd.log.r"), mean_log_k = v("mean.log.k"),
                    sd_log_k = v("sd.log.k"), cor_log_rk = v("cor.log.rk")),
     bk_beta = tryCatch(v("beta.prior")(v("b.prior")), error = function(e) NULL),
@@ -412,12 +434,13 @@ cmsy_retro_saver <- function() {
 cmsy_safe_name <- function(x) gsub("[^A-Za-z0-9_.-]", "_", x)
 
 # Start year suggested by CMSY++16.R when the first catches are low (lines 448-480 of the code):
-# catch smoothed with ksmooth(bandwidth = 3), mean of the first three years below 0.33 of the
-# maximum, start before 2000 and no start B/k prior -> first year with at least 0.4 of the maximum
-cmsy_auto_start <- function(catch, id) {
+# catch smoothed with ksmooth(bandwidth = bw), the setting bw of the run as in CMSY++16.R, mean of
+# the first three years below 0.33 of the maximum, start before 2000 and no start B/k prior ->
+# first year with at least 0.4 of the maximum
+cmsy_auto_start <- function(catch, id, bw = 3) {
   catch <- catch[catch$yr >= id$StartYear & catch$yr <= id$EndYear, ]
   smooth <- stats::ksmooth(x = catch$yr, y = catch$ct / 1000, kernel = "normal",
-                           n.points = nrow(catch), bandwidth = 3)$y
+                           n.points = nrow(catch), bandwidth = bw)$y
   start <- id$StartYear
   if (is.na(id$stb.low) && mean(smooth[1:3]) < 0.33 * max(smooth) && id$StartYear < 2000) {
     start <- catch$yr[which(smooth >= 0.4 * max(smooth))][1]
@@ -463,15 +486,22 @@ cmsy_collect <- function(jobs, runs, input, lang) {
   ), class = "cmsy_result")
 }
 
+# The status of a stock: "ok" when the run finished without error, "partial" when the main analysis
+# saved its results but a later step (e.g. the retrospective analysis or a chart) failed or ran out
+# of time, and "failed" or "timeout" when there are no results; `exit` keeps how the run ended
 cmsy_read_stock <- function(dir, stock, run) {
   log <- if (file.exists(file.path(dir, "log.txt"))) readLines(file.path(dir, "log.txt"), warn = FALSE) else character(0)
   out_file <- file.path(dir, "cmsy_output.csv")
   extra_file <- file.path(dir, "cmsy_extra.rds")
-  empty <- data.frame(Stock = stock, run_status = "failed", message = cmsy_log_error(log),
-                      seconds = round(run$seconds), stringsAsFactors = FALSE)
+  exit <- if (is.null(run$exit) || is.na(run$exit)) "unknown" else run$exit
+  timed_out <- startsWith(exit, "timeout")
   if (!file.exists(out_file) || !file.exists(extra_file)) {
+    empty <- data.frame(Stock = stock, run_status = if (timed_out) "timeout" else "failed",
+                        message = if (identical(exit, "ok")) cmsy_log_error(log) else exit, exit = exit,
+                        seconds = round(run$seconds), stringsAsFactors = FALSE)
     return(list(summary = empty, series = NULL, kobe = NULL, details = NULL, log = log))
   }
+  complete <- identical(exit, "ok")
   out <- utils::read.csv(out_file, stringsAsFactors = FALSE, check.names = FALSE)
   out <- out[nrow(out), ]
   x <- readRDS(extra_file)
@@ -485,8 +515,9 @@ cmsy_read_stock <- function(dir, stock, run) {
   last_b <- as.numeric(out$last.B_Bmsy)
   source_of <- function(expert) if (isTRUE(expert)) "user" else "CMSY++ neural network"
   summary <- data.frame(
-    Stock = stock, run_status = "ok", message = cmsy_log_notes(log),
-    seconds = round(run$seconds),
+    Stock = stock, run_status = if (complete) "ok" else "partial",
+    message = if (complete) cmsy_log_notes(log) else paste0("Main analysis only; the run then ended with: ", exit),
+    exit = exit, seconds = round(run$seconds),
     first_year = as.integer(out$start.yr), last_year = as.integer(out$end.yr),
     suggested_start_year = suppressWarnings(as.integer(out$start.yr.new)),
     MSY = kt(out$MSY), MSY_lcl = kt(out$lcl.MSY), MSY_ucl = kt(out$ucl.MSY),
@@ -580,3 +611,15 @@ cmsy_run_sources <- function(sys, input, seed, settings = NULL) {
     row("Run date", format(Sys.time(), "%Y-%m-%d %H:%M"), "")
   )
 }
+
+# Stops the R process of a stock that ran out of time (its process id is in pid.txt)
+cmsy_stop_process <- function(dir) {
+  pid_file <- file.path(dir, "pid.txt")
+  if (!file.exists(pid_file)) return(invisible(FALSE))
+  pid <- suppressWarnings(as.integer(readLines(pid_file, warn = FALSE)[1]))
+  if (is.na(pid)) return(invisible(FALSE))
+  invisible(tools::pskill(pid))
+}
+
+# Stocks with results of the main analysis (completed runs, and runs in which a later step failed)
+cmsy_has_results <- function(status) status %in% c("ok", "partial")

@@ -167,7 +167,7 @@ cmsy_area <- function(area, top = 10, species = NULL, recent_years = 10, out_dir
   fao_write_csv(input$stocks, file.path("input", "stocks.csv"))
   fao_write_csv(skipped, file.path("input", "excluded.csv"))
   if (!silent) {
-    message("      ", nrow(input$stocks), " stocks of ", label, " to assess",
+    message("      ", nrow(input$stocks), if (nrow(input$stocks) == 1) " stock" else " stocks", " of ", label, " to assess",
             if (nrow(skipped) > 0) paste0("; left out: ", paste0(skipped$species_name, " (", skipped$reason, ")",
                                                                  collapse = "; ")))
   }
@@ -212,7 +212,7 @@ cmsy_area <- function(area, top = 10, species = NULL, recent_years = 10, out_dir
   result$dir <- dir
   finished <- TRUE
   if (!silent) {
-    ok <- result$summary$run_status == "ok"
+    ok <- cmsy_has_results(result$summary$run_status)
     message("Done: ", sum(ok), " of ", nrow(result$summary), " stocks; ",
             sum(result$summary$status[ok] == "overfished", na.rm = TRUE), " overfished (B/Bmsy < 0.8). Results in ", dir)
   }

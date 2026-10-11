@@ -406,7 +406,7 @@ show_png("area34_map.png")
 projection <- cmsy_forecast(result, catch = 100000)
 ```
 
-`CMSY++16.R`本身没有预测功能。`cmsy_forecast()`用CMSY++自身的模型做预测：Schaefer剩余产量模型，生物量低于0.25 k时生产力线性下降。预测从同一组MCMC迭代的r、k和末年B/k后验抽样出发，加入对数正态过程误差（`sigma`，默认0.1，与CMSY++的`sigmaR`相同）。与CMSY++相同，某一年的生物量是该年渔获之前的生物量，F是渔获量除以该生物量，F/Fmsy中的Fmsy在生物量低于Bmsy的一半时线性降低。数据最后一年保留其实际渔获量；从第一个预测年起，F情景的渔获量等于情景F乘以同一年的生物量，因此F/Fmsy就是情景值。默认情景是0.5、0.6、0.8、0.95倍Fmsy（与Froese et al. 2018相同），以及维持末年捕捞死亡率；也可以设定固定渔获量（`catch`）。数据结束年份不同的种群，各自从自己的最后一年预测到同一个结束年份。
+`CMSY++16.R`本身没有预测功能。`cmsy_forecast()`用CMSY++自身的模型做预测：Schaefer剩余产量模型，生物量低于0.25 k时生产力线性下降。预测从同一组MCMC迭代的r、k和末年B/k后验抽样出发，加入标准差为`sigma`的对数正态过程误差（默认0.1，即`CMSY++16.R`给设置`sigmaR`的值；模型本身并不使用`sigmaR`，而是估计其过程误差）。与CMSY++相同，某一年的生物量是该年渔获之前的生物量，F是渔获量除以该生物量，F/Fmsy中的Fmsy在生物量低于Bmsy的一半时线性降低。数据最后一年保留其实际渔获量；从第一个预测年起，F情景的渔获量等于情景F乘以同一年的生物量，因此F/Fmsy就是情景值。默认情景是0.5、0.6、0.8、0.95倍Fmsy（与Froese et al. 2018相同），以及维持末年捕捞死亡率；也可以设定固定渔获量（`catch`）。数据结束年份不同的种群，各自从自己的最后一年预测到同一个结束年份。
 
 | 参数 | 含义 | 默认值 |
 |---|---|---|
@@ -466,7 +466,7 @@ tables <- cmsy_tables(result)
 
 ## ⚙️ CMSY++自带的设置 {#cmsy-settings}
 
-CMSY++代码里有一组“一般设置”，例如渔获量观测误差`CV.C`、过程误差`sigmaR`、MCMC链数和迭代次数。`cmsy_run()`默认完全沿用CMSY++原来的数值，`cmsy_defaults()`列出每一项的原默认值、实际使用的值和含义：
+CMSY++代码里有一组“一般设置”，例如渔获量观测误差`CV.C`、MCMC链数和迭代次数。其中`sigmaR`和`ni`两项在`CMSY++16.R`中有赋值，但代码并不使用（模型的过程误差由先验`itau2 ~ dgamma(4, 0.01)`估计）：它们标为“not used”（不使用），不能修改，以免误以为做了过程误差的敏感性分析。`cmsy_run()`默认完全沿用CMSY++原来的数值，`cmsy_defaults()`列出每一项的原默认值、实际使用的值和含义：
 
 ```{r}
 show_table(cmsy_defaults()[, c("setting", "cmsy_default", "applies_to", "description")], n = 30)
@@ -475,18 +475,18 @@ show_table(cmsy_defaults()[, c("setting", "cmsy_default", "applies_to", "descrip
 `applies_to`为"BSM"的设置只在有丰度数据（CPUE或生物量）时才起作用。FAO数据只有渔获量，所以真正影响结果的是标为"all"的设置。需要改时，用`settings`只写要改的几项，其余保持原值；每一项都会先检查（名称、取值范围、迭代次数是否足够）：
 
 ```{r}
-cmsy_defaults(list(sigmaR = 0.15, n.iter = 100000, n.burnin = 50000))[c(3, 17, 18), c("setting", "cmsy_default", "used", "changed")]
+cmsy_defaults(list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000))[c(1, 17, 18), c("setting", "cmsy_default", "used", "changed")]
 ```
 
 ```{r, eval = FALSE}
 result <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE,
-                   settings = list(sigmaR = 0.15, n.iter = 100000, n.burnin = 50000))
+                   settings = list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000))
 result$settings[result$settings$changed, ]          # 改动的设置
 ```
 
 | 参数 | 含义 | 默认值 |
 |---|---|---|
-| `settings` | 要修改的设置，命名列表，如`list(sigmaR = 0.2)`；与默认值并列显示并检查 | `list()` |
+| `settings` | 要修改的设置，命名列表，如`list(CV.C = 0.2)`；与默认值并列显示并检查 | `list()` |
 | `lang` | `description`列的语言：`"en"`、`"zh"`或`"both"` | `NULL`：使用`fao_settings()`设定的语言 |
 
 实际使用的设置保存在运行目录的`settings_used.csv`，也记录在`result$settings`和`result$sources`中。绘图和输出开关（`mgraphs`、`kobe.plot`、`retros`等）由`cmsy_run()`的`plots`参数控制，不在`settings`里设置。

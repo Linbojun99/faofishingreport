@@ -199,6 +199,12 @@ test_that("cmsy_run() runs the bundled CMSY++ code", {
   comparison <- cmsy_compare(a = result, b = result, silent = TRUE)
   expect_equal(nrow(comparison$last_year), 2)
   expect_true(file.exists(file.path("figures", "png", "cmsy", "PIL_34", "prior_posterior.png")))
+  # a run that ended with an error after the main analysis keeps its results, as "partial"
+  expect_equal(result$summary$run_status, "ok")
+  partial <- cmsy_read_stock(result$summary$folder, "PIL_34", list(exit = "error: retrospective failed", seconds = 1))
+  expect_equal(partial$summary$run_status, "partial")
+  expect_match(partial$summary$message, "retrospective failed")
+  expect_false(is.null(partial$details))
 })
 
 test_that("species are found by English, Chinese or scientific name, code, or both names", {
@@ -288,8 +294,12 @@ test_that("CMSY++ settings keep their defaults unless changed, and are checked",
   expect_false(any(d$changed))
   expect_equal(d$cmsy_default[d$setting == "n.iter"], "60000")
   expect_equal(d$cmsy_default[d$setting == "rk.cor.beta"], "2.52, 3.37")
-  changed <- cmsy_defaults(list(sigmaR = 0.2, n.chains = 3L), lang = "zh")
-  expect_equal(changed$setting[changed$changed], c("sigmaR", "n.chains"))
+  changed <- cmsy_defaults(list(CV.C = 0.2, n.chains = 3L), lang = "zh")
+  expect_equal(changed$setting[changed$changed], c("CV.C", "n.chains"))
+  # sigmaR and ni are set in CMSY++16.R but not used by it: they cannot be changed
+  expect_equal(d$applies_to[d$setting %in% c("sigmaR", "ni")], c("not used", "not used"))
+  expect_error(cmsy_check_settings(list(sigmaR = 0.5)), "does not use it")
+  expect_error(cmsy_check_settings(list(ni = 5)), "does not use it")
   expect_error(cmsy_check_settings(list(sigma = 0.2)), "Unknown")
   expect_error(cmsy_check_settings(list(retros = TRUE)), "arguments of cmsy_run")
   expect_error(cmsy_check_settings(list(nbk = 4)), "nbk")
@@ -399,4 +409,68 @@ test_that("the report only reuses CMSY++ results of its area and FAO release", {
   expect_error(fao_report_check_cmsy(result, "Atlantic, Eastern Central", "2027.1.0"), "release 2026.1.0")
   result$input <- NULL                          # results of cmsy_run(): the release is in the links
   expect_error(fao_report_check_cmsy(result, "Atlantic, Eastern Central", "2027.1.0"), "release 2026.1.0")
+})
+
+
+test_that("runs without results are failed or timed out, with how they ended", {
+  dir <- withr::local_tempdir()
+  failed <- cmsy_read_stock(dir, "A", list(exit = "error: no viable r-k pairs", seconds = 3))
+  expect_equal(failed$summary$run_status, "failed")
+  expect_equal(failed$summary$exit, "error: no viable r-k pairs")
+  timeout <- cmsy_read_stock(dir, "A", list(exit = "timeout after 60 s", seconds = 60))
+  expect_equal(timeout$summary$run_status, "timeout")
+  expect_equal(cmsy_has_results(c("ok", "partial", "failed", "timeout")), c(TRUE, TRUE, FALSE, FALSE))
+})
+
+test_that("B/k and r priors are checked as pairs, with valid ranges and years", {
+  id <- data.frame(Stock = c("A", "B"), StartYear = 1980, EndYear = 2020, r.low = NA, r.hi = NA, stb.low = NA,
+                   stb.hi = NA, int.yr = NA, intb.low = NA, intb.hi = NA, endb.low = NA, endb.hi = NA)
+  expect_true(cmsy_check_priors(id))
+  half <- id
+  half$endb.low[1] <- 0.12
+  expect_error(cmsy_check_priors(half), "endb.low and endb.hi must be given together \\(A\\)")
+  wrong <- id
+  wrong$stb.low[2] <- 0.6
+  wrong$stb.hi[2] <- 0.4
+  expect_error(cmsy_check_priors(wrong), "between 0 and 1")
+  no_year <- id
+  no_year$intb.low[1] <- 0.2
+  no_year$intb.hi[1] <- 0.4
+  expect_error(cmsy_check_priors(no_year), "need int.yr")
+  no_year$int.yr[1] <- 2030
+  expect_error(cmsy_check_priors(no_year), "between StartYear and EndYear")
+  data <- data.frame(Country..Name. = "Morocco", ASFIS.species..Name. = "European pilchard(=Sardine)",
+                     FAO.major.fishing.area..Name. = "Atlantic, Eastern Central", Unit..Name. = "Tonnes - live weight",
+                     Unit = "TLW", Year = 1990:2019, Production = 1000, Production.Type = "actual", stringsAsFactors = FALSE)
+  expect_error(cmsy_input(data, table = FALSE, silent = TRUE, priors = data.frame(alpha3 = "PIL", endb.low = 0.12)),
+               "must be given together")
+})
+
+test_that("stocks of countries without an ISO3 code keep their own identifiers", {
+  expect_equal(cmsy_stock_id("COD", "27", c(NA, NA, "NOR"), c("280", NA, "578"), c("Germany, Fed. Rep. of", "Some Land", "Norway")),
+               c("COD_27_UN280", "COD_27_SOMELAND", "COD_27_NOR"))
+  data <- data.frame(Country..Name. = rep(c("Germany, Fed. Rep. of", "Germany,New Länder"), each = 30),
+                     ASFIS.species..Name. = "Atlantic cod", FAO.major.fishing.area..Name. = "Atlantic, Northeast",
+                     Unit..Name. = "Tonnes - live weight", Unit = "TLW", Year = rep(1961:1990, 2), Production = 5000,
+                     Production.Type = "actual", stringsAsFactors = FALSE)
+  input <- cmsy_input(data, by = "country", table = FALSE, silent = TRUE)
+  expect_equal(anyDuplicated(input$id$Stock), 0)
+  expect_equal(anyDuplicated(paste(input$catch$Stock, input$catch$yr)), 0)
+  expect_false(any(grepl("XXX", input$id$Stock)))
+  twice <- input$id[c(1, 1), ]
+  expect_error(cmsy_check_priors(twice), "used more than once")
+  expect_error(cmsy_check_priors(input$id, input$catch[c(1, 1), ]), "more than one catch in a year")
+})
+
+test_that("the start year suggested by CMSY++ uses the smoothing bandwidth of the run", {
+  years <- 1970:2010
+  catch <- data.frame(Stock = "A", yr = years, ct = c(rep(10, 15), rep(1000, 26)))
+  id <- data.frame(Stock = "A", StartYear = 1970, EndYear = 2010, stb.low = NA)
+  expected <- function(bw) {
+    smooth <- stats::ksmooth(years, catch$ct / 1000, kernel = "normal", n.points = length(years), bandwidth = bw)$y
+    years[which(smooth >= 0.4 * max(smooth))][1]
+  }
+  expect_equal(cmsy_auto_start(catch, id, bw = 3), expected(3))
+  expect_equal(cmsy_auto_start(catch, id, bw = 10), expected(10))
+  expect_false(expected(3) == expected(10))
 })

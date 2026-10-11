@@ -48,7 +48,7 @@ by CMSY++.}
 its two MCMC chains. Default is half the number of processor cores.}
 
 \item{settings}{Optional named list of CMSY++ settings that replace its defaults, e.g.
-\code{list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000)}. See \code{\link[=cmsy_defaults]{cmsy_defaults()}} for the
+\code{list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000)}. See \code{\link[=cmsy_defaults]{cmsy_defaults()}} for the
 settings, their defaults and what they do. Default is no change: CMSY++ runs with its own
 defaults. The settings used are saved in \code{settings_used.csv} of the run folder and in
 \code{result$settings}.}

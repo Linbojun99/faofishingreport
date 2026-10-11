@@ -75,15 +75,16 @@ last-year fishing mortality) or constant catches, and draws the projected B/Bmsy
 }
 \details{
 CMSY++16.R has no projection, so it is done here with the CMSY++ model itself: the Schaefer
-surplus-production model in which productivity declines linearly below B/k = 0.25 (CMSY++16.R
-and Froese et al. 2023), started from the posterior draws of r, k and last-year B/k of the
-run (which come from the same MCMC iterations), with lognormal process error (\code{sigma}, 0.1 by
-default as \code{sigmaR} in CMSY++). As in CMSY++, the biomass of a year is the biomass before the
-catch of that year, F is the catch divided by that biomass, and F/Fmsy uses an Fmsy reduced
-linearly below half of Bmsy (CMSY++16.R). The catch of the last year of the data is kept, so
-the biomass of the next year is that of the CMSY++ model; the scenarios set the catch from the
-first projected year on. In the F scenarios the catch is the scenario F times the biomass of
-the same year, so F/Fmsy is the scenario value.
+surplus-production model in which productivity declines linearly below B/k = 0.25 (CMSY++16.R and
+Froese et al. 2023), started from the posterior draws of r, k and last-year B/k of the run (which
+come from the same MCMC iterations), with lognormal process error of standard deviation \code{sigma}
+(0.1 by default, the value \verb{CMSY++16.R} gives to its unused setting \code{sigmaR}; the CMSY++ model
+itself estimates its process error). As in CMSY++, the biomass of a year is the biomass before
+the catch of that year, F is the catch divided by that biomass, and F/Fmsy uses an Fmsy reduced
+linearly below half of Bmsy (CMSY++16.R). The catch of the last year of the data is kept, so the
+biomass of the next year is that of the CMSY++ model; the scenarios set the catch from the first
+projected year on. In the F scenarios the catch is the scenario F times the biomass of the same
+year, so F/Fmsy is the scenario value.
 
 Stocks whose data end in different years are each projected from their own last year to the
 same final year (the latest last year plus \code{years}); the share of stocks at or above Bmsy is

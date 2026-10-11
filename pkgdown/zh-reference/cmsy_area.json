@@ -1,6 +1,6 @@
 {
   "topic": "cmsy_area",
-  "rd_md5": "3aa11f350892bbe78cf5ee411563c6de",
+  "rd_md5": "e408fb6f9b5a10e4689a9e6d2bbc998f",
   "stale": false,
   "en": {
     "title": "Run CMSY++ for the Main Species of a Fishing Area",
@@ -16,7 +16,7 @@
       "auto_start": "As in `cmsy_run()`, but TRUE by default here: a stock whose start biomass is\nambiguous starts in the first year with at least 40% of the maximum catch, as suggested\nby CMSY++.",
       "seed": "The random seed of the runs, so that the results can be repeated. Default is 1.",
       "parallel": "The number of stocks run at the same time. Each uses two more processes for\nits two MCMC chains. Default is half the number of processor cores.",
-      "settings": "Optional named list of CMSY++ settings that replace its defaults, e.g.\n`list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000)`. See `cmsy_defaults()` for the\nsettings, their defaults and what they do. Default is no change: CMSY++ runs with its own\ndefaults. The settings used are saved in `settings_used.csv` of the run folder and in\n`result$settings`.",
+      "settings": "Optional named list of CMSY++ settings that replace its defaults, e.g.\n`list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000)`. See `cmsy_defaults()` for the\nsettings, their defaults and what they do. Default is no change: CMSY++ runs with its own\ndefaults. The settings used are saved in `settings_used.csv` of the run folder and in\n`result$settings`.",
       "charts": "The charts to draw (see `cmsy_plot()`). Default is all of them.",
       "classes": "The status classes: \"fao\" (default, two classes) or \"palomares\" (five classes).",
       "forecast": "A logical value. If TRUE (default), the stocks are also projected under the\ndefault fishing scenarios of `cmsy_forecast()`.",
@@ -42,7 +42,7 @@
       "auto_start": "同`cmsy_run()`，但这里默认为TRUE：起始生物量难以判断的种群，按CMSY++的建议从渔获量首次达到最大值至少40%的年份开始。",
       "seed": "运行所用的随机数种子，使结果可以重复。默认为1。",
       "parallel": "同时运行的种群数。每个种群还要为其两条MCMC链另外使用两个进程。默认为处理器物理核心数的一半。",
-      "settings": "可选，用于替换CMSY++默认值的CMSY++设置（命名列表），例如`list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000)`。各项设置、默认值及其作用见`cmsy_defaults()`。默认不做更改：CMSY++使用自己的默认值运行。所用的设置保存在运行文件夹的`settings_used.csv`和`result$settings`中。",
+      "settings": "可选，用于替换CMSY++默认值的CMSY++设置（命名列表），例如`list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000)`。各项设置、默认值及其作用见`cmsy_defaults()`。默认不做更改：CMSY++使用自己的默认值运行。所用的设置保存在运行文件夹的`settings_used.csv`和`result$settings`中。",
       "charts": "要绘制的图表（见`cmsy_plot()`）。默认为全部图表。",
       "classes": "资源状态分类：\"fao\"（默认，两类）或\"palomares\"（五类）。",
       "forecast": "逻辑值。为TRUE（默认）时，还按`cmsy_forecast()`的默认捕捞情景对各种群进行预测。",

@@ -435,7 +435,7 @@ show_png("area34_map.png")
 projection <- cmsy_forecast(result, catch = 100000)
 ```
 
-`CMSY++16.R` has no projection, so `cmsy_forecast()` projects with the CMSY++ model itself (Schaefer surplus production with productivity declining below 0.25 k), from the posterior draws of r, k and last-year B/k of the same MCMC iterations, with lognormal process error (`sigma`, 0.1 by default as `sigmaR` in CMSY++). As in CMSY++, the biomass of a year is the biomass before that year's catch, F is the catch divided by that biomass, and F/Fmsy uses an Fmsy reduced linearly below half of Bmsy. The last year of the data keeps its catch; from the first projected year on, the catch of an F scenario is the scenario F times the biomass of the same year, so F/Fmsy is the scenario value. The default scenarios are 0.5, 0.6, 0.8 and 0.95 Fmsy (as in Froese et al. 2018) and the last-year fishing mortality; constant catches can be added (`catch`). Stocks whose data end in different years are each projected from their own last year to the same final year.
+`CMSY++16.R` has no projection, so `cmsy_forecast()` projects with the CMSY++ model itself (Schaefer surplus production with productivity declining below 0.25 k), from the posterior draws of r, k and last-year B/k of the same MCMC iterations, with lognormal process error of standard deviation `sigma` (0.1 by default, the value `CMSY++16.R` gives to its setting `sigmaR`, which the model itself does not use: it estimates its process error). As in CMSY++, the biomass of a year is the biomass before that year's catch, F is the catch divided by that biomass, and F/Fmsy uses an Fmsy reduced linearly below half of Bmsy. The last year of the data keeps its catch; from the first projected year on, the catch of an F scenario is the scenario F times the biomass of the same year, so F/Fmsy is the scenario value. The default scenarios are 0.5, 0.6, 0.8 and 0.95 Fmsy (as in Froese et al. 2018) and the last-year fishing mortality; constant catches can be added (`catch`). Stocks whose data end in different years are each projected from their own last year to the same final year.
 
 | Argument | Meaning | Default |
 |---|---|---|
@@ -495,7 +495,7 @@ tables <- cmsy_tables(result)
 
 ## ⚙️ The settings of CMSY++ {#cmsy-settings}
 
-CMSY++ has a set of general settings, such as the catch observation error `CV.C`, the process error `sigmaR` and the number of MCMC chains and iterations. `cmsy_run()` keeps the CMSY++ values unless they are changed; `cmsy_defaults()` lists each one with its CMSY++ default, the value used and what it does:
+CMSY++ has a set of general settings, such as the catch observation error `CV.C` and the number of MCMC chains and iterations. Two of them, `sigmaR` and `ni`, are set in `CMSY++16.R` but not used by its code (the model estimates its process error with the prior `itau2 ~ dgamma(4, 0.01)`): they are listed as "not used" and cannot be changed, so that a run is not mistaken for a sensitivity analysis of the process error. `cmsy_run()` keeps the CMSY++ values unless they are changed; `cmsy_defaults()` lists each one with its CMSY++ default, the value used and what it does:
 
 ```{r}
 show_table(cmsy_defaults()[, c("setting", "cmsy_default", "applies_to", "description")], n = 30)
@@ -504,18 +504,18 @@ show_table(cmsy_defaults()[, c("setting", "cmsy_default", "applies_to", "descrip
 Settings marked "BSM" only matter with abundance data (CPUE or biomass); with FAO catch data only those marked "all" affect the results. To change some, give only those in `settings`; the others keep their CMSY++ values, and every value is checked (name, range, enough MCMC draws):
 
 ```{r}
-cmsy_defaults(list(sigmaR = 0.15, n.iter = 100000, n.burnin = 50000))[c(3, 17, 18), c("setting", "cmsy_default", "used", "changed")]
+cmsy_defaults(list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000))[c(1, 17, 18), c("setting", "cmsy_default", "used", "changed")]
 ```
 
 ```{r, eval = FALSE}
 result <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE,
-                   settings = list(sigmaR = 0.15, n.iter = 100000, n.burnin = 50000))
+                   settings = list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000))
 result$settings[result$settings$changed, ]          # the changed settings
 ```
 
 | Argument | Meaning | Default |
 |---|---|---|
-| `settings` | Named list of changed settings, e.g. `list(sigmaR = 0.2)`, shown next to the defaults and checked | `list()` |
+| `settings` | Named list of changed settings, e.g. `list(CV.C = 0.2)`, shown next to the defaults and checked | `list()` |
 | `lang` | Language of the `description` column: `"en"`, `"zh"` or `"both"` | `NULL`: the language of `fao_settings()` |
 
 The settings used are saved in `settings_used.csv` of the run folder and recorded in `result$settings` and `result$sources`. The chart and output switches of CMSY++ (`mgraphs`, `kobe.plot`, `retros`, ...) are set by the `plots` argument of `cmsy_run()`, not in `settings`.

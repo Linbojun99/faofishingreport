@@ -10,11 +10,11 @@ cmsy_default_settings <- list(
 
 cmsy_settings_info <- data.frame(
   setting = names(cmsy_default_settings),
-  applies_to = c("all", "BSM", "all", "charts", "all", "BSM", "BSM", "all", "BSM", "charts", "all", "BSM", "all",
+  applies_to = c("all", "BSM", "not used", "charts", "all", "BSM", "BSM", "all", "BSM", "charts", "not used", "BSM", "all",
                  "charts", "output", "all", "all", "all", "all"),
   en = c("Coefficient of variation of the catch (observation error)",
          "Minimum realistic coefficient of variation of CPUE",
-         "Process error (standard deviation)",
+         "Not used by CMSY++16.R: the code sets it (sigR <- sigmaR) but never uses it; the model estimates its process error with the prior itau2 ~ dgamma(4, 0.01). It cannot be changed",
          "Correlation of log r and log k, used only in charts",
          "Beta prior of the r-k correlation plus 1",
          "Number of B/k priors used by BSM: 1 (first year), 2 (and intermediate year), 3 (and last year)",
@@ -22,7 +22,7 @@ cmsy_settings_info <- data.frame(
          "Ratio of catch to the MSY prior above which the B/k prior is kept constant",
          "Prior range of q when the abundance data are biomass",
          "Number of points of the r-k cloud in the analysis chart",
-         "Iterations of r-k-start biomass combinations",
+         "Not used by CMSY++16.R: the code sets it but never uses it. It cannot be changed",
          "Minimum number of years with abundance data to run BSM",
          "Bandwidth of ksmooth() for smoothing the catch",
          "Show the CPUE not corrected for effort creep in the biomass chart",
@@ -33,7 +33,7 @@ cmsy_settings_info <- data.frame(
          "Thinning of the MCMC chains (JAGS)"),
   zh = c("\u6e14\u83b7\u91cf\u89c2\u6d4b\u8bef\u5dee\u7684\u53d8\u5f02\u7cfb\u6570",
          "CPUE \u7684\u6700\u5c0f\u53d8\u5f02\u7cfb\u6570",
-         "\u8fc7\u7a0b\u8bef\u5dee\uff08\u6807\u51c6\u5dee\uff09",
+         "CMSY++16.R\u4e0d\u4f7f\u7528\uff1a\u4ee3\u7801\u4e2d\u6709\u8d4b\u503c\uff08sigR <- sigmaR\uff09\uff0c\u4f46\u4ece\u672a\u4f7f\u7528\uff1b\u6a21\u578b\u7684\u8fc7\u7a0b\u8bef\u5dee\u7531\u5148\u9a8c itau2 ~ dgamma(4, 0.01) \u4f30\u8ba1\u3002\u4e0d\u80fd\u4fee\u6539",
          "log r \u4e0e log k \u7684\u76f8\u5173\u7cfb\u6570\uff0c\u4ec5\u7528\u4e8e\u4f5c\u56fe",
          "r-k \u76f8\u5173\u7cfb\u6570\u52a0 1 \u7684 beta \u5148\u9a8c",
          "BSM \u4f7f\u7528\u7684 B/k \u5148\u9a8c\u4e2a\u6570\uff1a1\uff08\u9996\u5e74\uff09\u30012\uff08\u52a0\u4e2d\u95f4\u5e74\uff09\u30013\uff08\u518d\u52a0\u672b\u5e74\uff09",
@@ -41,7 +41,7 @@ cmsy_settings_info <- data.frame(
          "\u6e14\u83b7\u91cf\u4e0e MSY \u5148\u9a8c\u4e4b\u6bd4\u8d85\u8fc7\u6b64\u503c\u65f6\uff0cB/k \u5148\u9a8c\u4fdd\u6301\u4e0d\u53d8",
          "\u4e30\u5ea6\u6570\u636e\u4e3a\u751f\u7269\u91cf\u65f6 q \u7684\u5148\u9a8c\u8303\u56f4",
          "\u5206\u6790\u56fe\u4e2d r-k \u70b9\u4e91\u7684\u70b9\u6570",
-         "r-k-\u8d77\u59cb\u751f\u7269\u91cf\u7ec4\u5408\u7684\u8fed\u4ee3\u6b21\u6570",
+         "CMSY++16.R\u4e0d\u4f7f\u7528\uff1a\u4ee3\u7801\u4e2d\u6709\u8d4b\u503c\uff0c\u4f46\u4ece\u672a\u4f7f\u7528\u3002\u4e0d\u80fd\u4fee\u6539",
          "\u8fd0\u884c BSM \u6240\u9700\u4e30\u5ea6\u6570\u636e\u7684\u6700\u5c11\u5e74\u6570",
          "\u6e14\u83b7\u91cf\u5e73\u6ed1\uff08ksmooth()\uff09\u7684\u5e26\u5bbd",
          "\u5728\u751f\u7269\u91cf\u56fe\u4e2d\u663e\u793a\u672a\u6309\u6e14\u6548\u589e\u957f\uff08effort creep\uff09\u6821\u6b63\u7684 CPUE",
@@ -60,13 +60,18 @@ cmsy_settings_info <- data.frame(
 #' values in CMSY++, the values [cmsy_run()] uses (the defaults, unless changed with its
 #' `settings` argument), what each one does and which part of CMSY++ it affects.
 #'
+#' Two settings of the code, `sigmaR` and `ni`, are set in `CMSY++16.R` but used nowhere in it: the
+#' process error of the model is estimated in JAGS with the prior `itau2 ~ dgamma(4, 0.01)`, so
+#' changing `sigmaR` would not change any result. They are listed as "not used" and cannot be
+#' changed, so that a run is not taken for a sensitivity analysis of the process error.
+#'
 #' Settings marked "BSM" only matter when abundance data (CPUE or biomass) are given; FAO data
 #' have none, so with FAO data alone only the settings marked "all" change the results. The chart
 #' and output switches of CMSY++ (`mgraphs`, `kobe.plot`, `pp.plot`, `retros`, `save.plots`,
 #' `write.output`, ...) are set by the `plots` argument of [cmsy_run()], and the file names by
 #' the run itself.
 #'
-#' @param settings Optional named list of changed settings, e.g. `list(sigmaR = 0.2)`, to show
+#' @param settings Optional named list of changed settings, e.g. `list(CV.C = 0.2)`, to show
 #'        them next to the defaults and check them.
 #' @param lang The language of the `description` column: "en", "zh" or "both". Default is NULL,
 #'        the language set with `fao_settings()`.
@@ -80,8 +85,8 @@ cmsy_settings_info <- data.frame(
 #' # All settings with their CMSY++ defaults
 #' cmsy_defaults()
 #'
-#' # Check changed settings before a run: here a larger process error and longer chains
-#' cmsy_defaults(list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000), lang = "zh")
+#' # Check changed settings before a run: here a larger catch error and longer chains
+#' cmsy_defaults(list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000), lang = "zh")
 cmsy_defaults <- function(settings = list(), lang = NULL) {
   lang <- fao_lang(lang)
   used <- cmsy_check_settings(settings)
@@ -99,7 +104,7 @@ cmsy_defaults <- function(settings = list(), lang = NULL) {
 cmsy_check_settings <- function(settings = list()) {
   if (is.null(settings)) settings <- list()
   if (!is.list(settings) || (length(settings) > 0 && (is.null(names(settings)) || any(names(settings) == "")))) {
-    stop("`settings` must be a named list, e.g. list(sigmaR = 0.2).", call. = FALSE)
+    stop("`settings` must be a named list, e.g. list(CV.C = 0.2).", call. = FALSE)
   }
   managed <- c("mgraphs", "kobe.plot", "pp.plot", "retros", "BSMfits.plot", "rk.diags", "save.plots", "close.plots",
                "write.output", "write.pdf", "write.rdata", "auto.start", "catch_file", "id_file", "nn_file", "outfile",
@@ -108,6 +113,13 @@ cmsy_check_settings <- function(settings = list()) {
   if (length(bad) > 0) {
     stop("Set ", paste(bad, collapse = ", "), " with the arguments of cmsy_run() (plots, auto_start, stocks), ",
          "not in `settings`.", call. = FALSE)
+  }
+  unused <- intersect(names(settings), c("sigmaR", "ni"))
+  if (length(unused) > 0) {
+    stop("CMSY++16.R sets ", paste(unused, collapse = " and "), " but does not use ", if (length(unused) > 1) "them" else "it",
+         ": changing ", if (length(unused) > 1) "them" else "it", " would not change the results",
+         if ("sigmaR" %in% unused) " (the process error of the model is estimated with the prior itau2 ~ dgamma(4, 0.01))",
+         ". See cmsy_defaults().", call. = FALSE)
   }
   unknown <- setdiff(names(settings), names(cmsy_default_settings))
   if (length(unknown) > 0) {
@@ -132,11 +144,11 @@ cmsy_check_settings <- function(settings = list()) {
     }
     out[[name]] <- value
   }
-  positive <- c("CV.C", "CV.cpue", "sigmaR", "ct_MSY.lim", "n", "ni", "nab", "bw", "n.chains", "n.iter", "n.thin")
+  positive <- c("CV.C", "CV.cpue", "ct_MSY.lim", "n", "nab", "bw", "n.chains", "n.iter", "n.thin")
   for (name in positive) {
     if (any(out[[name]] <= 0)) stop("Setting ", name, " must be positive.", call. = FALSE)
   }
-  whole <- c("n", "ni", "nab", "n.chains", "n.iter", "n.burnin", "n.thin")
+  whole <- c("n", "nab", "n.chains", "n.iter", "n.burnin", "n.thin")
   for (name in whole) {
     if (out[[name]] != round(out[[name]])) stop("Setting ", name, " must be a whole number.", call. = FALSE)
   }

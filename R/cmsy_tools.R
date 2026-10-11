@@ -8,15 +8,16 @@
 #' last-year fishing mortality) or constant catches, and draws the projected B/Bmsy and catch.
 #'
 #' CMSY++16.R has no projection, so it is done here with the CMSY++ model itself: the Schaefer
-#' surplus-production model in which productivity declines linearly below B/k = 0.25 (CMSY++16.R
-#' and Froese et al. 2023), started from the posterior draws of r, k and last-year B/k of the
-#' run (which come from the same MCMC iterations), with lognormal process error (`sigma`, 0.1 by
-#' default as `sigmaR` in CMSY++). As in CMSY++, the biomass of a year is the biomass before the
-#' catch of that year, F is the catch divided by that biomass, and F/Fmsy uses an Fmsy reduced
-#' linearly below half of Bmsy (CMSY++16.R). The catch of the last year of the data is kept, so
-#' the biomass of the next year is that of the CMSY++ model; the scenarios set the catch from the
-#' first projected year on. In the F scenarios the catch is the scenario F times the biomass of
-#' the same year, so F/Fmsy is the scenario value.
+#' surplus-production model in which productivity declines linearly below B/k = 0.25 (CMSY++16.R and
+#' Froese et al. 2023), started from the posterior draws of r, k and last-year B/k of the run (which
+#' come from the same MCMC iterations), with lognormal process error of standard deviation `sigma`
+#' (0.1 by default, the value `CMSY++16.R` gives to its unused setting `sigmaR`; the CMSY++ model
+#' itself estimates its process error). As in CMSY++, the biomass of a year is the biomass before
+#' the catch of that year, F is the catch divided by that biomass, and F/Fmsy uses an Fmsy reduced
+#' linearly below half of Bmsy (CMSY++16.R). The catch of the last year of the data is kept, so the
+#' biomass of the next year is that of the CMSY++ model; the scenarios set the catch from the first
+#' projected year on. In the F scenarios the catch is the scenario F times the biomass of the same
+#' year, so F/Fmsy is the scenario value.
 #'
 #' Stocks whose data end in different years are each projected from their own last year to the
 #' same final year (the latest last year plus `years`); the share of stocks at or above Bmsy is
@@ -76,7 +77,7 @@ cmsy_forecast <- function(result, stocks = NULL, years = 10, f = c(0.5, 0.6, 0.8
   if (!inherits(result, "cmsy_result")) stop("`result` must be the result of cmsy_run().", call. = FALSE)
   lang <- fao_lang(lang)
   ann <- cmsy_annotations(annotations)
-  ok <- result$summary[result$summary$run_status == "ok", ]
+  ok <- result$summary[cmsy_has_results(result$summary$run_status), ]
   if (!is.null(stocks)) ok <- ok[ok$Stock %in% cmsy_quietly(cmsy_match_stocks(stocks, ok), silent), ]
   if (nrow(ok) == 0) stop("No stock has CMSY++ results.", call. = FALSE)
   if (!is.null(seed)) set.seed(seed)
@@ -278,8 +279,8 @@ cmsy_chart_forecast <- function(projection, series, lang, ann) {
 #' cmsy_compare(`from 1950` = run_1950, `CMSY++ start year` = run_auto, annotations = "legend")
 #'
 #' # Sensitivity to a CMSY++ setting (see cmsy_defaults())
-#' run_sigma <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE, settings = list(sigmaR = 0.2))
-#' cmsy_compare(default = run_auto, `sigmaR = 0.2` = run_sigma)$last_year
+#' run_cv <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE, settings = list(CV.C = 0.3))
+#' cmsy_compare(default = run_auto, `CV.C = 0.3` = run_cv)$last_year
 #'
 #' # With another assessment of the same stock, read from a file with the columns
 #' # Stock, Year, B_Bmsy (optionally F_Fmsy) and source
@@ -380,7 +381,7 @@ cmsy_compare <- function(..., stocks = NULL, external = NULL, lang = NULL,
 cmsy_tables <- function(result, stocks = NULL, table = TRUE, lang = NULL, silent = fao_setting("silent")) {
   if (!inherits(result, "cmsy_result")) stop("`result` must be the result of cmsy_run().", call. = FALSE)
   lang <- fao_lang(lang)
-  s <- result$summary[result$summary$run_status == "ok", ]
+  s <- result$summary[cmsy_has_results(result$summary$run_status), ]
   if (!is.null(stocks)) s <- s[s$Stock %in% cmsy_quietly(cmsy_match_stocks(stocks, s), silent), ]
   r3 <- function(x) formatC(x, digits = 3, format = "fg")
   big <- function(x) format(round(x), big.mark = ",", trim = TRUE)

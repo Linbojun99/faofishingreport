@@ -138,7 +138,7 @@ cmsy_plot <- function(result, stocks = NULL, charts = c(cmsy_stock_charts, cmsy_
   }
   ann <- cmsy_annotations(annotations)
   lang <- fao_lang(lang)
-  ok <- result$summary[result$summary$run_status == "ok", ]
+  ok <- result$summary[cmsy_has_results(result$summary$run_status), ]
   if (!is.null(stocks)) ok <- ok[ok$Stock %in% cmsy_quietly(cmsy_match_stocks(stocks, ok), silent), ]
   if (nrow(ok) == 0) stop("No stock has CMSY++ results.", call. = FALSE)
   ok$species_name <- fao_translate(ok$species_en, "species", lang)

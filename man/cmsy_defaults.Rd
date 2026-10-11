@@ -7,7 +7,7 @@
 cmsy_defaults(settings = list(), lang = NULL)
 }
 \arguments{
-\item{settings}{Optional named list of changed settings, e.g. \code{list(sigmaR = 0.2)}, to show
+\item{settings}{Optional named list of changed settings, e.g. \code{list(CV.C = 0.2)}, to show
 them next to the defaults and check them.}
 
 \item{lang}{The language of the \code{description} column: "en", "zh" or "both". Default is NULL,
@@ -24,6 +24,11 @@ values in CMSY++, the values \code{\link[=cmsy_run]{cmsy_run()}} uses (the defau
 \code{settings} argument), what each one does and which part of CMSY++ it affects.
 }
 \details{
+Two settings of the code, \code{sigmaR} and \code{ni}, are set in \verb{CMSY++16.R} but used nowhere in it: the
+process error of the model is estimated in JAGS with the prior \code{itau2 ~ dgamma(4, 0.01)}, so
+changing \code{sigmaR} would not change any result. They are listed as "not used" and cannot be
+changed, so that a run is not taken for a sensitivity analysis of the process error.
+
 Settings marked "BSM" only matter when abundance data (CPUE or biomass) are given; FAO data
 have none, so with FAO data alone only the settings marked "all" change the results. The chart
 and output switches of CMSY++ (\code{mgraphs}, \code{kobe.plot}, \code{pp.plot}, \code{retros}, \code{save.plots},
@@ -34,8 +39,8 @@ the run itself.
 # All settings with their CMSY++ defaults
 cmsy_defaults()
 
-# Check changed settings before a run: here a larger process error and longer chains
-cmsy_defaults(list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000), lang = "zh")
+# Check changed settings before a run: here a larger catch error and longer chains
+cmsy_defaults(list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000), lang = "zh")
 }
 \references{
 Froese, R., Demirel, N., Coro, G. and Winker, H. (2021). User Guide for CMSY++. GEOMAR,

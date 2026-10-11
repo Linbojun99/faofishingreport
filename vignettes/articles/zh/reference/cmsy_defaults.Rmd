@@ -31,11 +31,11 @@ cmsy_defaults(settings = list(), lang = NULL)
 ## 参数
 
 `settings`
-:   可选的命名列表，给出更改后的设置，例如`list(sigmaR = 0.2)`，用于将它们与默认值并列显示并进行检查。
+:   可选的命名列表，给出更改后的设置，例如`list(CV.C = 0.2)`，用于将它们与默认值并列显示并进行检查。
 
     <details class="fao-en"><summary>English</summary>
 
-    Optional named list of changed settings, e.g. `list(sigmaR = 0.2)`, to show
+    Optional named list of changed settings, e.g. `list(CV.C = 0.2)`, to show
     them next to the defaults and check them.
 
     </details>
@@ -63,9 +63,16 @@ A data frame with one row per setting: `setting`, `cmsy_default`, `used`, `chang
 
 ## 详细说明
 
+代码中的两项设置`sigmaR`和`ni`在`CMSY++16.R`中有赋值，但代码中没有任何地方使用它们：模型的过程误差在JAGS中由先验`itau2 ~ dgamma(4, 0.01)`估计，因此修改`sigmaR`不会改变任何结果。它们标为"not used"（不使用），不能修改，以免把一次运行误当作过程误差的敏感性分析。
+
 标为"BSM"的设置只在给出资源丰度数据（CPUE或生物量）时才起作用；FAO数据没有资源丰度数据，因此仅用FAO数据时，只有标为"all"的设置会改变结果。CMSY++的图表和输出开关（`mgraphs`、`kobe.plot`、`pp.plot`、`retros`、`save.plots`、`write.output`等）由`cmsy_run()`的`plots`参数设定，文件名则由运行过程本身设定。
 
 <details class="fao-en"><summary>English</summary>
+
+Two settings of the code, `sigmaR` and `ni`, are set in `CMSY++16.R` but used nowhere in it: the
+process error of the model is estimated in JAGS with the prior `itau2 ~ dgamma(4, 0.01)`, so
+changing `sigmaR` would not change any result. They are listed as "not used" and cannot be
+changed, so that a run is not taken for a sensitivity analysis of the process error.
 
 Settings marked "BSM" only matter when abundance data (CPUE or biomass) are given; FAO data
 have none, so with FAO data alone only the settings marked "all" change the results. The chart
@@ -86,8 +93,8 @@ Germany, 17 pp. <https://oceanrep.geomar.de/id/eprint/52147/>
 # All settings with their CMSY++ defaults
 cmsy_defaults()
 
-# Check changed settings before a run: here a larger process error and longer chains
-cmsy_defaults(list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000), lang = "zh")
+# Check changed settings before a run: here a larger catch error and longer chains
+cmsy_defaults(list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000), lang = "zh")
 ```
 
 

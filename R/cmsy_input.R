@@ -121,14 +121,18 @@ cmsy_input <- function(area_data, species = NULL, by = c("area", "country"), pri
   keys <- c("ASFIS.species..Name.", "FAO.major.fishing.area..Name.", if (by == "country") "Country..Name.")
   series <- stats::aggregate(list(Tonnes = data$Production), by = data[c(keys, "Year")], FUN = sum)
   info <- data[!duplicated(data[keys]), c(keys, "alpha3", "scientific_name", "isscaap_en", "area_code",
-                                          "ocean_en", if (by == "country") "iso3")]
+                                          "ocean_en", if (by == "country") c("iso3", "un_code"))]
 
   stocks <- lapply(split(series, series[keys], drop = TRUE), function(s) cmsy_series(s, min_years, min_catch, max_filled))
   stocks <- stocks[!vapply(stocks, is.null, logical(1))]
   if (length(stocks) == 0) stop("No catch series in the data.", call. = FALSE)
   meta <- do.call(rbind, lapply(stocks, function(s) s$meta))
   meta <- merge(meta, info, by = keys, sort = FALSE)
-  meta$Stock <- cmsy_stock_id(meta$alpha3, meta$area_code, if (by == "country") meta$iso3)
+  meta$Stock <- if (by == "country") {
+    cmsy_stock_id(meta$alpha3, meta$area_code, meta$iso3, meta$un_code, meta$Country..Name.)
+  } else {
+    cmsy_stock_id(meta$alpha3, meta$area_code)
+  }
 
   # Priors: built-in FishBase/SeaLifeBase table, then the user's values
   table_priors <- cmsy_priors_table()
@@ -159,6 +163,7 @@ cmsy_input <- function(area_data, species = NULL, by = c("area", "country"), pri
                          meta$filled_years, " years interpolated")
   meta$prior_source <- "FishBase/SeaLifeBase; B/k priors from the CMSY++ neural network"
   if (!is.null(priors)) meta <- cmsy_quietly(cmsy_apply_priors(meta, priors), silent)
+  cmsy_check_priors(meta)
   if (!is.null(default_resilience)) {
     use <- is.na(meta$Resilience) & is.na(meta$r.low)
     meta$Resilience[use] <- default_resilience
@@ -237,7 +242,7 @@ cmsy_input <- function(area_data, species = NULL, by = c("area", "country"), pri
     fao_write_csv(result$excluded, file.path("tables", "cmsy", paste0(name, "_excluded.csv")))
   }
   if (!silent) {
-    message(nrow(result$stocks), " stocks ready for CMSY++ (catch only, no abundance data); ",
+    message(nrow(result$stocks), if (nrow(result$stocks) == 1) " stock" else " stocks", " ready for CMSY++ (catch only, no abundance data); ",
             nrow(result$excluded), " left out (see $excluded).")
   }
   invisible(result)
@@ -245,7 +250,7 @@ cmsy_input <- function(area_data, species = NULL, by = c("area", "country"), pri
 
 #' @export
 print.cmsy_input <- function(x, ...) {
-  cat("CMSY++ input from FAO capture ", x$fao_version, ": ", nrow(x$stocks), " stocks ready, ",
+  cat("CMSY++ input from FAO capture ", x$fao_version, ": ", nrow(x$stocks), if (nrow(x$stocks) == 1) " stock" else " stocks", " ready, ",
       nrow(x$excluded), " left out\n", sep = "")
   if (nrow(x$stocks) > 0) {
     print(utils::head(x$stocks[, c("Stock", "species_en", "area", "first_year", "last_year",
@@ -272,10 +277,62 @@ cmsy_series <- function(s, min_years, min_catch, max_filled) {
 }
 
 # Stock identifiers without spaces or the characters the user guide warns about
-cmsy_stock_id <- function(alpha3, area_code, iso3 = NULL) {
+# Stock identifier: FAO 3-alpha code, area code and, by country, the ISO3 code of the country; a
+# country without one (e.g. "Germany, Fed. Rep. of") gets its numeric code in the FAO country list
+# ("UN280"), else its name in capitals and digits, so that every country keeps its own stocks
+cmsy_stock_id <- function(alpha3, area_code, iso3 = NULL, un_code = NULL, country = NULL) {
   id <- paste0(alpha3, "_", area_code)
-  if (!is.null(iso3)) id <- paste0(id, "_", ifelse(is.na(iso3), "XXX", iso3))
+  if (!is.null(iso3)) {
+    n <- length(iso3)
+    un_code <- if (is.null(un_code)) rep(NA_character_, n) else un_code
+    name_code <- if (is.null(country)) rep(NA_character_, n) else toupper(gsub("[^A-Za-z0-9]", "", cmsy_ascii(country)))
+    code <- ifelse(!is.na(iso3), iso3, ifelse(!is.na(un_code), paste0("UN", un_code), name_code))
+    id <- paste0(id, "_", code)
+  }
   id
+}
+
+# Checks the CMSY++ input: one row per stock (unique Stock identifiers), one catch per stock and
+# year, B/k and r priors given as pairs of lower and upper bounds with lower < upper (B/k between 0
+# and 1), and an intermediate B/k prior with a year between the start and end years (CMSY++ user
+# guide; CMSY++16.R uses a prior only when both bounds are given)
+cmsy_check_priors <- function(id, catch = NULL) {
+  problems <- character(0)
+  dup <- unique(id$Stock[duplicated(id$Stock)])
+  if (length(dup) > 0) problems <- c(problems, paste0("Stock identifiers used more than once: ", paste(dup, collapse = ", ")))
+  if (!is.null(catch)) {
+    key <- paste(catch$Stock, catch$yr)
+    dup <- unique(catch$Stock[duplicated(key)])
+    if (length(dup) > 0) problems <- c(problems, paste0("more than one catch in a year for: ", paste(dup, collapse = ", ")))
+  }
+  pairs <- list(c("r.low", "r.hi", NA), c("stb.low", "stb.hi", 1), c("intb.low", "intb.hi", 1), c("endb.low", "endb.hi", 1))
+  for (p in pairs) {
+    if (!all(p[1:2] %in% names(id))) next
+    low <- suppressWarnings(as.numeric(id[[p[1]]]))
+    high <- suppressWarnings(as.numeric(id[[p[2]]]))
+    one <- xor(is.na(low), is.na(high))
+    if (any(one)) {
+      problems <- c(problems, paste0(p[1], " and ", p[2], " must be given together (", paste(id$Stock[one], collapse = ", "), ")"))
+    }
+    both <- !is.na(low) & !is.na(high)
+    upper <- if (is.na(p[3])) Inf else as.numeric(p[3])
+    bad <- both & !(low > 0 & low < high & high <= upper)
+    if (any(bad)) {
+      problems <- c(problems, paste0(p[1], " and ", p[2], " must be ", if (is.finite(upper)) "between 0 and 1 with " else "positive with ",
+                                     p[1], " < ", p[2], " (", paste(id$Stock[bad], collapse = ", "), ")"))
+    }
+  }
+  if (all(c("int.yr", "intb.low", "StartYear", "EndYear") %in% names(id))) {
+    year <- suppressWarnings(as.numeric(id$int.yr))
+    no_year <- is.na(year) & !is.na(suppressWarnings(as.numeric(id$intb.low)))
+    if (any(no_year)) problems <- c(problems, paste0("intb.low and intb.hi need int.yr (", paste(id$Stock[no_year], collapse = ", "), ")"))
+    outside <- !is.na(year) & (year < id$StartYear | year > id$EndYear)
+    if (any(outside)) {
+      problems <- c(problems, paste0("int.yr must be between StartYear and EndYear (", paste(id$Stock[outside], collapse = ", "), ")"))
+    }
+  }
+  if (length(problems) > 0) stop("CMSY++ input: ", paste(problems, collapse = "; "), ".", call. = FALSE)
+  invisible(TRUE)
 }
 
 # Text without non-ASCII characters, "/" or ":" (user guide: they may cause errors)

@@ -56,8 +56,8 @@ run_auto <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE)
 cmsy_compare(`from 1950` = run_1950, `CMSY++ start year` = run_auto, annotations = "legend")
 
 # Sensitivity to a CMSY++ setting (see cmsy_defaults())
-run_sigma <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE, settings = list(sigmaR = 0.2))
-cmsy_compare(default = run_auto, `sigmaR = 0.2` = run_sigma)$last_year
+run_cv <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE, settings = list(CV.C = 0.3))
+cmsy_compare(default = run_auto, `CV.C = 0.3` = run_cv)$last_year
 
 # With another assessment of the same stock, read from a file with the columns
 # Stock, Year, B_Bmsy (optionally F_Fmsy) and source
