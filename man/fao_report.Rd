@@ -67,9 +67,15 @@ be given, to write the report without running CMSY++ again. CMSY++ needs JAGS: s
 with CMSY++. Default is \code{top_n}, the number of main species of the report.}
 }
 \value{
-Invisibly, the path of the Word file. With \code{cmsy = TRUE}, all CMSY++ results (runs,
-charts and tables) are kept in the folder \verb{cmsy/} next to the report, with
-\code{cmsy_result.rds} to write the report again without running CMSY++
+Invisibly, a list of class \code{fao_report} with the path of the Word file (\code{file}) and
+the tables of the report as data frames: \code{main_species} and \code{main_countries}, and with
+CMSY++ \code{cmsy_reference_points} (r, k, MSY, Fmsy, Bmsy, B/Bmsy and F/Fmsy with 95\%
+confidence limits), \code{cmsy_priors} (resilience, r, k and B/k priors, their sources and
+the links to FishBase or SeaLifeBase, the FishBase data, the CMSY++ code and the FAO
+data) and the full CMSY++ result \code{cmsy}. Assign it, e.g. \code{report <- fao_report(...)},
+to look at the tables (\code{View(report$cmsy_priors)}). With \code{cmsy = TRUE}, all CMSY++
+results (runs, charts and tables) are kept in the folder \verb{cmsy/} next to the report,
+with \code{cmsy_result.rds} to write the report again without running CMSY++
 (\code{cmsy = readRDS("cmsy/<area>/cmsy_result.rds")}).
 }
 \description{
@@ -99,7 +105,10 @@ fao_report("Atlantic, Eastern Central", lang = "zh", author = "Hongyu Lin")
 fao_report(34, lang = "en", font = "Times New Roman", citation = "fao")
 
 # With a CMSY++ assessment of the 10 main species (a few minutes)
-fao_report(34, lang = "zh", cmsy = TRUE)
+report <- fao_report(34, lang = "zh", cmsy = TRUE)
+report                                         # the tables it returns
+View(report$cmsy_reference_points)             # r, k, MSY, B/Bmsy, ... with 95\% limits
+View(report$cmsy_priors)                       # priors, sources and links
 fao_report(34, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5)
 
 # Reuse CMSY++ results to rewrite the report

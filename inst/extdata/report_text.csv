@@ -136,3 +136,24 @@ col_msy,MSY (thousand t),MSY/万 t
 col_bbmsy,B/Bmsy,B/Bmsy
 col_ffmsy,F/Fmsy,F/Fmsy
 col_status,Status,资源状态
+app_cmsy_points,Biological reference points of the main species of {area} estimated with CMSY++ (95% confidence limits),{area}主要物种 CMSY++ 估算的生物学参考点（95% 置信区间）
+app_cmsy_priors,Priors of the CMSY++ assessments of the main species of {area},{area}主要物种 CMSY++ 评估的先验参数
+app_cmsy_sources,Sources of the CMSY++ priors of the main species of {area},{area}主要物种 CMSY++ 先验参数的来源
+app_cmsy_note,Other sources: FishBase data {fishbase_data}; CMSY++ code and user guide {cmsy_code}; FAO catch data {fao_data}. All values and links are also returned by fao_report() in R (cmsy_reference_points and cmsy_priors).,其他来源：FishBase 数据 {fishbase_data}；CMSY++ 代码与用户指南 {cmsy_code}；FAO 渔获数据 {fao_data}。上述数值和网址也由 R 中 fao_report() 的返回结果给出（cmsy_reference_points 和 cmsy_priors）。
+col_fmsy,Fmsy,Fmsy
+col_bmsy,Bmsy (thousand t),Bmsy/万 t
+col_resilience,Resilience,恢复力
+col_r_prior,r prior,r 先验
+col_k_prior,k prior (thousand t),k 先验/万 t
+col_bk_start,"B/k prior, first year",B/k 先验（首年）
+col_bk_int,"B/k prior, intermediate year",B/k 先验（中间年份）
+col_bk_end,"B/k prior, last year",B/k 先验（末年）
+col_r_source,Source of the r prior,r 先验来源
+col_bk_source,Source of the B/k priors,B/k 先验来源
+col_page,FishBase / SeaLifeBase page,FishBase/SeaLifeBase 页面
+resilience_High,High,高
+resilience_Medium,Medium,中
+resilience_Low,Low,低
+resilience_Very low,Very low,极低
+source_network,CMSY++ neural network,CMSY++ 神经网络
+source_user,user,用户设定

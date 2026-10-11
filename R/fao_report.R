@@ -45,9 +45,15 @@
 #'        [cmsy_setup()].
 #' @param cmsy_top The number of species with the largest catch of the last ten years assessed
 #'        with CMSY++. Default is `top_n`, the number of main species of the report.
-#' @return Invisibly, the path of the Word file. With `cmsy = TRUE`, all CMSY++ results (runs,
-#'         charts and tables) are kept in the folder `cmsy/` next to the report, with
-#'         `cmsy_result.rds` to write the report again without running CMSY++
+#' @return Invisibly, a list of class `fao_report` with the path of the Word file (`file`) and
+#'         the tables of the report as data frames: `main_species` and `main_countries`, and with
+#'         CMSY++ `cmsy_reference_points` (r, k, MSY, Fmsy, Bmsy, B/Bmsy and F/Fmsy with 95%
+#'         confidence limits), `cmsy_priors` (resilience, r, k and B/k priors, their sources and
+#'         the links to FishBase or SeaLifeBase, the FishBase data, the CMSY++ code and the FAO
+#'         data) and the full CMSY++ result `cmsy`. Assign it, e.g. `report <- fao_report(...)`,
+#'         to look at the tables (`View(report$cmsy_priors)`). With `cmsy = TRUE`, all CMSY++
+#'         results (runs, charts and tables) are kept in the folder `cmsy/` next to the report,
+#'         with `cmsy_result.rds` to write the report again without running CMSY++
 #'         (`cmsy = readRDS("cmsy/<area>/cmsy_result.rds")`).
 #' @family report
 #' @export
@@ -58,7 +64,10 @@
 #' fao_report(34, lang = "en", font = "Times New Roman", citation = "fao")
 #'
 #' # With a CMSY++ assessment of the 10 main species (a few minutes)
-#' fao_report(34, lang = "zh", cmsy = TRUE)
+#' report <- fao_report(34, lang = "zh", cmsy = TRUE)
+#' report                                         # the tables it returns
+#' View(report$cmsy_reference_points)             # r, k, MSY, B/Bmsy, ... with 95% limits
+#' View(report$cmsy_priors)                       # priors, sources and links
 #' fao_report(34, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5)
 #'
 #' # Reuse CMSY++ results to rewrite the report
@@ -108,7 +117,40 @@ fao_report <- function(area, file = NULL, lang = NULL, title = NULL, report_no =
   doc <- fao_report_body(doc, meta, results, values, text, cmsy_result)
   fao_report_save(doc, file, meta)
   message("Report saved: ", file)
-  invisible(file)
+
+  # The tables of the report as data frames, to look at or reuse in R
+  species <- values$species_table
+  countries <- values$country_table
+  out <- structure(list(
+    file = file,
+    main_species = data.frame(species = values$species_names$plain, species_en = species$name_en,
+                              scientific_name = values$species_names$scientific, mean_catch_t = species$mean,
+                              share_pct = species$share, peak_year = species$peak_year,
+                              pct_of_peak = species$pct_of_peak, trend_10_years = species$trend,
+                              stringsAsFactors = FALSE),
+    main_countries = data.frame(country = values$country_names, country_en = countries$name_en,
+                                mean_catch_t = countries$mean, share_pct = countries$share,
+                                peak_year = countries$peak_year, pct_of_peak = countries$pct_of_peak,
+                                trend_10_years = countries$trend, stringsAsFactors = FALSE),
+    cmsy = cmsy_result,
+    cmsy_reference_points = values$cmsy_reference_points,
+    cmsy_priors = values$cmsy_priors
+  ), class = "fao_report")
+  invisible(out)
+}
+
+#' @export
+print.fao_report <- function(x, ...) {
+  cat("FAO report: ", x$file, "\n", sep = "")
+  tables <- c(main_species = "main species of the last five years",
+              main_countries = "main fishing countries of the last five years",
+              cmsy_reference_points = "CMSY++ biological reference points with 95% confidence limits",
+              cmsy_priors = "CMSY++ priors, their sources and links")
+  for (name in names(tables)) {
+    if (!is.null(x[[name]])) cat(sprintf("  $%-22s %s (%d rows)\n", name, tables[[name]], nrow(x[[name]])))
+  }
+  if (!is.null(x$cmsy)) cat("  $cmsy                   CMSY++ result (folder ", x$cmsy$dir, ")\n", sep = "")
+  invisible(x)
 }
 
 # Runs CMSY++ on the main species of the area, keeping its results in `out_dir`
@@ -177,7 +219,8 @@ fao_report_cmsy_values <- function(result, lang, values) {
   word <- function(key) fao_report_text(key, lang)
   names(table) <- c(word("col_species"), word("col_scientific"), word("col_years"), word("col_r"), word("col_k"),
                     word("col_msy"), word("col_bbmsy"), word("col_ffmsy"), word("col_status"))
-  c(counts, list(
+  tables <- fao_report_cmsy_tables(result, lang, names)
+  c(counts, tables, list(
     has_cmsy = TRUE, cmsy_top = nrow(s) + nrow(result$input$excluded),
     not_assessed = if (length(missing) > 0) text("cmsy_not_assessed", list = list_text(missing)) else "",
     overfished_list = if (any(overfished)) text("cmsy_overfished_list", list = list_text(names$plain[overfished])) else "",
@@ -188,6 +231,93 @@ fao_report_cmsy_values <- function(result, lang, values) {
       bbmsy = file.path(result$dir, "figures", "summary", "b_bmsy_all.png"),
       species = file.path(result$dir, "figures", cmsy_safe_name(s$Stock), "management.png"))
   ))
+}
+
+# Biological reference points, priors and their sources: data frames for R (with all values
+# and links) and tables for the appendix of the report
+fao_report_cmsy_tables <- function(result, lang, names) {
+  s <- result$summary
+  stocks <- result$input$stocks[match(s$Stock, result$input$stocks$Stock), ]
+  ok <- s$run_status %in% "ok"
+  word <- function(key) fao_report_text(key, lang)
+  scale <- if (lang == "zh") 1e4 else 1e3
+  ci <- function(x, low, high, digits = 2, divide = 1) {
+    f <- function(v) formatC(v / divide, format = "f", digits = digits)
+    ifelse(ok, paste0(f(x), " (", f(low), "\u2013", f(high), ")"), "-")
+  }
+  range <- function(low, high, digits = 2, divide = 1) {
+    f <- function(v) formatC(v / divide, format = "f", digits = digits)
+    ifelse(is.na(low) | is.na(high), "-", paste0(f(low), "\u2013", f(high)))
+  }
+  bk_source <- function(x) {
+    x <- ifelse(x %in% "user", word("source_user"), ifelse(is.na(x), "-", word("source_network")))
+    x
+  }
+  resilience <- ifelse(is.na(stocks$Resilience), "-", vapply(stocks$Resilience, function(r) {
+    tryCatch(fao_report_text(paste0("resilience_", r), lang), error = function(e) r)
+  }, character(1)))
+  r_source <- fao_report_cmsy_source(stocks$r_source, lang)
+
+  # Data frames for R: one row per stock, with every value and link
+  reference_points <- data.frame(
+    Stock = s$Stock, species = names$plain, species_en = s$species_en, scientific_name = s$scientific_name,
+    first_year = s$first_year, last_year = s$last_year, run_status = s$run_status,
+    r = s$r, r_lcl = s$r_lcl, r_ucl = s$r_ucl, k_t = s$k, k_lcl_t = s$k_lcl, k_ucl_t = s$k_ucl,
+    MSY_t = s$MSY, MSY_lcl_t = s$MSY_lcl, MSY_ucl_t = s$MSY_ucl, Fmsy = s$Fmsy, Fmsy_lcl = s$Fmsy_lcl,
+    Fmsy_ucl = s$Fmsy_ucl, Bmsy_t = s$Bmsy, Bmsy_lcl_t = s$Bmsy_lcl, Bmsy_ucl_t = s$Bmsy_ucl,
+    B_Bmsy = s$B_Bmsy, B_Bmsy_lcl = s$B_Bmsy_lcl, B_Bmsy_ucl = s$B_Bmsy_ucl,
+    F_Fmsy = s$F_Fmsy, F_Fmsy_lcl = s$F_Fmsy_lcl, F_Fmsy_ucl = s$F_Fmsy_ucl, catch_last_t = s$catch_last,
+    p_green = s$p_green, p_orange = s$p_orange, p_yellow = s$p_yellow, p_red = s$p_red, status = s$status,
+    stringsAsFactors = FALSE
+  )
+  priors <- data.frame(
+    Stock = s$Stock, species = names$plain, species_en = s$species_en, scientific_name = s$scientific_name,
+    resilience = stocks$Resilience, resilience_source = stocks$resilience_source,
+    r_prior_low = s$r_prior_low, r_prior_high = s$r_prior_high, r_prior_source = stocks$r_source,
+    k_prior_low_t = s$k_prior_low, k_prior_high_t = s$k_prior_high, MSY_prior_t = s$MSY_prior,
+    start_bk_prior_low = s$start_bk_prior_low, start_bk_prior_high = s$start_bk_prior_high,
+    start_bk_prior_source = s$start_bk_prior_source, int_year = s$int_year,
+    int_bk_prior_low = s$int_bk_prior_low, int_bk_prior_high = s$int_bk_prior_high,
+    int_bk_prior_source = s$int_bk_prior_source, end_bk_prior_low = s$end_bk_prior_low,
+    end_bk_prior_high = s$end_bk_prior_high, end_bk_prior_source = s$end_bk_prior_source,
+    species_page_url = stocks$url, fishbase_data_url = stocks$data_url, cmsy_guide_url = stocks$rule_url,
+    fao_data_url = stocks$fao_data_url, stringsAsFactors = FALSE
+  )
+
+  # Tables of the appendix
+  points_table <- data.frame(names$plain, ci(s$r, s$r_lcl, s$r_ucl),
+                             ci(s$k, s$k_lcl, s$k_ucl, 1, scale), ci(s$MSY, s$MSY_lcl, s$MSY_ucl, 1, scale),
+                             ci(s$Fmsy, s$Fmsy_lcl, s$Fmsy_ucl), ci(s$Bmsy, s$Bmsy_lcl, s$Bmsy_ucl, 1, scale),
+                             ci(s$B_Bmsy, s$B_Bmsy_lcl, s$B_Bmsy_ucl), ci(s$F_Fmsy, s$F_Fmsy_lcl, s$F_Fmsy_ucl),
+                             stringsAsFactors = FALSE)
+  names(points_table) <- c(word("col_species"), word("col_r"), word("col_k"), word("col_msy"), word("col_fmsy"),
+                           word("col_bmsy"), word("col_bbmsy"), word("col_ffmsy"))
+  priors_table <- data.frame(names$plain, resilience, range(s$r_prior_low, s$r_prior_high, 3),
+                             range(s$k_prior_low, s$k_prior_high, 1, scale),
+                             range(s$start_bk_prior_low, s$start_bk_prior_high),
+                             ifelse(is.na(s$int_year), "-", paste0(s$int_year, ": ", range(s$int_bk_prior_low, s$int_bk_prior_high))),
+                             range(s$end_bk_prior_low, s$end_bk_prior_high), stringsAsFactors = FALSE)
+  names(priors_table) <- c(word("col_species"), word("col_resilience"), word("col_r_prior"), word("col_k_prior"),
+                           word("col_bk_start"), word("col_bk_int"), word("col_bk_end"))
+  sources_table <- data.frame(names$plain, r_source, bk_source(s$end_bk_prior_source),
+                              ifelse(is.na(stocks$url), "-", stocks$url), stringsAsFactors = FALSE)
+  names(sources_table) <- c(word("col_species"), word("col_r_source"), word("col_bk_source"), word("col_page"))
+  first <- function(x) { x <- unique(stats::na.omit(x)); if (length(x) > 0) x[1] else "-" }
+  list(cmsy_reference_points = reference_points, cmsy_priors = priors,
+       cmsy_appendix = list(points = points_table, priors = priors_table, sources = sources_table),
+       fishbase_data = first(stocks$data_url), cmsy_code = first(stocks$rule_url), fao_data = first(stocks$fao_data_url))
+}
+
+# The source of the r prior in the report language
+fao_report_cmsy_source <- function(x, lang) {
+  if (lang != "zh") return(ifelse(is.na(x), "-", x))
+  x <- sub("^(\\S+) prior r, 95% CL \\(Based on ([0-9]+) full stock assessments?\\.?\\)$",
+           "\\1 \u5148\u9a8c r\uff0895% \u7f6e\u4fe1\u9650\uff0c\u57fa\u4e8e \\2 \u4e2a\u5b8c\u6574\u8d44\u6e90\u8bc4\u4f30\uff09", x)
+  x <- sub("^(\\S+) prior r, 95% CL \\(Based on ([0-9]+) data-limited stock assessments?\\.?\\)$",
+           "\\1 \u5148\u9a8c r\uff0895% \u7f6e\u4fe1\u9650\uff0c\u57fa\u4e8e \\2 \u4e2a\u6570\u636e\u6709\u9650\u7684\u8d44\u6e90\u8bc4\u4f30\uff09", x)
+  x <- sub("^(\\S+) resilience \\(([^)]*)\\), CMSY\\+\\+ user guide Table 2$",
+           "\\1 \u6062\u590d\u529b\uff08\\2\uff09\uff0cCMSY++ \u7528\u6237\u6307\u5357\u8868 2", x)
+  ifelse(is.na(x), "-", x)
 }
 
 # officer writes the Word file and xml2 edits it; both are suggested packages
@@ -1050,6 +1180,12 @@ fao_report_body <- function(x, meta, results, values, text, cmsy_result = NULL) 
                         text("app_species"), appendix = TRUE)
   x <- fao_report_table(x, "app_countries", fao_report_decade_table(results$area_data, values, "countries", lang),
                         text("app_countries"), appendix = TRUE)
+  if (isTRUE(values$has_cmsy)) {
+    x <- fao_report_table(x, "app_cmsy_points", values$cmsy_appendix$points, text("app_cmsy_points"), appendix = TRUE)
+    x <- fao_report_table(x, "app_cmsy_priors", values$cmsy_appendix$priors, text("app_cmsy_priors"), appendix = TRUE)
+    x <- fao_report_table(x, "app_cmsy_sources", values$cmsy_appendix$sources, text("app_cmsy_sources"), appendix = TRUE)
+    x <- fao_report_par(x, text("app_cmsy_note"), "FAONote")
+  }
   officer::body_set_default_section(x, fao_report_section(state, footer = TRUE))
 }
 
