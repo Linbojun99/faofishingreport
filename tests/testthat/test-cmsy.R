@@ -223,3 +223,25 @@ test_that("progress bars print only when not silent, and auto start keeps ten ye
   expect_equal(cmsy_auto_start(catch, id), cmsy_auto_start(catch, id))
   expect_true(cmsy_auto_start(catch, id) <= 2006)
 })
+
+test_that("cmsy_area() runs the main species of an area into sorted folders", {
+  skip_on_cran()
+  skip_on_ci()
+  sys <- cmsy_system(silent = TRUE)
+  skip_if(is.na(sys$jags) || !all(sys$packages$ok), "JAGS or CMSY++ packages not installed")
+  dir <- withr::local_tempdir()
+  withr::local_dir(dir)
+  withr::local_options(faofishingreport.dpi = 72)
+  data <- data.frame(
+    Country..Name. = "Morocco", ASFIS.species..Name. = c(rep("European pilchard(=Sardine)", 40), rep("Bigeye grunt", 40)),
+    FAO.major.fishing.area..Name. = "Atlantic, Eastern Central", Unit..Name. = "Tonnes - live weight",
+    Unit = "TLW", Year = rep(1980:2019, 2), Production = c(1e5 * (1 + sin(seq(0, 3, length.out = 40))), seq(1e4, 5e4, length.out = 40)),
+    Production.Type = "actual", stringsAsFactors = FALSE
+  )
+  result <- cmsy_area(data, top = 1, out_dir = "areas", charts = c("kobe", "overview"), forecast = FALSE, silent = TRUE)
+  expect_equal(result$summary$Stock, "PIL_34")
+  expect_true(all(dir.exists(file.path(result$dir, c("input", "runs", "figures", "tables")))))
+  expect_true(file.exists(file.path(result$dir, "figures", "PIL_34", "kobe.png")))
+  expect_true(file.exists(file.path(result$dir, "tables", "results_table.csv")))
+  expect_true(file.exists(file.path(result$dir, "runs", "PIL_34", "cmsy_output.csv")))
+})

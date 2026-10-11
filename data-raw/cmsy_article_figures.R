@@ -5,7 +5,9 @@
 #   Rscript data-raw/cmsy_article_figures.R
 
 pkgload::load_all(".", quiet = TRUE)
-out <- normalizePath(file.path("vignettes", "articles", "figures", "cmsy"), mustWork = FALSE)
+out <- file.path("vignettes", "articles", "figures", "cmsy")
+dir.create(out, recursive = TRUE, showWarnings = FALSE)
+out <- normalizePath(out)
 work <- file.path(tempdir(), "cmsy_article")
 dir.create(work, recursive = TRUE, showWarnings = FALSE)
 setwd(work)
