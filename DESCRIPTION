@@ -1,7 +1,7 @@
 Package: faofishingreport
 Type: Package
 Title: Analyse and Report FAO Global Capture Production Statistics
-Version: 0.6.0
+Version: 0.7.0
 Authors@R: c(
     person("Hongyu", "Lin", email = "linbojun99@gmail.com", role = c("aut", "cre")),
     person("Rainer", "Froese", role = c("ctb", "cph"), comment = "CMSY++ code, neural network and user guide in inst/cmsy (CC BY 4.0)"),

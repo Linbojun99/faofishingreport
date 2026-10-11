@@ -1,3 +1,43 @@
+# faofishingreport 0.7.0
+
+This version corrects errors found in a review of the code and of the statistics. Some results change: see "Changed results".
+
+## Changed results
+
+* `cmsy_forecast()` follows the timing of CMSY++: the biomass of a year is the biomass before that year's catch, the last year of the data keeps its catch, and the catch of an F scenario is the scenario F times the biomass of the same year. F/Fmsy uses an Fmsy reduced below half of Bmsy, as in CMSY++, so it equals the scenario value (before, 0.5 Fmsy gave 0.45). Projections differ from those of earlier versions.
+* Trends in `peak_trend()`, `mean_temperature_catch()` and the report are tested with a Mann-Kendall test whose variance is corrected for autocorrelation (Yue and Wang 2004); `p_value_iid` keeps the p value of the usual test and `lag1_autocorrelation` the autocorrelation used. `peak_trend()` adds `q_value`, the p values adjusted for the number of series (Benjamini and Hochberg 1995), and the report calls a trend of a main species or country significant only when its q value is below 0.05. Fewer trends are significant than before.
+* `catch_synchrony()`: `share_of_variability_pct`, the share of each standard deviation in their sum, is renamed `sd_share_pct`, and the new `variance_contribution_pct` gives the contribution of each series to the variance of the total catch (its covariance with the total). The report names the series that contribute most to the variance.
+* `catch_shocks()`: the yearly shock frequency divides by the series analysed in that year, including series whose catch fell to zero, so it can no longer exceed 100%.
+* Decade means (tables of `fishing_area_species()`, `fishing_area_country()`, `species_country()`, `country_species()`, `country_analysis()` and the appendix of the report) divide the catch of a decade by the years of the data in that decade, the same for every item; before, they depended on the years an item or the items chosen had records, and `country_analysis()` averaged the rows of several areas.
+* Employment, catch per fisher and trade: years that a country did not report are missing (`NA`), not zero, and missing trade quantities stay missing; a group or flow not reported in a year that the country did report is zero. The employment chart shows stacked bars by year, with gaps for years not reported.
+* SST from NetCDF files: the weights of the grid cells are saved by grid and cover every cell with values, also cells without values in the first year; dates follow the calendar of the file (360-day, 365-day and 366-day calendars) and the time of the origin. Tables computed from your own files with earlier versions are computed again the next time they are used.
+* `catch_synchrony()` computes moving windows as soon as the series are as long as the window (20 years give one window).
+
+## CMSY++ integration
+
+These changes concern how the package runs CMSY++. The model of `CMSY++16.R` is unchanged, and no change was added to its code (the changes the package makes to run it, for file names, graphics devices and saving results, are listed in `code_changes.csv` of each run and in `result$changes`).
+
+* `sigmaR` and `ni` are set in `CMSY++16.R` but not used by its code (the process error of the model is estimated with the prior `itau2 ~ dgamma(4, 0.01)`): `cmsy_defaults()` lists them as "not used", and `cmsy_run(settings = )` refuses to change them, so that a run is not taken for a sensitivity analysis of the process error. Examples use `CV.C` instead.
+* B/k and r priors must be given as pairs of lower and upper bounds (CMSY++ uses a prior only when both are given), with lower < upper, B/k between 0 and 1, and an intermediate prior with a year between the start and end years; `cmsy_input()` and `cmsy_run()` stop with the stocks concerned. A prior is recorded as the user's only when both bounds are given.
+* Stocks by country of countries without an ISO3 code (e.g. "Germany, Fed. Rep. of" and "Germany,New Länder") get the numeric code of the FAO country list ("COD_27_UN280") instead of sharing "XXX"; `cmsy_input()` and `cmsy_run()` check that stock identifiers, folders and stock-year catches are unique.
+* `cmsy_run()` reports how each run ended: `run_status` is "ok" (finished), "partial" (the main analysis saved its results but a later step, such as the retrospective analysis, failed or ran out of time), "failed" or "timeout", and `exit` keeps the original message; a stock that runs out of time is stopped. Results of "ok" and "partial" stocks are used by the other functions.
+* `auto_start = TRUE` smooths the catch with the bandwidth `bw` of the run, as CMSY++ does, instead of always 3.
+* The report says that the CMSY++ results are completed model runs and, when the B/k priors came from the neural network, that these were not checked stock by stock (the CMSY++ user guide notes they "may not be appropriate for your stock"), so the results are not validated assessments.
+
+## Bug fixes
+
+* `fao_report()`: the charts of the main species and countries show the items of the tables, ranked by the last five years (new argument `rank_years` of `fishing_area_species()` and `fishing_area_country()`); a CMSY++ result given with `cmsy =` must be of the area and FAO release of the report; `collapse_null_model = FALSE`, `groups_group = "major"` and own pelagic and demersal groups (`pelagic_pelagic`, `pelagic_demersal`) are described in the text as used; the portfolio effect is described as positive, absent or negative; a slope of the mean temperature of the catch without a significant trend keeps its sign.
+* `cmsy_input()`: a prior row with a `Stock` applies to that stock only, rows for a species are applied before rows for one stock, and a `Resilience` given without `r.low` and `r.hi` replaces the FishBase r range; when no stock is ready, the excluded stocks are returned instead of an error.
+* `cmsy_area()` keeps the results of an earlier run until the new run has finished, and stops before deleting anything when the input is wrong.
+* `cmsy_forecast()` projects stocks whose data end in different years to the same final year, and the share of stocks at or above Bmsy gives the number of stocks.
+* `fishing_area_data()` keeps the FAO release of the data, so `cmsy_input()` records the release actually used; when data do not record it, `cmsy_input()` says which release is assumed.
+* `regime_shift()` leaves out species without catch instead of stopping.
+* The tables of `species_country()` keep "Other nei" when it is among the ranked countries.
+* `fao_report()`: the stock status paragraph gave the shares of collapsed and rebuilding stocks in the wrong order, and its total of over-exploited and collapsed stocks added rebuilding stocks instead of collapsed ones.
+* `fao_report()`: the Word file gives the author of the report as "last modified by", not the login name of the computer that wrote it.
+* Report text: the abstract no longer opens with a general sentence on the area or ends with a recommendation; the sentence on under-reporting cites Garibaldi (2012); the conclusion on diversity gives the HHI, and equal concentration by species and by country is said once; the P/D paragraph and conclusion do not name the most recent period twice; counts of CMSY++ stocks agree with their verbs and say "no stock" ("没有种群") instead of 0; English sentences no longer start with a number; lists whose items contain commas are separated by semicolons; Chinese notes no longer open with "需要指出的是".
+* `cmsy_input()` and `cmsy_area()` messages say "1 stock" instead of "1 stocks".
+
 # faofishingreport 0.6.0
 
 ## Documentation
