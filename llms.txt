@@ -1,0 +1,336 @@
+# faofishingreport
+
+> 📘 **中文文档**：[faofishingreport
+> 中文网站](https://linbojun99.github.io/faofishingreport/articles/zh/index.html)（网站右上角也可以随时切换中文）
+
+**faofishingreport** turns the [FAO Global Capture
+Production](https://www.fao.org/fishery/collection/capture/en)
+statistics into charts, maps and tables for reports, by fishing area,
+country and species, in English, Chinese or both.
+
+## ✨ Features
+
+- 💾 **Always the latest data**: check for and download new FAO releases
+  with one command.
+- 🌊 **Fishing area reports**: total catch with breakpoints, main
+  species, main countries, maps.
+- 🐟 **Species and country profiles**: who catches a species, what a
+  country catches, and where.
+- 📊 **Nine summary analyses**: species group composition, stock status
+  plots, peak and trend, data quality, diversity and concentration,
+  country groups, synchronous breakpoints, coastal versus distant-water
+  fleets, and an overview of all FAO marine areas.
+- 🌐 **English, Chinese or bilingual** charts with the official FAO
+  Chinese names.
+- 🎨 **Your style**: themes, colour palettes, map projections (Robinson,
+  Mollweide, Equal Earth, …) and Pacific-centred maps, set once with
+  [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md).
+- 💻 **Windows, macOS and Linux**: a Chinese font is chosen
+  automatically; tables open in Excel with Chinese names intact.
+
+## 📦 Installation
+
+faofishingreport needs R 4.2 or later. Install it from GitHub:
+
+``` r
+
+install.packages("remotes")
+remotes::install_github("Linbojun99/faofishingreport")
+```
+
+For editable PowerPoint charts, also install eoffice:
+`install.packages("eoffice")` (on macOS it also needs
+[XQuartz](https://www.xquartz.org)).
+
+## 🚀 Quick start
+
+``` r
+
+library(faofishingreport)
+
+# Get the latest FAO release (only needed when FAO publishes a new one)
+check_fao_update()
+download_fao_data()
+
+# FAO major fishing area 34, Eastern Central Atlantic
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+fishing_area_species(FAO34$area_data, rank_range = c(1, 10))
+fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
+
+# Who catches European pilchard, what Morocco catches
+species_country(FAO34$area_data, "European pilchard(=Sardine)", lang = "both")
+country_species(FAO34$area_data, "Morocco")
+
+# Summary analyses
+stock_status(FAO34$area_data)
+coastal_distant(FAO34$area_data)
+```
+
+Charts are saved in `figures/png/` (and, if you want, editable
+PowerPoint in `figures/pptx/`), tables in `tables/`.
+
+## 🖼️ Examples
+
+| Total catch and breakpoints | Stock status plot |
+|----|----|
+| ![Total catch of FAO area 34 with breakpoints](reference/figures/readme-area-trend.png) | ![Stock status plot of FAO area 34](reference/figures/readme-stock-status.png) |
+| **Bilingual charts** | **Robinson projection, Pacific-centred** |
+| ![Bilingual chart of the main countries](reference/figures/readme-bilingual.png) | ![Pacific-centred Robinson map of FAO areas](reference/figures/readme-area-map.png) |
+
+## 🔧 Function reference
+
+**💾 FAO data**
+
+| Function | Description |
+|----|----|
+| [`check_fao_update()`](https://linbojun99.github.io/faofishingreport/reference/check_fao_update.md) | Compare the latest FAO release online with the data on your computer |
+| [`download_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fao_data.md) | Download a release and convert it to the package format |
+| [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md) | Load the newest downloaded release, or the bundled data |
+| [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) | Folder where downloaded releases are stored |
+
+**🌊 Fishing areas**
+
+| Function | Description |
+|----|----|
+| [`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md) | Catch of one FAO fishing area: trend, breakpoints, share of world catch, map |
+| [`fishing_area_species()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_species.md) | Main species of an area, their catch and breakpoints |
+| [`fishing_area_country()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_country.md) | Main countries of an area, their catch and breakpoints |
+
+**🐟 Species and countries**
+
+| Function | Description |
+|----|----|
+| [`species_country()`](https://linbojun99.github.io/faofishingreport/reference/species_country.md) | Countries catching a species: ranking, trends, map, pie charts by decade |
+| [`country_species()`](https://linbojun99.github.io/faofishingreport/reference/country_species.md) | Species caught by a country in an area |
+| [`country_analysis()`](https://linbojun99.github.io/faofishingreport/reference/country_analysis.md) | A country’s catch in all FAO areas, by species and area, with a map |
+
+**📊 Summary analyses**
+
+| Function | Description |
+|----|----|
+| [`species_group_composition()`](https://linbojun99.github.io/faofishingreport/reference/species_group_composition.md) | Catch by ISSCAAP species group or major group |
+| [`stock_status()`](https://linbojun99.github.io/faofishingreport/reference/stock_status.md) | Stock status plots: developing, exploited, over-exploited, collapsed, rebuilding |
+| [`peak_trend()`](https://linbojun99.github.io/faofishingreport/reference/peak_trend.md) | Peak year, last year as % of peak and recent trend of species, countries or areas |
+| [`area_overview()`](https://linbojun99.github.io/faofishingreport/reference/area_overview.md) | All FAO marine areas compared |
+| [`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md) | Official versus estimated catch, and catch identified to species |
+| [`diversity_concentration()`](https://linbojun99.github.io/faofishingreport/reference/diversity_concentration.md) | Species and country numbers, Shannon diversity, HHI, top-N shares |
+| [`country_group_summary()`](https://linbojun99.github.io/faofishingreport/reference/country_group_summary.md) | Catch by income group, continent or region |
+| [`regime_shift()`](https://linbojun99.github.io/faofishingreport/reference/regime_shift.md) | Breakpoints of the main species and years when many change together |
+| [`coastal_distant()`](https://linbojun99.github.io/faofishingreport/reference/coastal_distant.md) | Catch by coastal countries and distant-water fleets |
+
+**🎨 Settings and language**
+
+| Function | Description |
+|----|----|
+| [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md) | Language, theme, palettes, map projection and centre, grid lines, output |
+| [`fao_font()`](https://linbojun99.github.io/faofishingreport/reference/fao_font.md) | Font of chart text |
+| [`fao_translate()`](https://linbojun99.github.io/faofishingreport/reference/fao_translate.md) | Chinese or bilingual names of countries, species and areas |
+
+## 📖 Documentation
+
+The [website](https://linbojun99.github.io/faofishingreport/) has a
+guide for every part of the package: [🚀 Get
+started](https://linbojun99.github.io/faofishingreport/articles/get-started.html)
+· [💾 FAO
+data](https://linbojun99.github.io/faofishingreport/articles/data.html)
+· [🌊 Fishing
+areas](https://linbojun99.github.io/faofishingreport/articles/fishing-areas.html)
+· [🐟 Species and
+countries](https://linbojun99.github.io/faofishingreport/articles/species-countries.html)
+· [📈 Status and
+trends](https://linbojun99.github.io/faofishingreport/articles/status-trends.html)
+· [🔍 Quality, diversity and
+fleets](https://linbojun99.github.io/faofishingreport/articles/quality-diversity-fleets.html)
+· [🎨
+Customise](https://linbojun99.github.io/faofishingreport/articles/customise.html)
+
+## 📝 Citation
+
+``` r
+
+citation("faofishingreport")
+```
+
+Please also cite FAO as the source of the data: FAO Fisheries and
+Aquaculture, Global Capture Production (FishStat). FAO data are licensed
+under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
+## ⚖️ License
+
+GPL-3 © Hongyu Lin
+
+# Package index
+
+## 💾 FAO data
+
+Check for, download and load FAO Global Capture Production releases.
+
+- [`check_fao_update()`](https://linbojun99.github.io/faofishingreport/reference/check_fao_update.md)
+  : Check for the Latest FAO Global Capture Production Release
+- [`download_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fao_data.md)
+  : Download an FAO Global Capture Production Release
+- [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)
+  : Load FAO Global Capture Production Data
+- [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md)
+  : Directory for Downloaded FAO Data
+
+## 🌊 Fishing areas
+
+Total catch, main species and main countries of an FAO fishing area.
+
+- [`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md)
+  : Extract Data for a Specified Fishing Area and Optionally Generate
+  Plots
+- [`fishing_area_species()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_species.md)
+  : Fishing Area Species Analysis
+- [`fishing_area_country()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_country.md)
+  : Fishing Area country Analysis
+
+## 🐟 Species and countries
+
+Who catches a species, what a country catches, and a country’s global
+catch.
+
+- [`species_country()`](https://linbojun99.github.io/faofishingreport/reference/species_country.md)
+  : Analyze and Plot Specified Species Data Ranked by Country Production
+- [`country_species()`](https://linbojun99.github.io/faofishingreport/reference/country_species.md)
+  : Analyze and Plot the Main Species Caught by a Country in a Fishing
+  Area
+- [`country_analysis()`](https://linbojun99.github.io/faofishingreport/reference/country_analysis.md)
+  : Analyze and Plot the Global Catch of a Country
+
+## 📊 Summary analyses
+
+Composition, stock status, trends, data quality, diversity and fleets.
+
+- [`species_group_composition()`](https://linbojun99.github.io/faofishingreport/reference/species_group_composition.md)
+  : Catch Composition by Species Group
+- [`stock_status()`](https://linbojun99.github.io/faofishingreport/reference/stock_status.md)
+  : Stock Status Plots
+- [`peak_trend()`](https://linbojun99.github.io/faofishingreport/reference/peak_trend.md)
+  : Peak Catch and Recent Trend
+- [`area_overview()`](https://linbojun99.github.io/faofishingreport/reference/area_overview.md)
+  : Overview of All FAO Marine Fishing Areas
+- [`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md)
+  : Data Quality of the Catch Statistics
+- [`diversity_concentration()`](https://linbojun99.github.io/faofishingreport/reference/diversity_concentration.md)
+  : Diversity and Concentration of the Catch
+- [`country_group_summary()`](https://linbojun99.github.io/faofishingreport/reference/country_group_summary.md)
+  : Catch by Country Group
+- [`regime_shift()`](https://linbojun99.github.io/faofishingreport/reference/regime_shift.md)
+  : Synchronous Breakpoints in the Catch of the Main Species
+- [`coastal_distant()`](https://linbojun99.github.io/faofishingreport/reference/coastal_distant.md)
+  : Catch by Coastal Countries and Distant-Water Fleets
+
+## 🎨 Settings and language
+
+Chart style, map projection, colours, fonts and Chinese names.
+
+- [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+  : Settings for Charts, Maps and Output
+- [`fao_font()`](https://linbojun99.github.io/faofishingreport/reference/fao_font.md)
+  : Font Used for Chart Text
+- [`fao_translate()`](https://linbojun99.github.io/faofishingreport/reference/fao_translate.md)
+  : Translate FAO Country, Species or Fishing Area Names
+
+# Articles
+
+### Guides
+
+- [🚀 Get
+  started](https://linbojun99.github.io/faofishingreport/articles/get-started.md):
+
+  Install faofishingreport, update the FAO data and produce the first
+  charts for the Eastern Central Atlantic (FAO area 34).
+
+- [💾 FAO data: download and
+  customise](https://linbojun99.github.io/faofishingreport/articles/data.md):
+
+  Where the data come from, how to check for and download FAO releases,
+  the data format, and how to analyse your own subsets.
+
+- [🌊 Fishing area
+  analysis](https://linbojun99.github.io/faofishingreport/articles/fishing-areas.md):
+
+  fishing_area_data(), fishing_area_species() and
+  fishing_area_country(): total catch, main species and main countries
+  of an FAO fishing area, with all options.
+
+- [🐟 Species and
+  countries](https://linbojun99.github.io/faofishingreport/articles/species-countries.md):
+
+  species_country(), country_species() and country_analysis(): who
+  catches a species, what a country catches in an area, and a country’s
+  catch in all FAO areas.
+
+- [📈 Composition, stock status and
+  trends](https://linbojun99.github.io/faofishingreport/articles/status-trends.md):
+
+  species_group_composition(), stock_status(), peak_trend(),
+  area_overview() and regime_shift(): what is caught, how the stocks
+  have developed, and when things changed.
+
+- [🔍 Data quality, diversity and
+  fleets](https://linbojun99.github.io/faofishingreport/articles/quality-diversity-fleets.md):
+
+  data_quality(), diversity_concentration(), country_group_summary() and
+  coastal_distant(): how reliable the data are, how diverse and
+  concentrated the catch is, and who is fishing.
+
+- [🎨 Customise charts and
+  maps](https://linbojun99.github.io/faofishingreport/articles/customise.md):
+
+  fao_settings(): language, theme, colour palettes, map projection and
+  centre, fonts, grid lines, resolution and PowerPoint output.
+
+### 中文文档
+
+- [faofishingreport
+  中文文档](https://linbojun99.github.io/faofishingreport/articles/zh/index.md):
+
+  用 FAO
+  全球捕捞产量数据，按渔区、国家和物种生成报告用的图表、地图和表格，支持中文、英文和中英双语。
+
+- [🚀
+  快速入门](https://linbojun99.github.io/faofishingreport/articles/zh/get-started.md):
+
+  安装 faofishingreport，更新 FAO 数据，并为中东大西洋（FAO 34
+  渔区）绘制第一批图表。
+
+- [💾 FAO
+  数据：下载与自定义](https://linbojun99.github.io/faofishingreport/articles/zh/data.md):
+
+  数据从哪里来，如何检查和下载 FAO 的新版本，数据格式是什么样的，
+  以及如何分析自己的数据子集。
+
+- [🌊
+  渔区分析](https://linbojun99.github.io/faofishingreport/articles/zh/fishing-areas.md):
+
+  fishing_area_data()、fishing_area_species() 和
+  fishing_area_country()：某个 FAO
+  渔区的总产量、主要物种和主要捕捞国家，以及全部选项。
+
+- [🐟
+  物种与国家分析](https://linbojun99.github.io/faofishingreport/articles/zh/species-countries.md):
+
+  species_country()、country_species() 和
+  country_analysis()：某个物种由哪些国家捕捞，某个国家在一个渔区捕什么，以及某个国家在全部
+  FAO 渔区的产量。
+
+- [📈
+  类群结构、资源状态与趋势](https://linbojun99.github.io/faofishingreport/articles/zh/status-trends.md):
+
+  species_group_composition()、stock_status()、peak_trend()、area_overview()
+  和 regime_shift()：捕捞了什么，各种群如何发展，以及何时发生了变化。
+
+- [🔍
+  数据质量、多样性与船队](https://linbojun99.github.io/faofishingreport/articles/zh/quality-diversity-fleets.md):
+
+  data_quality()、diversity_concentration()、country_group_summary() 和
+  coastal_distant()：数据有多可靠，产量的多样性和集中程度如何，以及是谁在捕捞。
+
+- [🎨
+  自定义图表与地图](https://linbojun99.github.io/faofishingreport/articles/zh/customise.md):
+
+  fao_settings()：语言、主题、色板、地图投影与中心、字体、网格线、分辨率和
+  PowerPoint 输出。

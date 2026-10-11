@@ -1,0 +1,23 @@
+pandoc: 3.8.3
+pkgdown: 2.2.1
+pkgdown_sha: ~
+articles:
+  articles/customise: customise.html
+  articles/zh/customise: zh/customise.html
+  articles/data: data.html
+  articles/zh/data: zh/data.html
+  articles/fishing-areas: fishing-areas.html
+  articles/zh/fishing-areas: zh/fishing-areas.html
+  articles/get-started: get-started.html
+  articles/zh/get-started: zh/get-started.html
+  articles/zh/index: zh/index.html
+  articles/quality-diversity-fleets: quality-diversity-fleets.html
+  articles/zh/quality-diversity-fleets: zh/quality-diversity-fleets.html
+  articles/species-countries: species-countries.html
+  articles/zh/species-countries: zh/species-countries.html
+  articles/status-trends: status-trends.html
+  articles/zh/status-trends: zh/status-trends.html
+last_built: 2026-10-11T02:49Z
+urls:
+  reference: https://linbojun99.github.io/faofishingreport/reference
+  article: https://linbojun99.github.io/faofishingreport/articles

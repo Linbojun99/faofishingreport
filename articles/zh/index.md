@@ -1,0 +1,168 @@
+# faofishingreport 中文文档
+
+[![version](https://img.shields.io/github/r-package/v/Linbojun99/faofishingreport?label=version&color=0B2E5B)](https://github.com/Linbojun99/faofishingreport)
+[![R-CMD-check](https://github.com/Linbojun99/faofishingreport/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/Linbojun99/faofishingreport/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/Linbojun99/faofishingreport/graph/badge.svg)](https://app.codecov.io/gh/Linbojun99/faofishingreport)
+[![downloads](https://img.shields.io/github/downloads/Linbojun99/faofishingreport/total?label=downloads)](https://github.com/Linbojun99/faofishingreport/releases)
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![R ≥
+4.2](https://img.shields.io/badge/R-%E2%89%A5%204.2-276DC3.svg)](https://www.r-project.org/)
+[![License:
+GPL-3](https://img.shields.io/badge/license-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+**faofishingreport** 把 [FAO
+全球捕捞产量统计](https://www.fao.org/fishery/collection/capture/en)（Global
+Capture
+Production）按渔区、国家和物种整理成报告用的图表、地图和表格，图表可以是中文、英文或中英双语。
+
+## ✨ 主要功能
+
+- 💾 **随时用上最新数据**：一行命令检查并下载 FAO 发布的新版本数据。
+- 🌊 **渔区报告**：总产量与突变点、主要物种、主要捕捞国家、世界地图。
+- 🐟
+  **物种与国家**：某个物种由哪些国家捕捞，某个国家主要捕什么、在哪里捕。
+- 📊 **9
+  项汇总分析**：物种类群结构、资源开发状态（资源状态图）、峰值与趋势、数据质量、集中度与多样性、按国家分组、突变点同步性、沿岸国与远洋捕捞国，以及全部海洋渔区对比。
+- 🌐 **中文、英文或中英双语**图表，国家、物种、渔区名使用 FAO
+  官方中文名。
+- 🎨 **自定义风格**：主题、色板、地图投影（Robinson、Mollweide、Equal
+  Earth 等）和太平洋居中地图，用
+  [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+  设置一次即可。
+- 💻 **Windows、macOS、Linux
+  通用**：自动选用系统里的中文字体，导出的表格用 Excel 打开中文不乱码。
+
+## 📦 安装
+
+需要 R 4.2 或以上版本，从 GitHub 安装：
+
+``` r
+
+install.packages("remotes")
+remotes::install_github("Linbojun99/faofishingreport")
+```
+
+如需输出可编辑的 PowerPoint 图表，再安装
+eoffice：`install.packages("eoffice")`（macOS 上还需要安装
+[XQuartz](https://www.xquartz.org)）。
+
+## 🚀 快速上手
+
+``` r
+
+library(faofishingreport)
+fao_settings(lang = "zh")        # 所有图表使用中文
+
+# 获取 FAO 最新数据（FAO 发布新版本时运行一次即可）
+check_fao_update()
+download_fao_data()
+
+# FAO 34 渔区：中东大西洋
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+fishing_area_species(FAO34$area_data, rank_range = c(1, 10))
+fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
+
+# 沙丁鱼由哪些国家捕捞；摩洛哥主要捕什么
+species_country(FAO34$area_data, "European pilchard(=Sardine)")
+country_species(FAO34$area_data, "Morocco")
+
+# 汇总分析
+stock_status(FAO34$area_data)
+coastal_distant(FAO34$area_data)
+```
+
+图表保存在工作目录的 `figures/png/`（需要时也可以同时输出可编辑的
+PowerPoint 到 `figures/pptx/`），表格保存在 `tables/`。
+
+## 🖼️ 示例
+
+| 总产量与突变点 | 资源状态图 |
+|----|----|
+| ![FAO 34 渔区总产量与突变点](../../reference/figures/readme-area-trend.png) | ![FAO 34 渔区资源状态图](../../reference/figures/readme-stock-status.png) |
+| **中英双语图表** | **Robinson 投影、太平洋居中** |
+| ![中英双语图表](../../reference/figures/readme-bilingual.png) | ![Robinson 投影、太平洋居中的渔区地图](../../reference/figures/readme-area-map.png) |
+
+## 🔧 函数一览
+
+**💾 FAO 数据**
+
+| 函数 | 用途 |
+|----|----|
+| [`check_fao_update()`](https://linbojun99.github.io/faofishingreport/reference/check_fao_update.md) | 对比 FAO 线上最新版本与本机数据 |
+| [`download_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fao_data.md) | 下载某个版本并转换成本包的数据格式 |
+| [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md) | 读取最新的数据（下载的或包自带的） |
+| [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) | 下载数据的保存目录 |
+
+**🌊 渔区分析**
+
+| 函数 | 用途 |
+|----|----|
+| [`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md) | 某个 FAO 渔区的产量：趋势、突变点、占全球比例、地图 |
+| [`fishing_area_species()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_species.md) | 渔区内的主要物种及其产量变化和突变点 |
+| [`fishing_area_country()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_country.md) | 渔区内的主要捕捞国家及其产量变化和突变点 |
+
+**🐟 物种与国家**
+
+| 函数 | 用途 |
+|----|----|
+| [`species_country()`](https://linbojun99.github.io/faofishingreport/reference/species_country.md) | 某个物种的主要捕捞国家：排名、趋势、地图、各年代饼图 |
+| [`country_species()`](https://linbojun99.github.io/faofishingreport/reference/country_species.md) | 某个国家在渔区内的主要捕捞物种 |
+| [`country_analysis()`](https://linbojun99.github.io/faofishingreport/reference/country_analysis.md) | 某个国家在全部 FAO 渔区的捕捞，按物种和渔区拆分，附渔区地图 |
+
+**📊 汇总分析**
+
+| 函数 | 用途 |
+|----|----|
+| [`species_group_composition()`](https://linbojun99.github.io/faofishingreport/reference/species_group_composition.md) | 按 ISSCAAP 物种类群或大类的产量结构 |
+| [`stock_status()`](https://linbojun99.github.io/faofishingreport/reference/stock_status.md) | 资源状态图：开发中、充分开发、过度开发、崩溃、恢复中 |
+| [`peak_trend()`](https://linbojun99.github.io/faofishingreport/reference/peak_trend.md) | 物种、国家或渔区的峰值年份、当前占峰值比例和近期趋势 |
+| [`area_overview()`](https://linbojun99.github.io/faofishingreport/reference/area_overview.md) | 全部 FAO 海洋渔区对比 |
+| [`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md) | 官方数据与估算值的比例，鉴定到种的产量比例 |
+| [`diversity_concentration()`](https://linbojun99.github.io/faofishingreport/reference/diversity_concentration.md) | 物种数、国家数、香农多样性指数、HHI、前 N 名占比 |
+| [`country_group_summary()`](https://linbojun99.github.io/faofishingreport/reference/country_group_summary.md) | 按收入分组、大洲或地区汇总产量 |
+| [`regime_shift()`](https://linbojun99.github.io/faofishingreport/reference/regime_shift.md) | 主要物种的突变点，以及多个物种同时突变的年份 |
+| [`coastal_distant()`](https://linbojun99.github.io/faofishingreport/reference/coastal_distant.md) | 沿岸国与远洋捕捞国的产量 |
+
+**🎨 设置与语言**
+
+| 函数 | 用途 |
+|----|----|
+| [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md) | 语言、主题、色板、地图投影和中心经度、网格线、输出设置 |
+| [`fao_font()`](https://linbojun99.github.io/faofishingreport/reference/fao_font.md) | 图表字体 |
+| [`fao_translate()`](https://linbojun99.github.io/faofishingreport/reference/fao_translate.md) | 国家、物种、渔区的中文或中英双语名称 |
+
+## 📖 文档
+
+- [🚀
+  快速入门](https://linbojun99.github.io/faofishingreport/articles/zh/get-started.md)
+- [💾 FAO
+  数据：下载与自定义](https://linbojun99.github.io/faofishingreport/articles/zh/data.md)
+- [🌊
+  渔区分析](https://linbojun99.github.io/faofishingreport/articles/zh/fishing-areas.md)
+- [🐟
+  物种与国家分析](https://linbojun99.github.io/faofishingreport/articles/zh/species-countries.md)
+- [📈
+  类群结构、资源状态与趋势](https://linbojun99.github.io/faofishingreport/articles/zh/status-trends.md)
+- [🔍
+  数据质量、多样性与船队](https://linbojun99.github.io/faofishingreport/articles/zh/quality-diversity-fleets.md)
+- [🎨
+  自定义图表与地图](https://linbojun99.github.io/faofishingreport/articles/zh/customise.md)
+
+每个函数的参数说明见[函数参考](https://linbojun99.github.io/faofishingreport/reference/index.md)（英文）。
+
+## 📝 引用
+
+``` r
+
+citation("faofishingreport")
+```
+
+使用结果发表时，请同时注明数据来源：FAO Fisheries and Aquaculture,
+Global Capture Production (FishStat)。FAO 数据采用 [CC BY
+4.0](https://creativecommons.org/licenses/by/4.0/) 许可。
+
+## ⚖️ 许可证
+
+GPL-3 © Hongyu Lin
