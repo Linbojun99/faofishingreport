@@ -21,7 +21,7 @@ utils::globalVariables(c(
   "intercept", "is_species", "last_year_tonnes", "mean_Percentage_area", "n_species",
   "pct_of_peak", "peak_tonnes", "percentage", "Percentage", "Percentage_area",
   "percentage_country", "percentage_of_global", "percentage_of_total", "period", "Production",
-  "Production.Type", "Rank", "species", "species_area_production", "species_production", "start",
+  "Production.Type", "Rank", "Rank_Tonnes", "species", "species_area_production", "species_production", "start",
   "start_year", "status_label", "text", "Tonnes", "total_2021_production",
   "total_species_production", "total_tonnes", "Total_Tonnes", "trend", "value", "Year",
   "yearly_production",

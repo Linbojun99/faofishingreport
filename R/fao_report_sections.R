@@ -400,8 +400,12 @@ fao_section_groups_write <- function(x, ctx) {
 fao_section_status_values <- function(ctx) {
   status <- ctx$results$status$value
   last <- status$yearly[status$yearly$Year == max(ctx$area_data$Year), ]
-  last <- last[order(as.integer(last$status_label)), ]
-  oc <- as.integer(last$status_label) %in% c(3, 4)
+  # the levels of stock_status() are developing, exploited, over-exploited, rebuilding and collapsed;
+  # the text names them as developing, exploited, over-exploited, collapsed and rebuilding
+  key <- c("developing", "exploited", "overexploited", "rebuilding", "collapsed")[as.integer(last$status_label)]
+  ord <- order(match(key, c("developing", "exploited", "overexploited", "collapsed", "rebuilding")))
+  last <- last[ord, ]
+  oc <- key[ord] %in% c("overexploited", "collapsed")
   pcts <- function(column) fao_report_list(paste0(fao_report_pct(last[[column]]), "%"), ctx$lang)
   setting <- function(name) fao_report_setting(ctx, "status", name)
   taxa <- intersect(c("species", "genus", "family", "higher"), setting("taxon_levels"))
@@ -453,9 +457,11 @@ fao_section_diversity_values <- function(ctx) {
   concentration <- function(hhi) {
     fao_report_text(if (hhi < 1500) "conc_low" else if (hhi < 2500) "conc_moderate" else "conc_high", ctx$lang)
   }
+  conc <- list(conc_species = concentration(last$hhi_species), conc_countries = concentration(last$hhi_countries))
   list(h_first = sprintf("%.2f", first$shannon_species), h_last = sprintf("%.2f", last$shannon_species),
        hhi_species = round(last$hhi_species), hhi_countries = round(last$hhi_countries),
-       conc_species = concentration(last$hhi_species), conc_countries = concentration(last$hhi_countries),
+       conc_species = conc$conc_species, conc_countries = conc$conc_countries,
+       conc_text = fao_report_text(if (conc$conc_species == conc$conc_countries) "conc_same" else "conc_differ", ctx$lang, conc),
        top5_last = fao_report_pct(last$top5_species_pct))
 }
 
@@ -527,7 +533,7 @@ fao_section_shocks_values <- function(ctx) {
     values$shock_median_loss <- fao_report_pct(stats::median(shocks$loss_pct, na.rm = TRUE))
     values$n_unrecovered <- sum(is.na(shocks$recovery_years))
     values$largest_shock <- fao_report_text("largest_shock", lang, list(
-      name = sub("[|].*$", "", largest$series_name), year = largest$Year, loss_pct = fao_report_pct(largest$loss_pct),
+      name = trimws(sub("[|].*$", "", largest$series_name)), year = largest$Year, loss_pct = fao_report_pct(largest$loss_pct),
       loss = fao_report_catch(largest$loss_tonnes, lang)))
   }
   values
@@ -697,7 +703,15 @@ fao_section_pelagic_values <- function(ctx) {
     # the English group names have commas, so they are separated by semicolons
     paste(fao_pick(used, table$isscaap_zh[match(used, table$isscaap_en)], lang), collapse = if (lang == "zh") "\u3001" else "; ")
   }
-  list(
+  # the decades with the highest and lowest mean P/D, and the most recent period; when one of them
+  # is the most recent period, the text names it once
+  i_max <- which.max(decades$pd_mean)
+  i_min <- which.min(decades$pd_mean)
+  i_now <- nrow(decades)
+  pd <- list(pd_max_period = period(i_max), pd_max = sprintf("%.2f", decades$pd_mean[i_max]),
+             pd_min_period = period(i_min), pd_min = sprintf("%.2f", decades$pd_mean[i_min]),
+             pd_recent_period = period(i_now), pd_recent = sprintf("%.2f", decades$pd_mean[i_now]))
+  c(list(
     pelagic_methods = if (custom) {
       fao_report_text("methods_pelagic_custom", lang, list(pd_pelagic_groups = groups_of("pelagic"),
                                                            pd_demersal_groups = groups_of("demersal")))
@@ -706,11 +720,11 @@ fao_section_pelagic_values <- function(ctx) {
     },
     pd_last = sprintf("%.2f", last$pd_ratio), pel_last = fao_report_catch(last$pelagic_tonnes, lang),
     dem_last = fao_report_catch(last$demersal_tonnes, lang),
-    pd_max_period = period(which.max(decades$pd_mean)), pd_max = sprintf("%.2f", max(decades$pd_mean, na.rm = TRUE)),
-    pd_min_period = period(which.min(decades$pd_mean)), pd_min = sprintf("%.2f", min(decades$pd_mean, na.rm = TRUE)),
-    pd_recent_period = period(nrow(decades)), pd_recent = sprintf("%.2f", decades$pd_mean[nrow(decades)]),
+    pd_decades = fao_report_text(if (i_min == i_now) "pd_decades_low_now" else if (i_max == i_now) "pd_decades_high_now" else "pd_decades",
+                                 lang, pd),
+    pd_concl = fao_report_text(if (i_max == i_now) "concl_pelagic_high_now" else "concl_pelagic_text", lang, pd),
     pd_counted = fao_report_pct(100 * sum(yearly$pelagic_tonnes + yearly$demersal_tonnes) / sum(yearly$total_tonnes))
-  )
+  ), pd)
 }
 
 fao_section_pelagic_write <- function(x, ctx) {
@@ -853,8 +867,8 @@ fao_report_body <- function(x, meta, ctx) {
   x <- fao_report_par(x, text("cover_date", value = meta$date), "FAOCoverText")
   x <- fao_report_end_cover(x)
 
-  # Title and abstract: the topics and methods of the switched-on sections, one sentence of
-  # results per section, and a recommendation
+  # Title and abstract: the topics and methods of the switched-on sections, and one sentence of
+  # results per section
   x <- fao_report_par(x, meta$report_no, "FAOTitle")
   x <- fao_report_par(x, meta$title, "FAOTitle")
   x <- fao_report_par(x, meta$author, "FAOAuthor")
@@ -869,8 +883,8 @@ fao_report_body <- function(x, meta, ctx) {
                 } else "")
   results <- unlist(lapply(sections, function(s) if (!is.null(s$abstract)) text(s$abstract)))
   separator <- if (lang == "zh") "" else " "
-  x <- fao_report_par(x, paste(c(intro, paste0(word("abstract_results"), paste(results, collapse = separator)),
-                                 word("abstract_end")), collapse = separator))
+  x <- fao_report_par(x, paste(c(intro, paste0(word("abstract_results"), paste(results, collapse = separator))),
+                               collapse = separator))
 
   # 1 Data and methods
   x <- heading(x, word("h_data_methods"))

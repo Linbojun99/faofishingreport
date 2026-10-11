@@ -56,7 +56,7 @@ fao_report_cmsy_values <- function(result, lang) {
   text <- function(.key, ...) fao_report_text(.key, lang, list(...))
   list_text <- function(x) fao_report_list(x, lang)
   s <- result$summary
-  ok <- s$run_status %in% "ok"
+  ok <- cmsy_has_results(s$run_status)
   names <- fao_report_species_names(s$species_en, lang, fao_group_table()$species)
   b <- s$B_Bmsy
   f <- s$F_Fmsy
@@ -64,6 +64,15 @@ fao_report_cmsy_values <- function(result, lang) {
   missing <- c(as.character(result$input$excluded$species_name), names$plain[!ok])
   counts <- list(n_ok = sum(ok), n_overfished = sum(overfished), n_msf = sum(ok & b >= 0.8),
                  n_green = sum(ok & b >= 1 & f <= 1, na.rm = TRUE), n_red = sum(ok & b < 1 & f > 1, na.rm = TRUE))
+  # counts of stocks with their verb: "no stock was", "1 stock was", "2 stocks were" (in Chinese
+  # "mei you zhong qun" for none)
+  were <- function(n) {
+    if (lang == "zh") return(if (n == 0) "\u6ca1\u6709\u79cd\u7fa4" else paste0(n, " \u4e2a\u79cd\u7fa4"))
+    if (n == 0) "no stock was" else if (n == 1) "1 stock was" else paste(n, "stocks were")
+  }
+  counts <- c(counts, list(msf_were = were(counts$n_msf), overfished_were = were(counts$n_overfished),
+                           green_were = were(counts$n_green), red_were = were(counts$n_red),
+                           overfished_verb = if (counts$n_overfished == 1) "was" else "were"))
   number <- function(x) sprintf("%.2f", x)
   catch <- function(x) fao_report_catch(x, lang)
   status <- function(i) {
@@ -97,8 +106,25 @@ fao_report_cmsy_values <- function(result, lang) {
   names(table) <- c(word("col_species"), word("col_scientific"), word("col_years"), word("col_r"), word("col_k"),
                     word("col_msy"), word("col_bbmsy"), word("col_ffmsy"), word("col_status"))
   tables <- fao_report_cmsy_tables(result, lang, names)
+  # A finished run is not a validated assessment: the B/k priors suggested by the neural network
+  # "may not be appropriate for your stock" (CMSY++ user guide) and were not checked stock by stock
+  # unless the user set them
+  default_prior <- function(column) if (column %in% names(s)) !s[[column]] %in% "user" else rep(TRUE, nrow(s))
+  unchecked <- ok & (default_prior("start_bk_prior_source") | default_prior("int_bk_prior_source") |
+                       default_prior("end_bk_prior_source"))
+  priors_text <- if (!any(unchecked)) {
+    text("cmsy_priors_user")
+  } else if (all(unchecked[ok])) {
+    text("cmsy_priors_nn")
+  } else {
+    text("cmsy_priors_mixed", n_user = sum(ok & !unchecked), n_nn = sum(unchecked))
+  }
+  partial <- s$run_status %in% "partial"
   c(counts, tables, list(
     has_cmsy = TRUE, cmsy_top = nrow(s) + nrow(result$input$excluded),
+    cmsy_priors_text = priors_text,
+    cmsy_unchecked = if (any(unchecked)) text("cmsy_unchecked") else "",
+    partial_note = if (any(partial)) text("cmsy_partial", list = list_text(names$plain[partial])) else "",
     not_assessed = if (length(missing) > 0) text("cmsy_not_assessed", list = list_text(missing)) else "",
     overfished_list = if (any(overfished)) text("cmsy_overfished_list", list = list_text(names$plain[overfished])) else "",
     cmsy_species = species, cmsy_table = table,
@@ -114,7 +140,7 @@ fao_report_cmsy_values <- function(result, lang) {
 fao_report_cmsy_tables <- function(result, lang, names) {
   s <- result$summary
   stocks <- result$input$stocks[match(s$Stock, result$input$stocks$Stock), ]
-  ok <- s$run_status %in% "ok"
+  ok <- cmsy_has_results(s$run_status)
   word <- function(key) fao_report_text(key, lang)
   scale <- if (lang == "zh") 1e4 else 1e3
   ci <- function(x, low, high, digits = 2, divide = 1) {

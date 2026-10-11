@@ -36,7 +36,7 @@ test_that("proceedings and databases with editors are formatted", {
   jags <- list(type = "C", author = "Plummer, M.", year = "2003", title = "JAGS",
                container = "Proceedings of DSC 2003", place = "Vienna", pages = "1-10")
   expect_identical(fao_ref_entry(jags, "numeric"), "Plummer M. JAGS[C]//Proceedings of DSC 2003. Vienna, 2003: 1-10.")
-  expect_match(fao_ref_entry(jags, "apa"), "In \\*Proceedings of DSC 2003\\* \\(pp. 1–10\\)")
+  expect_match(fao_ref_entry(jags, "apa"), "In \\*Proceedings of DSC 2003\\* \\(pp. 1\u201310\\)")
   fishbase <- list(type = "DB", author = "Froese, R.; Pauly, D.", editors = TRUE, year = "2026",
                    title = "FishBase", version = "version 06/2026", accessed = "2026-10-10",
                    url = "https://www.fishbase.se")
@@ -45,9 +45,9 @@ test_that("proceedings and databases with editors are formatted", {
 })
 
 test_that("catch ranges are written in one unit", {
-  expect_identical(fao_report_catch_range(775500, 1076000, "en"), "0.78–1.08 million t")
-  expect_identical(fao_report_catch_range(48200, 82400, "en"), "48.2–82.4 thousand t")
-  expect_identical(fao_report_catch_range(5618000, 9915000, "zh"), "561.8–991.5 万 t")
+  expect_identical(fao_report_catch_range(775500, 1076000, "en"), "0.78\u20131.08 million t")
+  expect_identical(fao_report_catch_range(48200, 82400, "en"), "48.2\u201382.4 thousand t")
+  expect_identical(fao_report_catch_range(5618000, 9915000, "zh"), "561.8\u2013991.5 万 t")
 })
 
 test_that("settings of the analyses are passed by section prefix", {
@@ -120,4 +120,75 @@ test_that("LaTeX output escapes text and keeps links, italics and tables", {
   expect_true(any(grepl("\\begin{longtable}", tex, fixed = TRUE)))
   expect_true(any(grepl("\\textit{Sardina} spp.", tex, fixed = TRUE)))
   expect_identical(tail(tex, 1), "\\end{document}")
+})
+
+test_that("stock status shares follow the order of the text and sum over-exploited and collapsed", {
+  labels <- c("Developing", "Exploited", "Over-exploited", "Rebuilding", "Collapsed")
+  yearly <- data.frame(Year = 2020, status_label = factor(labels, levels = labels),
+                       stocks_pct = c(10, 20, 30, 15, 25), catch_pct = c(5, 50, 20, 10, 15))
+  ctx <- list(results = list(status = list(value = list(yearly = yearly, stocks = data.frame(x = 1:20)))),
+              area_data = data.frame(Year = 2020), lang = "en",
+              args = list(status = list(taxon_levels = "species", min_years = 10, min_consecutive = 5,
+                                        min_catch = 1000, smooth = FALSE)))
+  v <- fao_section_status_values(ctx)
+  # developing, exploited, over-exploited, collapsed and rebuilding
+  expect_equal(v$stock_pcts, fao_report_list(paste0(fao_report_pct(c(10, 20, 30, 25, 15)), "%"), "en"))
+  expect_equal(v$oc_pct, fao_report_pct(55))
+  expect_equal(v$oc_catch_pct, fao_report_pct(35))
+})
+
+test_that("English lists use semicolons when the items have commas", {
+  expect_equal(fao_report_list(c("Cods, hakes, haddocks", "Herrings, sardines, anchovies", "Salmons"), "en"),
+               "Cods, hakes, haddocks; Herrings, sardines, anchovies; and Salmons")
+  expect_equal(fao_report_list(c("Peru", "Chile", "China"), "en"), "Peru, Chile and China")
+})
+
+test_that("CMSY++ counts agree with their verbs", {
+  text <- function(n) fao_report_text("cmsy_summary", "en", list(n_overfished = n, n_ok = 5, overfished_list = "", overfished_verb = if (n == 1) "was" else "were"))
+  expect_match(text(1), "1 of the 5 main species was overfished")
+  expect_match(text(2), "2 of the 5 main species were overfished")
+})
+
+test_that("the Word report names the author, not the computer user, as last modified by", {
+  skip_if_not_installed("officer")
+  info <- list(download_date = "2026-01-01", release_date = "2026-03-01", release = "2026.1",
+               years = c(1950, 2024), url = "https://www.fao.org/fishery/en/collection/capture")
+  x <- fao_report_new("en", "Times New Roman", "SimSun", "author-date", NULL, fao_report_references(info, "2026-06-01"))
+  x <- fao_report_par(x, "Text.")
+  file <- tempfile(fileext = ".docx")
+  user <- Sys.getenv("USER")
+  fao_report_save(x, file, list(title = "Report", author = "Test Author"))
+  expect_equal(Sys.getenv("USER"), user)
+  props <- officer::doc_properties(officer::read_docx(file))
+  expect_equal(props$value[props$tag == "creator"], "Test Author")
+  expect_equal(props$value[props$tag == "lastModifiedBy"], "Test Author")
+})
+
+test_that("the P/D text names the most recent period once", {
+  ctx_for <- function(pd_mean) {
+    yearly <- data.frame(area_en = "A", year = 2024, pd_ratio = 0.5, pelagic_tonnes = 1, demersal_tonnes = 2, total_tonnes = 3)
+    decades <- data.frame(area_en = "A", n_years = c(10, 10, 5), first_year = c(2000, 2010, 2020),
+                          last_year = c(2009, 2019, 2024), pd_mean = pd_mean)
+    list(lang = "en", area = list(name = "A"), args = list(),
+         results = list(pelagic = list(value = list(yearly = yearly, decades = decades))))
+  }
+  low_now <- fao_section_pelagic_values(ctx_for(c(0.9, 0.5, 0.1)))
+  expect_equal(low_now$pd_decades, "By decade, P/D was highest in the 2000s (0.90) and lowest in the most recent period, 2020\u20132024 (0.10).")
+  expect_equal(low_now$pd_concl, "The P/D ratio was highest in the 2000s (0.90) and was 0.10 in 2020\u20132024.")
+  high_now <- fao_section_pelagic_values(ctx_for(c(0.1, 0.5, 0.9)))
+  expect_match(high_now$pd_decades, "lowest in the 2000s \\(0\\.10\\) and highest in the most recent period, 2020\u20132024 \\(0\\.90\\)")
+  expect_equal(high_now$pd_concl, "The P/D ratio was highest in the most recent period, 2020\u20132024 (0.90).")
+  middle <- fao_section_pelagic_values(ctx_for(c(0.9, 0.1, 0.5)))
+  expect_match(middle$pd_decades, "lowest in the 2010s \\(0\\.10\\), and was 0\\.50 in 2020\u20132024")
+})
+
+test_that("the diversity text says once that species and countries are equally concentrated", {
+  diversity <- data.frame(Year = c(1950, 2024), shannon_species = c(2.3, 2.0), hhi_species = c(1000, 3000),
+                          hhi_countries = c(5000, 9000), top5_species_pct = c(60, 75))
+  ctx <- list(lang = "en", results = list(diversity = list(value = diversity)))
+  expect_equal(fao_section_diversity_values(ctx)$conc_text, "the catch was highly concentrated both by species and by country")
+  diversity$hhi_species[2] <- 1000
+  ctx$results$diversity$value <- diversity
+  expect_equal(fao_section_diversity_values(ctx)$conc_text,
+               "the catch was unconcentrated by species and highly concentrated by country")
 })

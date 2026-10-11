@@ -363,6 +363,9 @@ fao_report_list <- function(x, lang) {
   if (n <= 1) return(paste(x, collapse = ""))
   if (lang == "zh") {
     paste0(paste(x[-n], collapse = "\u3001"), "\u548c", x[n])
+  } else if (any(grepl(",", x))) {
+    # items with commas of their own (e.g. "Cods, hakes, haddocks") are separated by semicolons
+    paste0(paste(x[-n], collapse = "; "), "; and ", x[n])
   } else {
     paste0(paste(x[-n], collapse = ", "), " and ", x[n])
   }

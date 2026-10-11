@@ -349,7 +349,15 @@ fao_report_save <- function(x, file, meta) {
     }
     writeLines(enc2utf8(s), styles_file, useBytes = TRUE)
   }
-  x <- officer::set_doc_properties(x, title = meta$title, creator = meta$author)
+  author <- paste(meta$author, collapse = ", ")
+  x <- officer::set_doc_properties(x, title = meta$title, creator = author, created = Sys.time())
+  # officer writes the login name of the computer as "last modified by": the author is written
+  # instead, so that the file does not carry the user name of whoever ran the report
+  old_env <- Sys.getenv(c("USER", "LOGNAME", "USERNAME"), unset = NA)
+  Sys.setenv(USER = author, LOGNAME = author, USERNAME = author)
+  on.exit({
+    for (name in names(old_env)) if (is.na(old_env[[name]])) Sys.unsetenv(name) else do.call(Sys.setenv, as.list(old_env[name]))
+  }, add = TRUE)
   print(x, target = file)
   invisible(file)
 }
