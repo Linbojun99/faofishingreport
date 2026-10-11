@@ -115,8 +115,10 @@ jobs:
           if (!all(sys$packages$ok)) stop("Missing R packages: ", paste(sys$packages$package[!sys$packages$ok], collapse = ", "))
         shell: Rscript {0}
 
+      # The installed package is tested: loading from source (pkgload) needs every package of Imports
+      # to load, and eoffice does not load on macOS without XQuartz, which CMSY++ does not need
       - name: Run the CMSY tests (with real CMSY++ runs)
-        run: testthat::test_local(filter = "cmsy", reporter = "progress", stop_on_failure = TRUE)
+        run: testthat::test_local(filter = "cmsy", reporter = "progress", stop_on_failure = TRUE, load_package = "installed")
         shell: Rscript {0}
 
       - name: Run cmsy_area() on two species of FAO area 34
