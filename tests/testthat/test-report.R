@@ -92,3 +92,32 @@ test_that("author-date citations after the authors' names give only the year", {
   state$citation <- "numeric"
   expect_false(fao_report_narrative(state, "caddy1993", "Following Caddy "))
 })
+
+test_that("the report keeps the analyses by division (an extension) out", {
+  expect_false("by" %in% fao_report_allowed_args("pelagic_demersal"))
+  expect_false("by" %in% fao_report_allowed_args("mean_temperature_catch"))
+  expect_true("by" %in% fao_report_allowed_args("catch_shocks"))
+  expect_true("by" %in% fao_report_allowed_args("catch_synchrony"))
+})
+
+test_that("LaTeX output escapes text and keeps links, italics and tables", {
+  expect_identical(fao_latex_escape("a_b & 5% #1 {x}"), "a\\_b \\& 5\\% \\#1 \\{x\\}")
+  zh_link <- paste0("\u89c1https://doi.org/10.1/x.y\u4e0b\u8f7d\u3002")
+  expect_identical(fao_latex_text(zh_link), paste0("\u89c1\\url{https://doi.org/10.1/x.y}\u4e0b\u8f7d\u3002"))
+  expect_identical(fao_latex_text("see https://x.org/a#b."), "see \\url{https://x.org/a\\#b}.")
+
+  file <- withr::local_tempfile(fileext = ".tex")
+  x <- fao_latex_new(fao_report_state("zh", "Times New Roman", "FangSong", "numeric", 1, list()), file)
+  x <- fao_report_par(x, "Text with *Sardina pilchardus* and H~2~O.")
+  x <- fao_report_end_cover(x)
+  x <- fao_report_table(x, "t1", data.frame(name = c("*Sardina* spp.", "b"), n = 1:2), "Caption")
+  out <- fao_latex_save(x, list(title = "T", author = "A"), pdf = FALSE)
+  expect_identical(names(out), "latex")
+  tex <- readLines(out[["latex"]], encoding = "UTF-8")
+  expect_true(any(grepl("{ctexart}", tex, fixed = TRUE)))
+  expect_true(any(grepl("\\textit{Sardina pilchardus}", tex, fixed = TRUE)))
+  expect_true(any(grepl("H\\textsubscript{2}O", tex, fixed = TRUE)))
+  expect_true(any(grepl("\\begin{longtable}", tex, fixed = TRUE)))
+  expect_true(any(grepl("\\textit{Sardina} spp.", tex, fixed = TRUE)))
+  expect_identical(tail(tex, 1), "\\end{document}")
+})

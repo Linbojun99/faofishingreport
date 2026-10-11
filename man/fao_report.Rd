@@ -8,6 +8,7 @@ fao_report(
   area,
   ...,
   file = NULL,
+  format = "docx",
   lang = NULL,
   title = NULL,
   report_no = 1,
@@ -56,10 +57,21 @@ the number of distant-water countries profiled, default 3, or their names) and
 \code{countries_line_linewidth = 1}, \code{status_smooth = TRUE}, \code{cmsy_top = 5} or
 \code{cmsy_settings = list(n.iter = 100000)}. A name that is not an argument of the
 function gives an error listing its arguments. The arguments the report sets itself
-(\code{area_data}, \code{area_name}, \code{area}, \code{lang}, \code{table} and \code{pptx}) cannot be changed.}
+(\code{area_data}, \code{area_name}, \code{area}, \code{lang}, \code{table} and \code{pptx}) cannot be changed, nor
+can \code{pelagic_by} and \code{mtc_by} (the analyses by division use the data of
+\code{load_fao_divisions()}, an extension that is not part of the report).}
 
-\item{file}{The Word file to write. Default is \verb{reports/FAO<code>_report_<lang>.docx} in the
-working directory.}
+\item{file}{The file to write. Default is \verb{reports/FAO<code>_report_<lang>.docx} in the
+working directory. The other formats get the same name with \code{.tex} and \code{.pdf}.}
+
+\item{format}{The formats to write, one or more of "docx" (default: Word), "latex" (a \code{.tex}
+file with its figures in the folder \verb{<name>_figures/} next to it, compiled with XeLaTeX;
+Chinese reports use the ctexart class) and "pdf" (the LaTeX file compiled to PDF with
+XeLaTeX, through the tinytex package when it is installed, which also installs missing
+LaTeX packages). The analyses run once for all formats, and the formats have the same
+text, figures, tables and references. Fonts are taken from those of the computer: for
+Chinese, FangSong, SimHei and KaiTi on Windows, STFangsong, Heiti SC and Kaiti SC on macOS,
+else the Fandol fonts of TeX Live.}
 
 \item{lang}{The language of the report: "zh" (Chinese) or "en" (English). Default is NULL,
 the language set with \code{fao_settings()} ("both" gives a Chinese report).}
@@ -115,7 +127,8 @@ Default is FALSE. The result of an earlier \code{\link[=cmsy_area]{cmsy_area()}}
 write the report without running CMSY++ again. CMSY++ needs JAGS: see \code{\link[=cmsy_setup]{cmsy_setup()}}.}
 }
 \value{
-Invisibly, a list of class \code{fao_report} with the path of the Word file (\code{file}), the
+Invisibly, a list of class \code{fao_report} with the paths of the files written (\code{file},
+named by format: \code{docx}, \code{latex}, \code{pdf}), the
 sections in the report (\code{sections}) and
 the tables of the report as data frames: \code{main_species} and \code{main_countries}, the
 species of the mean temperature of the catch with their FishBase matches

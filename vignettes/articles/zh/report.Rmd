@@ -1,7 +1,7 @@
 ---
-title: "📝 一键生成 Word 评估报告"
+title: "📝 一键生成评估报告（Word、LaTeX、PDF）"
 description: >
-  fao_report()：一次调用即可生成某个FAO渔区的中文或英文Word评估报告。本文介绍报告的内容、参数、各分析章节及其设置、格式、引文格式、CMSY++部分、返回的表格以及报告文字的模板。
+  fao_report()：一次调用即可生成某个FAO渔区的中文或英文评估报告（Word、LaTeX或PDF）。本文介绍报告的内容、参数、各分析章节及其设置、格式、引文格式、CMSY++部分、返回的表格以及报告文字的模板。
 ---
 
 ```{r setup, include = FALSE}
@@ -115,7 +115,8 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 |---|---|---|
 | `area` | （必填） | FAO主要渔区：代码（如`34`）或英文名称（如`"Atlantic, Eastern Central"`）。渔区不存在时报错，并列出所有海洋渔区。 |
 | `...` | | 各项分析的设置，以章节名为前缀命名，如`species_h_value = 0.2`（见[⚙️ 分析的设置](#settings)） |
-| `file` | `reports/FAO<code>_report_<lang>.docx` | 要写入的Word文件，所在文件夹不存在时会自动创建 |
+| `file` | `reports/FAO<code>_report_<lang>.docx` | 要写入的文件，所在文件夹不存在时会自动创建；其他格式使用相同的文件名，扩展名为`.tex`和`.pdf` |
+| `format` | `"docx"` | `"docx"`、`"latex"`和`"pdf"`中的一个或多个（见[🖨️ Word、LaTeX和PDF](#formats)） |
 | `lang` | `NULL`：采用`fao_settings()`中的语言 | `"zh"`（中文）或`"en"`（英文）；`"both"`生成中文报告 |
 | `title` | 根据渔区生成 | 如“FAO 34渔区（中东大西洋）海洋捕捞产量评估” |
 | `report_no` | `1` | 报告编号：“报告一”（中文数字，最大到99；英文报告为“Report 1”），同时是图表编号的第一个数字（图1-1、表1-1） |
@@ -218,7 +219,7 @@ fao_report(34, species_h = 0.2)
 fao_report(34, speceis_h_value = 0.2)
 ```
 
-## 📐 格式
+## 📐 格式 {#format}
 
 中文报告采用课题报告的常用格式：
 
@@ -243,6 +244,40 @@ fao_report(34, speceis_h_value = 0.2)
 无论中英文，物种和属的学名在正文和表格中都用斜体：*Sardina pilchardus*、*Trachurus* spp.（“spp.”为正体）；科及更高分类阶元的名称用正体，如Actinopterygii。符号同样用斜体（*P*<0.05、*H*）。灰色备注和参考文献按原样写入，不做中文空格处理。
 
 各级标题设有大纲级别1和2，因此会显示在Word的导航窗格中，也会出现在Word中插入的目录里。标题和作者还写入了文件属性。
+
+## 🖨️ Word、LaTeX和PDF {#formats}
+
+`format`决定输出哪些文件：`"docx"`（默认）、`"latex"`和`"pdf"`，可以选一个或多个。各项分析只运行一次，各种格式的文字、图表、表格、图表标题和参考文献完全相同。
+
+```{r, eval = FALSE}
+fao_report(34, lang = "zh", format = c("docx", "pdf"))      # Word和PDF
+fao_report(34, lang = "en", format = "latex")                # 只输出LaTeX源文件
+report <- fao_report(34, format = c("docx", "latex", "pdf"))
+report$file                                                  # 按docx、latex、pdf命名的文件路径
+```
+
+| `format` | 输出的文件（以`fao_report(34, lang = "zh")`为例） | 说明 |
+|---|---|---|
+| `"docx"` | `reports/FAO34_report_zh.docx` | 本文介绍的Word文件 |
+| `"latex"` | `reports/FAO34_report_zh.tex`和文件夹`reports/FAO34_report_zh_figures/` | 同一份报告的XeLaTeX源文件，图片为PNG文件。中文报告使用`ctexart`文档类，英文报告使用`article`文档类。 |
+| `"pdf"` | `reports/FAO34_report_zh.pdf`（以及`.tex`） | 用XeLaTeX编译的PDF，带有各级标题的书签 |
+
+LaTeX版本沿用Word文件的格式（见[📐 格式](#format)）：A4纸张和相同的页边距，相同的字体和字号，1.5倍行距，三线表（booktabs，单倍行距，列宽按内容确定，可以跨页），带编号的图表标题，封面不编页码，标题页从第1页开始。字体取自本机已安装的字体：
+
+| | Windows | macOS | Linux |
+|---|---|---|---|
+| 中文正文（仿宋） | FangSong | STFangsong | FandolFang（TeX Live自带） |
+| 中文标题和图表标题（黑体） | SimHei | Heiti SC | FandolHei |
+| 中文二级标题（楷体） | KaiTi | Kaiti SC | FandolKai |
+| 西文和数字 | `font`：中文报告为Times New Roman，英文报告为Arial（没有时用Liberation Serif或Sans，再没有时用Latin Modern） | | |
+
+中文字体没有粗体字形：与Word一样，加粗的中文（如标题）通过加粗笔画实现。
+
+**编译。**安装了tinytex包（`install.packages("tinytex")`；如果本机没有LaTeX，再运行`tinytex::install_tinytex()`）时，用`tinytex::latexmk(engine = "xelatex")`生成PDF，第一次运行时会自动安装缺少的LaTeX宏包（ctex、xeCJK、booktabs、longtable、needspace、xurl等）；没有tinytex时，系统路径中须有`xelatex`。要修改LaTeX版本的文字，编辑`.tex`文件后重新编译即可，例如`tinytex::xelatex("reports/FAO34_report_zh.tex")`。
+
+::: callout-tip
+如果tinytex因为本机的TeX Live比在线仓库旧而无法安装宏包（提示"Local TeX Live (2024) is older than remote repository"），可以更新TeX Live（`tinytex::reinstall_tinytex()`），或从对应年份的存档安装宏包：`tlmgr --repository https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final install ctex`。
+:::
 
 ## 🔖 引文与参考文献
 
@@ -322,7 +357,7 @@ CMSY++部分的图来自那次运行，语言与运行时相同。方法、设�
 
 | 元素 | 内容 |
 |---|---|
-| `file` | Word文件的路径 |
+| `file` | 所写文件的路径，按`docx`、`latex`、`pdf`命名 |
 | `sections` | 开启的章节 |
 | `main_species` | 近5年主要渔获种类：报告语言的名称、英文名、学名、年均渔获量（t）、占比（%）、峰值年份、最后一年渔获量为峰值的百分比、近10年趋势（"up"、"down"或"none"） |
 | `main_countries` | 主要捕捞国家（地区）的同类信息 |

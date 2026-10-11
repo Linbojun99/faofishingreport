@@ -1,8 +1,8 @@
 ---
-title: "📝 Assessment report in Word"
+title: "📝 Assessment report: Word, LaTeX and PDF"
 description: >
-  fao_report(): a Word assessment report of an FAO fishing area in Chinese or English in one
-  call. Its contents, arguments, sections and their settings, format, citation styles, the
+  fao_report(): an assessment report of an FAO fishing area in Chinese or English in one call,
+  as Word, LaTeX or PDF. Its contents, arguments, sections and their settings, format, citation styles, the
   CMSY++ part, the tables it returns and the templates of its text.
 ---
 
@@ -14,8 +14,8 @@ source("_setup.R")
 data_source()
 ```
 
-`fao_report()` writes the assessment report of one FAO major fishing area as a Word file, in
-Chinese or English, in one call. It runs the analyses of the package on the area, writes their
+`fao_report()` writes the assessment report of one FAO major fishing area as a Word file (and,
+if asked, as LaTeX and PDF), in Chinese or English, in one call. It runs the analyses of the package on the area, writes their
 results into text made from templates, adds the charts and tables with numbered captions, and lists
 the references it cites.
 
@@ -149,7 +149,8 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 |---|---|---|
 | `area` | (required) | The FAO major fishing area: its code, e.g. `34`, or its English name, e.g. `"Atlantic, Eastern Central"`. An unknown area gives an error that lists the marine areas. |
 | `...` | | Settings of the analyses, named with the section as prefix, e.g. `species_h_value = 0.2` (see [⚙️ Settings of the analyses](#settings)) |
-| `file` | `reports/FAO<code>_report_<lang>.docx` | The Word file to write. Its folder is created if needed. |
+| `file` | `reports/FAO<code>_report_<lang>.docx` | The file to write; its folder is created if needed. The other formats get the same name with `.tex` and `.pdf`. |
+| `format` | `"docx"` | One or more of `"docx"`, `"latex"` and `"pdf"` (see [🖨️ Word, LaTeX and PDF](#formats)) |
 | `lang` | `NULL`: the language of `fao_settings()` | `"zh"` (Chinese) or `"en"` (English); `"both"` gives a Chinese report |
 | `title` | made from the area | e.g. "Assessment of Marine Capture Production in FAO Major Fishing Area 34 (Atlantic, Eastern Central)" |
 | `report_no` | `1` | Number of the report: "Report 1" ("报告一" in Chinese reports, with Chinese numerals up to 99), and the first number of the figures and tables (Figure 1-1, Table 1-1) |
@@ -279,7 +280,7 @@ fao_report(34, species_h = 0.2)
 fao_report(34, speceis_h_value = 0.2)
 ```
 
-## 📐 Format
+## 📐 Format {#format}
 
 Chinese reports follow the usual format of Chinese project reports:
 
@@ -313,6 +314,54 @@ grey notes and the references are written as they are, without the Chinese spaci
 The headings have outline levels 1 and 2, so they show in the navigation pane of Word and in a
 table of contents inserted in Word. The title and author are also stored in the properties of
 the file.
+
+## 🖨️ Word, LaTeX and PDF {#formats}
+
+`format` chooses the files to write: `"docx"` (default), `"latex"` and `"pdf"`, one or more. The
+analyses run once, and all formats have the same text, figures, tables, captions and references.
+
+```{r, eval = FALSE}
+fao_report(34, lang = "zh", format = c("docx", "pdf"))      # Word and PDF
+fao_report(34, lang = "en", format = "latex")                # the LaTeX source only
+report <- fao_report(34, format = c("docx", "latex", "pdf"))
+report$file                                                  # named docx, latex and pdf
+```
+
+| `format` | Files written (for `fao_report(34, lang = "zh")`) | What it is |
+|---|---|---|
+| `"docx"` | `reports/FAO34_report_zh.docx` | The Word file described in this article |
+| `"latex"` | `reports/FAO34_report_zh.tex` and the folder `reports/FAO34_report_zh_figures/` | The XeLaTeX source of the same report, with its figures as PNG files. Chinese reports use the `ctexart` class, English reports the `article` class. |
+| `"pdf"` | `reports/FAO34_report_zh.pdf` (and the `.tex`) | The LaTeX source compiled with XeLaTeX, with bookmarks for the headings |
+
+The LaTeX version follows the format of the Word file (see [📐 Format](#format)): A4 pages with
+the same margins, the same fonts and sizes, line spacing 1.5, three-line tables (booktabs, single
+line spacing, columns sized to their contents and running over pages), numbered captions, the
+cover without page number and pages numbered from 1 on the title page. The fonts are those
+installed on the computer:
+
+| | Windows | macOS | Linux |
+|---|---|---|---|
+| Chinese body text (仿宋) | FangSong | STFangsong | FandolFang (TeX Live) |
+| Chinese headings and captions (黑体) | SimHei | Heiti SC | FandolHei |
+| Chinese subsection headings (楷体) | KaiTi | Kaiti SC | FandolKai |
+| Latin text and numbers | `font`: Times New Roman in Chinese reports, Arial in English reports (else Liberation Serif or Sans, else Latin Modern) | | |
+
+Chinese fonts have no bold face: as in Word, bold Chinese text (the titles) is made by thickening
+the strokes.
+
+**Compiling.** With the tinytex package (`install.packages("tinytex")`, then
+`tinytex::install_tinytex()` if you have no LaTeX), the PDF is made with
+`tinytex::latexmk(engine = "xelatex")`, which installs missing LaTeX packages (ctex, xeCJK,
+booktabs, longtable, needspace, xurl, ...) on the first run. Without tinytex, `xelatex` must be
+on the system path. To change the text of the LaTeX version, edit the `.tex` file and compile it
+again, e.g. `tinytex::xelatex("reports/FAO34_report_zh.tex")`.
+
+::: callout-tip
+If tinytex cannot install a package because your TeX Live is older than the online repository
+("Local TeX Live (2024) is older than remote repository"), update TeX Live
+(`tinytex::reinstall_tinytex()`), or install the packages from the archive of your TeX Live year:
+`tlmgr --repository https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final install ctex`.
+:::
 
 ## 🔖 Citations and references
 
@@ -422,7 +471,7 @@ A list of class `fao_report`, returned invisibly:
 
 | Element | Content |
 |---|---|
-| `file` | Path of the Word file |
+| `file` | Paths of the files written, named `docx`, `latex` and `pdf` |
 | `sections` | The sections switched on |
 | `main_species` | Main species of the last five years: name in the report language, English and scientific names, mean yearly catch (t), share of the catch (%), peak year, catch of the last year as % of the peak, 10-year trend ("up", "down" or "none") |
 | `main_countries` | The same for the main fishing countries |

@@ -42,9 +42,19 @@
 #'        `countries_line_linewidth = 1`, `status_smooth = TRUE`, `cmsy_top = 5` or
 #'        `cmsy_settings = list(n.iter = 100000)`. A name that is not an argument of the
 #'        function gives an error listing its arguments. The arguments the report sets itself
-#'        (`area_data`, `area_name`, `area`, `lang`, `table` and `pptx`) cannot be changed.
-#' @param file The Word file to write. Default is `reports/FAO<code>_report_<lang>.docx` in the
-#'        working directory.
+#'        (`area_data`, `area_name`, `area`, `lang`, `table` and `pptx`) cannot be changed, nor
+#'        can `pelagic_by` and `mtc_by` (the analyses by division use the data of
+#'        `load_fao_divisions()`, an extension that is not part of the report).
+#' @param file The file to write. Default is `reports/FAO<code>_report_<lang>.docx` in the
+#'        working directory. The other formats get the same name with `.tex` and `.pdf`.
+#' @param format The formats to write, one or more of "docx" (default: Word), "latex" (a `.tex`
+#'        file with its figures in the folder `<name>_figures/` next to it, compiled with XeLaTeX;
+#'        Chinese reports use the ctexart class) and "pdf" (the LaTeX file compiled to PDF with
+#'        XeLaTeX, through the tinytex package when it is installed, which also installs missing
+#'        LaTeX packages). The analyses run once for all formats, and the formats have the same
+#'        text, figures, tables and references. Fonts are taken from those of the computer: for
+#'        Chinese, FangSong, SimHei and KaiTi on Windows, STFangsong, Heiti SC and Kaiti SC on macOS,
+#'        else the Fandol fonts of TeX Live.
 #' @param lang The language of the report: "zh" (Chinese) or "en" (English). Default is NULL,
 #'        the language set with `fao_settings()` ("both" gives a Chinese report).
 #' @param title The report title. Default is generated from the area, e.g. "Assessment of
@@ -83,7 +93,8 @@
 #'        every species and appendix tables of the reference points, priors and their sources.
 #'        Default is FALSE. The result of an earlier [cmsy_area()] run can also be given, to
 #'        write the report without running CMSY++ again. CMSY++ needs JAGS: see [cmsy_setup()].
-#' @return Invisibly, a list of class `fao_report` with the path of the Word file (`file`), the
+#' @return Invisibly, a list of class `fao_report` with the paths of the files written (`file`,
+#'         named by format: `docx`, `latex`, `pdf`), the
 #'         sections in the report (`sections`) and
 #'         the tables of the report as data frames: `main_species` and `main_countries`, the
 #'         species of the mean temperature of the catch with their FishBase matches
@@ -123,14 +134,15 @@
 #' fao_report(34, lang = "zh", cmsy = readRDS(file.path("reports", "cmsy", "Atlantic__Eastern_Central",
 #'                                                       "cmsy_result.rds")))
 #' }
-fao_report <- function(area, ..., file = NULL, lang = NULL, title = NULL, report_no = 1,
+fao_report <- function(area, ..., file = NULL, format = "docx", lang = NULL, title = NULL, report_no = 1,
                        author = NULL, affiliation = NULL, project = NULL, date = Sys.Date(),
                        font = NULL, font_zh = "FangSong", citation = c("apa", "fao"),
                        top_n = 10, data_version = "latest",
                        total = TRUE, species = TRUE, countries = TRUE, groups = TRUE, status = TRUE,
                        quality = TRUE, diversity = TRUE, fleets = TRUE, shocks = FALSE, collapse = FALSE,
                        synchrony = FALSE, pelagic = FALSE, mtc = FALSE, distant = FALSE, cmsy = FALSE) {
-  fao_check_report_packages()
+  format <- match.arg(format, c("docx", "latex", "pdf"), several.ok = TRUE)
+  if ("docx" %in% format) fao_check_report_packages()
   sections <- fao_report_sections()
   args <- fao_report_args(list(...), sections)
   lang <- fao_lang(lang)
@@ -141,6 +153,8 @@ fao_report <- function(area, ..., file = NULL, lang = NULL, title = NULL, report
   if (is.null(file)) file <- file.path("reports", paste0("FAO", area$code, "_report_", lang, ".docx"))
   dir.create(dirname(file), recursive = TRUE, showWarnings = FALSE)
   file <- file.path(normalizePath(dirname(file)), basename(file))
+  # The file names of the formats: the same name with .docx, .tex (and .pdf)
+  stem <- sub("\\.(docx|tex|pdf)$", "", file, ignore.case = TRUE)
 
   # The switched-on sections; cmsy may be the result of an earlier cmsy_area() run
   switches <- list(total = total, species = species, countries = countries, groups = groups, status = status,
@@ -180,16 +194,27 @@ fao_report <- function(area, ..., file = NULL, lang = NULL, title = NULL, report
     project = if (is.null(project)) ctx$text("project_default") else project,
     date = format(as.Date(date), "%Y-%m-%d")
   )
-  message("Writing ", file, " ...")
   cmsy_result <- if ("cmsy" %in% ctx$on) ctx$results$cmsy$value
   fishbase <- fao_report_fishbase_version(ctx, cmsy_result)
-  doc <- fao_report_new(lang, font, font_zh, citation, report_no, fao_report_references(info, date, fishbase))
-  doc <- fao_report_body(doc, meta, ctx)
-  fao_report_save(doc, file, meta)
-  message("Report saved: ", file)
+  references <- fao_report_references(info, date, fishbase)
+  files <- character()
+  if ("docx" %in% format) {
+    message("Writing ", stem, ".docx ...")
+    doc <- fao_report_new(lang, font, font_zh, citation, report_no, references)
+    doc <- fao_report_body(doc, meta, ctx)
+    files["docx"] <- fao_report_save(doc, paste0(stem, ".docx"), meta)
+  }
+  if (any(c("latex", "pdf") %in% format)) {
+    message("Writing ", stem, ".tex", if ("pdf" %in% format) " and the PDF", " ...")
+    doc <- fao_report_new(lang, font, font_zh, citation, report_no, references, format = "latex",
+                          file = paste0(stem, ".tex"))
+    doc <- fao_report_body(doc, meta, ctx)
+    files <- c(files, fao_latex_save(doc, meta, pdf = "pdf" %in% format))
+  }
+  message("Report saved: ", paste(files, collapse = ", "))
 
   # The tables of the report as data frames, to look at or reuse in R
-  out <- list(file = file, sections = ctx$on)
+  out <- list(file = files, sections = ctx$on)
   if ("species" %in% ctx$on) {
     s <- values$species_table
     out$main_species <- data.frame(species = values$species_names$plain, species_en = s$name_en,
@@ -215,7 +240,7 @@ fao_report <- function(area, ..., file = NULL, lang = NULL, title = NULL, report
 
 #' @export
 print.fao_report <- function(x, ...) {
-  cat("FAO report: ", x$file, "\n", "Sections: ", paste(x$sections, collapse = ", "), "\n", sep = "")
+  cat("FAO report: ", paste(x$file, collapse = "\n            "), "\n", "Sections: ", paste(x$sections, collapse = ", "), "\n", sep = "")
   tables <- c(main_species = "main species of the last five years",
               main_countries = "main fishing countries of the last five years",
               cmsy_reference_points = "CMSY++ biological reference points with 95% confidence limits",

@@ -86,6 +86,11 @@ fao_report_args <- function(dots, sections) {
     prefix <- prefix[which.max(nchar(prefix))]
     arg <- substring(name, nchar(prefix) + 2)
     allowed <- c(fao_report_allowed_args(sections[[prefix]]$fun), sections[[prefix]]$extra)
+    if (arg == "by" && sections[[prefix]]$fun %in% c("pelagic_demersal", "mean_temperature_catch")) {
+      stop("fao_report(): ", name, " cannot be set: the analyses by division use the data of load_fao_divisions(), ",
+           "an extension that is not part of the report. Run ", sections[[prefix]]$fun, "(by = \"division\") on its own.",
+           call. = FALSE)
+    }
     if (!arg %in% allowed) {
       stop("fao_report(): ", name, " would set ", arg, ", which is not an argument of ", sections[[prefix]]$fun,
            "(). Its arguments: ", paste(allowed, collapse = ", "), call. = FALSE)
@@ -98,6 +103,9 @@ fao_report_args <- function(dots, sections) {
 fao_report_allowed_args <- function(fun) {
   args <- names(formals(get(fun, envir = asNamespace("faofishingreport"))))
   if (fun == "cmsy_area") args <- c(args, names(formals(cmsy_input)))   # cmsy_area() passes ... to cmsy_input()
+  # by = "division" of pelagic_demersal() and mean_temperature_catch() needs the catch data by
+  # division of load_fao_divisions(), an extension that is not part of the report
+  if (fun %in% c("pelagic_demersal", "mean_temperature_catch")) args <- setdiff(args, "by")
   setdiff(unique(args), c("...", "area", "area_data", "area_name", "lang", "pptx", "table"))
 }
 
@@ -781,7 +789,7 @@ fao_report_body <- function(x, meta, ctx) {
   word <- function(key) fao_report_text(key, lang)
   par <- function(x, key, style = "FAOBody") fao_report_par(x, text(key), style)
   heading <- function(x, title, level = 1) fao_report_par(x, title, paste0("FAOHeading", level))
-  blank <- function(x, style = "FAOAuthor") officer::body_add_par(x, "", style = fao_report_style_name(style))
+  blank <- function(x, style = "FAOAuthor") fao_report_blank(x, style)
 
   # Cover, on its own page without page number
   x <- blank(x, "FAOCoverText")
@@ -795,7 +803,7 @@ fao_report_body <- function(x, meta, ctx) {
   x <- fao_report_par(x, text("cover_author", value = meta$author), "FAOCoverText")
   if (!is.null(meta$affiliation)) x <- fao_report_par(x, text("cover_affiliation", value = meta$affiliation), "FAOCoverText")
   x <- fao_report_par(x, text("cover_date", value = meta$date), "FAOCoverText")
-  x <- officer::body_end_block_section(x, officer::block_section(fao_report_section(state, footer = FALSE)))
+  x <- fao_report_end_cover(x)
 
   # Title and abstract: the topics and methods of the switched-on sections, one sentence of
   # results per section, and a recommendation
@@ -882,5 +890,5 @@ fao_report_body <- function(x, meta, ctx) {
     x <- fao_report_table(x, "app_cmsy_sources", ctx$values$cmsy_appendix$sources, text("app_cmsy_sources"), appendix = TRUE)
     x <- fao_report_par(x, text("app_cmsy_note"), "FAONote")
   }
-  officer::body_set_default_section(x, fao_report_section(state, footer = TRUE))
+  fao_report_end(x)
 }

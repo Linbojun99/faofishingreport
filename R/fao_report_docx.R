@@ -1,9 +1,12 @@
 # Writing the Word file of fao_report(): styles, paragraphs with citations and italics, figures,
 # tables, captions, sections and the final clean-up of the file.
 
-# A new Word document with the styles of the report
-fao_report_new <- function(lang, font, font_zh, citation, report_no, references) {
+# A new document of the report: Word (with the styles of the report) or LaTeX (written to `file`)
+fao_report_new <- function(lang, font, font_zh, citation, report_no, references, format = "docx", file = NULL) {
   zh <- lang == "zh"
+  if (format == "latex") {
+    return(fao_latex_new(fao_report_state(lang, font, if (zh) font_zh else font, citation, report_no, references), file))
+  }
   body_ea <- if (zh) font_zh else font
   heading_ea <- if (zh) "SimHei" else font
   x <- officer::read_docx()
@@ -35,7 +38,12 @@ fao_report_new <- function(lang, font, font_zh, citation, report_no, references)
   x <- style(x, "FAOCoverTitle", 22, align = "center", bold = TRUE)
   x <- style(x, "FAOCoverText", 16, align = "center")
 
-  # Report state: language, fonts, numbering of figures and tables, and the citations
+  attr(x, "fao_report") <- fao_report_state(lang, font, body_ea, citation, report_no, references)
+  x
+}
+
+# Report state: language, fonts, numbering of figures and tables, and the citations
+fao_report_state <- function(lang, font, body_ea, citation, report_no, references) {
   state <- new.env()
   state$lang <- lang
   state$font <- font
@@ -47,8 +55,7 @@ fao_report_new <- function(lang, font, font_zh, citation, report_no, references)
   state$cited <- character()
   state$references <- references
   state$suffix <- fao_ref_suffixes(references, citation)
-  attr(x, "fao_report") <- state
-  x
+  state
 }
 
 # Letters after the year for references of the same authors and year (2026a, 2026b)
@@ -164,6 +171,7 @@ fao_report_zh_spacing <- function(text, numbered = FALSE) {
 
 # Adds a paragraph of marked text
 fao_report_par <- function(x, text, style = "FAOBody", bold_prefix = NULL) {
+  if (inherits(x, "fao_latex")) return(fao_latex_par(x, text, style, bold_prefix))
   numbered <- style %in% c("FAOHeading1", "FAOHeading2", "FAOCaption", "FAOTableCaption")
   # notes and references are written as they are
   runs <- fao_report_runs(x, text, numbered, spacing = !style %in% c("FAONote", "FAOReference"))
@@ -186,6 +194,7 @@ fao_report_style_name <- function(id) gsub("([a-z])([A-Z0-9])", "\\1 \\2", sub("
 fao_report_figure <- function(x, id, file, caption) {
   state <- attr(x, "fao_report")
   number <- fao_report_number_of(x, "figures", id)
+  if (inherits(x, "fao_latex")) return(fao_latex_figure(x, file, number, caption))
   if (is.na(file) || !file.exists(file)) {
     x <- fao_report_par(x, fao_report_text("figure_missing", state$lang), "FAONote")
   } else {
@@ -226,6 +235,7 @@ fao_report_table <- function(x, id, table, caption, appendix = FALSE) {
     table[] <- lapply(table, fao_report_zh_spacing)
     names(table) <- fao_report_zh_spacing(names(table))
   }
+  if (inherits(x, "fao_latex")) return(fao_latex_table(x, table))
   styles <- list(names(table))
   names(styles) <- fao_report_style_name("FAOTableText")
   x <- officer::body_add_table(x, table, style = "Normal Table", header = TRUE,
@@ -255,6 +265,24 @@ fao_report_table_italics <- function(x) {
     xml2::xml_remove(run)
   }
   invisible(x)
+}
+
+# An empty paragraph of a style
+fao_report_blank <- function(x, style = "FAOAuthor") {
+  if (inherits(x, "fao_latex")) return(fao_latex_blank(x, style))
+  officer::body_add_par(x, "", style = fao_report_style_name(style))
+}
+
+# The cover is a section of its own, without page number
+fao_report_end_cover <- function(x) {
+  if (inherits(x, "fao_latex")) return(fao_latex_end_cover(x))
+  officer::body_end_block_section(x, officer::block_section(fao_report_section(attr(x, "fao_report"), footer = FALSE)))
+}
+
+# The section of the rest of the report, with page numbers
+fao_report_end <- function(x) {
+  if (inherits(x, "fao_latex")) return(x)
+  officer::body_set_default_section(x, fao_report_section(attr(x, "fao_report"), footer = TRUE))
 }
 
 # Page size, margins and page numbers of the report sections
