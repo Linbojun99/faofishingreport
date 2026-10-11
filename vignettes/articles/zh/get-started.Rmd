@@ -12,6 +12,10 @@ source("../_setup.R")
 fao_settings(lang = "zh")   # 本文所有图表使用中文
 ```
 
+```{r data-source, echo = FALSE, results = "asis"}
+data_source("zh")
+```
+
 **faofishingreport** 把 FAO 全球捕捞产量统计（Global Capture Production）整理成报告用的图表、地图和表格。
 本文以**中东大西洋（FAO 主要渔区 34）**为例，完整演示第一次分析的全过程；下面每张图都由其上方的代码生成。
 

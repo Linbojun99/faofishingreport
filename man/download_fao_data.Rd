@@ -14,7 +14,7 @@ download_fao_data(
 \arguments{
 \item{version}{The release to download, e.g. "2026.1.0". Default is "latest".}
 
-\item{data_dir}{The directory where the converted data is saved. Default is `fao_data_dir()`.}
+\item{data_dir}{The directory where the converted data is saved. Default is \code{fao_data_dir()}.}
 
 \item{overwrite}{A logical value. If FALSE (default), a release that was already
 downloaded is read from disk instead of being downloaded again.}
@@ -22,12 +22,12 @@ downloaded is read from disk instead of being downloaded again.}
 \item{quiet}{A logical value. If TRUE, progress messages are not printed. Default is FALSE.}
 }
 \value{
-Invisibly, a data frame with the columns of `Global_Production_long`.
+Invisibly, a data frame with the columns of \code{Global_Production_long}.
 }
 \description{
 This function downloads a Global Capture Production release from FAO,
 converts it to the same long format as the data bundled with the package
-(`Global_Production_long`), and saves it as an `.rds` file in `data_dir`.
+(\code{Global_Production_long}), and saves it as an \code{.rds} file in \code{data_dir}.
 }
 \details{
 Country and species names are matched through their FAO codes to the names
@@ -41,3 +41,11 @@ check_fao_update()
 new_data <- download_fao_data()
 }
 }
+\seealso{
+Other FAO data:
+\code{\link[=check_fao_update]{check_fao_update()}},
+\code{\link[=fao_data_dir]{fao_data_dir()}},
+\code{\link[=fao_data_info]{fao_data_info()}},
+\code{\link[=load_fao_data]{load_fao_data()}}
+}
+\concept{FAO data}

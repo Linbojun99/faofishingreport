@@ -34,25 +34,25 @@ country_analysis(
 the percentage labels are placed in the faceted time series plot. Default is 10.}
 
 \item{h_value}{The minimum segment size, which must be greater than the
-number of regressors. For the model `ts_data ~ 1`, this means `h_value`
+number of regressors. For the model \code{ts_data ~ 1}, this means \code{h_value}
 should be greater than 1. The default value is 0.15.}
 
-\item{ZH}{A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the same as `lang = "zh"`.}
+\item{ZH}{A logical value to Chinese. Default is "FALSE". \code{ZH = TRUE} is the same as \code{lang = "zh"}.}
 
-\item{fill_scale}{The colour palette of the map. Default is NULL, which uses `map_palette` of
-`fao_settings()` ("deep-orange" unless changed); see `?fao_settings` for the choices.}
+\item{fill_scale}{The colour palette of the map. Default is NULL, which uses \code{map_palette} of
+\code{fao_settings()} ("deep-orange" unless changed); see \code{?fao_settings} for the choices.}
 
 \item{lang}{The language of the chart text and names: "en" (English), "zh" (Chinese) or "both"
-(Chinese and English). Default is NULL, which uses "zh" if `ZH = TRUE`, and otherwise the language
-set with `fao_settings()` ("en" unless changed).}
+(Chinese and English). Default is NULL, which uses "zh" if \code{ZH = TRUE}, and otherwise the language
+set with \code{fao_settings()} ("en" unless changed).}
 
 \item{data_version}{The FAO data release to use: "latest" (default) uses the newest of the
-releases downloaded with `download_fao_data()` and the data bundled with the package;
+releases downloaded with \code{download_fao_data()} and the data bundled with the package;
 "bundled" uses the data bundled with the package; or a release such as "2026.1.0".}
 
-\item{pptx}{A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are
-also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
-changed for all functions with `fao_settings(pptx = TRUE)`.}
+\item{pptx}{A logical value. Charts are always saved as PNG in \verb{figures/png/}; if TRUE they are
+also saved as editable PowerPoint files in \verb{figures/pptx/}. Default is FALSE, which can be
+changed for all functions with \code{fao_settings(pptx = TRUE)}.}
 }
 \description{
 This function takes a country name, analyzes the catch of that country in all
@@ -64,3 +64,9 @@ based on production within the specified rank range.
 country_analysis(country_name = "Morocco",c(1, 10), plot=TRUE,table=TRUE)
 }
 }
+\seealso{
+Other species and country analyses:
+\code{\link[=country_species]{country_species()}},
+\code{\link[=species_country]{species_country()}}
+}
+\concept{species and country analyses}

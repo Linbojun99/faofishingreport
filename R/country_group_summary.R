@@ -8,6 +8,7 @@
 #' @param group "income" (default) for the World Bank income groups, "continent" or "region".
 #' @param top_n The number of groups shown separately; the others are combined. Default is 8.
 #' @return Invisibly, a list with `yearly` (catch by group and year) and `table`.
+#' @family summary analyses
 #' @export
 #' @examples
 #' \dontrun{

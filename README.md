@@ -86,6 +86,7 @@ tables in `tables/`.
 | `check_fao_update()` | Compare the latest FAO release online with the data on your computer |
 | `download_fao_data()` | Download a release and convert it to the package format |
 | `load_fao_data()` | Load the newest downloaded release, or the bundled data |
+| `fao_data_info()` | The FAO release used, its download link and citation |
 | `fao_data_dir()` | Folder where downloaded releases are stored |
 
 **🌊 Fishing areas**
@@ -137,15 +138,32 @@ The [website](https://linbojun99.github.io/faofishingreport/) has a guide for ev
 [🔍 Quality, diversity and fleets](https://linbojun99.github.io/faofishingreport/articles/quality-diversity-fleets.html) ·
 [🎨 Customise](https://linbojun99.github.io/faofishingreport/articles/customise.html)
 
+## 📊 Data source
+
+The package comes with the FAO [Global Capture Production](https://www.fao.org/fishery/collection/capture/en)
+statistics, **release 2026.1.0** (published by FAO on 30 March 2026; catches 1950–2024),
+downloaded on 10 October 2026 from
+<https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip>.
+
+- All releases: <https://www.fao.org/fishery/static/Data/>. `check_fao_update()` and
+  `download_fao_data()` find and download newer ones.
+- Species names: FAO [ASFIS list](https://www.fao.org/fishery/static/ASFIS/ASFIS_sp.zip);
+  Chinese names of countries, species and areas from the FAO code lists in the release.
+- Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), with the
+  [FAO terms of use](https://www.fao.org/contact-us/terms/db-terms-of-use/en).
+- `fao_data_info()` shows the release your analyses use and how to cite it.
+
 ## 📝 Citation
 
 ```r
 citation("faofishingreport")
 ```
 
-Please also cite FAO as the source of the data: FAO Fisheries and Aquaculture,
-Global Capture Production (FishStat). FAO data are licensed under
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+Please also cite the FAO data, e.g. with the citation given by `fao_data_info()`:
+
+> FAO. 2026. Global Capture Production 1950-2024, release 2026.1.0. In: Fisheries and
+> Aquaculture [online]. Rome. [Cited 10 October 2026].
+> https://www.fao.org/fishery/collection/capture/en. Licence: CC BY 4.0.
 
 ## ⚖️ License
 

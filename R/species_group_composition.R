@@ -11,6 +11,7 @@
 #' @param group "isscaap" (default) for the ISSCAAP species groups, or "major" for the major groups.
 #' @param top_n The number of groups shown separately; the others are combined. Default is 8.
 #' @return Invisibly, a list with `yearly` (catch by group and year) and `table`.
+#' @family summary analyses
 #' @export
 #' @examples
 #' \dontrun{

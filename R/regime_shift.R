@@ -14,6 +14,7 @@
 #'        the series length (default 0.15) or a number of years.
 #' @return Invisibly, a list with `breakpoints` (one row per species) and `yearly` (number of
 #'         species with a breakpoint in each year).
+#' @family summary analyses
 #' @export
 #' @examples
 #' \dontrun{

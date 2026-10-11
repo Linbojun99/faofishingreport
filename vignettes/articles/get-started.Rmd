@@ -9,6 +9,10 @@ description: >
 source("_setup.R")
 ```
 
+```{r data-source, echo = FALSE, results = "asis"}
+data_source()
+```
+
 **faofishingreport** turns the FAO Global Capture Production statistics into charts, maps
 and tables for reports. This page walks through a complete first analysis of the
 **Eastern Central Atlantic (FAO major fishing area 34)**; every chart below was produced by

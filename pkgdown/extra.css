@@ -59,3 +59,86 @@ main table td:first-child code {
 html[lang="zh-CN"] body {
   font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
 }
+
+/* Function reference pages: group above the title, previous / next function, group list */
+.fao-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  align-items: center;
+  margin-bottom: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--bs-secondary-color);
+}
+.fao-pager {
+  display: flex;
+  gap: 0.75rem;
+  align-items: stretch;
+  margin: 3rem 0 1rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--bs-border-color);
+}
+.fao-pager > a, .fao-pager > span {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 8px;
+  text-decoration: none;
+}
+.fao-pager > a:hover {
+  border-color: #16A6B6;
+  background: rgba(22, 166, 182, 0.07);
+}
+.fao-pager code {
+  overflow-wrap: anywhere;
+  background: none;
+  padding: 0;
+}
+.fao-pager .fao-pager-next { text-align: right; align-items: flex-end; }
+.fao-pager .fao-pager-index { flex: 0 0 auto; justify-content: center; font-weight: 600; }
+.fao-pager .fao-pager-empty { visibility: hidden; }
+.fao-pager-label { font-size: 0.8rem; color: var(--bs-secondary-color); }
+.fao-pager-group { font-size: 0.75rem; color: var(--bs-secondary-color); }
+@media (max-width: 575.98px) {
+  .fao-pager { flex-direction: column; }
+  .fao-pager .fao-pager-next { text-align: left; align-items: flex-start; }
+  .fao-pager .fao-pager-empty { display: none; }
+}
+.fao-group-nav { margin-top: 1.5rem; }
+.fao-group-nav h2 { font-size: 1rem; margin-bottom: 0.5rem; }
+.fao-group-nav ul { list-style: none; padding-left: 0; margin: 0; }
+.fao-group-nav li a {
+  display: block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  font-family: var(--bs-font-monospace);
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+.fao-group-nav li a:hover { background: rgba(22, 166, 182, 0.1); }
+.fao-group-nav li.active a { background: #0B2E5B; color: #fff; }
+
+/* FAO release used by an article, shown at its top */
+.fao-data-source {
+  margin: 0.5rem 0 1.5rem;
+  padding: 0.6rem 0.9rem;
+  border-left: 4px solid #0B2E5B;
+  border-radius: 4px;
+  background: #f4f6fb;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+@media (min-width: 576px) {
+  .fao-aside-sticky {
+    position: sticky;
+    top: 56px;
+    max-height: calc(100vh - 56px - 1rem);
+    overflow-y: auto;
+  }
+  .fao-aside-sticky #toc { position: static; max-height: none; overflow: visible; }
+}

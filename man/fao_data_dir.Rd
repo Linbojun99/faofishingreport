@@ -10,9 +10,9 @@ fao_data_dir()
 A character string with the directory path.
 }
 \description{
-Returns the directory where `download_fao_data()` saves releases and where all functions
-look for them: the folder set with `fao_settings(data_dir = ...)`, or otherwise the user data
-folder of R (`tools::R_user_dir("faofishingreport", "data")`).
+Returns the directory where \code{download_fao_data()} saves releases and where all functions
+look for them: the folder set with \code{fao_settings(data_dir = ...)}, or otherwise the user data
+folder of R (\code{tools::R_user_dir("faofishingreport", "data")}).
 }
 \examples{
 \dontrun{
@@ -20,3 +20,11 @@ fao_data_dir()
 fao_settings(data_dir = "D:/shared/fao_data")   # e.g. a folder shared by a team
 }
 }
+\seealso{
+Other FAO data:
+\code{\link[=check_fao_update]{check_fao_update()}},
+\code{\link[=download_fao_data]{download_fao_data()}},
+\code{\link[=fao_data_info]{fao_data_info()}},
+\code{\link[=load_fao_data]{load_fao_data()}}
+}
+\concept{FAO data}

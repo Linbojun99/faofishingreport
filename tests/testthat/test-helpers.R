@@ -18,3 +18,15 @@ test_that("taxonomic levels come from the FAO taxonomic code", {
 test_that("file names are safe", {
   expect_equal(fao_file_name("European pilchard(=Sardine)"), "European_pilchard__Sardine_")
 })
+
+test_that("fao_data_info describes the bundled release", {
+  info <- fao_data_info(data_dir = withr::local_tempdir())
+  expect_s3_class(info, "fao_data_info")
+  expect_identical(info$source, "bundled")
+  expect_identical(info$release, fao_bundled_release())
+  expect_match(info$url, paste0("Capture_", info$release, "\\.zip$"))
+  expect_length(info$years, 2)
+  expect_match(info$citation, paste0("release ", info$release))
+  expect_output(print(info), "Global Capture Production")
+  expect_error(load_fao_data("1999.1.0", data_dir = withr::local_tempdir()), "has not been downloaded")
+})

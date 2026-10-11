@@ -13,6 +13,10 @@ FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = 
 fao_settings(lang = "zh")   # 本文所有图表使用中文
 ```
 
+```{r data-source, echo = FALSE, results = "asis"}
+data_source("zh")
+```
+
 ```{r, eval = FALSE}
 FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 ```

@@ -8,7 +8,7 @@ fao_font(family = NULL)
 }
 \arguments{
 \item{family}{Optional font family to use from now on, e.g. "Microsoft YaHei".
-The choice can also be set with `options(faofishingreport.font = "...")`.}
+The choice can also be set with \code{options(faofishingreport.font = "...")}.}
 }
 \value{
 The font family name.
@@ -25,3 +25,9 @@ fao_font()                    # font chosen for this computer
 fao_font("Microsoft YaHei")   # use another font
 }
 }
+\seealso{
+Other settings and language:
+\code{\link[=fao_settings]{fao_settings()}},
+\code{\link[=fao_translate]{fao_translate()}}
+}
+\concept{settings and language}

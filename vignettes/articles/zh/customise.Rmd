@@ -13,6 +13,10 @@ FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = 
 fao_settings(lang = "zh")   # 本文所有图表使用中文
 ```
 
+```{r data-source, echo = FALSE, results = "asis"}
+data_source("zh")
+```
+
 所有图表和地图都遵循少数几项设置，每个 R 会话中用 `fao_settings()` 设置一次即可。不带参数运行它可以查看当前设置：
 
 ```{r, eval = FALSE}

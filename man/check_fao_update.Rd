@@ -7,15 +7,15 @@
 check_fao_update(data_dir = fao_data_dir(), quiet = FALSE)
 }
 \arguments{
-\item{data_dir}{The directory where downloaded releases are stored. Default is `fao_data_dir()`.}
+\item{data_dir}{The directory where downloaded releases are stored. Default is \code{fao_data_dir()}.}
 
 \item{quiet}{A logical value. If TRUE, no message is printed. Default is FALSE.}
 }
 \value{
-Invisibly, a list with `latest` (newest online version), `bundled`
-  (version bundled with the package), `local` (newest downloaded version, or NA
-  if none), `update_available` (logical) and `releases` (a data frame of all
-  online releases).
+Invisibly, a list with \code{latest} (newest online version), \code{bundled}
+(version bundled with the package), \code{local} (newest downloaded version, or NA
+if none), \code{update_available} (logical) and \code{releases} (a data frame of all
+online releases).
 }
 \description{
 This function reads the FAO fishery data index, lists the Global Capture
@@ -27,3 +27,11 @@ the data bundled with the package and the data downloaded on this computer.
 check_fao_update()
 }
 }
+\seealso{
+Other FAO data:
+\code{\link[=download_fao_data]{download_fao_data()}},
+\code{\link[=fao_data_dir]{fao_data_dir()}},
+\code{\link[=fao_data_info]{fao_data_info()}},
+\code{\link[=load_fao_data]{load_fao_data()}}
+}
+\concept{FAO data}

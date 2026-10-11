@@ -12,6 +12,10 @@ source("../_setup.R")
 fao_settings(lang = "zh")   # 本文所有图表使用中文
 ```
 
+```{r data-source, echo = FALSE, results = "asis"}
+data_source("zh")
+```
+
 三个渔区函数用于描述单个 FAO 主要渔区。示例使用**中东大西洋（34 区）**，最后一节将同样的分析应用于**西北太平洋（61 区）**。
 
 ## 🗺️ FAO 主要渔区
