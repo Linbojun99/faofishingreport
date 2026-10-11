@@ -123,7 +123,7 @@ fishing_area_species <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
   fao_verbose_print(recent_production_species)
   fao_verbose_print(percentage_of_total_species)
   # 检查并创建 'tables' 目录
-  if (!dir.exists("tables")) {
+  if (table && !dir.exists("tables")) {
     dir.create("tables")
   }
 

@@ -130,8 +130,6 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
 
   max_value <- max(species_country_ranked_total$country_production)/1e6*1.1
 
-  str(species_country_ranked_total)
-  head(species_country_ranked_total)
 
 
   species_country_ranked <- species_data %>%
@@ -267,7 +265,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
   status_messages <- lapply(results, function(x) x$status_message)
   status_messages <- Filter(Negate(is.null), status_messages) # 移除空消息
   if (length(status_messages) > 0) {
-    cat(paste(status_messages, collapse = "\n"))
+    message(paste(status_messages, collapse = "\n"))
   }
 
 
@@ -469,7 +467,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
     fao_verbose_print(recent_production_country)
     fao_verbose_print(percentage_of_total_country)
     # 检查并创建 'tables' 目录
-    if (!dir.exists("tables")) {
+    if (table && !dir.exists("tables")) {
       dir.create("tables")
     }
 

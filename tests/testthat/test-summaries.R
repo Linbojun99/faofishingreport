@@ -58,3 +58,16 @@ test_that("intermediate tables are printed only when asked", {
   expect_output(fao_verbose_print(data.frame(a = 1)), "a")
   expect_message(fao_verbose_message("count"), "count")
 })
+
+test_that("the species and country functions print nothing and report gaps as messages", {
+  withr::local_dir(withr::local_tempdir())
+  data <- data.frame(Country..Name. = rep(c("Japan", "Canada"), each = 30), ASFIS.species..Name. = "Pacific cod",
+                     FAO.major.fishing.area..Name. = "Pacific, Northeast",
+                     Year = c(1981:2010, 1981:1995, 1997:2011), Production = c(1:30, 30:1))
+  expect_output(expect_message(result <- species_country(data, "Pacific cod", rank_range = c(1, 2), plot = FALSE,
+                                                          table = FALSE),
+                               "Canada is not continuous"), NA)
+  expect_length(result, 2)
+  expect_output(country_species(data, "Japan", rank_range = c(1, 1), plot = FALSE, table = FALSE), NA)
+  expect_length(list.files(), 0)
+})

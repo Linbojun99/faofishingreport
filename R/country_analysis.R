@@ -87,8 +87,6 @@ country_analysis <- function(country_name, rank_range = c(1, 10),plot=TRUE,table
 
   max_value <- max(country_species_ranked_total$species_production)/1e6*1.1
 
-  str(country_species_ranked_total)
-  head(country_species_ranked_total)
 
   country_species_ranked <- country_data %>%
     dplyr::filter(ASFIS.species..Name. %in% country_species_ranked_total$ASFIS.species..Name.) %>%
@@ -412,7 +410,7 @@ country_analysis <- function(country_name, rank_range = c(1, 10),plot=TRUE,table
   fao_verbose_print(recent_production_country)
   fao_verbose_print(percentage_of_total_country)
   # 检查并创建 'tables' 目录
-  if (!dir.exists("tables")) {
+  if (table && !dir.exists("tables")) {
     dir.create("tables")
   }
 
