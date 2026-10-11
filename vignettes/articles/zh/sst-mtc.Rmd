@@ -1,0 +1,136 @@
+---
+title: "🌡️ 海表温度与渔获平均温度"
+description: >
+  fao_area_sst()、download_sst_data() 和 mean_temperature_catch()：FAO 渔区的海表温度，如何使用自己的 SST 文件，以及使用渔获平均温度之前必须核对的内容。
+---
+
+```{r setup, include = FALSE}
+source("../_setup.R")
+```
+
+```{r}
+fao_settings(lang = "zh")   # 本文所有图表使用中文
+```
+
+FAO 捕捞统计每个渔区每年只有一个数，没有渔区内部的空间信息。所以本包的海表温度（SST）也采用同样的形式：每个 FAO 主要海洋渔区每年一行。本包用它和渔获对照，计算**渔获平均温度**（MTC）。
+
+## 🌡️ FAO 渔区的海表温度
+
+`fao_area_sst()` 返回 19 个 FAO 主要海洋渔区的逐年 SST。每次调用都会说明用的是哪一套 SST 数据：
+
+```{r, message = TRUE}
+sst34 <- fao_area_sst("34")
+head(sst34[, c("area_en", "year", "sst_mean", "sst_p10", "sst_p90", "sst_min_month", "sst_max_month")])
+```
+
+| 列 | 含义 |
+|---|---|
+| `sst_mean` | 渔区平均 SST：12 个月渔区平均值的平均（°C） |
+| `sst_p10`、`sst_p90` | 渔区内的范围：区内各格点年平均 SST 的 10% 和 90% 分位 |
+| `sst_min_month`、`sst_max_month` | 季节范围：最冷月和最暖月的渔区平均值。横跨赤道的渔区，南北半球的季节会部分抵消，所以这个范围较窄 |
+| `n_cells` | 渔区内的格点数 |
+| `source` | 所用的 SST 数据 |
+
+### 内置的 SST：NOAA ERSST v5
+
+为了控制包的大小，包里只内置一套 SST 数据：
+
+| | NOAA ERSST v5 |
+|---|---|
+| 提供方 | 美国国家海洋和大气管理局 国家环境信息中心（NOAA NCEI） |
+| 网格 | 2° × 2°（约 220 km），逐月 |
+| 包内年份 | 1950–2025 |
+| 观测来源 | 仅现场观测：船舶和浮标（ICOADS），1999 年起含 Argo 浮标 |
+| 海冰 | 冰下约 -1.8 °C |
+| 许可 | NOAA 数据，可免费使用和再分发 |
+| 引用 | Huang et al. (2017) *Journal of Climate* 30: 8179–8205，[doi:10.1175/JCLI-D-16-0836.1](https://doi.org/10.1175/JCLI-D-16-0836.1) |
+
+ERSST v5 是常用 SST 产品中最小的。它不用卫星资料，整个时段前后一致。不过 2° 网格对小渔区偏粗：地中海和黑海（37 区）只有 `r suppressMessages(fao_area_sst("37"))$n_cells[1]` 个格点。
+
+### 使用自己的 SST 数据
+
+其他网格化的 SST 数据，只要给出 **NetCDF 文件的路径，或者存放 NetCDF 文件的文件夹路径**，就可以使用。可以只用于一次调用，也可以对整个会话生效：
+
+```{r, eval = FALSE}
+fao_area_sst("34", sst = "D:/data/HadISST_sst.nc")       # 只用于这一次调用
+fao_settings(sst = "D:/data/HadISST_sst.nc")             # 本次会话的所有函数都用这个文件
+mean_temperature_catch(FAO34$area_data)                  # 现在使用这个文件
+fao_settings(sst = "ersst5")                             # 换回内置的 SST
+```
+
+文件的读取规则如下：
+
+- 文件里要有一个带**经度、纬度和时间**维度的 SST 变量，逐月或逐日均可（如 HadISST、COBE-SST2、OISST、ERSST，或气候模式输出）。变量按名字自动识别（`sst`、`analysed_sst`、`tos` 等）；识别不了时用 `variable = "..."` 指定。
+- 经度用 -180 到 180 或 0 到 360 都可以。以开尔文为单位的值会换算成 °C。有多个深度层时取第一层（表层）。低于 -5 °C 的值会被设为 -1.8 °C，因为有些产品用这种值标记海冰（HadISST1 用 -1000）。
+- 逐日数据先按月平均，只保留 12 个月齐全的年份。分辨率细于 1° 的网格会先平均到约 1°。
+- 渔区逐年平均值在第一次使用时计算（可能需要几分钟），结果保存在 `fao_data_dir()` 的 `sst` 文件夹里。之后用同样的文件会直接读取保存的结果；文件有变化时会重新计算。
+- 读取 NetCDF 文件需要 ncdf4 包：`install.packages("ncdf4")`。
+
+### 下载常用的 SST 产品
+
+`download_sst_data()` 可以下载下面几种产品并算好渔区表，之后按名字使用，例如 `sst = "hadisst1"`：
+
+```{r}
+knitr::kable(fao_sst_products()[, c("product", "name", "grid", "first_year", "data_sources", "mb_per_year")])
+```
+
+```{r, eval = FALSE}
+download_sst_data("hadisst1")                 # 约 240 MB；中断后重新运行会接着下载
+fao_area_sst("34", sst = "hadisst1")
+```
+
+`fao_sst_products()` 还给出每种产品的海冰处理、许可和引用。不同 SST 产品使用的观测和方法不同，数值和趋势会有一定差异。换一种产品重复分析，可以看出结果在多大程度上依赖所选的产品。
+
+### 渔区平均值的计算方法
+
+每个格点按它与各个 FAO 主要渔区重叠的面积（在球面上计算）加权，计入它所覆盖的每个渔区。位于两个渔区交界处的格点由两边共享，沿岸格点只计算海洋部分。渔区边界来自包内的 FAO 渔区地图（19 个海洋渔区）。北冰洋和南极渔区的数值有一部分反映的是海冰，而不是实测的水温。
+
+## 🐟 渔获平均温度
+
+渔获平均温度（MTC；Cheung et al. 2013）是渔获物种偏好温度的平均值，按渔获量加权：
+
+$$MTC_t = \frac{\sum_i T_i C_{i,t}}{\sum_i C_{i,t}}$$
+
+其中 $T_i$ 是物种 $i$ 的偏好温度，$C_{i,t}$ 是它在第 $t$ 年的渔获量。MTC 上升，说明喜暖物种在渔获中所占的比例变大。
+
+```{r, eval = FALSE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
+mtc <- mean_temperature_catch(FAO34$area_data)
+mtc$trend      # 斜率（°C/十年）、Mann-Kendall 检验、与 SST 的相关
+```
+
+第一次运行时会下载所需的 FishBase 和 SeaLifeBase 表格（约 23 MB）。图的上半部分是 MTC 与渔区 SST（及区内范围），下半部分是有偏好温度的渔获所占的比例。这个比例低于 `min_coverage`（默认 50%）的年份会淡化显示，并且不参与趋势计算。
+
+### ⚠️ 包做什么，你必须核对什么
+
+本包负责计算 MTC、它的趋势以及与 SST 的对比。各物种的偏好温度**没有经过本包核对**：它们是按 FAO 学名自动匹配 FishBase 或 SeaLifeBase（`TempPrefMean`）得到的初配结果，并附有核对用的网址。每个匹配和偏好温度是否正确，需要你查阅这些网页和文献后自行判断，然后才能使用结果：
+
+1. 打开物种表 `tables/<渔区>_mtc_species.csv`。表按渔获量从大到小排序，越靠前的条目越重要。
+2. 对每个参与计算的条目（`used` 为 TRUE），打开 `url`（匹配到的 FishBase 或 SeaLifeBase 物种页面）、`search_url` 和 `worms_url`（世界海洋物种名录）。核对两点：匹配到的物种是否就是这个 FAO 条目，偏好温度对该渔区的种群是否合理。
+3. 在 `checked` 列写上核对人或日期。值不对就改 `temp_pref_mean`，并在 `note` 写明出处。
+4. 用核对后的表重新运行：
+
+```{r, eval = FALSE}
+mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern_Central_mtc_species.csv")
+```
+
+在所有参与计算的条目都核对完之前，函数会提示已核对的渔获占比，图注也会写明"偏好温度为自动初配结果，尚未全部经用户核对"。
+
+### 局限性
+
+- **偏好温度。** FishBase 说明 `TempPrefMean` 是根据 AquaMaps 分布图估算的，计算脚本没有公开，也没有说明用了哪些格点、用的是表层还是底层温度。有些物种的值远低于其主要渔获海域的温度。例如沙丁鱼（European pilchard）为 10.3 °C，而它 2015–2024 年 83% 的渔获来自 34 区。Cheung et al. (2013) 用的是基于物种模拟分布得到的温度剖面中位数，所以本包的 MTC 数值不能直接和已发表的数值比较。
+- **覆盖率。** 种以上的类群条目（如"Marine fishes nei"）不参与计算，这与已发表的研究一致。没有任何文献规定最低覆盖率，`min_coverage = 50` 是本包的约定。随着时间推移，鉴定到种的渔获越来越多，渔获也会在渔区之间重新归属，这些都会改变 MTC，而与温度无关。
+- **成因。** 除了温度，捕捞对象、渔场、渔具、市场、管理和报告方式的变化也会改变 MTC。把某个变化归因于变暖之前，先用物种表中的 `weight_pct` 和 `contribution_c` 看清楚是哪些条目引起的。
+- **统计。** 趋势用线性斜率和 Mann-Kendall 检验；与 SST 的对比用原序列和逐年差分的相关。两个序列都有自相关，所以 p 值偏小；逐年差分的相关则可能漏掉只在几十年尺度上起作用的关系。
+
+以上每一点的参考文献见帮助页 `?mean_temperature_catch`。
+
+### 输出文件
+
+| 文件 | 内容 |
+|---|---|
+| `figures/png/summary/<label>_mtc.png` | MTC 与 SST（含区内范围）；单个渔区时下方是覆盖率 |
+| `figures/png/summary/<label>_mtc_coverage.png` | 各渔区的覆盖率（仅多个渔区时） |
+| `tables/<label>_mtc.csv` | 逐年 MTC、覆盖率、SST 及所用的 SST 数据 |
+| `tables/<label>_mtc_trend.csv` | 斜率、Mann-Kendall 检验和与 SST 的相关 |
+| `tables/<label>_mtc_species.csv` | 每个物种条目：偏好温度、渔获量、权重、贡献、匹配方式、链接、`checked` 和 `note` |

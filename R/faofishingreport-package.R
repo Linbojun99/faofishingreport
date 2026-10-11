@@ -24,5 +24,13 @@ utils::globalVariables(c(
   "Production.Type", "Rank", "species", "species_area_production", "species_production", "start",
   "start_year", "status_label", "text", "Tonnes", "total_2021_production",
   "total_species_production", "total_tonnes", "Total_Tonnes", "trend", "value", "Year",
-  "yearly_production"
+  "yearly_production",
+  # cmsy_chart_forecast(), cmsy_chart_kobe_all(), compare_releases(), distant_water_profile()
+  "area", "change_tonnes", "country", "direction", "first_year", "net_change_tonnes", "release",
+  "scenario", "Stock", "tonnes",
+  # catch_shocks()
+  "group_name", "last_year", "loss_pct", "n_series", "n_shocks", "series_name", "shock_frequency_pct",
+  "shocks_per_series",
+  # collapse_analysis()
+  "n_collapsed", "n_collapses", "offset", "pct", "pct_collapsed", "rel", "type", "what"
 ))

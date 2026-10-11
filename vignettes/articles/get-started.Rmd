@@ -157,4 +157,6 @@ status <- stock_status(FAO34$area_data)
 - [🐟 Species and countries](species-countries.html): `species_country()`, `country_species()`, `country_analysis()`
 - [📈 Composition, stock status and trends](status-trends.html) and
   [🔍 Data quality, diversity and fleets](quality-diversity-fleets.html): the nine summary analyses
+- [🌡️ Sea temperature and catch temperature](sst-mtc.html): SST of the fishing areas (built in or
+  from your own NetCDF files) and the mean temperature of the catch
 - [🎨 Customise charts and maps](customise.html): themes, palettes, map projections, fonts and output

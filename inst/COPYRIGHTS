@@ -1,0 +1,37 @@
+faofishingreport is licensed under GPL-3. It includes files from other authors:
+
+inst/cmsy/CMSY++16.R, inst/cmsy/ffnn.bin, inst/cmsy/CMSYUserGuideMarch2021.pdf,
+inst/cmsy/Train_Catch_9e.csv, inst/cmsy/Train_ID_9e.csv
+  CMSY++, by Rainer Froese, Gianpaolo Coro, Henning Winker and Nazli Demirel (GEOMAR, CNR-ISTI),
+  March 2021 release, https://oceanrep.geomar.de/id/eprint/52147/
+  Licence: Creative Commons Attribution 4.0 International (CC BY 4.0),
+  https://creativecommons.org/licenses/by/4.0/
+  The files are unmodified. cmsy_run() writes a changed copy of CMSY++16.R into each run folder
+  and lists the changes in code_changes.csv.
+
+R/cmsy_run.R (cmsy_runs_test in the settings written by cmsy_settings_code())
+  Reproduces the approximate runs test of snpar::runs.test() from the snpar package 1.0
+  (Debin Qiu, 2014, GPL (>= 2)), archived on CRAN on 2022-05-10.
+
+inst/extdata/cmsy_priors.csv
+  Resilience and prior r values taken from FishBase (Froese R, Pauly D, Eds.) and SeaLifeBase
+  (Palomares MLD, Pauly D, Eds.), release 26.06, through the parquet snapshots published by the
+  rfishbase project (https://data.source.coop/cboettig/fishbase/). Each row links to the
+  FishBase or SeaLifeBase page it comes from. Licence: Creative Commons
+  Attribution-NonCommercial 4.0 International (CC BY-NC 4.0), FishBase.org team, as stated for
+  the snapshots; no commercial use. Rebuilt by data-raw/cmsy_priors.R.
+
+inst/extdata/fishbase_traits.rda
+  Trophic level, preferred temperature, habitat, maximum length and vulnerability of the FAO
+  species items, taken from FishBase (Froese R, Pauly D, Eds.) and SeaLifeBase (Palomares MLD,
+  Pauly D, Eds.), release 26.06, through the parquet snapshots published by the rfishbase project
+  (https://data.source.coop/cboettig/fishbase/), and matched by the rules listed by
+  fishbase_sources(). Licence: Creative Commons Attribution-NonCommercial 4.0 International
+  (CC BY-NC 4.0), FishBase.org team, as stated for the snapshots; no commercial use.
+  Valid names looked up in the World Register of Marine Species (WoRMS Editorial Board,
+  https://www.marinespecies.org, doi:10.14284/170), licence CC BY.
+  Each row links to the FishBase, SeaLifeBase or WoRMS page it comes from.
+  Rebuilt by data-raw/build_fishbase_traits.R.
+
+  The same CC BY-NC 4.0 licence applies to the FishBase and SeaLifeBase tables that
+  download_fishbase_data() and fishbase_table() download.

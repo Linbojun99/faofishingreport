@@ -1,0 +1,2 @@
+﻿"种群","物种","学名","年份","r 先验","r 先验来源","k 先验（吨）","MSY 先验（吨）","首年 B/k 先验","中间年 B/k 先验","末年 B/k 先验","FishBase / SeaLifeBase 页面"
+"GRB_34","大眼裸颌鲈","Brachydeuterus auritus","1978-2024","0.358-0.813","FishBase prior r, 95% CL (Based on 1 full stock assessment.)","239,371-1,015,903","66,870","0.0972-0.385 (神经网络)","2002: 0.0686-0.324 (神经网络)","0.427-0.815 (神经网络)","https://www.fishbase.se/summary/400"

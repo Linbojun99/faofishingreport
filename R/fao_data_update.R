@@ -236,9 +236,14 @@ fao_data_citation <- function(info) {
 
 #' Directory for Downloaded FAO Data
 #'
-#' Returns the directory where `download_fao_data()` saves releases and where all functions
-#' look for them: the folder set with `fao_settings(data_dir = ...)`, or otherwise the user data
-#' folder of R (`tools::R_user_dir("faofishingreport", "data")`).
+#' Returns the directory where `download_fao_data()` and `download_fishbase_data()` save data
+#' and where all functions look for it: the folder set with `fao_settings(data_dir = ...)`, else
+#' the environment variable `FAOFISHINGREPORT_DATA_DIR`, else the user data folder of R
+#' (`tools::R_user_dir("faofishingreport", "data")`).
+#'
+#' To use the same folder in every R session, e.g. a cloud folder shared by several computers or
+#' a team, add a line `FAOFISHINGREPORT_DATA_DIR=<folder>` to the `.Renviron` file in your home
+#' folder (`file.path(Sys.getenv("HOME"), ".Renviron")`) and restart R.
 #'
 #' @return A character string with the directory path.
 #' @family FAO data
@@ -250,7 +255,8 @@ fao_data_citation <- function(info) {
 #' }
 fao_data_dir <- function() {
   dir <- getOption("faofishingreport.data_dir")
-  if (is.null(dir)) tools::R_user_dir("faofishingreport", which = "data") else path.expand(dir)
+  if (is.null(dir)) dir <- Sys.getenv("FAOFISHINGREPORT_DATA_DIR")
+  if (identical(dir, "")) tools::R_user_dir("faofishingreport", which = "data") else path.expand(dir)
 }
 
 

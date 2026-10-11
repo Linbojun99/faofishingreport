@@ -9,3 +9,5 @@ faofishingreport_*.tar.gz
 docs/
 .claude/launch.json
 report_samples/
+tests/testthat/_problems/
+tests/testthat/testthat-problems.rds

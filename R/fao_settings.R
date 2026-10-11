@@ -38,6 +38,16 @@
 #'   \item{data_dir}{Folder where `download_fao_data()` saves FAO releases and where all
 #'     functions look for them, e.g. a folder shared by a team. Default is NULL, the user data
 #'     folder of R; see `fao_data_dir()`.}
+#'   \item{online}{Whether functions may connect to the internet to look for the newest FishBase
+#'     release (see `fishbase_table()`). Default is TRUE; use FALSE to work offline with the
+#'     downloaded copy, e.g. on a slow connection.}
+#'   \item{sst}{The sea surface temperature (SST) data used by `fao_area_sst()` and
+#'     `mean_temperature_catch()`: "ersst5" (default, NOAA ERSST v5, built into the package), a
+#'     product downloaded with `download_sst_data()` (e.g. "hadisst1"), or the path of your own
+#'     NetCDF file, or of a folder of NetCDF files (see `fao_area_sst()`).}
+#'   \item{silent}{Whether the CMSY++ functions (`cmsy_run()`, `cmsy_plot()`, ...) work
+#'     silently, without progress bars and messages. Default is FALSE. Their `silent` argument
+#'     still takes precedence.}
 #' }
 #' @param reset A logical value. If TRUE, all settings go back to their defaults first.
 #' @return Invisibly, a list of the current settings.
@@ -82,6 +92,13 @@ fao_settings <- function(..., reset = FALSE) {
          "equal_earth, winkel_tripel, mercator, a PROJ string or an EPSG code.", call. = FALSE)
   }
   if (isTRUE(new$pptx)) fao_check_eoffice()
+  if (!is.null(new$online) && !(is.logical(new$online) && length(new$online) == 1 && !is.na(new$online))) {
+    stop("online must be TRUE or FALSE.", call. = FALSE)
+  }
+  if (!is.null(new$sst)) fao_sst_check_setting(new$sst)
+  if (!is.null(new$silent) && !(is.logical(new$silent) && length(new$silent) == 1 && !is.na(new$silent))) {
+    stop("silent must be TRUE or FALSE.", call. = FALSE)
+  }
   if (length(new) > 0) options(stats::setNames(new, paste0("faofishingreport.", names(new))))
 
   current <- c(lapply(stats::setNames(names(fao_defaults), names(fao_defaults)), fao_setting),
@@ -99,7 +116,7 @@ fao_settings <- function(..., reset = FALSE) {
 fao_defaults <- list(
   lang = "en", theme = "bw", base_size = 12, palette = "npg", map_palette = "deep-orange",
   map_center = 0, map_projection = "longlat", map_land = "grey90", map_ocean = NA,
-  grid = FALSE, dpi = 600, pptx = FALSE, data_dir = NULL
+  grid = FALSE, dpi = 600, pptx = FALSE, data_dir = NULL, online = TRUE, sst = "ersst5", silent = FALSE
 )
 
 fao_setting <- function(name) {

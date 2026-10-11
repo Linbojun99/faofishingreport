@@ -38,6 +38,10 @@ navbar:
         href: articles/species-countries.html
       - text: "📈 Composition, stock status and trends"
         href: articles/status-trends.html
+      - text: "📉 CMSY++ stock assessment"
+        href: articles/cmsy.html
+      - text: "🌡️ Sea temperature and catch temperature"
+        href: articles/sst-mtc.html
       - text: "🔍 Data quality, diversity and fleets"
         href: articles/quality-diversity-fleets.html
       - text: "🎨 Customise charts and maps"
@@ -84,6 +88,41 @@ reference:
   - country_group_summary
   - regime_shift
   - coastal_distant
+- title: "🔬 Literature-based analyses"
+  desc: Analyses that follow published methods, each citing its sources.
+  contents:
+  - catch_shocks
+  - collapse_analysis
+  - distant_water_profile
+  - compare_releases
+- title: "🌡️ FishBase and temperature"
+  desc: Species traits from FishBase and SeaLifeBase, sea surface temperature, and the mean temperature of the catch.
+  contents:
+  - check_fishbase_update
+  - download_fishbase_data
+  - fishbase_table
+  - fishbase_match
+  - fishbase_sources
+  - fao_sst_products
+  - download_sst_data
+  - fao_area_sst
+  - mean_temperature_catch
+- title: "📉 CMSY++ stock assessment"
+  desc: Catch-only stock assessment with the bundled CMSY++ code, FishBase priors and JAGS set up for the operating system.
+  contents:
+  - cmsy_area
+  - cmsy_system
+  - cmsy_setup
+  - cmsy_install_jags
+  - cmsy_sources
+  - cmsy_priors
+  - cmsy_input
+  - cmsy_defaults
+  - cmsy_run
+  - cmsy_plot
+  - cmsy_forecast
+  - cmsy_compare
+  - cmsy_tables
 - title: "📝 Reports"
   desc: A Word report of a fishing area, in Chinese or English, written from the results.
   contents:
@@ -104,6 +143,8 @@ articles:
   - articles/fishing-areas
   - articles/species-countries
   - articles/status-trends
+  - articles/cmsy
+  - articles/sst-mtc
   - articles/quality-diversity-fleets
   - articles/customise
 - title: "中文文档"
@@ -114,6 +155,8 @@ articles:
   - articles/zh/fishing-areas
   - articles/zh/species-countries
   - articles/zh/status-trends
+  - articles/zh/cmsy
+  - articles/zh/sst-mtc
   - articles/zh/quality-diversity-fleets
   - articles/zh/customise
 

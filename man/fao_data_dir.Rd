@@ -10,9 +10,15 @@ fao_data_dir()
 A character string with the directory path.
 }
 \description{
-Returns the directory where \code{download_fao_data()} saves releases and where all functions
-look for them: the folder set with \code{fao_settings(data_dir = ...)}, or otherwise the user data
-folder of R (\code{tools::R_user_dir("faofishingreport", "data")}).
+Returns the directory where \code{download_fao_data()} and \code{download_fishbase_data()} save data
+and where all functions look for it: the folder set with \code{fao_settings(data_dir = ...)}, else
+the environment variable \code{FAOFISHINGREPORT_DATA_DIR}, else the user data folder of R
+(\code{tools::R_user_dir("faofishingreport", "data")}).
+}
+\details{
+To use the same folder in every R session, e.g. a cloud folder shared by several computers or
+a team, add a line \verb{FAOFISHINGREPORT_DATA_DIR=<folder>} to the \code{.Renviron} file in your home
+folder (\code{file.path(Sys.getenv("HOME"), ".Renviron")}) and restart R.
 }
 \examples{
 \dontrun{

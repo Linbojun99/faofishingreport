@@ -1,0 +1,110 @@
+# CMSY++ on Windows, macOS and Linux: downloads JAGS with cmsy_install_jags() (checksum checked),
+# installs it, runs the CMSY tests with real CMSY++ runs, and runs cmsy_area() on two species of
+# FAO area 34. The CMSY++ output, charts and tables of each system are kept as artifacts.
+on:
+  push:
+    branches: [main, master, dev]
+    paths:
+      - 'R/cmsy_*.R'
+      - 'inst/cmsy/**'
+      - 'inst/extdata/cmsy_priors.csv'
+      - 'tests/testthat/test-cmsy.R'
+      - '.github/workflows/cmsy-cross-platform.yaml'
+  pull_request:
+    paths:
+      - 'R/cmsy_*.R'
+      - 'inst/cmsy/**'
+      - 'tests/testthat/test-cmsy.R'
+  workflow_dispatch:
+
+name: CMSY-cross-platform
+
+permissions: read-all
+
+jobs:
+  cmsy:
+    runs-on: ${{ matrix.os }}
+    name: CMSY++ on ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      FAOFISHINGREPORT_CMSY_TESTS: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: release
+          use-public-rspm: true
+
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            any::testthat
+            any::pkgload
+            any::withr
+            any::rjags
+            any::R2jags
+            any::coda
+            any::gplots
+            any::mvtnorm
+            any::neuralnet
+            any::conicfit
+            any::patchwork
+            any::MASS
+            local::.
+
+      - name: Download the JAGS installer with cmsy_install_jags()
+        if: runner.os != 'Linux'
+        run: |
+          path <- faofishingreport::cmsy_install_jags(open = FALSE)
+          cat("JAGS_INSTALLER=", normalizePath(path), "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
+        shell: Rscript {0}
+
+      - name: Install JAGS (Windows, silent installer)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Start-Process -FilePath "$env:JAGS_INSTALLER" -ArgumentList "/S" -Wait
+
+      - name: Install JAGS (macOS)
+        if: runner.os == 'macOS'
+        run: sudo installer -pkg "$JAGS_INSTALLER" -target /
+
+      - name: Install JAGS (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y jags
+
+      - name: Check the computer for CMSY++
+        run: |
+          sys <- faofishingreport::cmsy_system()
+          print(sys$changes[, c("change", "applies_to")])
+          if (is.na(sys$jags)) stop("JAGS was not found: ", sys$jags_message)
+          if (!all(sys$packages$ok)) stop("Missing R packages: ", paste(sys$packages$package[!sys$packages$ok], collapse = ", "))
+        shell: Rscript {0}
+
+      - name: Run the CMSY tests (with real CMSY++ runs)
+        run: testthat::test_local(filter = "cmsy", reporter = "progress", stop_on_failure = TRUE)
+        shell: Rscript {0}
+
+      - name: Run cmsy_area() on two species of FAO area 34
+        run: |
+          library(faofishingreport)
+          fao_settings(dpi = 72)
+          res <- cmsy_area("Atlantic, Eastern Central", species = c("Brachydeuterus auritus", "PIL"),
+                           out_dir = "cmsy-ci", annotations = TRUE)
+          print(res$summary[, c("Stock", "run_status", "first_year", "B_Bmsy", "F_Fmsy", "status", "seconds")])
+          print(res$sources[, c("component", "version")])
+          stopifnot(all(res$summary$run_status == "ok"))
+          stopifnot(file.exists(file.path(res$dir, "figures", "GRB_34", "kobe.png")))
+        shell: Rscript {0}
+
+      - name: Keep the CMSY++ output of this system
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cmsy-${{ matrix.os }}
+          path: cmsy-ci
+          if-no-files-found: ignore

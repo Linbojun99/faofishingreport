@@ -40,6 +40,16 @@ package). Default is FALSE.}
 \item{data_dir}{Folder where \code{download_fao_data()} saves FAO releases and where all
 functions look for them, e.g. a folder shared by a team. Default is NULL, the user data
 folder of R; see \code{fao_data_dir()}.}
+\item{online}{Whether functions may connect to the internet to look for the newest FishBase
+release (see \code{fishbase_table()}). Default is TRUE; use FALSE to work offline with the
+downloaded copy, e.g. on a slow connection.}
+\item{sst}{The sea surface temperature (SST) data used by \code{fao_area_sst()} and
+\code{mean_temperature_catch()}: "ersst5" (default, NOAA ERSST v5, built into the package), a
+product downloaded with \code{download_sst_data()} (e.g. "hadisst1"), or the path of your own
+NetCDF file, or of a folder of NetCDF files (see \code{fao_area_sst()}).}
+\item{silent}{Whether the CMSY++ functions (\code{cmsy_run()}, \code{cmsy_plot()}, ...) work
+silently, without progress bars and messages. Default is FALSE. Their \code{silent} argument
+still takes precedence.}
 }}
 
 \item{reset}{A logical value. If TRUE, all settings go back to their defaults first.}

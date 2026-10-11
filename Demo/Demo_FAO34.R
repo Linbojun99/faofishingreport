@@ -151,6 +151,32 @@ regime_shift(FAO34[["area_data"]], lang=my_lang)
 #沿岸国与远洋捕捞国
 coastal_distant(FAO34[["area_data"]], lang=my_lang)
 
+#海表温度（SST）：各渔区的年平均、渔区内范围（格点10%-90%分位）和季节范围（最冷月、最暖月）
+#包里内置的是 NOAA ERSST v5（2°网格，1950年起，仅现场观测），运行时会打印所用的SST数据
+sst34 <- fao_area_sst("34")
+#用自己的SST数据：给出 NetCDF 文件（或文件夹）的路径；第一次运行时计算渔区平均并保存，之后直接读取
+#sst34_own <- fao_area_sst("34", sst = "D:/data/HadISST_sst.nc")
+#fao_settings(sst = "D:/data/HadISST_sst.nc")       #本次会话的所有函数都用这个文件
+#也可以用包下载常用产品（分辨率、年份、来源、许可和引用见 fao_sst_products()）
+#fao_sst_products()[, c("product", "name", "grid", "first_year", "built_in")]
+#download_sst_data("hadisst1")                       #约 240 MB，只需一次；之后 sst = "hadisst1"
+
+#渔获平均温度（MTC）：各物种在 FishBase/SeaLifeBase 中的偏好温度按渔获量加权平均，与渔区海表温度对照
+#第一次运行需要联网，会自动下载用到的 FishBase 和 SeaLifeBase 表格（约 23 MB），之后可离线使用
+#只用种一级的条目（学名精确匹配、官方同物异名、经 WoRMS 有效名匹配、人工更正）；属、科等类群条目不参与计算
+#注意：偏好温度是程序自动初配的结果，正误需要使用者逐条核对（见下）
+mtc34 <- mean_temperature_catch(FAO34[["area_data"]], lang=my_lang)              #SST 默认用内置的 ERSST v5
+#mtc34 <- mean_temperature_catch(FAO34[["area_data"]], sst = "D:/data/HadISST_sst.nc", lang=my_lang)   #换用自己的 SST 文件
+mtc34$trend   #全时段和1970年以来的斜率（°C/十年）、Mann-Kendall检验、与SST的相关（含逐年差分）
+#核对：打开 tables/ 下 *_mtc_species.csv，按渔获量从大到小逐条点 url、search_url、worms_url 链接，
+#核对匹配的物种和偏好温度；核对过的在 checked 列写上核对人或日期，错的改 temp_pref_mean 并在 note 写明出处，
+#然后用核对后的表重新计算（图中"尚未全部核对"的提示会在全部核对后消失）
+#mtc34 <- mean_temperature_catch(FAO34[["area_data"]], match = "tables/Atlantic__Eastern_Central_mtc_species.csv", lang=my_lang)
+head(mtc34$species[, c("species_name", "match_type", "temp_pref_mean", "catch_pct", "used", "checked")], 20)
+#与 Cheung et al. (2013) 相同的时段 1970-2006
+mtc34_1970_2006 <- mean_temperature_catch(subset(FAO34[["area_data"]], Year >= 1970 & Year <= 2006),
+                                          label = "FAO34_1970_2006", lang=my_lang)
+
 
 ####major country：国家在全球所有渔区的捕捞情况
 Morocco_analysis<-country_analysis(country_name = "Morocco",c(1, 10), plot=TRUE,table=TRUE,h_value=5,lang=my_lang)

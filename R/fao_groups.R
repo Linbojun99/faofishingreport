@@ -1,5 +1,5 @@
 # Grouping information for species, countries and fishing areas, from the FAO code lists:
-#   species: taxonomic level, major group (PISCES, ...) and ISSCAAP group
+#   species: 3-alpha code, scientific name, taxonomic level, major group (PISCES, ...) and ISSCAAP group
 #   country: ISO3 code, continent, region and World Bank income group
 #   area:    FAO code, inland/marine and ocean
 # Chinese names come from the FAO code lists, or from inst/extdata/group_names_zh.csv where
@@ -23,6 +23,8 @@ fao_build_group_table <- function(capture, lookup = fao_lookup_tables()) {
   sp <- capture$species
   species <- data.frame(
     name_en = fao_species_names(sp$`3A_Code`, sp, lookup),
+    alpha3 = sp$`3A_Code`,
+    scientific_name = sp$Scientific_Name,
     taxon_level = fao_taxon_level(sp$Taxonomic_Code),
     major_en = sp$Major_Group, major_zh = zh_of("major", sp$Major_Group),
     isscaap_en = sp$ISSCAAP_Group_En, isscaap_zh = zh_of("isscaap", sp$ISSCAAP_Group_En),
@@ -63,7 +65,14 @@ fao_group_table <- function(data_dir = fao_data_dir()) {
       downloaded <- readRDS(groups_file)
       newer_first <- numeric_version(newest) > numeric_version(fao_bundled_release())
       groups <- lapply(names(groups), function(type) {
-        both <- if (newer_first) rbind(downloaded[[type]], groups[[type]]) else rbind(groups[[type]], downloaded[[type]])
+        # Tables saved by older versions of the package lack some columns (e.g. alpha3)
+        columns <- union(names(groups[[type]]), names(downloaded[[type]]))
+        fill <- function(x) {
+          x[setdiff(columns, names(x))] <- NA_character_
+          x[columns]
+        }
+        both <- if (newer_first) rbind(fill(downloaded[[type]]), fill(groups[[type]])) else
+          rbind(fill(groups[[type]]), fill(downloaded[[type]]))
         both[!duplicated(both$name_en), ]
       })
       names(groups) <- names(bundled$fao_groups)

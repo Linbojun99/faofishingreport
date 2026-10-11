@@ -13,3 +13,5 @@
 ^research_notes$
 ^reports$
 ^report_samples$
+^dev$
+^\.git$

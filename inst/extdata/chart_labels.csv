@@ -56,3 +56,37 @@ peak_year_note,Peak year in brackets,括号内为峰值年份
 n_stocks_note,{n} stocks,共{n}个种群
 share_world_marine,Share of World Marine Catch (%),占全球海洋捕捞产量的比例（%）
 share_world_inland,Share of World Inland Catch (%),占全球内陆捕捞产量的比例（%）
+mtc,Mean temperature of the catch,渔获平均温度
+sst,Sea surface temperature,海表温度
+temperature_c,Temperature (°C),温度 (°C)
+mtc_coverage,Catch with a preferred temperature (%),有偏好温度的渔获占比 (%)
+mtc_faded_note,Faded: years in which less than {n}% of the catch has a preferred temperature,浅色：有偏好温度的渔获不足{n}%的年份
+sst_range,SST range in the area (10th-90th percentile),渔区内海表温度范围（10%-90%分位）
+mtc_unchecked_note,Preferred temperatures are automatic first matches and have not all been checked by the user,偏好温度为自动初配结果，尚未全部经用户核对
+adjacent_areas,Adjacent areas,邻近渔区
+distant_areas,Distant-water areas,远洋渔区
+n_areas_fished,Number of FAO areas fished,作业的FAO渔区数
+other_area,Other areas,其他渔区
+area_years_note,Lines: from the first to the last year with catch above {n} tonnes,线段：渔获超过{n}吨的首年至末年
+release,Release {n},{n}版
+revision_kt,Revision (thousand tonnes),修订量（千吨）
+revision_note,Revision = {n},修订量 = {n}
+shock_frequency,Series with a shock (%),出现骤变的序列占比 (%)
+shocks_per_series,Shocks per series,每条序列的骤变次数
+shock_loss,Loss (% of baseline),损失（占基线的%）
+shock_method_note,Shocks: {n},骤变判定：{n}
+collapse_type,Decline before collapse,崩溃前的下降形态
+collapse_plateau,Plateau,平台型
+collapse_smooth,Smooth,平滑型
+collapse_erratic,Erratic,波动型
+collapse_unclassified,Not classified,未分类
+n_collapses,Number of collapses,崩溃次数
+pct_collapsed,Collapsed series (%),崩溃序列占比 (%)
+years_from_collapse,Years from the collapse year,距崩溃年份的年数
+catch_rel_max,Catch / maximum catch,渔获量/最高渔获量
+collapsed_current,Collapsed in the year,当年处于崩溃
+collapsed_cumulative,Collapsed at least once,曾经崩溃
+catch_data,Catch data,渔获数据
+null_model,Random series with no trend (Wilberg & Miller 2007),无趋势随机序列（Wilberg & Miller 2007）
+collapse_note_mullon2005,"Collapse: catch below 1/10 of the maximum for 4 years after the maximum (Mullon et al. 2005)",崩溃：最高渔获之后连续4年低于最高值的1/10（Mullon et al. 2005）
+collapse_note_worm2006,"Collapsed: catch below 10% of the maximum (Worm et al. 2006)",崩溃：渔获低于最高值的10%（Worm et al. 2006）
