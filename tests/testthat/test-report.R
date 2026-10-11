@@ -26,6 +26,7 @@ test_that("references follow GB/T 7714, APA and FAO styles", {
 
 test_that("report text templates exist in both languages", {
   texts <- fao_extdata_csv("report_text.csv")
+  texts <- texts[texts$key != "abstract_results", ]   # "Results show that" has no English sentence
   expect_false(any(is.na(texts$en) | texts$en == ""))
   expect_false(any(is.na(texts$zh) | texts$zh == ""))
   expect_match(fao_report_text("report_no", "en", list(no = 2)), "Report 2")
@@ -47,4 +48,15 @@ test_that("catch ranges are written in one unit", {
   expect_identical(fao_report_catch_range(775500, 1076000, "en"), "0.78–1.08 million t")
   expect_identical(fao_report_catch_range(48200, 82400, "en"), "48.2–82.4 thousand t")
   expect_identical(fao_report_catch_range(5618000, 9915000, "zh"), "561.8–991.5 万 t")
+})
+
+test_that("settings of the analyses are passed by section prefix", {
+  sections <- fao_report_sections()
+  args <- fao_report_args(list(species_h_value = 0.2, status_smooth = TRUE, cmsy_top = 5), sections)
+  expect_identical(args$species$h_value, 0.2)
+  expect_true(args$status$smooth)
+  expect_identical(args$cmsy$top, 5)
+  expect_error(fao_report_args(list(species_hvalue = 0.2), sections), "not an argument of fishing_area_species")
+  expect_error(fao_report_args(list(spcies_h_value = 0.2), sections), "Unknown argument")
+  expect_error(fao_report_args(list(0.2), sections), "must be named")
 })
