@@ -66,7 +66,7 @@ Series are chosen as by Ong et al. (2021): the median catch is above `min_median
 year and more than `min_nonzero` (3/4) of the years have catch; with `by = "species"`, only
 items identified to species are used (Ong et al. left out miscellaneous and "nei" items). Each
 series is detrended with a linear regression on year (as by Ong et al.), since trends make
-series look synchronous (Leps et al. 2019); use `detrend = "none"` to keep them. From the
+series look synchronous (Lepš et al. 2019); use `detrend = "none"` to keep them. From the
 standard deviations \eqn{\sigma_i} of the series, the standard deviation \eqn{\sigma_T} of the
 total catch and its mean \eqn{m_T}:
 \itemize{
@@ -92,7 +92,11 @@ catch_synchrony(FAO34$area_data, by = "country", window = 15)
 }
 }
 \references{
-Leps, J., Gotzenberger, L., Valencia, E. and de Bello, F. (2019). Accounting for long-term
+Carlson, S.M. and Satterthwaite, W.H. (2011). Weakened portfolio effect in a collapsed salmon
+population complex. Canadian Journal of Fisheries and Aquatic Sciences 68: 1579-1589.
+\doi{10.1139/f2011-084}
+
+Lepš, J., Götzenberger, L., Valencia, E. and de Bello, F. (2019). Accounting for long-term
 directional trends on year-to-year synchrony in species fluctuations. Ecography 42: 1728-1741.
 \doi{10.1111/ecog.04528}
 

@@ -10,7 +10,9 @@
 #' Zeller and Pauly (2018) call "presentist bias" the practice of applying improvements in
 #' reporting to recent years only, without revising the earlier years, which makes the time series
 #' show an increase that did not happen. Comparing releases shows which years and countries were
-#' revised and how far back the revisions reach.
+#' revised and how far back the revisions reach. No published study has compared successive
+#' FishStat releases record by record in this way; the comparison is a tool of this package, and
+#' the two papers above give the background.
 #'
 #' Releases are compared on the names used by the package (matched through FAO codes when a
 #' release is downloaded). A record removed under one species item and added under another with
