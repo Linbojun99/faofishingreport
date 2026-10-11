@@ -4,3 +4,10 @@
 ^data-raw$
 ^Demo$
 ^faofishingreport_.*\.tar\.gz$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
+^vignettes/articles$
+^codecov\.yml$
+^research_notes$

@@ -21,7 +21,7 @@
 #'        set with `fao_settings()` ("en" unless changed).
 #' @param pptx A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are
 #'        also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
-#'        changed for all functions with `options(faofishingreport.pptx = TRUE)`.
+#'        changed for all functions with `fao_settings(pptx = TRUE)`.
 #' @export
 #'
 #' @examples

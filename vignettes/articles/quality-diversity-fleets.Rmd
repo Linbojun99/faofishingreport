@@ -1,0 +1,114 @@
+---
+title: "🔍 Data quality, diversity and fleets"
+description: >
+  data_quality(), diversity_concentration(), country_group_summary() and coastal_distant():
+  how reliable the data are, how diverse and concentrated the catch is, and who is fishing.
+---
+
+```{r setup, include = FALSE}
+source("_setup.R")
+FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+```
+
+```{r, eval = FALSE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+```
+
+## 🧪 Data quality
+
+`data_quality()` shows two aspects of the statistics over time:
+
+- the share of the catch **reported officially**, and the share **estimated** (by the country or
+  imputed by FAO), from the FAO status flags;
+- the share of the catch **identified to species**, genus, family, or only to a higher group such as
+  "Marine fishes nei", from the FAO taxonomic codes.
+
+```{r, figures = TRUE}
+quality <- data_quality(FAO34$area_data)
+```
+
+A large estimated share in the latest years usually means that FAO has not yet received the
+national reports; these values are often revised in the next release. The country table shows,
+for the countries with the largest catch in the last five years, how much was estimated and how
+much identified to species:
+
+```{r}
+show_table(quality$countries, digits = 1)
+```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `top_n` | Number of countries in the country table | `10` |
+
+## 🌈 Diversity and concentration
+
+`diversity_concentration()` computes, for each year:
+
+| Indicator | Calculation |
+|---|---|
+| Number of species reported | Items identified to species with catch |
+| Number of countries | Countries with catch |
+| Shannon diversity | $H = -\sum_i p_i \ln p_i$, with $p_i$ the share of species item $i$ in the year's catch |
+| HHI of species / countries | $\text{HHI} = \sum_i (100\,p_i)^2$, from 0 to 10 000 |
+| Top-N share | Share of the `top_n` largest species items or countries |
+
+```{r, figures = TRUE}
+diversity <- diversity_concentration(FAO34$area_data, top_n = 5)
+```
+
+```{r}
+show_table(subset(diversity, Year %in% c(1970, 1990, 2010, max(Year))), digits = 2)
+```
+
+**Reading the indicators.** A higher Shannon index means more species items and a more even catch;
+its maximum is $\ln S$ for $S$ items. An HHI below 1 500 is usually read as unconcentrated, 1 500
+to 2 500 as moderately and above 2 500 as highly concentrated. For example, three species with
+shares of 50%, 30% and 20% give $H = 1.03$ and $\text{HHI} = 50^2 + 30^2 + 20^2 = 3\,800$.
+
+::: callout-note
+The indicators use FAO species items, including "nei" groups. When FAO splits a "nei" group into
+species, Shannon diversity rises and HHI falls even if nothing changed at sea. Country indicators
+change when countries split, e.g. the USSR in 1991.
+:::
+
+## 🏳️ Country groups
+
+`country_group_summary()` sums the catch by groups of countries from the FAO country list:
+**World Bank income group**, **continent** or **region**.
+
+```{r, figures = TRUE}
+income <- country_group_summary(FAO34$area_data, group = "income")
+```
+
+```{r, figures = TRUE}
+country_group_summary(FAO34$area_data, group = "region", top_n = 6, lang = "zh")
+```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `group` | `"income"`, `"continent"` or `"region"` | `"income"` |
+| `top_n` | Number of groups shown separately | `8` |
+
+## 🚢 Coastal countries and distant-water fleets
+
+`coastal_distant()` splits the catch between countries that **border** the fishing area and
+**distant-water** fleets from elsewhere, and shows the main distant-water countries.
+
+A country is coastal to an area if its land (including overseas territories) lies within 20 km of
+the FAO area boundary. Former countries such as the USSR take the coastline of their successor
+states. In area 34, for example, Spain and Portugal count as coastal because of the Canary Islands
+and Madeira.
+
+```{r, figures = TRUE}
+fleets <- coastal_distant(FAO34$area_data)
+```
+
+```{r}
+show_table(fleets$table, digits = 0)
+```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `top_n` | Number of distant-water countries shown separately | `8` |
+
+The analysis works for marine areas; inland areas in the data are left out with a message.

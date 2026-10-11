@@ -6,11 +6,14 @@
 \alias{faofishingreport-package}
 \title{faofishingreport: Analyse and Report FAO Global Capture Production Statistics}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Analyses FAO Global Capture Production statistics by fishing area, country and species, and exports charts (PNG and editable PowerPoint) and tables for reports. Includes breakpoint analysis of catch time series, checks for and downloads the latest FAO data release, and draws charts in English, Chinese or both, using official FAO Chinese names and a Chinese font chosen for the operating system.
 }
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://linbojun99.github.io/faofishingreport/}
   \item \url{https://github.com/Linbojun99/faofishingreport}
   \item Report bugs at \url{https://github.com/Linbojun99/faofishingreport/issues}
 }

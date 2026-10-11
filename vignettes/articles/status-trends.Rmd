@@ -1,0 +1,162 @@
+---
+title: "📈 Composition, stock status and trends"
+description: >
+  species_group_composition(), stock_status(), peak_trend(), area_overview() and
+  regime_shift(): what is caught, how the stocks have developed, and when things changed.
+---
+
+```{r setup, include = FALSE}
+source("_setup.R")
+FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+```
+
+The summary analyses take any catch data: a fishing area from `fishing_area_data()`, or any subset
+of `load_fao_data()` (see [💾 FAO data](data.html)). Their charts are saved in
+`figures/png/summary/` and their tables in `tables/`, with the name of the area at the start of the
+file names (or `label`).
+
+```{r, eval = FALSE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+```
+
+## 🧺 Species group composition
+
+`species_group_composition()` sums the catch by **ISSCAAP species group** (the FAO
+classification of species into about 50 groups, such as "Herrings, sardines, anchovies") or by
+**major group** (fishes, crustaceans, molluscs, ...).
+
+```{r, figures = TRUE}
+groups <- species_group_composition(FAO34$area_data)
+```
+
+The first chart shows the catch of each group, the second its share of the yearly catch. The
+`top_n` largest groups are shown separately (default 8), the others combined:
+
+```{r}
+show_table(groups$table, digits = 0)
+```
+
+```{r, figures = TRUE}
+species_group_composition(FAO34$area_data, group = "major", lang = "zh")
+```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `group` | `"isscaap"` or `"major"` | `"isscaap"` |
+| `top_n` | Number of groups shown separately | `8` |
+
+## 🚦 Stock status plots
+
+`stock_status()` classifies the catch series of each species every year, by its catch relative to
+the **peak catch** of the series (Kleisner et al. 2013):
+
+| Status | Rule |
+|---|---|
+| Developing | before the peak year, catch at most 50% of the peak |
+| Exploited | catch above 50% of the peak |
+| Over-exploited | after the peak, catch between 10% and 50% of the peak |
+| Collapsed | after the peak, catch below 10% of the peak |
+| Rebuilding | after a collapse, catch back between 10% and 50% of the peak |
+
+```{r, figures = TRUE}
+status <- stock_status(FAO34$area_data)
+```
+
+The first chart is the share of **stocks** in each status, the second the share of the **catch**.
+A "stock" here is one species item in the data (all countries together). Only series that meet
+the inclusion criteria are classified:
+
+| Argument | Criterion | Default |
+|---|---|---|
+| `taxon_levels` | Items identified to species, genus or family (pooled groups such as "Marine fishes nei" are left out) | `c("species", "genus", "family")` |
+| `min_years` | Years from the first to the last catch | `10` |
+| `min_consecutive` | Consecutive years with catch | `5` |
+| `min_catch` | Total catch (t) | `1000` |
+| `smooth` | 3-year running mean before classifying | `FALSE` |
+
+The table of stocks gives the peak year and the status of each stock in the last year:
+
+```{r}
+show_table(status$stocks, digits = 0)
+table(status$stocks$status_last_year)
+```
+
+```{r, figures = TRUE}
+# Smoothed catches, stricter inclusion
+stock_status(FAO34$area_data, smooth = TRUE, min_catch = 10000, label = "FAO34 smoothed")
+```
+
+::: callout-note
+Stock status plots use catch data only. A falling catch can also come from management,
+markets or reporting, so the results are indicative and do not replace stock assessments.
+:::
+
+## ⛰️ Peak and trend
+
+`peak_trend()` finds, for the total and for the main species (or countries, or areas), the year and
+size of the **peak catch**, the catch in the last year as a **percentage of the peak**, and the
+trend over the last `recent_years` years:
+
+- **growth rate**: the average yearly change between the first and last of these years;
+- **trend**: a Mann-Kendall test (Kendall's τ between year and catch); "increasing" or
+  "decreasing" when p < 0.05.
+
+```{r, figures = TRUE}
+species_trend <- peak_trend(FAO34$area_data, by = "species", top_n = 10)
+```
+
+```{r}
+show_table(species_trend[, c("name", "peak_year", "pct_of_peak", "growth_pct_per_year", "kendall_tau", "p_value", "trend")])
+```
+
+```{r, figures = TRUE}
+peak_trend(FAO34$area_data, by = "country", top_n = 15, recent_years = 20, lang = "zh")
+```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `by` | `"species"`, `"country"` or `"area"` | `"species"` |
+| `top_n` | Number of series (`Inf` for all) | `10` |
+| `recent_years` | Years used for the trend | `10` |
+
+## 🌍 All FAO marine areas
+
+`area_overview()` compares all FAO marine fishing areas: the catch of each area over time with its
+peak, and the peak and trend chart for the areas:
+
+```{r, figures = TRUE}
+overview <- area_overview()
+```
+
+```{r}
+show_table(overview[, c("name", "peak_year", "peak_tonnes", "last_year_tonnes", "pct_of_peak", "trend")], n = 20, digits = 0)
+```
+
+## 🔀 Synchronous breakpoints
+
+`regime_shift()` runs the breakpoint analysis on the main species (default 20) and counts how many
+species change their mean catch in each year. Years when many species change together may point
+to an ecosystem-wide regime shift, or to changes in management or reporting.
+
+```{r, figures = TRUE}
+shifts <- regime_shift(FAO34$area_data, top_n = 20)
+```
+
+```{r}
+show_table(shifts$breakpoints[, c("species", "first_year", "n_breakpoints", "breakpoint_years")], n = 20)
+head(shifts$yearly[order(-shifts$yearly$n_species), ], 5)
+```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `top_n` | Number of main species analysed | `20` |
+| `h_value` | Minimum period length (fraction or years) | `0.15` |
+
+## 📖 References
+
+Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global catch data for inferences
+on the world's marine fisheries. *Fish and Fisheries* 14: 293–311.
+[doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
+
+Zeileis, A., Kleiber, C., Krämer, W. and Hornik, K. (2003). Testing and dating of structural
+changes in practice. *Computational Statistics & Data Analysis* 44: 109–123.

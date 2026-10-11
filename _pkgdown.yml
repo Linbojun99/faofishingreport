@@ -1,0 +1,116 @@
+url: https://linbojun99.github.io/faofishingreport/
+
+template:
+  bootstrap: 5
+  bslib:
+    primary: "#0B2E5B"
+    secondary: "#16A6B6"
+    navbar-bg: "#0B2E5B"
+    link-color: "#0A6F9C"
+    code-color: "#0B5E80"
+
+home:
+  title: "faofishingreport: FAO capture statistics, charts and reports"
+  description: >
+    Analyse FAO Global Capture Production statistics by fishing area, country and
+    species, and produce charts, maps and tables for reports in English or Chinese.
+  sidebar:
+    structure: [links, license, citation, authors, dev]
+
+navbar:
+  bg: primary
+  type: dark
+  structure:
+    left: [intro, reference, articles, news]
+    right: [lang, search, github]
+  components:
+    intro:
+      text: "🚀 Get started"
+      href: articles/get-started.html
+    articles:
+      text: Articles
+      menu:
+      - text: "💾 FAO data: download and customise"
+        href: articles/data.html
+      - text: "🌊 Fishing area analysis"
+        href: articles/fishing-areas.html
+      - text: "🐟 Species and countries"
+        href: articles/species-countries.html
+      - text: "📈 Composition, stock status and trends"
+        href: articles/status-trends.html
+      - text: "🔍 Data quality, diversity and fleets"
+        href: articles/quality-diversity-fleets.html
+      - text: "🎨 Customise charts and maps"
+        href: articles/customise.html
+    lang:
+      text: "中文"
+      href: "#lang"
+      aria-label: "Switch language / 切换语言"
+    github:
+      icon: fa-github
+      href: https://github.com/Linbojun99/faofishingreport
+      aria-label: GitHub
+
+reference:
+- title: "💾 FAO data"
+  desc: Check for, download and load FAO Global Capture Production releases.
+  contents:
+  - check_fao_update
+  - download_fao_data
+  - load_fao_data
+  - fao_data_dir
+- title: "🌊 Fishing areas"
+  desc: Total catch, main species and main countries of an FAO fishing area.
+  contents:
+  - fishing_area_data
+  - fishing_area_species
+  - fishing_area_country
+- title: "🐟 Species and countries"
+  desc: Who catches a species, what a country catches, and a country's global catch.
+  contents:
+  - species_country
+  - country_species
+  - country_analysis
+- title: "📊 Summary analyses"
+  desc: Composition, stock status, trends, data quality, diversity and fleets.
+  contents:
+  - species_group_composition
+  - stock_status
+  - peak_trend
+  - area_overview
+  - data_quality
+  - diversity_concentration
+  - country_group_summary
+  - regime_shift
+  - coastal_distant
+- title: "🎨 Settings and language"
+  desc: Chart style, map projection, colours, fonts and Chinese names.
+  contents:
+  - fao_settings
+  - fao_font
+  - fao_translate
+
+articles:
+- title: Guides
+  navbar: ~
+  contents:
+  - articles/get-started
+  - articles/data
+  - articles/fishing-areas
+  - articles/species-countries
+  - articles/status-trends
+  - articles/quality-diversity-fleets
+  - articles/customise
+- title: "中文文档"
+  contents:
+  - articles/zh/index
+  - articles/zh/get-started
+  - articles/zh/data
+  - articles/zh/fishing-areas
+  - articles/zh/species-countries
+  - articles/zh/status-trends
+  - articles/zh/quality-diversity-fleets
+  - articles/zh/customise
+
+news:
+  one_page: true

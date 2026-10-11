@@ -10,23 +10,11 @@ Description: Analyses FAO Global Capture Production statistics by fishing area,
     English, Chinese or both, using official FAO Chinese names and a Chinese
     font chosen for the operating system.
 License: GPL-3
-URL: https://github.com/Linbojun99/faofishingreport
+URL: https://linbojun99.github.io/faofishingreport/, https://github.com/Linbojun99/faofishingreport
 BugReports: https://github.com/Linbojun99/faofishingreport/issues
 Encoding: UTF-8
-Imports: 
-    dplyr,
-    ggplot2,
-    magrittr,
-    eoffice,
-    metR,
-    ggsci,
-    RColorBrewer,
-    forcats,
-    tidyverse,
-    strucchange,
-    ggrepel,
+Imports:
     sf,
-    maps,
     rnaturalearth,
     rnaturalearthdata,
     ragg,
@@ -38,6 +26,12 @@ Imports:
     stats,
     tools,
     utils
+Suggests:
+    testthat (>= 3.0.0),
+    withr,
+    knitr,
+    rmarkdown
+Config/testthat/edition: 3
 Depends:
     R (>= 4.2.0),
     dplyr,

@@ -173,12 +173,20 @@ load_fao_data <- function(version = "latest", data_dir = fao_data_dir()) {
 
 #' Directory for Downloaded FAO Data
 #'
-#' Returns the default directory where `download_fao_data()` saves releases.
+#' Returns the directory where `download_fao_data()` saves releases and where all functions
+#' look for them: the folder set with `fao_settings(data_dir = ...)`, or otherwise the user data
+#' folder of R (`tools::R_user_dir("faofishingreport", "data")`).
 #'
 #' @return A character string with the directory path.
 #' @export
+#' @examples
+#' \dontrun{
+#' fao_data_dir()
+#' fao_settings(data_dir = "D:/shared/fao_data")   # e.g. a folder shared by a team
+#' }
 fao_data_dir <- function() {
-  tools::R_user_dir("faofishingreport", which = "data")
+  dir <- getOption("faofishingreport.data_dir")
+  if (is.null(dir)) tools::R_user_dir("faofishingreport", which = "data") else path.expand(dir)
 }
 
 

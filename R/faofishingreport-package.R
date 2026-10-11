@@ -12,3 +12,17 @@
 #' @importFrom stats coef na.omit reorder ts
 #' @importFrom utils head str
 NULL
+
+# Column names used in dplyr and ggplot2 code of the analysis functions
+utils::globalVariables(c(
+  "area_name", "area_species_production", "ASFIS.species..Name.", "avg_production",
+  "catch_last_5_years", "category", "country_production", "Country..Name.", "Decade",
+  "end", "end_year", "FAO.major.fishing.area..Name.", "Global_Tonnes", "global_yearly_total",
+  "intercept", "is_species", "last_year_tonnes", "mean_Percentage_area", "n_species",
+  "pct_of_peak", "peak_tonnes", "percentage", "Percentage", "Percentage_area",
+  "percentage_country", "percentage_of_global", "percentage_of_total", "period", "Production",
+  "Production.Type", "Rank", "species", "species_area_production", "species_production", "start",
+  "start_year", "status_label", "text", "Tonnes", "total_2021_production",
+  "total_species_production", "total_tonnes", "Total_Tonnes", "trend", "value", "Year",
+  "yearly_production"
+))

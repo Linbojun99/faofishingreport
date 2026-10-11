@@ -96,7 +96,7 @@ set with `fao_settings()` ("en" unless changed).}
 
 \item{pptx}{A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are
 also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
-changed for all functions with `options(faofishingreport.pptx = TRUE)`.}
+changed for all functions with `fao_settings(pptx = TRUE)`.}
 }
 \value{
 NULL. The function saves the generated plots to the specified directory if plot = TRUE.

@@ -30,7 +30,7 @@ data_quality(
 
 \item{pptx}{A logical value. If TRUE, charts are also saved as editable PowerPoint files in
 `figures/pptx/summary/`. Default is FALSE, which can be changed for all functions with
-`options(faofishingreport.pptx = TRUE)`.}
+`fao_settings(pptx = TRUE)`.}
 
 \item{label}{The name used in the output file names. Default is the fishing area (or the
 country) of the data.}
