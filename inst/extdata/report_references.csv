@@ -1,0 +1,9 @@
+key,type,author,year,title,container,volume,issue,pages,edition,series,place,publisher,doi,url
+fao_yearbook,M,FAO,2026,Fishery and Aquaculture Statistics – Yearbook 2024,,,,,,FAO Yearbook of Fishery and Aquaculture Statistics,Rome,FAO,10.4060/ce1217en,
+bai2003,J,"Bai, J.; Perron, P.",2003,Computation and analysis of multiple structural change models,Journal of Applied Econometrics,18,1,1-22,,,,,10.1002/jae.659,
+zeileis2003,J,"Zeileis, A.; Kleiber, C.; Krämer, W.; Hornik, K.",2003,Testing and dating of structural changes in practice,Computational Statistics & Data Analysis,44,1-2,109-123,,,,,10.1016/S0167-9473(03)00030-6,
+kleisner2013,J,"Kleisner, K.; Zeller, D.; Froese, R.; Pauly, D.",2013,Using global catch data for inferences on the world's marine fisheries,Fish and Fisheries,14,3,293-311,,,,,10.1111/j.1467-2979.2012.00469.x,
+mann1945,J,"Mann, H. B.",1945,Nonparametric tests against trend,Econometrica,13,3,245-259,,,,,10.2307/1907187,
+kendall1975,M,"Kendall, M. G.",1975,Rank correlation methods,,,,,4,,London,Charles Griffin,,
+shannon1948,J,"Shannon, C. E.",1948,A mathematical theory of communication,Bell System Technical Journal,27,3,379-423,,,,,10.1002/j.1538-7305.1948.tb01338.x,
+rhoades1993,J,"Rhoades, S. A.",1993,The Herfindahl-Hirschman index,Federal Reserve Bulletin,79,3,188-189,,,,,,

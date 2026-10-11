@@ -28,6 +28,8 @@ Imports:
     utils
 Suggests:
     eoffice,
+    officer,
+    xml2,
     testthat (>= 3.0.0),
     withr,
     knitr,

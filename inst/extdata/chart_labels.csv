@@ -54,3 +54,5 @@ other_country_group,Other groups,其余分组
 other_distant,Other distant-water countries,其余远洋捕捞国
 peak_year_note,Peak year in brackets,括号内为峰值年份
 n_stocks_note,{n} stocks,共{n}个种群
+share_world_marine,Share of World Marine Catch (%),占全球海洋捕捞产量的比例（%）
+share_world_inland,Share of World Inland Catch (%),占全球内陆捕捞产量的比例（%）

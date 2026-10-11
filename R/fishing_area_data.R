@@ -2,6 +2,8 @@
 #'
 #' This function extracts and returns data for a specified FAO major fishing area.
 #' If the plot parameter is TRUE, it will also generate and save plots to the figures directory.
+#' The percentage chart shows the share of the area in the world catch of all marine areas (or,
+#' for an inland area, of all inland waters).
 #'
 #' @param area_name The name of the FAO major fishing area.
 #' @param plot A logical indicating whether to generate and save plots. Default is TRUE.
@@ -112,8 +114,14 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
 
 
   #draw set
+  # The share is of the world catch in waters of the same kind: marine areas or inland waters
+  area_types <- fao_group_table()$area
+  water <- area_types$inland_marine_en[match(area_name, area_types$name_en)]
+  same_water <- area_types$name_en[area_types$inland_marine_en %in% water]
+  global_data <- if (length(same_water) > 0) data[data$FAO.major.fishing.area..Name. %in% same_water, ] else data
+
   ylab <- fao_label("million_tonnes", lang)
-  xlab2 <- fao_label("share", lang)
+  xlab2 <- fao_label(if (identical(water, "Inland waters")) "share_world_inland" else "share_world_marine", lang)
   xlab <- fao_label("year", lang)
   year_breaks <- fao_year_breaks(area_data$Year)
 
@@ -169,7 +177,7 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
     fao_save_plot(p1, "fishing_trend", width = 12, height = 6, pptx = pptx)
 }
     # Percentage calculations
-    Global_production_total <- dplyr::group_by(data, Year) %>%
+    Global_production_total <- dplyr::group_by(global_data, Year) %>%
       dplyr::summarise(Global_Tonnes = sum(Production, na.rm = TRUE))
 
     merged_data <- dplyr::left_join(area_production, Global_production_total, by = "Year")

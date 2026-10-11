@@ -30,3 +30,13 @@ test_that("the summary analyses return their results without writing files", {
   expect_true(all(levels(fleets$yearly$category) %in% c("Coastal countries", "Distant-water countries", "Unknown")))
   expect_length(list.files(), 0)
 })
+
+test_that("peak_trend works for all series, including short ones", {
+  data <- data.frame(ASFIS.species..Name. = c(rep("A", 12), "B"), Country..Name. = "X",
+                     FAO.major.fishing.area..Name. = "Area", Year = c(2001:2012, 2012),
+                     Production = c(1:12, 5))
+  result <- peak_trend(data, top_n = Inf, plot = FALSE, table = FALSE, lang = "en")
+  expect_equal(nrow(result), 3)
+  expect_true(is.na(result$p_value[result$name_en == "B"]))
+  expect_identical(result$trend[result$name_en == "B"], "none")
+})

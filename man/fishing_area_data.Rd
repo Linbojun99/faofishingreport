@@ -105,6 +105,8 @@ A data frame containing data for the specified fishing area.
 \description{
 This function extracts and returns data for a specified FAO major fishing area.
 If the plot parameter is TRUE, it will also generate and save plots to the figures directory.
+The percentage chart shows the share of the area in the world catch of all marine areas (or,
+for an inland area, of all inland waters).
 }
 \examples{
 \dontrun{

@@ -33,6 +33,7 @@ peak_trend <- function(area_data, by = c("species", "country", "area"), top_n = 
                              by = list(name = area_data[[column]], Year = area_data$Year),
                              FUN = sum, na.rm = TRUE)
   totals <- sort(tapply(yearly$Tonnes, yearly$name, sum), decreasing = TRUE)
+  totals <- totals[totals > 0]   # series without any catch
   top <- names(totals)[seq_len(min(top_n, length(totals)))]
   total <- stats::aggregate(list(Tonnes = yearly$Tonnes), by = list(Year = yearly$Year), FUN = sum)
   series <- c(list(total), lapply(top, function(n) yearly[yearly$name == n, c("Year", "Tonnes")]))
@@ -46,7 +47,11 @@ peak_trend <- function(area_data, by = c("species", "country", "area"), top_n = 
     recent <- years > last_year - recent_years
     first <- catch[recent][1]
     last <- catch[length(catch)]
-    test <- suppressWarnings(stats::cor.test(years[recent], catch[recent], method = "kendall", exact = FALSE))
+    # Series with fewer than three recent years have no trend
+    test <- tryCatch(
+      suppressWarnings(stats::cor.test(years[recent], catch[recent], method = "kendall", exact = FALSE)),
+      error = function(e) list(estimate = NA_real_, p.value = NA_real_)
+    )
     data.frame(
       name_en = n,
       peak_year = years[which.max(catch)],

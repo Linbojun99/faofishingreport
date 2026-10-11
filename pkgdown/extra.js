@@ -114,6 +114,7 @@
     "🌊 Fishing areas": "🌊 渔区分析",
     "🐟 Species and countries": "🐟 物种与国家",
     "📊 Summary analyses": "📊 汇总分析",
+    "📝 Reports": "📝 报告",
     "🎨 Settings and language": "🎨 设置与语言"
   };
 

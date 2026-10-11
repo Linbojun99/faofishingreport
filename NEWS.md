@@ -4,6 +4,7 @@
 
 * A package website (<https://linbojun99.github.io/faofishingreport/>) with a guide for every part of the package, illustrated with FAO area 34, in English with a Chinese version (switch with the button at the top right).
 * New logo.
+* `fao_report()` writes a Word report of an FAO fishing area in Chinese or English, in one call: cover, title, abstract, data and methods, results and conclusions with charts and tables, references and appendix. The text is written from templates filled in with the results (`inst/extdata/report_text.csv`), as a first draft to complete by hand. Chinese reports follow the format of project reports (FangSong and Times New Roman, 1.5 line spacing, three-line tables, numbered GB/T 7714 references); English reports use Arial by default and APA or FAO citations.
 * `fao_data_info()` shows which FAO release the analyses use, when FAO published it, the years it covers, the file it was downloaded from, its licence and a citation for reports. Every page of the website shows the release used and its download link.
 * Function reference pages of the website link to the previous and next function and list the other functions of their group; help pages link to related functions ("See also").
 * `fao_settings(data_dir = ...)` keeps downloaded FAO data in a chosen folder, e.g. one shared by a team; `fao_data_dir()` returns it.
@@ -36,6 +37,9 @@
 * The previous bundled data lost the country name of about 24.5 million tonnes of catch (e.g. Türkiye, Réunion); the new data has no missing names.
 
 ## Bug fixes
+
+* The share chart of `fishing_area_data()` now gives the share of the area in the world catch of marine areas (or of inland waters, for an inland area); inland waters were counted in the world catch before.
+* `peak_trend(top_n = Inf)` no longer fails on series without catch or with fewer than three recent years.
 
 * `species_country()` now uses its `h_value` argument; it was always 0.15 before, so breakpoint results differ from earlier charts.
 * Years are no longer fixed at 2021: axis breaks, "last five years" tables, last-year shares and pie chart periods follow the data.

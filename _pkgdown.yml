@@ -84,6 +84,10 @@ reference:
   - country_group_summary
   - regime_shift
   - coastal_distant
+- title: "📝 Reports"
+  desc: A Word report of a fishing area, in Chinese or English, written from the results.
+  contents:
+  - fao_report
 - title: "🎨 Settings and language"
   desc: Chart style, map projection, colours, fonts and Chinese names.
   contents:
