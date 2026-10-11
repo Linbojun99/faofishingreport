@@ -273,11 +273,32 @@ LaTeX版本沿用Word文件的格式（见[📐 格式](#format)）：A4纸张�
 
 中文字体没有粗体字形：与Word一样，加粗的中文（如标题）通过加粗笔画实现。
 
-**编译。**安装了tinytex包（`install.packages("tinytex")`；如果本机没有LaTeX，再运行`tinytex::install_tinytex()`）时，用`tinytex::latexmk(engine = "xelatex")`生成PDF，第一次运行时会自动安装缺少的LaTeX宏包（ctex、xeCJK、booktabs、longtable、needspace、xurl等）；没有tinytex时，系统路径中须有`xelatex`。要修改LaTeX版本的文字，编辑`.tex`文件后重新编译即可，例如`tinytex::xelatex("reports/FAO34_report_zh.tex")`。
+### 安装TinyTeX（只需一次） {#tinytex}
 
-::: callout-tip
-如果tinytex因为本机的TeX Live比在线仓库旧而无法安装宏包（提示"Local TeX Live (2024) is older than remote repository"），可以更新TeX Live（`tinytex::reinstall_tinytex()`），或从对应年份的存档安装宏包：`tlmgr --repository https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final install ctex`。
-:::
+PDF用XeLaTeX编译。最简单的办法是安装**TinyTeX**：一个可以在R中安装和更新的精简版TeX Live（Xie 2019）。只需运行一次：
+
+```{r, eval = FALSE}
+install.packages("tinytex")
+tinytex::install_tinytex()     # 下载TinyTeX（约100 MB），安装到用户文件夹
+tinytex::is_tinytex()          # TRUE：R能找到它
+tinytex::tinytex_root()        # 安装位置
+```
+
+TinyTeX在macOS上安装到`~/Library/TinyTeX`，在Windows上安装到`%APPDATA%/TinyTeX`，在Linux上安装到`~/.TinyTeX`，不需要管理员权限。安装后请重启R。不需要手动安装任何LaTeX宏包：第一次生成PDF报告时会自动安装所需的宏包（中文用的ctex和xeCJK，以及booktabs、longtable、needspace、xurl等），只在第一次需要几分钟。
+
+```{r, eval = FALSE}
+fao_report(34, lang = "zh", format = "pdf")   # 第一次运行时还会安装LaTeX宏包
+```
+
+| 情况 | 怎么做 |
+|---|---|
+| 电脑上没有LaTeX | `install.packages("tinytex")`，然后`tinytex::install_tinytex()` |
+| TinyTeX安装时间较早，宏包装不上，或提示"Local TeX Live (2024) is older than remote repository" | `tinytex::reinstall_tinytex()`：重新安装最新版TinyTeX，并装回原有的宏包 |
+| 使用其他TeX发行版（MacTeX、TeX Live、MiKTeX） | 只要`xelatex`在系统路径中即可使用；缺少的宏包用其自带的管理工具安装（如`tlmgr install ctex`） |
+| 修改了`.tex`文件 | 重新编译：`tinytex::xelatex("reports/FAO34_report_zh.tex")` |
+| 只需要LaTeX源文件 | `format = "latex"`不需要安装LaTeX |
+
+没有安装tinytex包时，本包调用系统路径中的`xelatex`（为生成书签编译两次）。
 
 ## 🔖 引文与参考文献
 
@@ -415,6 +436,12 @@ show_table(refs[, c("key", "type", "author", "year", "title")], n = 5)
 如需修改措辞或增加文献，在包源代码中编辑这两个文件，重新安装本包（如在源代码文件夹中运行`R CMD INSTALL .`），然后重启R：这两个文件在每个会话中只读取一次。
 
 ## 📖 参考文献
+
+**Software for the LaTeX and PDF report**
+
+Xie, Y. (2019). TinyTeX: A lightweight, cross-platform, and easy-to-maintain LaTeX distribution
+based on TeX Live. *TUGboat*, 40(1), 30–32. <https://tug.org/TUGboat/tb40-1/tb124xie-tinytex.pdf>;
+R package tinytex: <https://CRAN.R-project.org/package=tinytex>, <https://yihui.org/tinytex/>
 
 **标准与引文格式**
 

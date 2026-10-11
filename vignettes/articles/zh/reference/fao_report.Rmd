@@ -110,7 +110,7 @@ fao_report(
     </details>
 
 `format`
-:   要输出的格式，可以是"docx"（默认，Word）、"latex"（`.tex`文件，其图片保存在旁边的`<name>_figures/`文件夹中，用XeLaTeX编译；中文报告使用ctexart文档类）和"pdf"（用XeLaTeX把LaTeX文件编译为PDF；安装了tinytex包时通过它编译，并自动安装缺少的LaTeX宏包）中的一个或多个。各项分析只运行一次，各种格式的文字、图表、表格和参考文献完全相同。字体取自本机已安装的字体：中文在Windows上为仿宋、黑体和楷体（FangSong、SimHei、KaiTi），在macOS上为STFangsong、Heiti SC和Kaiti SC，其他系统使用TeX Live自带的Fandol字体。
+:   要输出的格式，可以是"docx"（默认，Word）、"latex"（`.tex`文件，其图片保存在旁边的`<name>_figures/`文件夹中，用XeLaTeX编译；中文报告使用ctexart文档类）和"pdf"（用XeLaTeX把LaTeX文件编译为PDF；安装了tinytex包时通过它编译，并自动安装缺少的LaTeX宏包）中的一个或多个。TinyTeX只需安装一次：`install.packages("tinytex")`，然后`tinytex::install_tinytex()`；较旧的TinyTeX用`tinytex::reinstall_tinytex()`更新。各项分析只运行一次，各种格式的文字、图表、表格和参考文献完全相同。字体取自本机已安装的字体：中文在Windows上为仿宋、黑体和楷体（FangSong、SimHei、KaiTi），在macOS上为STFangsong、Heiti SC和Kaiti SC，其他系统使用TeX Live自带的Fandol字体。
 
     <details class="fao-en"><summary>English</summary>
 
@@ -118,7 +118,9 @@ fao_report(
     file with its figures in the folder `<name>_figures/` next to it, compiled with XeLaTeX;
     Chinese reports use the ctexart class) and "pdf" (the LaTeX file compiled to PDF with
     XeLaTeX, through the tinytex package when it is installed, which also installs missing
-    LaTeX packages). The analyses run once for all formats, and the formats have the same
+    LaTeX packages). Install TinyTeX once with `install.packages("tinytex")` and
+    `tinytex::install_tinytex()`; an old TinyTeX is updated with
+    `tinytex::reinstall_tinytex()`. The analyses run once for all formats, and the formats have the same
     text, figures, tables and references. Fonts are taken from those of the computer: for
     Chinese, FangSong, SimHei and KaiTi on Windows, STFangsong, Heiti SC and Kaiti SC on macOS,
     else the Fandol fonts of TeX Live.

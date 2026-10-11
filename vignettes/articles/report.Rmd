@@ -349,19 +349,36 @@ installed on the computer:
 Chinese fonts have no bold face: as in Word, bold Chinese text (the titles) is made by thickening
 the strokes.
 
-**Compiling.** With the tinytex package (`install.packages("tinytex")`, then
-`tinytex::install_tinytex()` if you have no LaTeX), the PDF is made with
-`tinytex::latexmk(engine = "xelatex")`, which installs missing LaTeX packages (ctex, xeCJK,
-booktabs, longtable, needspace, xurl, ...) on the first run. Without tinytex, `xelatex` must be
-on the system path. To change the text of the LaTeX version, edit the `.tex` file and compile it
-again, e.g. `tinytex::xelatex("reports/FAO34_report_zh.tex")`.
+### Install TinyTeX (once) {#tinytex}
 
-::: callout-tip
-If tinytex cannot install a package because your TeX Live is older than the online repository
-("Local TeX Live (2024) is older than remote repository"), update TeX Live
-(`tinytex::reinstall_tinytex()`), or install the packages from the archive of your TeX Live year:
-`tlmgr --repository https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final install ctex`.
-:::
+The PDF is compiled with XeLaTeX. The easiest way to get it is **TinyTeX**, a small TeX Live
+distribution installed and kept up to date from R (Xie 2019). Run once:
+
+```{r, eval = FALSE}
+install.packages("tinytex")
+tinytex::install_tinytex()     # downloads TinyTeX (about 100 MB) into your user folder
+tinytex::is_tinytex()          # TRUE: R finds it
+tinytex::tinytex_root()        # where it is installed
+```
+
+TinyTeX goes into `~/Library/TinyTeX` on macOS, `%APPDATA%/TinyTeX` on Windows and `~/.TinyTeX`
+on Linux, and needs no administrator rights. Restart R after installing it. You do not need to
+install any LaTeX package by hand: the first PDF report installs the ones it uses (ctex and xeCJK
+for Chinese, booktabs, longtable, needspace, xurl, ...), which takes a few minutes once.
+
+```{r, eval = FALSE}
+fao_report(34, lang = "zh", format = "pdf")   # the first run also installs the LaTeX packages
+```
+
+| Situation | What to do |
+|---|---|
+| No LaTeX on the computer | `install.packages("tinytex")`, then `tinytex::install_tinytex()` |
+| TinyTeX installed long ago; packages fail to install, or the message "Local TeX Live (2024) is older than remote repository" | `tinytex::reinstall_tinytex()` reinstalls the newest TinyTeX with the packages you had |
+| Another TeX distribution (MacTeX, TeX Live, MiKTeX) | It is used if `xelatex` is on the system path; install missing packages with its own manager (e.g. `tlmgr install ctex`) |
+| You changed the `.tex` file | Compile it again: `tinytex::xelatex("reports/FAO34_report_zh.tex")` |
+| Only the LaTeX source is wanted | `format = "latex"` needs no LaTeX installation |
+
+Without tinytex, the package calls `xelatex` from the system path (twice, for the bookmarks).
 
 ## 🔖 Citations and references
 
@@ -536,6 +553,12 @@ the package (e.g. `R CMD INSTALL .` in the source folder), then restart R: the f
 once per session.
 
 ## 📖 References
+
+**Software for the LaTeX and PDF report**
+
+Xie, Y. (2019). TinyTeX: A lightweight, cross-platform, and easy-to-maintain LaTeX distribution
+based on TeX Live. *TUGboat*, 40(1), 30–32. <https://tug.org/TUGboat/tb40-1/tb124xie-tinytex.pdf>;
+R package tinytex: <https://CRAN.R-project.org/package=tinytex>, <https://yihui.org/tinytex/>
 
 **Standards and citation styles**
 

@@ -51,7 +51,9 @@
 #'        file with its figures in the folder `<name>_figures/` next to it, compiled with XeLaTeX;
 #'        Chinese reports use the ctexart class) and "pdf" (the LaTeX file compiled to PDF with
 #'        XeLaTeX, through the tinytex package when it is installed, which also installs missing
-#'        LaTeX packages). The analyses run once for all formats, and the formats have the same
+#'        LaTeX packages). Install TinyTeX once with `install.packages("tinytex")` and
+#'        `tinytex::install_tinytex()`; an old TinyTeX is updated with
+#'        `tinytex::reinstall_tinytex()`. The analyses run once for all formats, and the formats have the same
 #'        text, figures, tables and references. Fonts are taken from those of the computer: for
 #'        Chinese, FangSong, SimHei and KaiTi on Windows, STFangsong, Heiti SC and Kaiti SC on macOS,
 #'        else the Fandol fonts of TeX Live.
