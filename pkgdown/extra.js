@@ -74,7 +74,7 @@
 
   function translateText(root) {
     var nodes = document.querySelectorAll(
-      ".navbar a.nav-link, .navbar a.dropdown-item, .navbar .dropdown-toggle, #toc h2, nav#toc > h2, footer p, footer div"
+      ".navbar a.nav-link, .navbar a.dropdown-item, .navbar .dropdown-toggle, .navbar .dropdown-header, #toc h2, nav#toc > h2, footer p, footer div"
     );
     nodes.forEach(function (node) {
       node.childNodes.forEach(function (child) {

@@ -37,7 +37,7 @@ footer:
       [FAOSTAT](https://www.fao.org/faostat/en/#data) ·
       [Global Capture Production](https://www.fao.org/fishery/collection/capture/en).
       This package is not affiliated with FAO; the data come from FAO.
-      本包与 FAO 无关联，数据来源为 FAO。
+      本包与FAO无关联，数据来源为FAO。
 
 navbar:
   bg: primary
