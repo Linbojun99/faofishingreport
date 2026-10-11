@@ -11,7 +11,7 @@
   // Navbar and page text, English -> Chinese
   var DICT = {
     "🚀 Get started": "🚀 快速入门",
-    "🎓 Tutorial: FAO area 61 from zero to a report": "🎓 教程：FAO 61区从零到报告",
+    "🎓 Tutorial: FAO area 67 from zero to a report": "🎓 教程：FAO 67区从零到报告",
     "Reference": "函数参考",
     "Articles": "文章",
     "News": "更新日志",

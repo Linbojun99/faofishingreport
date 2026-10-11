@@ -208,7 +208,7 @@ Every function has its own arguments as well; each article has a table of all of
 
 ## 🧭 Next steps
 
-- [🎓 Tutorial: FAO area 61 from zero to a report](tutorial-61.html): a complete worked example,
+- [🎓 Tutorial: FAO area 67 from zero to a report](tutorial-67.html): a complete worked example,
   with every analysis of the package and how to read each chart
 - [💾 FAO data: download and customise](data.html): releases, data format, subsets, Chinese names
 - [🌊 Fishing area analysis](fishing-areas.html): all options of the fishing area functions

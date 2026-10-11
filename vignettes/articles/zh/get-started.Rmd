@@ -183,7 +183,7 @@ fao_report(34, lang = "en")   # 在工作目录中生成reports/FAO34_report_en.
 
 ## 🧭 下一步
 
-- [🎓 教程：西北太平洋（FAO 61区）从零到报告](tutorial-61.html)：一个完整的示例，涵盖本包的全部分析，并讲解每张图怎么看
+- [🎓 教程：东北太平洋（FAO 67区）从零到报告](tutorial-67.html)：一个完整的示例，涵盖本包的全部分析，并讲解每张图怎么看
 - [💾 FAO数据：下载与自定义](data.html)：版本、数据格式、数据子集、中文名称
 - [🌊 渔区分析](fishing-areas.html)：渔区分析函数的全部选项
 - [🐟 物种与国家分析](species-countries.html)：`species_country()`、`country_species()`、`country_analysis()`

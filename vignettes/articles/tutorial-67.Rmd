@@ -1,22 +1,24 @@
 ---
-title: "🎓 Tutorial: the Northwest Pacific (FAO area 61) from zero to a report"
+title: "🎓 Tutorial: the Northeast Pacific (FAO area 67) from zero to a report"
 description: >
-  A complete worked example: get the FAO data, analyse FAO major fishing area 61 step by step with
-  every function of the package, read and interpret each chart, find the files the package saves,
-  and export the assessment report as Word, LaTeX and PDF.
+  A complete worked example: get the FAO data, analyse FAO major fishing area 67 (Alaska, Canada
+  and the US west coast) step by step with every function of the package, read and interpret each
+  chart, find the files the package saves, and export the assessment report as Word, LaTeX and PDF.
 ---
 
 ```{r setup, include = FALSE}
 source("_setup.R")
-# CMSY++ charts and results made beforehand by data-raw/tutorial61_figures.R (JAGS is not
+# CMSY++ charts and results made beforehand by data-raw/tutorial67_figures.R (JAGS is not
 # available when the site is built)
-fig_dir <- normalizePath(file.path("figures", "tutorial-61", "en"))
+fig_dir <- normalizePath(file.path("figures", "tutorial-67", "en"))
 show_png <- function(file) {
   knitr::asis_output(sprintf('<figure class="fao-figure"><img src="%s" alt="%s" loading="lazy"></figure>',
                              knitr::image_uri(file.path(fig_dir, file)), file))
 }
 pct <- function(x, digits = 1) paste0(formatC(x, format = "f", digits = digits), "%")
 mt <- function(x, digits = 1) paste(formatC(x / 1e6, format = "f", digits = digits), "million t")
+# yearly catch of the rows of `data` that match `keep`
+yearly <- function(data, keep) tapply(data$Production[keep], data$Year[keep], sum, na.rm = TRUE)
 ```
 
 ```{r data-source, echo = FALSE, results = "asis"}
@@ -24,17 +26,21 @@ data_source()
 ```
 
 This tutorial walks through a complete assessment of one FAO major fishing area, the
-**Northwest Pacific (FAO area 61)**, from an empty R session to a finished report. It uses almost
-every function of the package, in the order you would use them in your own work, and explains
-**what each chart shows, how to read it and what it says about the area**. If you have never used
-the package, read it from top to bottom and run the code as you go; if you know the package, use
-the table of contents to jump to the step you need.
+**Northeast Pacific (FAO area 67)**, from an empty R session to a finished report. Area 67
+stretches from the eastern Bering Sea and the Gulf of Alaska along the coasts of Canada and the
+United States down to northern California (40° N). The tutorial uses almost every function of the
+package, in the order you would use them in your own work, and explains **what each chart shows,
+how to read it and what it says about the area**. If you have never used the package, read it from
+top to bottom and run the code as you go; if you know the package, use the table of contents to
+jump to the step you need.
 
-Area 61 is a good teaching example: it is the largest fishing area of the world by catch, it
-holds famous boom-and-bust species (the Pacific sardine, the Alaska pollock), one country (China)
-takes most of the catch, and a large part of the catch is not identified to species. Every
-number in the text below is computed from the data when the page is built, so it matches the
-charts.
+Area 67 is a good teaching example because its history is written clearly in the data: for twenty
+years the fleets of Japan and the USSR took a large part of its catch, until the United States and
+Canada extended their fishery limits to 200 nautical miles in 1977 and the catch passed to their
+own fleets. It is dominated by one species, the Alaska pollock, it holds a famous case of
+overfishing (the Pacific ocean perch) and the salmon fisheries of the North Pacific, and its data
+are among the best of all FAO areas. Every number in the text below is computed from the data when
+the page is built, so it matches the charts.
 
 | Step | What you do | Functions |
 |---|---|---|
@@ -49,12 +55,12 @@ charts.
 | [9](#literature) | Methods from the literature | `catch_shocks()`, `collapse_analysis()`, `catch_synchrony()`, `pelagic_demersal()`, `distant_water_profile()` |
 | [10](#temperature) | Species traits and temperature | `fishbase_match()`, `fao_area_sst()`, `mean_temperature_catch()` |
 | [11](#cmsy) | Stock assessment of the main species | `cmsy_setup()`, `cmsy_area()` |
-| [12](#report) | The report in Word, LaTeX and PDF | `fao_report()` |
+| [12](#report) | The report in Word, LaTeX and PDF (with TinyTeX) | `fao_report()`, `tinytex::install_tinytex()` |
 | [13](#files) | Where everything is saved and how to get it back | |
 
 ::: callout-note
 **How the charts are explained.** Under each chart, "🔎 How to read it" describes the axes,
-colours and lines, and "What it shows for area 61" gives the result. Charts describe the
+colours and lines, and "What it shows for area 67" gives the result. Charts describe the
 **reported catch**: they say what was landed and reported to FAO, not how many fish are in the
 sea. Keep that in mind for every conclusion.
 :::
@@ -78,8 +84,8 @@ directory* (the folder `getwd()` returns). Create one folder per assessment, e.g
 project, or set it yourself:
 
 ```{r, eval = FALSE}
-dir.create("~/fao61", showWarnings = FALSE)
-setwd("~/fao61")
+dir.create("~/fao67", showWarnings = FALSE)
+setwd("~/fao67")
 getwd()
 ```
 
@@ -121,7 +127,7 @@ one bundled with the package), one row per country, species item, area and year:
 ```{r}
 fao <- load_fao_data()
 dim(fao)
-show_table(fao[fao$FAO.major.fishing.area..Name. == "Pacific, Northwest" & fao$Year == 2024, ], n = 5)
+show_table(fao[fao$FAO.major.fishing.area..Name. == "Pacific, Northeast" & fao$Year == 2024, ], n = 5)
 ```
 
 | Column | Meaning |
@@ -150,9 +156,9 @@ the data of an area can be saved like any R object:
 
 ```{r}
 fao_data_dir()
-area61_raw <- fao[fao$FAO.major.fishing.area..Name. == "Pacific, Northwest", ]
-saveRDS(area61_raw, "area61_data.rds")                 # for R: readRDS("area61_data.rds")
-write.csv(area61_raw, "area61_data.csv", row.names = FALSE, fileEncoding = "UTF-8")   # for Excel
+area67_raw <- fao[fao$FAO.major.fishing.area..Name. == "Pacific, Northeast", ]
+saveRDS(area67_raw, "area67_data.rds")                 # for R: readRDS("area67_data.rds")
+write.csv(area67_raw, "area67_data.csv", row.names = FALSE, fileEncoding = "UTF-8")   # for Excel
 ```
 
 ## 3. 🌊 The catch of the area {#area}
@@ -161,15 +167,15 @@ write.csv(area61_raw, "area61_data.csv", row.names = FALSE, fileEncoding = "UTF-
 catch with its stages and the share of the area in the world marine catch:
 
 ```{r, figures = "fishing_trend|fishing_percentage"}
-NWP <- fishing_area_data("Pacific, Northwest")
-area61 <- NWP$area_data
+NEP <- fishing_area_data("Pacific, Northeast")
+area67 <- NEP$area_data
 ```
 
 ```{r, include = FALSE}
-total <- tapply(area61$Production, area61$Year, sum, na.rm = TRUE)
-last_year <- max(area61$Year)
+total <- tapply(area67$Production, area67$Year, sum, na.rm = TRUE)
+last_year <- max(area67$Year)
 peak_year <- as.integer(names(which.max(total)))
-periods <- NWP$coefs_data
+periods <- NEP$coefs_data
 world <- tapply(fao$Production[fao$FAO.major.fishing.area..Name. %in% fao_area_sst()$area_en],
                 fao$Year[fao$FAO.major.fishing.area..Name. %in% fao_area_sst()$area_en], sum, na.rm = TRUE)
 share <- 100 * total / world[names(total)]
@@ -182,12 +188,15 @@ dashed lines are **breakpoints**: years in which the mean catch changes, found w
 Bai-Perron test (`strucchange::breakpoints()`); a stage starts at each dashed line. The
 horizontal grey segments are the mean catch of each stage.
 
-*What it shows for area 61.* The catch rose from `r mt(total[1])` in `r min(area61$Year)` to a
+*What it shows for area 67.* The catch rose from `r mt(total[1])` in `r min(area67$Year)` to a
 peak of `r mt(max(total))` in `r peak_year`, and was `r mt(total[as.character(last_year)])` in
 `r last_year`. The test finds `r nrow(periods)` stages:
-`r paste0(periods$start_year, "–", periods$end_year, " (mean ", round(periods$intercept / 1e6, 1), " million t)", collapse = "; ")`.
-The growth of the 1950s–1980s, the high plateau of the late 1980s and 1990s and the lower, steady
-catch since `r periods$start_year[nrow(periods)]` are the three things to explain in a report.
+`r paste0(periods$start_year, "–", periods$end_year, " (mean ", mt(periods$intercept), ")", collapse = "; ")`.
+They follow the history of the fleets, which the next steps show one by one: a small catch of
+salmon and herring by Canada and the United States in the 1950s; the arrival of the trawlers of
+the USSR and Japan, which fished the groundfish of the Bering Sea and the Gulf of Alaska from the
+1960s; and, after the 200-mile fishery limits of 1977, the growth of the fleets of the United
+States to the high, steady catch of the last four decades.
 
 **`fishing_percentage.png`: share of the world marine catch**
 
@@ -195,15 +204,15 @@ catch since `r periods$start_year[nrow(periods)]` are the three things to explai
 marine areas in that year; the red line is the mean of these shares. Inland waters are not
 counted.
 
-*What it shows for area 61.* The area took between `r pct(min(share))` and `r pct(max(share))` of
+*What it shows for area 67.* The area took between `r pct(min(share))` and `r pct(max(share))` of
 the world marine catch, `r pct(mean(share))` on average, and `r pct(share[as.character(last_year)])`
 in `r last_year`. A share above its mean means the area grew faster (or declined more slowly)
-than the rest of the world's oceans.
+than the rest of the world's oceans: here in the 1980s, when its catch reached its plateau.
 
 ::: callout-tip
-`NWP` is a list: `NWP$area_data` (the data of the area, used by all the next steps),
-`NWP$coefs_data` (the stages: first and last year and mean catch) and `NWP$act_world_map` (the map
-data). Save it with `saveRDS(NWP, "NWP.rds")` to continue later without recomputing.
+`NEP` is a list: `NEP$area_data` (the data of the area, used by all the next steps),
+`NEP$coefs_data` (the stages: first and last year and mean catch) and `NEP$act_world_map` (the map
+data). Save it with `saveRDS(NEP, "NEP.rds")` to continue later without recomputing.
 :::
 
 ## 4. 🐟 The main species {#species}
@@ -212,16 +221,23 @@ data). Save it with `saveRDS(NWP, "NWP.rds")` to continue later without recomput
 largest), draws their catch over time and finds the stages of each:
 
 ```{r, figures = "area_species"}
-sp <- fishing_area_species(area61, rank_range = c(1, 10))
+sp <- fishing_area_species(area67, rank_range = c(1, 10))
 ```
 
 ```{r, include = FALSE}
-ranked <- sp$area_species_ranked_total
-ranked <- ranked[order(-ranked$Total_Tonnes), ]
-sp_last5 <- area61[area61$Year > last_year - 5, ]
+sp_last5 <- area67[area67$Year > last_year - 5, ]
 sp5 <- sort(tapply(sp_last5$Production, sp_last5$ASFIS.species..Name., sum, na.rm = TRUE) / 5, decreasing = TRUE)
-sard <- tapply(area61$Production[area61$ASFIS.species..Name. == "Pacific sardine"],
-               area61$Year[area61$ASFIS.species..Name. == "Pacific sardine"], sum, na.rm = TRUE)
+pollock_name <- "Alaska pollock(=Walleye poll.)"
+pollock_share <- 100 * sum(area67$Production[area67$ASFIS.species..Name. == pollock_name]) / sum(area67$Production)
+all_items <- sort(tapply(area67$Production, area67$ASFIS.species..Name., sum, na.rm = TRUE), decreasing = TRUE)
+next9 <- 100 * sum(all_items[2:10]) / sum(all_items)
+pop <- yearly(area67, area67$ASFIS.species..Name. == "Pacific ocean perch")
+pop_peak <- as.integer(names(which.max(pop)))
+herring <- yearly(area67, area67$ASFIS.species..Name. == "Pacific herring")
+pink <- yearly(area67, area67$ASFIS.species..Name. == "Pink(=Humpback) salmon")
+pink <- pink[as.integer(names(pink)) >= 2000]
+pink_odd <- mean(pink[as.integer(names(pink)) %% 2 == 1])
+pink_even <- mean(pink[as.integer(names(pink)) %% 2 == 0])
 ```
 
 **`area_species.png`: the main species together**, and **`area_species_wrap.png`: one panel per
@@ -233,19 +249,24 @@ the line is the yearly catch, the dashed vertical lines and grey segments are th
 species, the dashed slanted line is a linear trend, and the percentage is the share of the species
 in the catch of the area over all years.
 
-*What it shows for area 61.* Over the last five years the largest items were
+*What it shows for area 67.* Over the last five years the largest items were
 `r paste0(names(sp5)[1:5], " (", mt(sp5[1:5], 2), " a year)", collapse = ", ")`.
-Three patterns stand out:
+Four patterns stand out:
 
-- **"Marine fishes nei" is the largest item.** It is not a species: it is fish that countries
-  report without naming it. A large "nei" share limits what the species charts can say (see
-  [data quality](#quality)).
-- **Boom and bust.** The Pacific sardine went from almost nothing to a peak of
-  `r mt(max(sard))` in `r names(which.max(sard))` and back to low catches within two decades, a
-  well-known fluctuation of sardine populations with ocean conditions; it has risen again
-  recently.
-- **Alaska pollock** peaked in the late 1980s and declined in the 1990s, when the catch of the
-  former USSR and of Japan fell.
+- **One species dominates.** The Alaska pollock gave `r pct(pollock_share)` of all the catch of
+  the area since `r min(area67$Year)`, against `r pct(next9)` for the next nine items together. What happens to the
+  pollock happens to the area.
+- **Boom and bust.** The Pacific ocean perch, a rockfish, went from `r mt(pop[1], 2)` in
+  `r names(pop)[1]` to a peak of `r mt(max(pop), 2)` in `r names(which.max(pop))`, taken mostly by
+  Soviet and Japanese trawlers, and fell to `r mt(pop[as.character(pop_peak + 10)], 2)` ten years
+  later. Rockfishes grow
+  slowly and live long, so they cannot sustain a heavy catch for long.
+- **A fishery that faded.** The Pacific herring gave `r mt(herring[1], 2)` in `r names(herring)[1]`
+  and peaked at `r mt(max(herring), 2)` in `r names(which.max(herring))`; its catch in
+  `r last_year` was `r mt(herring[length(herring)], 3)`.
+- **Two-year cycles.** The pink salmon lives two years, so its runs alternate: since 2000 the
+  catch averaged `r mt(pink_odd, 2)` in odd years and `r mt(pink_even, 2)` in even years, the
+  zigzag in its panel.
 
 ::: callout-note
 Changing `rank_range` changes the species shown, e.g. `rank_range = c(11, 20)` for the next ten.
@@ -253,79 +274,129 @@ The lines in the panels are smoothed only if `timeseries_analysis = FALSE`, whic
 the stages.
 :::
 
-## 5. 🌏 The main countries {#countries}
+## 5. 🌎 The main countries {#countries}
 
 `fishing_area_country()` does the same for the countries, and adds a map of their catch:
 
 ```{r, figures = "area_country"}
-co <- fishing_area_country(area61, rank_range = c(1, 8))
+co <- fishing_area_country(area67, rank_range = c(1, 8))
 ```
 
 ```{r, include = FALSE}
 co_last5 <- tapply(sp_last5$Production, sp_last5$Country..Name., sum, na.rm = TRUE) / 5
 co_last5 <- sort(co_last5, decreasing = TRUE)
-china <- tapply(area61$Production[area61$Country..Name. == "China"], area61$Year[area61$Country..Name. == "China"], sum)
-japan <- tapply(area61$Production[area61$Country..Name. == "Japan"], area61$Year[area61$Country..Name. == "Japan"], sum)
-ahead <- names(china)[china > japan[names(china)]]
+usa <- yearly(area67, area67$Country..Name. == "United States of America")
+japan <- yearly(area67, area67$Country..Name. == "Japan")
+korea <- yearly(area67, area67$Country..Name. == "Korea, Republic of")
+ussr <- yearly(area67, area67$Country..Name. == "Un. Sov. Soc. Rep.")
+ahead <- names(usa)[usa > japan[names(usa)]]
 overtake <- min(as.integer(ahead[as.integer(ahead) > as.integer(names(which.max(japan)))]))
+usa_share <- function(year) pct(100 * usa[as.character(year)] / total[as.character(year)], 0)
+last_japan <- max(as.integer(names(japan)[japan > 1000]))
+by_country <- tapply(area67$Production, list(area67$Year, area67$Country..Name.), sum, na.rm = TRUE)
+leader <- colnames(by_country)[apply(by_country, 1, which.max)]
+names(leader) <- rownames(by_country)
+lead_years <- function(country) paste(range(as.integer(names(leader))[leader == country]), collapse = "–")
+canada_50s <- sum(leader[as.character(1950:1959)] == "Canada")
 ```
 
 🔎 *How to read them.* As for the species: one panel per country with its stages, trend and share
 of the catch over all years; the map colours each country by its total catch in the area.
 
-*What it shows for area 61.* Over the last five years,
-`r paste0(names(co_last5)[1:4], " (", pct(100 * co_last5[1:4] / sum(co_last5)), ")", collapse = ", ")`
-took most of the catch. **China** rose from `r mt(china[1], 2)` in `r names(china)[1]` to a peak of
-`r mt(max(china))` in `r names(which.max(china))`; **Japan**, the largest fishing country of the
-area until `r overtake - 1` (its peak: `r mt(max(japan))` in `r names(which.max(japan))`; China has caught
-more every year since `r overtake`), caught
-`r mt(japan[length(japan)])` in `r last_year`. The panel of the **former USSR** ends in 1991 and
-the **Russian Federation** starts in 1992: FAO keeps them as separate countries, so their
-stages should be read together.
+*What it shows for area 67.* Over the last five years,
+`r paste0(names(co_last5)[1:2], " (", pct(100 * co_last5[1:2] / sum(co_last5)), ")", collapse = " and ")`
+took almost all of the catch. It was not always so. **Canada** was the largest fishing country in
+`r canada_50s` years of the 1950s; the **USSR** was the largest in `r lead_years("Un. Sov. Soc. Rep.")`
+(its peak: `r mt(max(ussr))` in `r names(which.max(ussr))`) and **Japan** in
+`r lead_years("Japan")` (its peak: `r mt(max(japan))` in `r names(which.max(japan))`); the
+**Republic of Korea** reached `r mt(max(korea))` in `r names(which.max(korea))`. The share of the **United States** was only
+`r usa_share(1970)` in 1970 and `r usa_share(1980)` in 1980, then `r usa_share(1990)` in 1990 and
+`r usa_share(last_year)` in `r last_year`; it has caught more than Japan every year since
+`r overtake`, and Japan's last catch above 1 000 t in the area was in `r last_japan`.
+
+This change has a clear cause. The Fishery Conservation and Management Act of the United States
+(1976, in force on 1 March 1977) created a 200-mile fishery zone and gave foreign fleets only the
+part of the catch that US fleets could not take; Canada extended its fishery limit to 200 miles in
+the same year. In the 1980s US fishing vessels first sold their catch to foreign processing ships
+at sea ("joint ventures"), then landed it at home, until foreign fishing ended. The panels of
+Japan, the USSR, Korea and Poland all end in those years.
 
 ## 6. 🔍 One species, one country {#one}
 
 ### 6.1 Who catches a species: `species_country()`
 
 ```{r, figures = "Alaska_pollock"}
-pollock <- species_country(area61, "Alaska pollock(=Walleye poll.)", rank_range = c(1, 5))
+pollock <- species_country(area67, "Alaska pollock(=Walleye poll.)", rank_range = c(1, 5))
+```
+
+```{r, include = FALSE}
+pol <- area67[area67$ASFIS.species..Name. == pollock_name, ]
+pol_peak <- function(country) {
+  x <- yearly(pol, pol$Country..Name. == country)
+  paste0(mt(max(x), 2), " in ", names(which.max(x)))
+}
 ```
 
 🔎 *How to read them.* The charts break the catch of one species item down by country: the
 ranked chart and the small multiples (one panel per country, with stages), a pie chart of the
 countries by period and a map. Species names must be written as in the FAO data
-(`unique(area61$ASFIS.species..Name.)` lists them; `fao_translate()` gives the Chinese names).
+(`unique(area67$ASFIS.species..Name.)` lists them; `fao_translate()` gives the Chinese names).
 
-*What it shows for area 61.* The Alaska pollock of the Northwest Pacific was caught mostly by the
-former USSR and then the Russian Federation, Japan and the Republic of Korea; Japan's catch
-peaked in the early 1970s, the USSR's in the late 1980s, and Poland fished it in the late 1980s
-and the 1990s.
+*What it shows for area 67.* The pollock story is the story of the area in miniature. Japan
+developed the fishery (peak `r pol_peak("Japan")`), followed by the USSR
+(peak `r pol_peak("Un. Sov. Soc. Rep.")`) and the Republic of Korea
+(peak `r pol_peak("Korea, Republic of")`). The United States caught almost no pollock before
+1980; its catch rose through the joint ventures of the 1980s and has been the only large one since,
+with a peak of `r pol_peak("United States of America")`.
 
 ### 6.2 What a country catches: `country_species()` and `country_analysis()`
 
 `country_species()` breaks down the catch of one country in the area by species;
 `country_analysis()` looks at the same country in **all** FAO areas, to see where it fishes:
 
-```{r, figures = "Japan"}
-japan_61 <- country_species(area61, "Japan", rank_range = c(1, 10))
-japan_all <- country_analysis("Japan", rank_range = c(1, 10))
+```{r, figures = "United_States_of_America"}
+usa_67 <- country_species(area67, "United States of America", rank_range = c(1, 10))
+usa_all <- country_analysis("United States of America", rank_range = c(1, 10))
 ```
 
-🔎 *How to read them.* `Japan_species_*` charts: the species of Japan in area 61. `Japananalysis_*`
-charts: the species of Japan in all areas, its catch by area (`Japanyearly_area_production.png`,
-one line per area) and a map of the areas where it fishes.
+```{r, include = FALSE}
+us <- area67[area67$Country..Name. == "United States of America", ]
+us_top <- function(years) {
+  x <- us[us$Year %in% years, ]
+  names(sort(tapply(x$Production, x$ASFIS.species..Name., sum), decreasing = TRUE))[1:3]
+}
+us_all <- fao[fao$Country..Name. == "United States of America" &
+                fao$FAO.major.fishing.area..Name. %in% c("Pacific, Northeast", "Atlantic, Northwest"), ]
+us_area <- tapply(us_all$Production, list(us_all$Year, us_all$FAO.major.fishing.area..Name.), sum)
+us_lead <- min(as.integer(rownames(us_area))[us_area[, "Pacific, Northeast"] > us_area[, "Atlantic, Northwest"]])
+```
 
-*What it shows.* Japan's catch in area 61 was dominated by the Pacific sardine in the 1980s; since
-then its main species have been the chub mackerel, the sardine again, the Yesso scallop and the
-Japanese anchovy (the pollock mattered mostly up to the 1990s). Area 61 has always been by far
-Japan's largest fishing area, and its catch there has fallen steadily since the late 1980s.
+🔎 *How to read them.* `United_States_of_America_species_*` charts: the species of the United
+States in area 67. `United_States_of_Americaanalysis_*` charts: the species of the United States in
+all areas, its catch by area (`United_States_of_Americayearly_area_production.png`, one line per
+area) and a map of the areas where it fishes.
+
+*What it shows.* In the 1970s the US catch in area 67 was mostly
+`r paste(us_top(1970:1979), collapse = ", ")`: salmon, crabs and shrimps of the coastal fisheries.
+Over the last five years it was `r paste(us_top((last_year - 4):last_year), collapse = ", ")`: the
+groundfish that the foreign fleets had caught before. Across all FAO areas, area 67 has been the
+largest fishing area of the United States since `r us_lead`, when it passed the Northwest
+Atlantic; it now gives far more than all other areas.
 
 ## 7. 📈 Composition, stock status, trends and shifts {#status}
 
 ### 7.1 Species groups: `species_group_composition()`
 
 ```{r, figures = "group"}
-groups <- species_group_composition(area61)
+groups <- species_group_composition(area67)
+```
+
+```{r, include = FALSE}
+gy <- as.data.frame(groups$yearly)
+group_pct <- function(group, year) {
+  y <- gy[gy$Year == year, ]
+  pct(100 * sum(y$Tonnes[y$category %in% group]) / sum(y$Tonnes), 0)
+}
 ```
 
 🔎 *How to read it.* Species items are grouped into the ISSCAAP groups of FAO (e.g. "Herrings,
@@ -333,15 +404,17 @@ sardines, anchovies", "Cods, hakes, haddocks"). The stacked areas show the catch
 and the `_share` chart its percentage of the catch; the largest groups are named, the others are
 "Other groups".
 
-*What it shows for area 61.* The cods, hakes and haddocks (mostly pollock) and the herrings,
-sardines and anchovies (mostly sardine and anchovy) took the largest shares in the 1980s; since
-the 2000s the catch is spread over more groups, with a larger share of miscellaneous coastal and
-pelagic fishes, squids and shrimps.
+*What it shows for area 67.* In 1950 the salmons (`r group_pct("Salmons, trouts, smelts", 1950)`)
+and the herrings (`r group_pct("Herrings, sardines, anchovies", 1950)`) made up most of the catch,
+and the cods, hakes and haddocks only `r group_pct("Cods, hakes, haddocks", 1950)`. The trawl
+fisheries changed this within twenty years: the cods, hakes and haddocks (pollock, Pacific cod,
+Pacific hake) reached `r group_pct("Cods, hakes, haddocks", 1970)` in 1970 and
+`r group_pct("Cods, hakes, haddocks", last_year)` in `r last_year`, with the flatfishes second.
 
 ### 7.2 Stock status plots: `stock_status()`
 
 ```{r, figures = "stock_status"}
-status <- stock_status(area61)
+status <- stock_status(area67)
 ```
 
 ```{r, include = FALSE}
@@ -356,13 +429,14 @@ year, a stock is classed by its catch relative to its own peak (Kleisner et al. 
 **rebuilding** (back to 10–50% after a collapse). The `_stocks` chart counts stocks, the
 `_catch` chart weights them by their catch.
 
-*What it shows for area 61.* Of the `r nrow(status$stocks)` stocks, in `r last_year`
+*What it shows for area 67.* Of the `r nrow(status$stocks)` stocks, in `r last_year`
 `r pct(st_pct("Collapsed"))` were collapsed and `r pct(st_pct("Over-exploited"))` over-exploited
-by number. Weighted by catch the picture is different: the collapsed stocks took only
-`r pct(st_pct("Collapsed", "catch_pct"))` of the catch, because they are small, while the
-over-exploited stocks took `r pct(st_pct("Over-exploited", "catch_pct"))` and the exploited ones
-`r pct(st_pct("Exploited", "catch_pct"))`. Many small stocks have fallen far below their peaks,
-and a large part of the catch now comes from stocks below half of theirs.
+by number. Weighted by catch the picture is very different: the collapsed stocks took only
+`r pct(st_pct("Collapsed", "catch_pct"))` of the catch and the over-exploited ones
+`r pct(st_pct("Over-exploited", "catch_pct"))`, while the exploited stocks, still above half of
+their peak, took `r pct(st_pct("Exploited", "catch_pct"))`. Many small stocks are far below their
+old peaks (some of them, like the herring, because their fisheries were closed or not wanted
+any more), but the large stocks that give most of the catch are not.
 
 ::: callout-warning
 **What not to conclude.** A stock status plot uses catch only. A fall in catch can come from
@@ -374,18 +448,20 @@ classes the 3-year running mean, which reduces the effect of single bad years.
 ### 7.3 Peak and trend of each species: `peak_trend()`
 
 ```{r, figures = "peak_trend"}
-pt <- peak_trend(area61)
-show_table(pt[, c("name", "peak_year", "pct_of_peak", "growth_pct_per_year", "trend")], n = 10)
+pt <- peak_trend(area67)
+show_table(pt[, c("name", "peak_year", "pct_of_peak", "growth_pct_per_year", "trend")], n = 11)
 ```
 
 🔎 *How to read it.* For each of the main species: the year of its peak catch, the catch of the
 last year as a percentage of that peak, the mean yearly growth over the last ten years and the
-Mann-Kendall test of that trend ("up", "down" or "none" at *P* < 0.05).
+Mann-Kendall test of that trend ("up", "down" or "none" at *P* < 0.05). In area 67 the total
+and the pollock are both close to their peak of the late 1980s, while the herring and the
+Pacific ocean perch are far below theirs.
 
 ### 7.4 Synchronous shifts: `regime_shift()`
 
 ```{r, figures = "regime_shift"}
-shifts <- regime_shift(area61)
+shifts <- regime_shift(area67)
 ```
 
 ```{r, include = FALSE}
@@ -397,8 +473,12 @@ counts, for every year, how many species changed their mean catch in that year. 
 species change together point to a common cause: the ocean (a regime shift), a change of
 management, or a change of reporting.
 
-*What it shows for area 61.* The years with the most simultaneous breakpoints are
-`r paste0(rs_top$Year, " (", rs_top$n_species, " species)", collapse = ", ")`.
+*What it shows for area 67.* The years with the most simultaneous breakpoints are
+`r paste0(rs_top$Year, " (", rs_top$n_species, " species)", collapse = ", ")`. The North Pacific
+had well-known climate regime shifts in 1977 and 1989 (Hare and Mantua 2000), but the catch
+breakpoints cluster instead in the 1980s, the years when the catch passed from foreign to US
+fleets. In catch data, fleets and management often leave a larger mark than the ocean; a
+breakpoint alone cannot tell which cause it was.
 
 ### 7.5 All FAO areas compared: `area_overview()`
 
@@ -407,14 +487,15 @@ overview <- area_overview()
 ```
 
 🔎 *How to read it.* The catch of every FAO marine area over time, and their peak year and recent
-trend. It places area 61 among the others: it is the area with the largest catch.
+trend. It places area 67 among the others: a medium-sized area with a catch that has been steady
+for four decades, unlike the areas that peaked and declined.
 
 ## 8. 🔍 Data quality, diversity and fleets {#quality}
 
 ### 8.1 How good are the data? `data_quality()`
 
 ```{r, figures = "data_quality"}
-quality <- data_quality(area61)
+quality <- data_quality(area67)
 ```
 
 ```{r, include = FALSE}
@@ -428,16 +509,16 @@ sq$pct <- 100 * sq$Tonnes / sum(sq$Tonnes)
 family, or only to order or higher (e.g. "Marine fishes nei"). `_status_share`: the share reported
 officially by countries and the share estimated by FAO or the country.
 
-*What it shows for area 61.* In `r last_year`, `r pct(tq$pct[tq$category == "Species"])` of the
-catch was identified to species and `r pct(tq$pct[tq$category == "Order or higher"])` only to
-order or higher. The species charts above therefore describe only part of the catch, and
-changes in identification can look like changes in species. This is one of the main
-limitations to state in a report on area 61.
+*What it shows for area 67.* In `r last_year`, `r pct(tq$pct[tq$category == "Species"])` of the
+catch was identified to species, only `r pct(tq$pct[tq$category == "Order or higher"])` to order
+or higher, and `r pct(sq$pct[sq$category == "Official data"])` was official data reported by the
+countries. Few areas have data this good: the species charts above describe nearly the whole
+catch, and a change in a species is unlikely to be a change in reporting.
 
 ### 8.2 Diversity and concentration: `diversity_concentration()`
 
 ```{r, figures = "diversity"}
-div <- diversity_concentration(area61)
+div <- diversity_concentration(area67)
 ```
 
 ```{r, include = FALSE}
@@ -450,25 +531,39 @@ species and of the countries, and the share of the five largest species and coun
 goes from near 0 (catch spread over many) to 10 000 (one takes all); above 2 500 is "highly
 concentrated".
 
-*What it shows for area 61.* In `r last_year`, `r dl$n_species` species items and
-`r dl$n_countries` countries reported catch; the HHI of the countries was
-`r round(dl$hhi_countries)`, highly concentrated, because of China's share, while the HHI of the
-species (`r round(dl$hhi_species)`) shows a catch spread over many species.
+*What it shows for area 67.* In `r last_year`, `r dl$n_species` species items and
+`r dl$n_countries` countries reported catch. Both indices are above 2 500: the HHI of the
+countries was `r round(dl$hhi_countries)`, close to its maximum, because the United States takes
+almost everything, and the HHI of the species was `r round(dl$hhi_species)`, because of the
+pollock. The area has many species, but its catch depends on one country and one species.
 
 ### 8.3 Who fishes: `country_group_summary()` and `coastal_distant()`
 
 ```{r, figures = "country_income|coastal_distant"}
-income <- country_group_summary(area61)
-fleets <- coastal_distant(area61)
+income <- country_group_summary(area67)
+fleets <- coastal_distant(area67)
+```
+
+```{r, include = FALSE}
+fl <- as.data.frame(fleets$yearly)
+fl_total <- tapply(fl$Tonnes, fl$Year, sum)
+fl_distant <- tapply(fl$Tonnes[fl$category == "Distant-water countries"], fl$Year[fl$category == "Distant-water countries"], sum)
+fl_pct <- 100 * fl_distant / fl_total[names(fl_distant)]
+fl_end <- min(as.integer(names(fl_pct))[fl_pct < 1 & as.integer(names(fl_pct)) > as.integer(names(which.max(fl_pct)))])
 ```
 
 🔎 *How to read them.* `country_income`: the catch by World Bank income group of the countries.
 `coastal_distant`: the catch of **coastal countries** (whose territory borders the area) and of
 **distant-water countries**, from the FAO area boundaries and country outlines.
 
-*What it shows for area 61.* Nearly all the catch is taken by coastal countries: the countries
-around the Northwest Pacific fish their own waters, and distant-water catch was only a small
-share in the 1980s and 1990s.
+*What it shows for area 67.* Nearly all the catch is taken by high-income countries; the
+"not classified" part of the 1960s and 1970s is the USSR, which no longer exists. The
+distant-water countries (Japan, the Republic of Korea, Poland and others) took
+`r pct(fl_pct["1960"], 0)` of the catch in 1960 and up to `r pct(max(fl_pct), 0)` in
+`r names(which.max(fl_pct))`; their share fell below 1% in `r fl_end` and has stayed there. Note
+that the USSR and the Russian Federation count as coastal, because part of the Russian coast on the
+Bering Sea borders the area: the foreign share of the catch before 1990 was even larger than the
+distant-water share.
 
 ## 9. 🔬 Methods from the literature {#literature}
 
@@ -478,8 +573,8 @@ explains each in detail.
 ### 9.1 Catch shocks: `catch_shocks()`
 
 ```{r, figures = "shocks"}
-shocks_country <- catch_shocks(area61)
-shocks_species <- catch_shocks(area61, by = "species", label = "area61_species")
+shocks_country <- catch_shocks(area67)
+shocks_species <- catch_shocks(area67, by = "species", label = "area67_species")
 ```
 
 🔎 *How to read them.* A **shock** is a year in which the catch of a series fell far below what
@@ -487,7 +582,7 @@ its recent years predicted (Cottrell et al. 2019). The bar chart gives the perce
 with a shock in each year; `_series` shows the series with their shocks, `_by_country` /
 `_by_continent` count them by group.
 
-*What it shows for area 61.* By country (`by = c("country", "area")`, the default), area 61 has
+*What it shows for area 67.* By country (`by = c("country", "area")`, the default), area 67 has
 only `r nrow(shocks_country$series)` series, so each shock is a large percentage and the chart is
 coarse. By species there are `r nrow(shocks_species$series)` series and
 `r nrow(shocks_species$shocks)` shocks, a more informative picture for one area. **Choose the
@@ -497,8 +592,12 @@ series to fit the question**: countries for national food supply, species for ec
 
 ```{r, figures = "collapse"}
 set.seed(1)   # the comparison with random series uses random numbers
-collapses <- collapse_analysis(area61)
+collapses <- collapse_analysis(area67)
 show_table(collapses$summary)
+```
+
+```{r, include = FALSE}
+cs <- collapses$summary[collapses$summary$type == "collapsed", ]
 ```
 
 🔎 *How to read it.* A series (one species by one country) has **collapsed** when, after its
@@ -508,10 +607,19 @@ erratic). The function repeats the analysis on random series without trend, beca
 and downs alone produce some "collapses" (Wilberg and Miller 2007): only the excess over that
 null model is informative.
 
+*What it shows for area 67.* `r cs$n` of the `r cs$n_series` series collapsed
+(`r pct(cs$pct_of_series, 0)`), against `r pct(cs$null_pct_of_series, 0)` of the random series.
+`r if (cs$pct_of_series <= cs$null_pct_of_series + 5) "That is about what random variability alone produces, so the collapses of area 67 are, as a whole, no evidence of a fishery-wide problem; look at the individual series instead." else "That is more than random variability alone produces: the excess points to declines with a common cause."`
+This is why the null model matters: without it, `r pct(cs$pct_of_series, 0)` of the series "collapsed" would sound alarming.
+
 ### 9.3 Synchrony and the portfolio effect: `catch_synchrony()`
 
 ```{r, figures = "synchrony"}
-sync <- catch_synchrony(area61)
+sync <- catch_synchrony(area67)
+```
+
+```{r, include = FALSE}
+most_variable <- sync$series$series_en[which.max(sync$series$cv)]
 ```
 
 🔎 *How to read them.* `_cv`: the coefficient of variation (year-to-year variability) of each
@@ -519,32 +627,35 @@ species and, in red, of the total catch. `_correlation`: how the species vary to
 synchrony index φ is 0 when species compensate each other and 1 when they rise and fall together
 (Loreau and de Mazancourt 2008).
 
-*What it shows for area 61.* φ = `r round(sync$summary$synchrony_phi, 2)`: the total catch varies
+*What it shows for area 67.* φ = `r round(sync$summary$synchrony_phi, 2)`: the total catch varies
 (CV `r round(sync$summary$cv_total, 2)`) much less than its species (mean CV
 `r round(sync$summary$mean_cv_series, 2)`): the species are on average
 `r pct(sync$summary$portfolio_effect_pct, 0)` more variable than their total. This **portfolio
-effect** means that when one species declines, others take its place.
-Among the main species in the chart, the Pacific sardine is by far the most variable.
+effect** means that when one species declines, others take its place. Among the main species in
+the chart, the `r most_variable` is by far the most variable, the mark of its boom and bust.
 
 ### 9.4 Pelagic to demersal ratio: `pelagic_demersal()`
 
 ```{r, figures = "pelagic_demersal"}
-pd <- pelagic_demersal(area61)
+pd <- pelagic_demersal(area67)
 show_table(pd$decades[, c("period", "pd_mean", "pd_min", "pd_max")])
 ```
 
 🔎 *How to read them.* P/D is the catch of small pelagic fishes divided by the catch of demersal
 fishes and crustaceans (Caddy 1993; de Leiva Moreno et al. 2000), on a log scale; the dashed line
 is P/D = 1. In semi-enclosed seas a rising P/D has been linked to nutrient enrichment; in open
-areas like area 61 it mostly follows the big swings of the small pelagic fishes.
+areas it mostly follows what the fleets target.
 
-*What it shows for area 61.* P/D stayed below 1; its highest values came in the 1980s, the decade
-of the sardine boom, and it has risen again since the 2010s.
+*What it shows for area 67.* P/D fell from `r round(pd$decades$pd_mean[1], 2)` in the
+`r pd$decades$period[1]` to `r round(pd$decades$pd_mean[nrow(pd$decades)], 3)` in the
+`r pd$decades$period[nrow(pd$decades)]`. It does not mean the sea lost its nutrients: the herring
+fisheries shrank while the trawl fisheries for groundfish grew, so the ratio tells the history of
+the fishery.
 
 ### 9.5 A distant-water fleet: `distant_water_profile()`
 
 ```{r, figures = "distant_water"}
-china_dw <- distant_water_profile("China")
+japan_dw <- distant_water_profile("Japan")
 ```
 
 🔎 *How to read them.* The catch of one country in the FAO areas it borders ("adjacent") and in
@@ -552,24 +663,26 @@ the others ("distant-water"), the share of distant-water catch, the number of ar
 year and when it entered each area (Swartz et al. 2010).
 
 ```{r, include = FALSE}
-dw <- china_dw$yearly[order(china_dw$yearly$Year), ]
+dw <- japan_dw$yearly[order(japan_dw$yearly$Year), ]
+dw_peak <- dw[which.max(dw$distant_pct), ]
 dw_last <- dw[dw$Year == max(dw$Year), ]
+jp67_peak <- japan[as.character(dw_peak$Year)]
 ```
 
-*What it shows.* Area 61 is China's only adjacent area and gives most of its catch. China's
-distant-water catch grew from the late 1990s to `r mt(dw_last$distant_tonnes, 2)` in
-`r dw_last$Year` (`r pct(dw_last$distant_pct)` of its catch), in `r dw_last$n_distant_areas`
-distant FAO areas. FAO notes that in 2022 China gave species and areas only for the catch landed
-in China, and part of its distant-water catch was entered as "Marine fishes nei" in area 61
-(FAO 2024): recent distant-water catch is partly counted in area 61, which also adds to the
-"nei" share seen in [data quality](#quality).
+*What it shows.* Japan's only adjacent area is area 61. Its distant-water share rose to
+`r pct(dw_peak$distant_pct)` in `r dw_peak$Year`, when it fished `r dw_peak$n_distant_areas`
+distant FAO areas; in that year area 67 alone gave `r mt(jp67_peak, 2)`, or
+`r pct(100 * jp67_peak / dw_peak$distant_tonnes, 0)` of its distant-water catch. The 200-mile
+zones of the late 1970s closed the richest of these waters, and the share was
+`r pct(dw_last$distant_pct)` in `r dw_last$Year`. Area 67 and Japan show the two sides of the same
+change.
 
 ## 10. 🌡️ Species traits and temperature {#temperature}
 
 ### 10.1 FishBase traits: `fishbase_match()`
 
 ```{r}
-traits <- fishbase_match(area61, version = "builtin")
+traits <- fishbase_match(area67, version = "builtin")
 show_table(traits[, c("species_en", "catch_pct", "match_type", "trophic_level", "temp_pref_mean")], n = 8)
 ```
 
@@ -582,8 +695,8 @@ it works offline. Matches are first guesses: check the main ones with the links 
 ### 10.2 Sea surface temperature and the mean temperature of the catch
 
 ```{r, figures = "mtc"}
-sst61 <- fao_area_sst("Pacific, Northwest")
-mtc <- mean_temperature_catch(area61, version = "builtin")
+sst67 <- fao_area_sst("Pacific, Northeast")
+mtc <- mean_temperature_catch(area67, version = "builtin")
 show_table(mtc$trend[, c("period_start", "period_end", "mtc_slope_per_decade", "trend", "sst_slope_per_decade", "cor_mtc_sst")])
 ```
 
@@ -595,21 +708,27 @@ faded. A rising MTC means warm-water species take a larger share of the catch.
 
 ```{r, include = FALSE}
 my <- mtc$yearly[!is.na(mtc$yearly$mtc) & !mtc$yearly$low_coverage, ]
-low <- my[my$year <= 1990, ][which.min(my$mtc[my$year <= 1990]), ]
-high <- my[my$year > 1990, ][which.max(my$mtc[my$year > 1990]), ]
+low <- my[which.min(my$mtc), ]
+high <- my[which.max(my$mtc), ]
 last_mtc <- my[nrow(my), ]
 pref <- function(name) round(mtc$species$temp_pref_mean[match(name, mtc$species$species_en)], 1)
+pol_low <- 100 * sum(area67$Production[area67$Year == low$year & area67$ASFIS.species..Name. == pollock_name]) /
+  sum(area67$Production[area67$Year == low$year])
+tr <- mtc$trend
 ```
 
-*What it shows for area 61.* The MTC fell to a low of `r round(low$mtc, 1)` °C in `r low$year`,
-when the cold-water Alaska pollock (preferred temperature `r pref("Alaska pollock(=Walleye poll.)")` °C)
-took a growing share of the catch; it rose to `r round(high$mtc, 1)` °C in `r high$year` and has
-fallen again since, to `r round(last_mtc$mtc, 1)` °C in `r last_mtc$year`. Species of warmer
-waters such as the Pacific sardine (`r pref("Pacific sardine")` °C) move it up and down as their
-catches boom and decline. The SST of the area warmed by
-`r round(mtc$trend$sst_slope_per_decade[1], 2)` °C per decade over
-`r mtc$trend$period_start[1]`–`r mtc$trend$period_end[1]`. The MTC of area 61 therefore reflects
-the fishery and its target species as much as the ocean: read it with the species charts.
+*What it shows for area 67.* The MTC stays between `r round(low$mtc, 1)` and
+`r round(high$mtc, 1)` °C, far below the SST of the area (`r round(last_mtc$sst_mean, 1)` °C in
+`r last_mtc$year`). The reason is the species: the main catch is of cold-water fishes that live
+near the bottom, such as the pollock (preferred temperature `r pref(pollock_name)` °C) and the
+Pacific cod (`r pref("Pacific cod")` °C). The MTC was lowest in `r low$year`, when the pollock gave
+`r pct(pol_low, 0)` of the catch, and highest in `r high$year`, before the pollock fishery grew;
+the Pacific hake of the US west coast (`r pref("North Pacific hake")` °C) raises it in the years
+when its catch is large. The trend of the MTC is "`r tr$trend[1]`" over
+`r tr$period_start[1]`–`r tr$period_end[1]` (`r round(tr$mtc_slope_per_decade[1], 3)` °C per decade) and
+"`r tr$trend[2]`" over `r tr$period_start[2]`–`r tr$period_end[2]` (`r round(tr$mtc_slope_per_decade[2], 3)` °C per decade) while the
+SST warmed by `r round(tr$sst_slope_per_decade[2], 2)` °C per decade. The MTC of area 67 follows
+the mix of target species more than the ocean: read it with the species charts.
 
 ## 11. 📉 Stock assessment of the main species {#cmsy}
 
@@ -620,8 +739,8 @@ same code.
 
 ```{r, eval = FALSE}
 cmsy_setup()                                            # once: JAGS and the R packages
-nwp_cmsy <- cmsy_area("Pacific, Northwest", top = 10)   # the ten main species
-nwp_cmsy$summary                                        # B/Bmsy, F/Fmsy, MSY, status
+nep_cmsy <- cmsy_area("Pacific, Northeast", top = 10)   # the ten main species
+nep_cmsy$summary                                        # B/Bmsy, F/Fmsy, MSY, status
 ```
 
 ```{r, include = FALSE}
@@ -639,8 +758,10 @@ pressure relative to the one that gives it (F/Fmsy, vertical); the size is the c
 one of the two. The dashed line at B/Bmsy = 0.8 separates "maximally sustainably fished" from
 "overfished" in the FAO classes for catch-only results.
 
-*What it shows for area 61.* `r sum(cmsy_summary$B_Bmsy < 0.8, na.rm = TRUE)` of the
-`r nrow(cmsy_summary)` stocks assessed were below 0.8 Bmsy in their last year.
+*What it shows for area 67.* `r sum(cmsy_summary$B_Bmsy < 0.8, na.rm = TRUE)` of the
+`r nrow(cmsy_summary)` stocks assessed were below 0.8 Bmsy in their last year; the lowest were
+`r paste0(cmsy_summary$species[order(cmsy_summary$B_Bmsy)][1:2], " (", cmsy_summary$B_Bmsy[order(cmsy_summary$B_Bmsy)][1:2], ")", collapse = " and ")`,
+the two fisheries whose catch has fallen furthest from its peak.
 
 ```{r, echo = FALSE}
 show_table(cmsy_summary[, intersect(names(cmsy_summary), c("Stock", "species", "B_Bmsy", "F_Fmsy", "MSY", "status"))])
@@ -671,9 +792,12 @@ right). Shaded bands are the 95% limits. See [📉 CMSY++](cmsy.html) for all CM
 
 ::: callout-warning
 FAO capture statistics have no abundance index, so these are **catch-only** assessments driven
-largely by their priors: indicative only, never a replacement for a full stock assessment. The
-CMSY++ code is that of its authors (<https://github.com/SISTA16/cmsyPlusPlus>); see the
-disclaimer in [📉 CMSY++](cmsy.html).
+largely by their priors: indicative only, never a replacement for a full stock assessment. This
+matters in area 67: most of its main stocks are assessed every year by the fishery agencies of the
+United States and Canada with survey data, and their catch is held by catch limits, so a catch that
+stays below its old peak can be read by a catch-only method as a smaller stock. Compare these
+results with the official assessments before using them. The CMSY++ code is that of its authors
+(<https://github.com/SISTA16/cmsyPlusPlus>); see the disclaimer in [📉 CMSY++](cmsy.html).
 :::
 
 ## 12. 📝 The report in Word, LaTeX and PDF {#report}
@@ -684,7 +808,7 @@ appendix. Here a Word report in English, with the catch shocks and the mean temp
 catch added to the default sections:
 
 ```{r}
-report <- fao_report(61, lang = "en", shocks = TRUE, mtc = TRUE)
+report <- fao_report(67, lang = "en", shocks = TRUE, mtc = TRUE)
 report
 ```
 
@@ -696,19 +820,40 @@ headings <- doc$text[doc$style_name %in% c("FAO Heading 1", "FAO Heading 2")]
 headings
 ```
 
+### 12.1 Before the PDF: install TinyTeX once {#tinytex}
+
+The Word file and the LaTeX source (`format = "latex"`) need nothing else. The **PDF** is compiled
+from the LaTeX source with XeLaTeX, which comes with a LaTeX distribution. The simplest is
+[TinyTeX](https://yihui.org/tinytex/) (Xie 2019), a small distribution installed from R, without
+administrator rights:
+
+```{r, eval = FALSE}
+install.packages("tinytex")
+tinytex::install_tinytex()   # once, a few minutes; restart R afterwards
+tinytex::is_tinytex()        # TRUE when it is installed
+```
+
+The first PDF takes longer: TinyTeX downloads the LaTeX packages the report uses (e.g. `ctex` and
+the Chinese fonts for a Chinese report) and keeps them for the next times. If TinyTeX was installed
+long ago and the PDF fails with a message such as "TeX Live is older than remote", update it with
+`tinytex::reinstall_tinytex()`. [📝 Assessment report](report.html#tinytex) lists the other cases
+(another LaTeX distribution, compiling an edited `.tex` file).
+
+### 12.2 The same report as LaTeX and PDF
+
 The same report as LaTeX and PDF, in Chinese, with CMSY++ (reusing the results of step 11 so
 CMSY++ does not run again):
 
 ```{r, eval = FALSE}
-fao_report(61, lang = "zh", format = c("docx", "latex", "pdf"), shocks = TRUE, mtc = TRUE,
-           cmsy = nwp_cmsy)
+fao_report(67, lang = "zh", format = c("docx", "latex", "pdf"), shocks = TRUE, mtc = TRUE,
+           cmsy = nep_cmsy)
 ```
 
 | File | What it is |
 |---|---|
-| `reports/FAO61_report_en.docx` | The Word report, to edit and complete |
-| `reports/FAO61_report_zh.tex` and `reports/FAO61_report_zh_figures/` | The LaTeX source and its figures |
-| `reports/FAO61_report_zh.pdf` | The PDF (needs XeLaTeX, e.g. through tinytex) |
+| `reports/FAO67_report_en.docx` | The Word report, to edit and complete |
+| `reports/FAO67_report_zh.tex` and `reports/FAO67_report_zh_figures/` | The LaTeX source and its figures |
+| `reports/FAO67_report_zh.pdf` | The PDF (needs XeLaTeX, e.g. TinyTeX, see [above](#tinytex)) |
 
 ::: callout-note
 The report is a **first draft**: the text is written from templates filled with the results. Read
@@ -728,7 +873,7 @@ Every function writes into the working directory:
 | `figures/png/` | `area_country_map.png`, `<species>_country_map.png` | maps of `fishing_area_country()`, `species_country()` |
 | `figures/png/species/` | `<species>_country_*.png` | `species_country()` |
 | `figures/png/country/` | `<country>_species_*.png`, `<country>analysis_*.png`, `<country>yearly_area_production*.png` | `country_species()`, `country_analysis()` |
-| `figures/png/summary/` | `<label>_<analysis>*.png`, e.g. `Pacific__Northwest_stock_status_stocks.png` | the summary and literature analyses |
+| `figures/png/summary/` | `<label>_<analysis>*.png`, e.g. `Pacific__Northeast_stock_status_stocks.png` | the summary and literature analyses |
 | `figures/pptx/...` | The same charts as PowerPoint files | when `pptx = TRUE` |
 | `tables/` | CSV tables (UTF-8, open in Excel) | every function with `table = TRUE` |
 | `reports/` | The reports, and `reports/cmsy/` with the CMSY++ results | `fao_report()` |
@@ -746,10 +891,10 @@ head(list.files("tables"), 10)
 To continue another day, save them and read them back, or read the CSV tables:
 
 ```{r}
-saveRDS(list(NWP = NWP, status = status, mtc = mtc), "area61_results.rds")
-results <- readRDS("area61_results.rds")
+saveRDS(list(NEP = NEP, status = status, mtc = mtc), "area67_results.rds")
+results <- readRDS("area67_results.rds")
 names(results)
-head(read.csv("tables/Pacific__Northwest_stock_status_stocks.csv"), 3)
+head(read.csv("tables/Pacific__Northeast_stock_status_stocks.csv"), 3)
 ```
 
 When FAO publishes a new release, run `download_fao_data()` and the same code again: every chart,
@@ -780,7 +925,7 @@ See [🎨 Customise charts and maps](customise.html) for all settings.
 | Literature | `catch_shocks()`, `collapse_analysis()`, `catch_synchrony()`, `pelagic_demersal()`, `distant_water_profile()` | Shocks, collapses, synchrony, P/D, fleets |
 | Temperature | `fishbase_match()`, `fao_area_sst()`, `mean_temperature_catch()` | Traits, SST, MTC |
 | Assessment | `cmsy_area()` | B/Bmsy, F/Fmsy, MSY |
-| Report | `fao_report()` | Word, LaTeX, PDF |
+| Report | `fao_report()`, with TinyTeX for the PDF | Word, LaTeX, PDF |
 
 ## 📖 References
 
@@ -794,10 +939,12 @@ release_info <- fao_data_info()
 - Cottrell, R. S., Nash, K. L., Halpern, B. S., Remenyi, T. A., Corney, S. P., Fleming, A., Fulton, E. A., Hornborg, S., Johne, A., Watson, R. A. and Blanchard, J. L. (2019). Food production shocks across land and sea. *Nature Sustainability*, 2, 130–137. [doi:10.1038/s41893-018-0210-1](https://doi.org/10.1038/s41893-018-0210-1)
 - de Leiva Moreno, J. I., Agostini, V. N., Caddy, J. F. and Carocci, F. (2000). Is the pelagic-demersal ratio from fishery landings a useful proxy for nutrient availability? *ICES Journal of Marine Science*, 57(4), 1091–1102. [doi:10.1006/jmsc.2000.0705](https://doi.org/10.1006/jmsc.2000.0705)
 - `r release_info$citation`
-- FAO (2024). *The State of World Fisheries and Aquaculture 2024: Blue Transformation in action*. Rome, FAO. [doi:10.4060/cd0683en](https://doi.org/10.4060/cd0683en)
+- Fishery Conservation and Management Act of 1976. Public Law 94-265, 90 Stat. 331, United States (in force 1 March 1977; now the Magnuson-Stevens Fishery Conservation and Management Act).
 - Froese, R., Winker, H., Coro, G., Palomares, M. L. D., Tsikliras, A. C., Dimarchopoulou, D., Touloumis, K., Demirel, N., Vianna, G. M. S., Scarcella, G., Schijns, R., Liang, C. and Pauly, D. (2023). New developments in the analysis of catch time series as the basis for fish stock assessments: the CMSY++ method. *Acta Ichthyologica et Piscatoria*, 53, 173–189. [doi:10.3897/aiep.53.105910](https://doi.org/10.3897/aiep.53.105910)
+- Hare, S. R. and Mantua, N. J. (2000). Empirical evidence for North Pacific regime shifts in 1977 and 1989. *Progress in Oceanography*, 47(2–4), 103–145. [doi:10.1016/S0079-6611(00)00033-1](https://doi.org/10.1016/S0079-6611(00)00033-1)
 - Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global catch data for inferences on the world's marine fisheries. *Fish and Fisheries*, 14(3), 293–311. [doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
 - Loreau, M. and de Mazancourt, C. (2008). Species synchrony and its drivers: neutral and nonneutral community dynamics in fluctuating environments. *The American Naturalist*, 172(2), E48–E66. [doi:10.1086/589746](https://doi.org/10.1086/589746)
 - Mullon, C., Fréon, P. and Cury, P. (2005). The dynamics of collapse in world fisheries. *Fish and Fisheries*, 6(2), 111–120. [doi:10.1111/j.1467-2979.2005.00181.x](https://doi.org/10.1111/j.1467-2979.2005.00181.x)
 - Swartz, W., Sala, E., Tracey, S., Watson, R. and Pauly, D. (2010). The spatial expansion and ecological footprint of fisheries (1950 to present). *PLoS ONE*, 5(12), e15143. [doi:10.1371/journal.pone.0015143](https://doi.org/10.1371/journal.pone.0015143)
 - Wilberg, M. J. and Miller, T. J. (2007). Comment on "Impacts of biodiversity loss on ocean ecosystem services". *Science*, 316, 1285. [doi:10.1126/science.1137946](https://doi.org/10.1126/science.1137946)
+- Xie, Y. (2019). TinyTeX: a lightweight, cross-platform, and easy-to-maintain LaTeX distribution based on TeX Live. *TUGboat*, 40(1), 30–32. <https://tug.org/TUGboat/tb40-1/tb124xie-tinytex.pdf>; R package tinytex: <https://CRAN.R-project.org/package=tinytex>

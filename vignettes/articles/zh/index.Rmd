@@ -187,7 +187,7 @@ report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE, format = c("do
 ## 📖 文档
 
 - [🚀 快速入门](get-started.html)
-- [🎓 教程：西北太平洋（FAO 61区）从零到报告](tutorial-61.html)
+- [🎓 教程：东北太平洋（FAO 67区）从零到报告](tutorial-67.html)
 - [💾 FAO 数据：下载与自定义](data.html)
 - [🌊 渔区分析](fishing-areas.html)
 - [🐟 物种与国家分析](species-countries.html)
