@@ -1,0 +1,136 @@
+# load_fao_divisions(): 按分区的渔获量：区域渔业组织的FAO数据
+
+英文原页：[`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md)
+
+## 说明
+
+该函数返回FAO为四个区域发布的按分区（FAO主要渔区内的组成部分）统计的捕捞产量，格式同[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)，另外多三列：`Division`（代码，例如”37.1.1”）、`Division..Name.`（代码和名称，例如”37.1.1
+Balearic”）和`Region`。它可以在`by = "division"`时传给[`pelagic_demersal()`](https://linbojun99.github.io/faofishingreport/reference/pelagic_demersal.md)和[`mean_temperature_catch()`](https://linbojun99.github.io/faofishingreport/reference/mean_temperature_catch.md)，也可以作为渔获数据用于任何其他分析。
+
+- **GFCM**：地中海渔业总委员会（General Fisheries Commission for the
+  Mediterranean），37渔区（地中海和黑海），分区如37.1.1巴利阿里、37.2.1亚得里亚海、37.4.2黑海。
+- **CECAF**：中东大西洋渔业委员会（Fishery Committee for the Eastern
+  Central Atlantic），34渔区。
+- **SEATL**：东南大西洋（Southeast Atlantic），47渔区。
+- **RECOFI**：区域渔业委员会（Regional Commission for
+  Fisheries），51渔区的一部分（海湾、阿曼海和阿拉伯海西南部）。
+
+在2026.1.0版本中，GFCM和CECAF的数据始于1970年，SEATL始于1975年，RECOFI始于1986年。有些代码并不对应具体海域：“Tunas”（例如34.0.0，按整个渔区报告的金枪鱼）和”Not
+known”（例如37.9.0；34.1.9则表示亚区已知而分区不明）。
+
+English
+
+This function returns the capture production by division (parts of an
+FAO major fishing area) that FAO publishes for four regions, in the
+format of
+[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)
+with three more columns: `Division` (code, e.g. “37.1.1”),
+`Division..Name.` (code and name, e.g. “37.1.1 Balearic”) and `Region`.
+It can be given to
+[`pelagic_demersal()`](https://linbojun99.github.io/faofishingreport/reference/pelagic_demersal.md)
+and
+[`mean_temperature_catch()`](https://linbojun99.github.io/faofishingreport/reference/mean_temperature_catch.md)
+with `by = "division"`, or to any other analysis as catch data.
+
+- **GFCM**: General Fisheries Commission for the Mediterranean: area 37
+  (Mediterranean and Black Sea), divisions such as 37.1.1 Balearic,
+  37.2.1 Adriatic, 37.4.2 Black Sea.
+- **CECAF**: Fishery Committee for the Eastern Central Atlantic: area
+  34.
+- **SEATL**: Southeast Atlantic: area 47.
+- **RECOFI**: Regional Commission for Fisheries: part of area 51 (the
+  Gulf, the Sea of Oman and the southwestern Arabian Sea).
+
+In release 2026.1.0, GFCM and CECAF start in 1970, SEATL in 1975 and
+RECOFI in 1986. Some codes are not places: “Tunas” (e.g. 34.0.0, tunas
+reported for the whole area) and “Not known” (e.g. 37.9.0, or 34.1.9 for
+a subarea whose division is not known).
+
+## 用法
+
+``` r
+
+load_fao_divisions(
+  region = NULL,
+  version = "latest",
+  data_dir = fao_data_dir()
+)
+```
+
+## 参数
+
+- `region`:
+
+  要读取的区域：“GFCM”、“CECAF”、“SEATL”和”RECOFI”中的任意几个。默认为NULL，即全部区域。
+
+  English
+
+  The regions: any of “GFCM”, “CECAF”, “SEATL” and “RECOFI”. Default is
+  NULL, all.
+
+- `version`:
+
+  所用的版本，如”2026.1.0”。默认为”latest”（最新版本）。
+
+  English
+
+  The release, e.g. “2026.1.0”. Default is “latest”.
+
+- `data_dir`:
+
+  数据的保存目录。默认为[`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md)。
+
+  English
+
+  The directory where the data is saved. Default is
+  [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md).
+
+## 返回值
+
+一个数据框，包含[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)的各列以及`Division`、`Division..Name.`和`Region`，并带有属性`fao_version`和`source_url`。
+
+English
+
+A data frame with the columns of
+[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)
+and `Division`, `Division..Name.` and `Region`, with the attributes
+`fao_version` and `source_url`.
+
+## 详细说明
+
+GFCM、CECAF和SEATL的分区覆盖整个FAO渔区：在两个数据集中都有的记录里，几乎所有记录按分区加总后，某一国家、物种和年份的渔获量都与[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)中该渔区的渔获量相同（2026.1.0版本中，99.7%至100%的记录相差在1%以内）；只出现在其中一个数据集中的记录合计不到渔获量的2.2%。RECOFI只覆盖海湾、阿曼海和阿拉伯海西南部，即51渔区的一部分。
+
+数据来自FAO数据索引（<https://www.fao.org/fishery/static/Data/>）中的FI_Regional文件。联网时使用最新版本：第一次使用时下载（约5
+MB）并转换，保存在`data_dir`中；离线时，或设置了`fao_settings(online = FALSE)`时，使用已保存的最新版本。
+
+English
+
+The divisions of GFCM, CECAF and SEATL cover the whole FAO area: summed
+over the divisions, the catch of a country, species and year equals that
+of the area in
+[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)
+for nearly all records found in both (99.7 to 100% within 1% in release
+2026.1.0), and the records found in one dataset only hold less than 2.2%
+of the catch. RECOFI covers only the Gulf, the Sea of Oman and the
+southwestern Arabian Sea, a part of area 51.
+
+The data come from the file FI_Regional of the FAO data index
+(<https://www.fao.org/fishery/static/Data/>). When the computer is
+online, the newest release is used, downloaded and converted the first
+time (about 5 MB) and saved in `data_dir`; offline, or with
+`fao_settings(online = FALSE)`, the newest saved release is used.
+
+## 参考文献
+
+FAO. Fishery and Aquaculture Statistics: capture production by regional
+fishery bodies (FI_Regional).
+<https://www.fao.org/fishery/statistics-query/en>
+
+## 示例
+
+``` r
+
+med <- load_fao_divisions("GFCM")
+pelagic_demersal(med, by = "division")
+mean_temperature_catch(med, by = "division")
+```

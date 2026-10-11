@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,8 +52,11 @@
     <li><a class="dropdown-item" href="../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="../articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="../articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="../articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="../articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -809,6 +812,50 @@ and income groups; the package’s translations are in
 package source and reinstall to change the wording.</p>
 </div>
 <div class="section level2">
+<h2 id="extension-catch-by-division">🧩 Extension: catch by division<a class="anchor" aria-label="anchor" href="#extension-catch-by-division"></a>
+</h2>
+<p>This and the next section use FAO datasets other than global capture
+production; they are an extension of the package and not part of the
+Word report.</p>
+<p>For four regions FAO also publishes the catch by
+<strong>division</strong>, the parts of an FAO area used by regional
+fishery bodies: GFCM (area 37, e.g. 37.1.1 Balearic, 37.2.1 Adriatic,
+37.4.2 Black Sea), CECAF (area 34), the Southeast Atlantic (area 47) and
+RECOFI (the Gulf, the Sea of Oman and the southwestern Arabian Sea, part
+of area 51). <code><a href="../reference/load_fao_divisions.html">load_fao_divisions()</a></code> downloads the newest
+release the first time (about 5 MB), keeps it in the data folder, and
+returns it in the format above with three more columns:
+<code>Division</code>, <code>Division..Name.</code> and
+<code>Region</code>.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">med</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_fao_divisions.html">load_fao_divisions</a></span><span class="op">(</span><span class="st">"GFCM"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/pelagic_demersal.html">pelagic_demersal</a></span><span class="op">(</span><span class="va">med</span>, by <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span>          <span class="co"># one P/D series per division</span></span>
+<span><span class="fu"><a href="../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">med</span>, by <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span>    <span class="co"># MTC and SST of each division</span></span></code></pre></div>
+<p>For GFCM, CECAF and the Southeast Atlantic, the catch summed over the
+divisions equals that of the FAO area for nearly all records. Some codes
+are not places: “37.0.0 Tunas” holds tunas reported for the whole area
+and “37.9.0 Not known” catch whose division is not known.</p>
+</div>
+<div class="section level2">
+<h2 id="extension-trade-and-employment-data">🧩 Extension: trade and employment data<a class="anchor" aria-label="anchor" href="#extension-trade-and-employment-data"></a>
+</h2>
+<p>FAO also publishes the trade of aquatic products and the employment
+in fisheries and aquaculture. <code><a href="../reference/load_fao_trade.html">load_fao_trade()</a></code> (exports,
+imports and re-exports by country, commodity and year from 1976, about
+16 MB) and <code><a href="../reference/load_fao_employment.html">load_fao_employment()</a></code> (people by country, work
+area, working time and sex from 1995, under 1 MB) download them the
+first time and keep them in the data folder, like
+<code><a href="../reference/load_fao_divisions.html">load_fao_divisions()</a></code>. Trade quantities are product weight,
+not live weight, and employment counts people, not full-time
+equivalents. See <a href="trade-employment.html">🚢 Trade and
+employment</a> for the analyses that join them to the catch:
+<code><a href="../reference/catch_trade.html">catch_trade()</a></code>, <code><a href="../reference/employment_summary.html">employment_summary()</a></code> and
+<code><a href="../reference/catch_per_fisher.html">catch_per_fisher()</a></code>.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">trade</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_fao_trade.html">load_fao_trade</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">employment</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_fao_employment.html">load_fao_employment</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
 <h2 id="notes-on-the-data">⚠️ Notes on the data<a class="anchor" aria-label="anchor" href="#notes-on-the-data"></a>
 </h2>
 <ul>
@@ -843,7 +890,7 @@ databases; cite the release you use.</li>
 </h2>
 <p>The bundled data, Chinese names and groups are rebuilt from the
 latest FAO release with:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="ex">Rscript</span> data-raw/update_bundled_data.R</span></code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="ex">Rscript</span> data-raw/update_bundled_data.R</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="references">📖 References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -876,7 +923,7 @@ Policy</em> 90: 14–19. <a href="https://doi.org/10.1016/j.marpol.2018.01.015" 
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">

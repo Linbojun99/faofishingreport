@@ -969,8 +969,8 @@ session default.
 
 [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
 assesses the main species of the area with CMSY++ when `cmsy = TRUE`
-(see [📝 Assessment report in
-Word](https://linbojun99.github.io/faofishingreport/articles/report.md)),
+(see [📝 Assessment report: Word, LaTeX and
+PDF](https://linbojun99.github.io/faofishingreport/articles/report.md)),
 and adds a part on the assessment with the results of every species and
 appendix tables of the reference points, the priors and their sources.
 It runs

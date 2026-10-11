@@ -13,6 +13,7 @@ It always says which SST data it uses.
 fao_area_sst(
   area = NULL,
   sst = fao_setting("sst"),
+  level = c("area", "division"),
   variable = NULL,
   data_dir = fao_data_dir()
 )
@@ -34,6 +35,14 @@ fao_area_sst(
   is the `sst` setting of
   [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md),
   "ersst5" unless changed.
+
+- level:
+
+  "area" (default) for the 19 FAO major marine areas, or "division" for
+  the FAO subareas and divisions (e.g. "37.1.1", Balearic), as in the
+  catch data of
+  [`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md)
+  (see Subareas and divisions).
 
 - variable:
 
@@ -86,6 +95,20 @@ downloaded or computed).
   (HadISST1, COBE-SST2, OISST v2.1, or the newest years of ERSST v5) and
   computes its table; it is then used by its name, e.g.
   `sst = "hadisst1"`.
+
+## Subareas and divisions
+
+With `level = "division"`, the table has one row per FAO subarea and
+division of the FAO map in the package
+(`inst/extdata/FAO_AREAS_CWP.shp`): `area_code` is its code (e.g.
+"34.1.1" or the subarea "34.2") and `area_en` its name. The built-in
+ERSST v5 table covers the subareas and divisions of areas 34, 37, 47 and
+51, those of the catch data by division
+([`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md));
+tables from downloaded products or your own files cover all of them.
+Many divisions are small for a 2° grid (see `n_cells`; e.g. the Sea of
+Azov or the Sea of Marmara have none or a few cells), so a finer SST
+product, given as the path of its NetCDF files, suits divisions better.
 
 ## How the area means are computed
 
@@ -169,5 +192,9 @@ lines(sst_p90 ~ year, data = sst34, lty = 2)
 fao_area_sst("34", sst = "D:/data/HadISST_sst.nc")
 # ... or for the whole session, including mean_temperature_catch()
 fao_settings(sst = "D:/data/HadISST_sst.nc")
+
+# Subareas and divisions, e.g. those of the Mediterranean and Black Sea
+div <- fao_area_sst(level = "division")
+subset(div, startsWith(area_code, "37.") & year == 2024)
 } # }
 ```

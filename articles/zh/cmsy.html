@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,8 +52,11 @@
     <li><a class="dropdown-item" href="../../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="../../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="../../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="../../articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="../../articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="../../articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="../../articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../../news/index.html">Changelog</a></li>
@@ -2650,7 +2653,7 @@ Actions上的”CMSY-cross-platform”检验都会在三个系统上用<code><a 
 <h2 id="写入word报告">📝 写入Word报告<a class="anchor" aria-label="anchor" href="#%E5%86%99%E5%85%A5word%E6%8A%A5%E5%91%8A"></a>
 </h2>
 <p><code>cmsy = TRUE</code>时，<code><a href="../../reference/fao_report.html">fao_report()</a></code>会用CMSY++评估该渔区的主要物种（见<a href="report.html">📝
-一键生成Word评估报告</a>），并在报告中加入资源评估部分，给出每个物种的结果，以及参考点、先验及其来源的附表。它对报告的<code>top_n</code>个主要物种（默认10个）运行<code><a href="../../reference/cmsy_area.html">cmsy_area()</a></code>，不做情景预测。<code><a href="../../reference/cmsy_area.html">cmsy_area()</a></code>和<code><a href="../../reference/cmsy_input.html">cmsy_input()</a></code>的设置以<code>cmsy_</code>为前缀传入，例如<code>cmsy_top = 5</code>、<code>cmsy_default_resilience = "Medium"</code>或<code>cmsy_settings = list(n.iter = 100000)</code>。CMSY++的全部结果（运行、图表和表格）保存在报告旁边的<code>cmsy/</code>文件夹中，其中的<code>cmsy_result.rds</code>可以用来重写报告而不必重新运行CMSY++：<code>cmsy = readRDS("cmsy/&lt;渔区&gt;/cmsy_result.rds")</code>，路径从工作目录算起（默认是<code>reports/cmsy/&lt;渔区&gt;/cmsy_result.rds</code>）。以前用<code><a href="../../reference/cmsy_area.html">cmsy_area()</a></code>得到的结果也可以这样传入。</p>
+一键生成评估报告（Word、LaTeX、PDF）</a>），并在报告中加入资源评估部分，给出每个物种的结果，以及参考点、先验及其来源的附表。它对报告的<code>top_n</code>个主要物种（默认10个）运行<code><a href="../../reference/cmsy_area.html">cmsy_area()</a></code>，不做情景预测。<code><a href="../../reference/cmsy_area.html">cmsy_area()</a></code>和<code><a href="../../reference/cmsy_input.html">cmsy_input()</a></code>的设置以<code>cmsy_</code>为前缀传入，例如<code>cmsy_top = 5</code>、<code>cmsy_default_resilience = "Medium"</code>或<code>cmsy_settings = list(n.iter = 100000)</code>。CMSY++的全部结果（运行、图表和表格）保存在报告旁边的<code>cmsy/</code>文件夹中，其中的<code>cmsy_result.rds</code>可以用来重写报告而不必重新运行CMSY++：<code>cmsy = readRDS("cmsy/&lt;渔区&gt;/cmsy_result.rds")</code>，路径从工作目录算起（默认是<code>reports/cmsy/&lt;渔区&gt;/cmsy_result.rds</code>）。以前用<code><a href="../../reference/cmsy_area.html">cmsy_area()</a></code>得到的结果也可以这样传入。</p>
 <div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span>, cmsy_top <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span><span class="va">report</span><span class="op">$</span><span class="va">cmsy_reference_points</span>                  <span class="co"># r、k、MSY、B/Bmsy等及其95%置信限</span></span>
@@ -2727,7 +2730,7 @@ package version 0.8-9. <a href="https://doi.org/10.32614/CRAN.package.R2jags" cl
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -1,0 +1,140 @@
+# load_fao_employment(): 渔业与水产养殖就业：FAO数据
+
+英文原页：[`load_fao_employment()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_employment.md)
+
+## 说明
+
+本函数返回FAO渔业与水产养殖初级部门从业人数统计（“Global employment in
+the primary sector of fisheries and
+aquaculture”，FI_Employment），按国家、工作领域、工作时间、性别和年份分列，从1995年起，并附FAO对各国的注释。
+
+English
+
+This function returns the FAO statistics of the number of people
+employed in the primary sector of fisheries and aquaculture (“Global
+employment in the primary sector of fisheries and aquaculture”,
+FI_Employment), by country, work area, working time, sex and year, from
+1995, with FAO’s notes on individual countries.
+
+## 用法
+
+``` r
+
+load_fao_employment(version = "latest", data_dir = fao_data_dir())
+```
+
+## 参数
+
+- `version`:
+
+  数据版本，例如”2026.1.0”。默认为”latest”，即最新的版本（联网时为线上最新版本，离线时为本机已保存的最新版本）。
+
+  English
+
+  The release, e.g. “2026.1.0”. Default is “latest”.
+
+- `data_dir`:
+
+  数据的保存目录。默认为[`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md)。
+
+  English
+
+  The directory where the data is saved. Default is
+  [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md).
+
+## 返回值
+
+一个数据框，每个国家、工作领域、工作时间、性别和年份一行：`Country..Name.`（与[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)中的一致）、`Work.area..Code.`（A、C、D、I、M或U，分别为水产养殖、海洋沿海捕捞、海洋深海捕捞、内陆水域捕捞、海洋捕捞未细分和未说明）、`Work.area`、`Working.time`、`Sex`、`Year`、`Number`（人数）和`Number.Type`（“actual”、“estimate”等）。属性`country_notes`是FAO对各国注释的数据框（`country_en`、`note`），属性`fao_version`和`source_url`给出所用的版本及其来源网址。
+
+English
+
+A data frame with one row per country, work area, working time, sex and
+year: `Country..Name.` (as in
+[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)),
+`Work.area..Code.` (A, C, D, I, M or U), `Work.area`, `Working.time`,
+`Sex`, `Year`, `Number` (people) and `Number.Type` (“actual”,
+“estimate”, …). The attribute `country_notes` is a data frame of FAO’s
+notes on individual countries (`country_en`, `note`), and `fao_version`
+and `source_url` give the release.
+
+## 数据说明
+
+FAO通过年度问卷向各国收集这些数据（其中53个国家与OECD联合收集），并估算未报告国家的数字（据FAO
+2026.1.0版本的元数据；FAO于2026年首次发布这一数据集）：
+
+- 223个国家，1995–2024年；2024年共6,540万人（SOFIA
+  2026给出的是6,530万人）。
+- 工作领域：水产养殖、海洋沿海捕捞、海洋深海捕捞、海洋捕捞未细分（NEI）、内陆水域捕捞，以及”Unspecified”（未说明，2024年占人数的9%）。加工和自给性渔业的数据覆盖面太小，不予发布。
+- 工作时间按渔业统计协调工作组（CWP）的定义划分：全职（至少占工作时间或生计来源的90%）、兼职（30%至90%）、临时（不到30%），或未说明。
+- 数字是人数，不是全时当量：一个临时从业者也算一人。
+- 数据中工作时间未说明的占38%，性别未说明的占41%（FAO元数据）；FAO的插补值约占数据的30%，2024年约占人数的一半。`Number.Type`为”estimate”的记录，既包括这些插补值，也包括各国自己的估计值。
+- 各国的定义不同，细分程度也可能逐年变化；请阅读各国的注释（属性`country_notes`，[`employment_summary()`](https://linbojun99.github.io/faofishingreport/reference/employment_summary.md)和[`catch_per_fisher()`](https://linbojun99.github.io/faofishingreport/reference/catch_per_fisher.md)也会显示）。例如，FAO注明中国把捕捞和养殖的兼职、临时从业者合在一起报告为”Unspecified”，而其”Marine
+  fishing, NEI”在1995–2006年和2014–2020年包含内陆捕捞。
+- FAO在不同版本之间会修订整个序列，因此不应比较不同版本的数据。
+
+电脑联网时，使用最新的版本，第一次使用时下载并转换（文件不到1
+MB），保存在`data_dir`中；离线时，或设置了`fao_settings(online = FALSE)`时，使用本机已保存的最新版本。
+
+English
+
+FAO collects the data from countries with an annual questionnaire
+(jointly with the OECD for 53 countries) and estimates the figures of
+countries that do not report (FAO metadata of release 2026.1.0; FAO
+first disseminated this dataset in 2026):
+
+- 223 countries, 1995-2024; 65.4 million people in 2024 (SOFIA 2026
+  gives 65.3 million).
+- Work areas: aquaculture, marine coastal fishing, marine deep-sea
+  fishing, marine fishing not specified (NEI), inland waters fishing,
+  and “Unspecified” (9 percent of the people in 2024). Processing and
+  subsistence are not published, their coverage being too small.
+- Working time, as defined by the Coordinating Working Party on Fishery
+  Statistics (CWP): full time (at least 90 percent of working time or
+  livelihood), part time (30 to 90 percent), occasional (less than 30
+  percent), or unspecified.
+- The numbers are people, not full-time equivalents: an occasional
+  worker counts as one.
+- Working time is unspecified for 38 percent and sex for 41 percent of
+  the data (FAO metadata); FAO’s imputations make up about 30 percent of
+  the data and half of the people in 2024. `Number.Type` “estimate”
+  marks them and the estimates of countries.
+- National definitions differ, and the level of detail can change over
+  the years; read the notes of each country (the attribute
+  `country_notes`, also shown by
+  [`employment_summary()`](https://linbojun99.github.io/faofishingreport/reference/employment_summary.md)
+  and
+  [`catch_per_fisher()`](https://linbojun99.github.io/faofishingreport/reference/catch_per_fisher.md)).
+  For example, FAO notes that China reports its part-time and occasional
+  workers of fishing and aquaculture together as “Unspecified”, and that
+  its “Marine fishing, NEI” includes inland fishing for 1995-2006 and
+  2014-2020.
+- FAO revises the whole series between releases, so releases should not
+  be compared.
+
+When the computer is online, the newest release is used, downloaded and
+converted the first time (a file under 1 MB) and saved in `data_dir`;
+offline, or with `fao_settings(online = FALSE)`, the newest saved
+release is used.
+
+## 参考文献
+
+FAO. Global employment in the primary sector of fisheries and
+aquaculture (FI_Employment), metadata and country notes of the release.
+<https://www.fao.org/fishery/static/Data/>
+
+Coordinating Working Party on Fishery Statistics (CWP). Handbook of
+Fishery Statistics: fishers.
+<https://www.fao.org/cwp-on-fishery-statistics/handbook/capture-fisheries-statistics/fishers/en/>
+
+FAO (2026). The State of World Fisheries and Aquaculture 2026. Rome:
+FAO. [doi:10.4060/cd8357en](https://doi.org/10.4060/cd8357en)
+
+## 示例
+
+``` r
+
+employment <- load_fao_employment()
+subset(employment, Country..Name. == "Norway" & Year == 2024)
+notes <- attr(employment, "country_notes")
+notes$note[notes$country_en == "China"]
+```

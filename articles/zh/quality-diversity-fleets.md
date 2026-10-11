@@ -220,7 +220,7 @@ show_table(fleets$table, digits = 0)
 ## 📝 写入Word报告
 
 [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)会把数据质量、多样性与集中度、沿岸国与远洋捕捞国写进某个渔区的Word报告（见[📝
-一键生成Word评估报告](https://linbojun99.github.io/faofishingreport/articles/zh/report.md)）：它们是报告的`quality`、`diversity`和`fleets`三个章节，默认都会写入。各函数的设置以章节名为前缀传入（[`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md)用`quality_`，[`diversity_concentration()`](https://linbojun99.github.io/faofishingreport/reference/diversity_concentration.md)用`diversity_`，[`coastal_distant()`](https://linbojun99.github.io/faofishingreport/reference/coastal_distant.md)用`fleets_`），设为`FALSE`即可去掉某个章节：
+一键生成评估报告（Word、LaTeX、PDF）](https://linbojun99.github.io/faofishingreport/articles/zh/report.md)）：它们是报告的`quality`、`diversity`和`fleets`三个章节，默认都会写入。各函数的设置以章节名为前缀传入（[`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md)用`quality_`，[`diversity_concentration()`](https://linbojun99.github.io/faofishingreport/reference/diversity_concentration.md)用`diversity_`，[`coastal_distant()`](https://linbojun99.github.io/faofishingreport/reference/coastal_distant.md)用`fleets_`），设为`FALSE`即可去掉某个章节：
 
 ``` r
 

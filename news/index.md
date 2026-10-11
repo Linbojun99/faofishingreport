@@ -1,5 +1,114 @@
 # Changelog
 
+## faofishingreport 0.4.0
+
+### New features
+
+- `fao_report(format = )` writes the report as Word (`"docx"`, default),
+  LaTeX (`"latex"`) and PDF (`"pdf"`), one or more. The analyses run
+  once and all formats have the same text, figures, tables, captions and
+  references. The LaTeX file (with its figures in a folder next to it)
+  follows the format of the Word report: the `ctexart` class with
+  FangSong, SimHei and KaiTi (or the fonts of macOS, or the Fandol fonts
+  of TeX Live) for Chinese reports, the `article` class for English
+  reports, three-line tables that run over pages, numbered captions,
+  page numbers from the title page and PDF bookmarks. PDFs are compiled
+  with XeLaTeX through tinytex when it is installed (which installs
+  missing LaTeX packages), else with the `xelatex` of the system.
+- The website links to the FAO sources (FAO, FAOSTAT, Global Capture
+  Production and the FAO fishery data files) in the sidebar of the home
+  page and in the footer of every page, with the note “This package is
+  not affiliated with FAO; the data come from FAO”
+  (“本包与FAO无关联，数据来源为FAO”); the README and the Chinese home
+  page give the same links and note.
+- The Chinese function reference covers the new functions (62 pages).
+
+### Extensions: other FAO datasets
+
+These functions use FAO fishery statistics other than global capture
+production. They are an extension of the package and not part of the
+Word report
+([`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)).
+
+- Catch by division:
+  [`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md)
+  downloads and loads the FAO capture data by division of four regional
+  fishery bodies (GFCM in area 37, CECAF in area 34, the Southeast
+  Atlantic in area 47 and RECOFI in part of area 51), in the package
+  format with the columns `Division`, `Division..Name.` and `Region`.
+  [`pelagic_demersal()`](https://linbojun99.github.io/faofishingreport/reference/pelagic_demersal.md)
+  and
+  [`mean_temperature_catch()`](https://linbojun99.github.io/faofishingreport/reference/mean_temperature_catch.md)
+  gain `by = "division"`, and `fao_area_sst(level = "division")` gives
+  the SST of the FAO subareas and divisions (built in for areas 34, 37,
+  47 and 51 from NOAA ERSST v5; all of them from downloaded products or
+  the user’s own NetCDF files). Divisions without a boundary on the FAO
+  map use the SST of their subarea, and the functions say when the SST
+  of a division rests on fewer than 5 grid cells.
+- Trade:
+  [`load_fao_trade()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_trade.md)
+  downloads and loads the FAO statistics of the trade of aquatic
+  products (FI_Trade: exports, imports and re-exports of each country by
+  ISSCFC commodity and year from 1976, quantity in tonnes product weight
+  and value in thousand USD, each commodity with its ISSCAAP group).
+  [`catch_trade()`](https://linbojun99.github.io/faofishingreport/reference/catch_trade.md)
+  compares a country’s catch with its exports and imports of the same
+  ISSCAAP groups, by year and by group: exports as a share of the catch,
+  net trade, unit values, the share of the export value estimated or
+  taken from partner reports, and, with conversion factors given by the
+  user, trade in live weight equivalent and the apparent supply (catch +
+  imports - exports - re-exports). Because trade statistics do not tell
+  whether a product was caught or farmed, only the groups mostly caught
+  are compared (capture at least 90% of world production in every year;
+  [`fao_capture_groups()`](https://linbojun99.github.io/faofishingreport/reference/fao_capture_groups.md),
+  from FAO global production data built into the package); fishmeal and
+  fish oil not assigned to a species group are reported separately.
+- Employment:
+  [`load_fao_employment()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_employment.md)
+  downloads and loads the FAO statistics of the people employed in
+  fisheries and aquaculture (FI_Employment, first disseminated in 2026:
+  by country, work area, working time and sex from 1995), with FAO’s
+  notes on individual countries.
+  [`employment_summary()`](https://linbojun99.github.io/faofishingreport/reference/employment_summary.md)
+  gives the people in aquaculture, marine and inland fishing and
+  unspecified work areas by year, for countries or the world, with the
+  shares of women and full-time workers among those known and the shares
+  unknown (as FAO does in The State of World Fisheries and Aquaculture).
+  [`catch_per_fisher()`](https://linbojun99.github.io/faofishingreport/reference/catch_per_fisher.md)
+  divides marine and inland catch by marine and inland fishers (FAO
+  2012, table 9), as people or as full-time equivalents with the weights
+  of Scherrer et al. (2024), and flags workers of unspecified work area,
+  estimated values and numbers carried forward unchanged. The article
+  “Trade and employment” shows both datasets and what others did with
+  them.
+
+### Bug fixes
+
+- `fao_area_sst(sst = "ersst5")` and
+  [`mean_temperature_catch()`](https://linbojun99.github.io/faofishingreport/reference/mean_temperature_catch.md)
+  use the downloaded ERSST v5 tables together with the built-in ones:
+  the subareas and divisions the built-in table lacks were left out
+  unless the download reached a later year.
+- `mean_temperature_catch(by = "division", sst = <table>)` matches an
+  SST table keyed by `area_en` to the divisions (it found no SST
+  before), and says when no SST matches; the check for the division
+  columns now comes before the FishBase matching.
+- `fao_capture_groups(years = )` gives the years covered by its table
+  when none of `years` is in it.
+- The SST area weights computed before are found again (their cache name
+  had changed).
+- `fao_report(pelagic_by = , mtc_by = )` explains that the analyses by
+  division are an extension outside the report.
+- Help pages of the new functions: defaults of `label`, the columns of
+  `catch_trade()$groups`, `meal_oil_export_value`, the file names with
+  `by = "division"`, and the shares of
+  [`fao_capture_groups()`](https://linbojun99.github.io/faofishingreport/reference/fao_capture_groups.md).
+
+### Other changes
+
+- The CMSY++ tests of the three-system check run on the installed
+  package, so they also run on macOS without XQuartz.
+
 ## faofishingreport 0.3.0
 
 ### New features

@@ -15,7 +15,7 @@ species of warmer waters make up a larger part of the catch."><meta property="og
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,8 +36,11 @@ species of warmer waters make up a larger part of the catch."><meta property="og
     <li><a class="dropdown-item" href="../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="../articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="../articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="../articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="../articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="nav-link" href="../#lang" aria-label="Switch language / 切换语言">中文</a></li>
@@ -75,6 +78,7 @@ species of warmer waters make up a larger part of the catch.</p>
 <span>    <span class="st">"WoRMS valid name (synonym)"</span>, <span class="st">"manual"</span><span class="op">)</span>,</span>
 <span>  match <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sst <span class="op">=</span> <span class="fu">fao_setting</span><span class="op">(</span><span class="st">"sst"</span><span class="op">)</span>,</span>
+<span>  by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"area"</span>, <span class="st">"division"</span><span class="op">)</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  lang <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -133,6 +137,11 @@ changed. The SST data used is printed, shown in the chart legend and given in th
 column <code>sst_source</code> of the yearly table.</p></dd>
 
 
+<dt id="arg-by">by<a class="anchor" aria-label="anchor" href="#arg-by"></a></dt>
+<dd><p>"area" (default) for the FAO major areas, or "division" for the divisions of the
+catch data of <code><a href="load_fao_divisions.html">load_fao_divisions()</a></code> (see Divisions).</p></dd>
+
+
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
 <dd><p>A logical value. If TRUE (default), charts are saved in <code>figures/png/summary/</code>.</p></dd>
 
@@ -165,9 +174,10 @@ country) of the data.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Invisibly, a list of three data frames:</p><dl><dt>yearly</dt>
-<dd><p>one row per area and year: MTC, coverage (percent), whether the coverage is
-below <code>min_coverage</code>, SST (mean and 10th-90th percentile range in the area) and its
-product, number of items used, total catch and catch of the items used;</p></dd>
+<dd><p>one row per area (or division) and year: MTC, coverage (percent), whether the
+coverage is below <code>min_coverage</code>, SST (mean and 10th-90th percentile range in the area),
+its product and the unit of the SST table used (<code>sst_unit</code>), number of items used, total
+catch and catch of the items used;</p></dd>
 
 <dt>trend</dt>
 <dd><p>one row per area and period: slopes of the MTC and SST (°C per decade), the
@@ -183,7 +193,8 @@ in and contribution (°C) to the MTC of the whole period, match, links, and the 
 </dl><p>Charts are saved in <code>figures/png/summary/</code>: <code>&lt;label&gt;_mtc.png</code> (MTC and SST with its range
 in the area; for a single area with the coverage below) and, for several areas,
 <code>&lt;label&gt;_mtc_coverage.png</code>. Tables are saved in <code>tables/</code>: <code>&lt;label&gt;_mtc.csv</code>,
-<code>&lt;label&gt;_mtc_trend.csv</code> and <code>&lt;label&gt;_mtc_species.csv</code>.</p>
+<code>&lt;label&gt;_mtc_trend.csv</code> and <code>&lt;label&gt;_mtc_species.csv</code>. With <code>by = "division"</code>, <code>_mtc</code> in the
+file names becomes <code>_mtc_divisions</code>.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -277,6 +288,21 @@ correlation of differences avoids this, but can miss a relation that acts only o
 significant once autocorrelation was accounted for (Kamberi et al. 2025).</p>
     </div>
     <div class="section level2">
+    <h2 id="divisions">Divisions<a class="anchor" aria-label="anchor" href="#divisions"></a></h2>
+
+
+<p>With <code>by = "division"</code> and catch data by division (<code><a href="load_fao_divisions.html">load_fao_divisions()</a></code>, e.g. the GFCM
+divisions of the Mediterranean and Black Sea; Tsikliras and Stergiou 2014 used GFCM data of the
+western, central and eastern Mediterranean), the MTC
+is calculated for each division and compared with the SST of the division
+(<code>fao_area_sst(level = "division")</code>). Divisions without a boundary on the FAO map use the SST of
+their subarea (e.g. 34.1.9 "Northern coastal, not known" uses 34.1, 51.3.1 Oman Sea uses 51.3);
+the column <code>sst_unit</code> gives the unit used. Codes that are not places (e.g. 37.0.0 Tunas, 37.9.0
+Not known) have no SST. On the 2° grid of the built-in ERSST v5, some divisions have only a few
+cells (the function says which); a finer SST product, given as the path of its NetCDF files,
+suits them better.</p>
+    </div>
+    <div class="section level2">
     <h2 id="interpretation">Interpretation<a class="anchor" aria-label="anchor" href="#interpretation"></a></h2>
 
 
@@ -351,6 +377,9 @@ Register of Marine Species. <a href="https://www.marinespecies.org" class="exter
 <span class="r-in"><span><span class="fu"><a href="download_sst_data.html">download_sst_data</a></span><span class="op">(</span><span class="st">"cobe2"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">mean_temperature_catch</span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, sst <span class="op">=</span> <span class="st">"cobe2"</span>, label <span class="op">=</span> <span class="st">"FAO34_cobe2"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># The GFCM divisions of the Mediterranean and Black Sea</span></span></span>
+<span class="r-in"><span><span class="fu">mean_temperature_catch</span><span class="op">(</span><span class="fu"><a href="load_fao_divisions.html">load_fao_divisions</a></span><span class="op">(</span><span class="st">"GFCM"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># The period studied by Cheung et al. (2013)</span></span></span>
 <span class="r-in"><span><span class="fu">mean_temperature_catch</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, <span class="va">Year</span> <span class="op">&gt;=</span> <span class="fl">1970</span> <span class="op">&amp;</span> <span class="va">Year</span> <span class="op">&lt;=</span> <span class="fl">2006</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>                       label <span class="op">=</span> <span class="st">"FAO34_1970_2006"</span><span class="op">)</span></span></span>
@@ -366,7 +395,7 @@ Register of Marine Species. <a href="https://www.marinespecies.org" class="exter
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">

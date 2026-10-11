@@ -14,7 +14,7 @@ FAO捕捞统计每个渔区每年只有一个数，没有渔区内部的空间�
 ``` r
 
 sst34 <- fao_area_sst("34")
-#> SST: NOAA ERSST v5, built into the package (2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.
+#> SST: NOAA ERSST v5, built into the package (FAO major areas; 2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.
 head(sst34[, c("area_en", "year", "sst_mean", "sst_p10", "sst_p90", "sst_min_month", "sst_max_month")])
 #>                     area_en year sst_mean sst_p10 sst_p90 sst_min_month
 #> 1 Atlantic, Eastern Central 1950   24.510  20.834  27.147        23.620
@@ -129,6 +129,36 @@ al. 2021），数值和趋势会有一定差异。换一种产品重复分析�
 
 每个格点按它与各个FAO主要渔区重叠的面积（在球面上计算）加权，计入它所覆盖的每个渔区。位于两个渔区交界处的格点由两边共享，沿岸格点只计算海洋部分。渔区边界来自包内的FAO渔区地图（CWP手册中的19个海洋渔区）。北冰洋和南极渔区的数值有一部分反映的是海冰，而不是实测的水温。
 
+### 🧩 亚区和分区（扩展功能）
+
+`fao_area_sst(level = "division")`给出FAO亚区和分区的海表温度，对应按分区的渔获数据（[`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md)，见[💾
+FAO数据](https://linbojun99.github.io/faofishingreport/articles/zh/data.md)）。内置的ERSST
+v5表包含34、37、47和51区的亚区和分区；下载的产品和你自己的NetCDF文件会给出全部亚区和分区。
+
+``` r
+
+div <- fao_area_sst(level = "division")
+#> SST: NOAA ERSST v5, built into the package (FAO subareas and divisions of areas 34, 37, 47 and 51; 2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.
+show_table(subset(div, startsWith(area_code, "37.") & year == 2024)[, c("area_code", "area_en", "sst_mean", "n_cells")], n = 12)
+```
+
+|      | area_code | area_en           | sst_mean | n_cells |
+|:-----|:----------|:------------------|---------:|--------:|
+| 1215 | 37.1      | Western subarea   |    19.96 |      31 |
+| 1291 | 37.1.1    | Balearic          |    19.95 |      16 |
+| 1367 | 37.1.2    | Gulf of Lion      |    18.88 |       6 |
+| 1443 | 37.1.3    | Sardinia          |    20.19 |      16 |
+| 1519 | 37.2      | Central subarea   |    21.60 |      32 |
+| 1595 | 37.2.1    | Adriatic          |    19.69 |       6 |
+| 1671 | 37.2.2    | Ionian            |    21.76 |      28 |
+| 1747 | 37.3      | Eastern subarea   |    22.38 |      26 |
+| 1823 | 37.3.1    | Aegean            |    21.46 |      13 |
+| 1899 | 37.3.2    | Levant            |    22.96 |      15 |
+| 1975 | 37.4      | Black Sea subarea |    16.97 |      17 |
+| 2051 | 37.4.1    | Marmara Sea       |    20.58 |       1 |
+
+很多分区对2°网格来说太小：马尔马拉海和亚速海只有一两个格点。用分辨率更高的产品（给出其NetCDF文件路径）更适合分区。
+
 ## 🐟 渔获平均温度
 
 渔获平均温度（MTC；Cheung et
@@ -173,16 +203,28 @@ MB）；不联网时使用已下载的最新版本，没有下载过则使用包
 
 函数返回`yearly`（各渔区逐年的MTC、覆盖率、SST及所用产品）、`trend`（各渔区各时段的斜率、Mann-Kendall检验和相关）和`species`（每个渔区每个FAO物种条目一行）。
 
+### 🧩 按分区（扩展功能）
+
+有了按分区的渔获数据，`by = "division"`会给出每个分区的渔获平均温度，并与该分区的海表温度对比：
+
+``` r
+
+med <- load_fao_divisions("GFCM")
+mtc_divisions <- mean_temperature_catch(med, by = "division")
+```
+
+在FAO地图上没有边界的分区使用所在亚区的海表温度（见`sst_unit`列）；不是具体海域的代码（如37.0.0金枪鱼）没有海表温度；海温格点少于5个的分区，函数会给出提示。
+
 ### ⚠️ 包做什么，你必须核对什么
 
 本包负责计算MTC、它的趋势以及与SST的对比。各物种的偏好温度**没有经过本包核对**：它们是按FAO学名自动匹配FishBase或SeaLifeBase（`TempPrefMean`）得到的初配结果，并附有核对用的网址。不同数据库之间的物种名并不总能对上（Grenié
 et
 al. 2023），所以每个匹配和偏好温度是否正确，需要你查阅这些网页和文献后自行判断，然后才能使用结果：
 
-1.  打开物种表`tables/<label>_mtc_species.csv`。表按渔获量从大到小排序，越靠前的条目越重要。
-2.  对每个参与计算的条目（`used`为TRUE），打开`url`（匹配到的FishBase或SeaLifeBase物种页面）、`search_url`和`worms_url`（世界海洋物种名录）。核对两点：匹配到的物种是否就是这个FAO条目，偏好温度对该渔区的种群是否合理。
-3.  在`checked`列写上核对人或日期。值不对就改`temp_pref_mean`，并在`note`写明出处（如果要给原本不参与计算的条目，如属一级的条目，赋一个值，还要把它的`match_type`改为`"manual"`）；也可以把更正写进[`fishbase_match()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_match.md)的更正文件，之后每次运行都会自动采用。
-4.  用核对后的表重新运行：
+1.打开物种表`tables/<label>_mtc_species.csv`。表按渔获量从大到小排序，越靠前的条目越重要。
+2.对每个参与计算的条目（`used`为TRUE），打开`url`（匹配到的FishBase或SeaLifeBase物种页面）、`search_url`和`worms_url`（世界海洋物种名录）。核对两点：匹配到的物种是否就是这个FAO条目，偏好温度对该渔区的种群是否合理。
+3.在`checked`列写上核对人或日期。值不对就改`temp_pref_mean`，并在`note`写明出处（如果要给原本不参与计算的条目，如属一级的条目，赋一个值，还要把它的`match_type`改为`"manual"`）；也可以把更正写进[`fishbase_match()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_match.md)的更正文件，之后每次运行都会自动采用。
+4.用核对后的表重新运行：
 
 ``` r
 
@@ -227,7 +269,7 @@ mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern
 ## 📝 写入Word报告
 
 [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)用`mtc = TRUE`加入渔获平均温度一节（见[📝
-一键生成Word评估报告](https://linbojun99.github.io/faofishingreport/articles/zh/report.md)）。报告使用包内置的FishBase数据（`mtc_version = "builtin"`），不需要下载，在任何电脑上得到的数值都相同；`mtc_version = "latest"`则改用最新的FishBase版本。[`mean_temperature_catch()`](https://linbojun99.github.io/faofishingreport/reference/mean_temperature_catch.md)的其他设置以`mtc_`为前缀传入，例如`mtc_sst = "hadisst1"`或`mtc_match = "<核对过的物种表>"`。报告用到的物种及其匹配和链接以`report$mtc_species`返回，方便核对：
+一键生成评估报告（Word、LaTeX、PDF）](https://linbojun99.github.io/faofishingreport/articles/zh/report.md)）。报告使用包内置的FishBase数据（`mtc_version = "builtin"`），不需要下载，在任何电脑上得到的数值都相同；`mtc_version = "latest"`则改用最新的FishBase版本。[`mean_temperature_catch()`](https://linbojun99.github.io/faofishingreport/reference/mean_temperature_catch.md)的其他设置以`mtc_`为前缀传入，例如`mtc_sst = "hadisst1"`或`mtc_match = "<核对过的物种表>"`。报告用到的物种及其匹配和链接以`report$mtc_species`返回，方便核对：
 
 ``` r
 

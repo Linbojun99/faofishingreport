@@ -383,6 +383,60 @@ income groups; the package’s translations are in
 `inst/extdata/chart_labels.csv`. Edit these files in the package source
 and reinstall to change the wording.
 
+## 🧩 Extension: catch by division
+
+This and the next section use FAO datasets other than global capture
+production; they are an extension of the package and not part of the
+Word report.
+
+For four regions FAO also publishes the catch by **division**, the parts
+of an FAO area used by regional fishery bodies: GFCM (area 37,
+e.g. 37.1.1 Balearic, 37.2.1 Adriatic, 37.4.2 Black Sea), CECAF (area
+34), the Southeast Atlantic (area 47) and RECOFI (the Gulf, the Sea of
+Oman and the southwestern Arabian Sea, part of area 51).
+[`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md)
+downloads the newest release the first time (about 5 MB), keeps it in
+the data folder, and returns it in the format above with three more
+columns: `Division`, `Division..Name.` and `Region`.
+
+``` r
+
+med <- load_fao_divisions("GFCM")
+pelagic_demersal(med, by = "division")          # one P/D series per division
+mean_temperature_catch(med, by = "division")    # MTC and SST of each division
+```
+
+For GFCM, CECAF and the Southeast Atlantic, the catch summed over the
+divisions equals that of the FAO area for nearly all records. Some codes
+are not places: “37.0.0 Tunas” holds tunas reported for the whole area
+and “37.9.0 Not known” catch whose division is not known.
+
+## 🧩 Extension: trade and employment data
+
+FAO also publishes the trade of aquatic products and the employment in
+fisheries and aquaculture.
+[`load_fao_trade()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_trade.md)
+(exports, imports and re-exports by country, commodity and year from
+1976, about 16 MB) and
+[`load_fao_employment()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_employment.md)
+(people by country, work area, working time and sex from 1995, under 1
+MB) download them the first time and keep them in the data folder, like
+[`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md).
+Trade quantities are product weight, not live weight, and employment
+counts people, not full-time equivalents. See [🚢 Trade and
+employment](https://linbojun99.github.io/faofishingreport/articles/trade-employment.md)
+for the analyses that join them to the catch:
+[`catch_trade()`](https://linbojun99.github.io/faofishingreport/reference/catch_trade.md),
+[`employment_summary()`](https://linbojun99.github.io/faofishingreport/reference/employment_summary.md)
+and
+[`catch_per_fisher()`](https://linbojun99.github.io/faofishingreport/reference/catch_per_fisher.md).
+
+``` r
+
+trade <- load_fao_trade()
+employment <- load_fao_employment()
+```
+
 ## ⚠️ Notes on the data
 
 - **Recent years are often estimated.** When a country has not yet

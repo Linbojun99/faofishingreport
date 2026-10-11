@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,8 +52,11 @@
     <li><a class="dropdown-item" href="../../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="../../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="../../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="../../articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="../../articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="../../articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="../../articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../../news/index.html">Changelog</a></li>
@@ -113,9 +116,8 @@ FishBase、SeaLifeBase 物种特征的匹配（数据来自 <a href="https://git
 资源评估</strong>：对主要物种进行仅基于渔获量的资源评估（Froese 等
 2023；采用其作者发布的代码 <a href="https://github.com/SISTA16/cmsyPlusPlus" class="external-link uri">https://github.com/SISTA16/cmsyPlusPlus</a>，原样内置），自动为本机配置
 JAGS，输出图表、预测以及生物学参考点和先验参数表。</li>
-<li>📝 <strong>一键生成 Word
-评估报告</strong>：<code><a href="../../reference/fao_report.html">fao_report()</a></code>
-生成中文或英文报告（封面、摘要、数据来源与分析方法、结果、结论、参考文献和附件），每项分析都可以单独开关，各函数的设置用前缀传入。</li>
+<li>📝 <strong>一键生成评估报告</strong>：<code><a href="../../reference/fao_report.html">fao_report()</a></code>
+生成中文或英文报告，可输出Word、LaTeX或PDF（封面、摘要、数据来源与分析方法、结果、结论、参考文献和附件），每项分析都可以单独开关，各函数的设置用前缀传入。</li>
 <li>🌐 <strong>中文、英文或中英双语</strong>图表，国家、物种、渔区名使用
 FAO 官方中文名。</li>
 <li>🎨
@@ -167,8 +169,8 @@ Earth 等）和太平洋居中地图，用 <code><a href="../../reference/fao_se
 <span><span class="co"># 前 10 个主要物种的 CMSY++ 评估（先运行一次 cmsy_setup()）</span></span>
 <span><span class="fu"><a href="../../reference/cmsy_area.html">cmsy_area</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, top <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 一键生成中文 Word 评估报告，包含 CMSY++ 和渔获骤变</span></span>
-<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span>, shocks <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># 一键生成中文评估报告，包含 CMSY++ 和渔获骤变，输出 Word 和 PDF（LaTeX）</span></span>
+<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span>, shocks <span class="op">=</span> <span class="cn">TRUE</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docx"</span>, <span class="st">"pdf"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>图表保存在工作目录的
 <code>figures/png/</code>（需要时也可以同时输出可编辑的 PowerPoint 到
 <code>figures/pptx/</code>），表格保存在 <code>tables/</code>。</p>
@@ -513,8 +515,7 @@ Earth 等）和太平洋居中地图，用 <code><a href="../../reference/fao_se
 </tr></thead>
 <tbody><tr class="odd">
 <td><code><a href="../../reference/fao_report.html">fao_report()</a></code></td>
-<td>一键生成某个渔区的中文或英文 Word
-评估报告，每项分析都可以单独开关</td>
+<td>一键生成某个渔区的中文或英文评估报告（Word、LaTeX、PDF），每项分析都可以单独开关</td>
 </tr></tbody>
 </table>
 <p><strong>🎨 设置与语言</strong></p>
@@ -559,7 +560,11 @@ Earth 等）和太平洋居中地图，用 <code><a href="../../reference/fao_se
 <li><a href="sst-mtc.html">🌡️ 海表温度与渔获平均温度</a></li>
 <li><a href="fishbase.html">🐠 FishBase 与 SeaLifeBase 物种特征</a></li>
 <li><a href="cmsy.html">📉 CMSY++ 资源评估</a></li>
-<li><a href="report.html">📝 一键生成 Word 评估报告</a></li>
+<li><a href="report.html">📝
+一键生成评估报告（Word、LaTeX、PDF）</a></li>
+<li>🧩 扩展（不纳入Word报告）：<a href="trade-employment.html">🚢
+贸易与就业</a>
+</li>
 <li><a href="customise.html">🎨 自定义图表与地图</a></li>
 </ul>
 <p>每篇文档最后都列出了所用方法和数据的参考文献及其 DOI
@@ -583,7 +588,11 @@ Capture Production）统计 <strong>2026.1.0 版</strong>（FAO 于 2026 年 3
 数据库使用条款</a>。</li>
 <li>
 <code><a href="../../reference/fao_data_info.html">fao_data_info()</a></code> 显示你的分析所用的版本及引用格式。</li>
+<li>FAO网站：<a href="https://www.fao.org/home/zh" class="external-link">FAO</a>、<a href="https://www.fao.org/faostat/zh/#data" class="external-link">FAOSTAT数据</a>和<a href="https://www.fao.org/fishery/static/Data/" class="external-link">FAO渔业数据文件</a>。</li>
 </ul>
+<blockquote>
+<p>本包与FAO无关联，数据来源为FAO。</p>
+</blockquote>
 </div>
 <div class="section level2">
 <h2 id="引用">📝 引用<a class="anchor" aria-label="anchor" href="#%E5%BC%95%E7%94%A8"></a>
@@ -610,7 +619,7 @@ Licence: CC BY 4.0.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -23,6 +23,7 @@ mean_temperature_catch(
     "WoRMS valid name (synonym)", "manual"),
   match = NULL,
   sst = fao_setting("sst"),
+  by = c("area", "division"),
   plot = TRUE,
   table = TRUE,
   lang = NULL,
@@ -90,6 +91,13 @@ mean_temperature_catch(
   "ersst5" unless changed. The SST data used is printed, shown in the
   chart legend and given in the column `sst_source` of the yearly table.
 
+- by:
+
+  "area" (default) for the FAO major areas, or "division" for the
+  divisions of the catch data of
+  [`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md)
+  (see Divisions).
+
 - plot:
 
   A logical value. If TRUE (default), charts are saved in
@@ -129,10 +137,11 @@ Invisibly, a list of three data frames:
 
 - yearly:
 
-  one row per area and year: MTC, coverage (percent), whether the
-  coverage is below `min_coverage`, SST (mean and 10th-90th percentile
-  range in the area) and its product, number of items used, total catch
-  and catch of the items used;
+  one row per area (or division) and year: MTC, coverage (percent),
+  whether the coverage is below `min_coverage`, SST (mean and 10th-90th
+  percentile range in the area), its product and the unit of the SST
+  table used (`sst_unit`), number of items used, total catch and catch
+  of the items used;
 
 - trend:
 
@@ -150,7 +159,8 @@ Charts are saved in `figures/png/summary/`: `<label>_mtc.png` (MTC and
 SST with its range in the area; for a single area with the coverage
 below) and, for several areas, `<label>_mtc_coverage.png`. Tables are
 saved in `tables/`: `<label>_mtc.csv`, `<label>_mtc_trend.csv` and
-`<label>_mtc_species.csv`.
+`<label>_mtc_species.csv`. With `by = "division"`, `_mtc` in the file
+names becomes `_mtc_divisions`.
 
 ## Details
 
@@ -268,6 +278,22 @@ relation that acts only over decades (Pyper and Peterman 1998). In the
 Adriatic Sea, the relation of MTC with SST was no longer significant
 once autocorrelation was accounted for (Kamberi et al. 2025).
 
+## Divisions
+
+With `by = "division"` and catch data by division
+([`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md),
+e.g. the GFCM divisions of the Mediterranean and Black Sea; Tsikliras
+and Stergiou 2014 used GFCM data of the western, central and eastern
+Mediterranean), the MTC is calculated for each division and compared
+with the SST of the division (`fao_area_sst(level = "division")`).
+Divisions without a boundary on the FAO map use the SST of their subarea
+(e.g. 34.1.9 "Northern coastal, not known" uses 34.1, 51.3.1 Oman Sea
+uses 51.3); the column `sst_unit` gives the unit used. Codes that are
+not places (e.g. 37.0.0 Tunas, 37.9.0 Not known) have no SST. On the 2°
+grid of the built-in ERSST v5, some divisions have only a few cells (the
+function says which); a finer SST product, given as the path of its
+NetCDF files, suits them better.
+
 ## Interpretation
 
 A change in the MTC can come from a warmer or cooler ocean, but also
@@ -375,6 +401,9 @@ mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern_Centra
 mean_temperature_catch(FAO34$area_data, sst = "D:/data/HadISST_sst.nc", label = "FAO34_hadisst")
 download_sst_data("cobe2")
 mean_temperature_catch(FAO34$area_data, sst = "cobe2", label = "FAO34_cobe2")
+
+# The GFCM divisions of the Mediterranean and Black Sea
+mean_temperature_catch(load_fao_divisions("GFCM"), by = "division")
 
 # The period studied by Cheung et al. (2013)
 mean_temperature_catch(subset(FAO34$area_data, Year >= 1970 & Year <= 2006),

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>📝 一键生成 Word 评估报告 • faofishingreport</title>
+<title>📝 一键生成评估报告（Word、LaTeX、PDF） • faofishingreport</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../../apple-touch-icon.png">
@@ -16,9 +16,9 @@
 <script src="../../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../../deps/headroom-0.11.0/headroom.min.js"></script><script src="../../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../../deps/search-1.0.0/fuse.min.js"></script><script src="../../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../../pkgdown.js"></script><link href="../../extra.css" rel="stylesheet">
-<script src="../../extra.js"></script><meta property="og:title" content="📝 一键生成 Word 评估报告">
-<meta name="description" content="fao_report()：一次调用即可生成某个FAO渔区的中文或英文Word评估报告。本文介绍报告的内容、参数、各分析章节及其设置、格式、引文格式、CMSY++部分、返回的表格以及报告文字的模板。">
-<meta property="og:description" content="fao_report()：一次调用即可生成某个FAO渔区的中文或英文Word评估报告。本文介绍报告的内容、参数、各分析章节及其设置、格式、引文格式、CMSY++部分、返回的表格以及报告文字的模板。">
+<script src="../../extra.js"></script><meta property="og:title" content="📝 一键生成评估报告（Word、LaTeX、PDF）">
+<meta name="description" content="fao_report()：一次调用即可生成某个FAO渔区的中文或英文评估报告（Word、LaTeX或PDF）。本文介绍报告的内容、参数、各分析章节及其设置、格式、引文格式、CMSY++部分、返回的表格以及报告文字的模板。">
+<meta property="og:description" content="fao_report()：一次调用即可生成某个FAO渔区的中文或英文评估报告（Word、LaTeX或PDF）。本文介绍报告的内容、参数、各分析章节及其设置、格式、引文格式、CMSY++部分、返回的表格以及报告文字的模板。">
 <meta property="og:image" content="https://linbojun99.github.io/faofishingreport/logo.png">
 </head>
 <body>
@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,8 +52,11 @@
     <li><a class="dropdown-item" href="../../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="../../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="../../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="../../articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="../../articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="../../articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="../../articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../../news/index.html">Changelog</a></li>
@@ -76,7 +79,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../../logo.png" class="logo" alt=""><h1>📝 一键生成 Word 评估报告</h1>
+      <img src="../../logo.png" class="logo" alt=""><h1>📝 一键生成评估报告（Word、LaTeX、PDF）</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/Linbojun99/faofishingreport/blob/main/vignettes/articles/zh/report.Rmd" class="external-link"><code>vignettes/articles/zh/report.Rmd</code></a></small>
@@ -111,7 +114,7 @@ be completed”）。使用前请核对自动生成的文字。</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_report_zh.docx"</span>, lang <span class="op">=</span> <span class="st">"zh"</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmpESQdVG/faofishingreport_site_17c5482cb535/FAO34_report_zh.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmpR5DG5Q/faofishingreport_site_1b7886c187f41/FAO34_report_zh.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, quality, diversity, fleets</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -534,7 +537,7 @@ Computing, 2026[2026-10-11]. <a href="https://www.R-project.org/" class="externa
 </tr>
 <tr class="odd">
 <td align="left">[11] Lin H. faofishingreport: Analyse and report FAO
-Global Capture Production statistics. R package version 0.3.0[CP/OL].
+Global Capture Production statistics. R package version 0.4.0[CP/OL].
 2026[2026-10-11]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>.</td>
 </tr>
 </tbody>
@@ -568,93 +571,100 @@ Global Capture Production statistics. R package version 0.3.0[CP/OL].
 <tr class="odd">
 <td><code>file</code></td>
 <td><code>reports/FAO&lt;code&gt;_report_&lt;lang&gt;.docx</code></td>
-<td>要写入的Word文件，所在文件夹不存在时会自动创建</td>
+<td>要写入的文件，所在文件夹不存在时会自动创建；其他格式使用相同的文件名，扩展名为<code>.tex</code>和<code>.pdf</code>
+</td>
 </tr>
 <tr class="even">
+<td><code>format</code></td>
+<td><code>"docx"</code></td>
+<td>
+<code>"docx"</code>、<code>"latex"</code>和<code>"pdf"</code>中的一个或多个（见<a href="#formats">🖨️ Word、LaTeX和PDF</a>）</td>
+</tr>
+<tr class="odd">
 <td><code>lang</code></td>
 <td>
 <code>NULL</code>：采用<code><a href="../../reference/fao_settings.html">fao_settings()</a></code>中的语言</td>
 <td>
 <code>"zh"</code>（中文）或<code>"en"</code>（英文）；<code>"both"</code>生成中文报告</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>title</code></td>
 <td>根据渔区生成</td>
 <td>如“FAO 34渔区（中东大西洋）海洋捕捞产量评估”</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>report_no</code></td>
 <td><code>1</code></td>
 <td>报告编号：“报告一”（中文数字，最大到99；英文报告为“Report
 1”），同时是图表编号的第一个数字（图1-1、表1-1）</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>author</code></td>
 <td>
 <code>NULL</code>：“作者”</td>
 <td>封面、标题下方和文件属性中的作者</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>affiliation</code></td>
 <td>
 <code>NULL</code>：不显示</td>
 <td>封面上的单位</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>project</code></td>
 <td>
 <code>NULL</code>：“课题报告”</td>
 <td>封面顶部的文字（英文报告为“Project Report”）</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>date</code></td>
 <td><code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date()</a></code></td>
 <td>封面上的日期，格式为YYYY-MM-DD；也是R和faofishingreport两条参考文献中的引用日期</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>font</code></td>
 <td>
 <code>NULL</code>：中文报告为“Times New
 Roman”，英文报告为“Arial”</td>
 <td>西文和数字的字体；英文报告中为全部文字的字体</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>font_zh</code></td>
 <td><code>"FangSong"</code></td>
 <td>正文、标题、表格和参考文献的中文字体；各级标题和题注仍用黑体和楷体</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>citation</code></td>
 <td><code>"apa"</code></td>
 <td>英文报告的引文格式：<code>"apa"</code>或<code>"fao"</code>。中文报告一律采用顺序编码制（GB/T
 7714）。</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>top_n</code></td>
 <td><code>10</code></td>
 <td>表格和图中主要种类和国家的数量，也是CMSY++评估的物种数（未指定<code>cmsy_top</code>时）</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>data_version</code></td>
 <td><code>"latest"</code></td>
 <td>使用的FAO数据版本，同<code><a href="../../reference/load_fao_data.html">load_fao_data()</a></code>
 </td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>
 <code>total</code>、<code>species</code>、<code>countries</code>、<code>groups</code>、<code>status</code>、<code>quality</code>、<code>diversity</code>、<code>fleets</code>
 </td>
 <td><code>TRUE</code></td>
 <td>默认开启的章节（见<a href="#sections">🧩 分析章节</a>）</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>
 <code>shocks</code>、<code>collapse</code>、<code>synchrony</code>、<code>pelagic</code>、<code>mtc</code>、<code>distant</code>
 </td>
 <td><code>FALSE</code></td>
 <td>默认关闭的章节</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>cmsy</code></td>
 <td><code>FALSE</code></td>
 <td>
@@ -844,7 +854,7 @@ v5数据时的Huang等（2017）、Pyper和Peterman（1998）、Alajmi等（2024
 <code class="sourceCode R"><span><span class="va">short</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_short.docx"</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, quality <span class="op">=</span> <span class="cn">FALSE</span>, diversity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                    fleets <span class="op">=</span> <span class="cn">FALSE</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span>, status_smooth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">short</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmpESQdVG/faofishingreport_site_17c5482cb535/FAO34_short.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmpR5DG5Q/faofishingreport_site_1b7886c187f41/FAO34_short.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, pelagic</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -928,7 +938,7 @@ Computing, 2026[2026-10-11]. <a href="https://www.R-project.org/" class="externa
 </tr>
 <tr class="odd">
 <td align="left">[11] Lin H. faofishingreport: Analyse and report FAO
-Global Capture Production statistics. R package version 0.3.0[CP/OL].
+Global Capture Production statistics. R package version 0.4.0[CP/OL].
 2026[2026-10-11]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>.</td>
 </tr>
 <tr class="even">
@@ -1047,7 +1057,7 @@ Landings Composition[J]. Marine and Coastal Fisheries, 2010, 2(1):
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Unknown argument of fao_report(): speceis_h_value. Settings of an analysis start with its section: total_, species_, countries_, groups_, status_, quality_, diversity_, fleets_, shocks_, collapse_, synchrony_, pelagic_, mtc_, distant_, cmsy_</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="格式">📐 格式<a class="anchor" aria-label="anchor" href="#%E6%A0%BC%E5%BC%8F"></a>
+<h2 id="format">📐 格式<a class="anchor" aria-label="anchor" href="#format"></a>
 </h2>
 <p>中文报告采用课题报告的常用格式：</p>
 <table class="table">
@@ -1125,6 +1135,100 @@ Roman五号（10.5磅），单倍行距</td>
 pilchardus</em>、<em>Trachurus</em>
 spp.（“spp.”为正体）；科及更高分类阶元的名称用正体，如Actinopterygii。符号同样用斜体（<em>P</em>&lt;0.05、<em>H</em>）。灰色备注和参考文献按原样写入，不做中文空格处理。</p>
 <p>各级标题设有大纲级别1和2，因此会显示在Word的导航窗格中，也会出现在Word中插入的目录里。标题和作者还写入了文件属性。</p>
+</div>
+<div class="section level2">
+<h2 id="formats">🖨️ Word、LaTeX和PDF<a class="anchor" aria-label="anchor" href="#formats"></a>
+</h2>
+<p><code>format</code>决定输出哪些文件：<code>"docx"</code>（默认）、<code>"latex"</code>和<code>"pdf"</code>，可以选一个或多个。各项分析只运行一次，各种格式的文字、图表、表格、图表标题和参考文献完全相同。</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docx"</span>, <span class="st">"pdf"</span><span class="op">)</span><span class="op">)</span>      <span class="co"># Word和PDF</span></span>
+<span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"en"</span>, format <span class="op">=</span> <span class="st">"latex"</span><span class="op">)</span>                <span class="co"># 只输出LaTeX源文件</span></span>
+<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docx"</span>, <span class="st">"latex"</span>, <span class="st">"pdf"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">report</span><span class="op">$</span><span class="va">file</span>                                                  <span class="co"># 按docx、latex、pdf命名的文件路径</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th><code>format</code></th>
+<th>输出的文件（以<code>fao_report(34, lang = "zh")</code>为例）</th>
+<th>说明</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>"docx"</code></td>
+<td><code>reports/FAO34_report_zh.docx</code></td>
+<td>本文介绍的Word文件</td>
+</tr>
+<tr class="even">
+<td><code>"latex"</code></td>
+<td>
+<code>reports/FAO34_report_zh.tex</code>和文件夹<code>reports/FAO34_report_zh_figures/</code>
+</td>
+<td>同一份报告的XeLaTeX源文件，图片为PNG文件。中文报告使用<code>ctexart</code>文档类，英文报告使用<code>article</code>文档类。</td>
+</tr>
+<tr class="odd">
+<td><code>"pdf"</code></td>
+<td>
+<code>reports/FAO34_report_zh.pdf</code>（以及<code>.tex</code>）</td>
+<td>用XeLaTeX编译的PDF，带有各级标题的书签</td>
+</tr>
+</tbody>
+</table>
+<p>LaTeX版本沿用Word文件的格式（见<a href="#format">📐
+格式</a>）：A4纸张和相同的页边距，相同的字体和字号，1.5倍行距，三线表（booktabs，单倍行距，列宽按内容确定，可以跨页），带编号的图表标题，封面不编页码，标题页从第1页开始。字体取自本机已安装的字体：</p>
+<table class="table">
+<colgroup>
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th></th>
+<th>Windows</th>
+<th>macOS</th>
+<th>Linux</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>中文正文（仿宋）</td>
+<td>FangSong</td>
+<td>STFangsong</td>
+<td>FandolFang（TeX Live自带）</td>
+</tr>
+<tr class="even">
+<td>中文标题和图表标题（黑体）</td>
+<td>SimHei</td>
+<td>Heiti SC</td>
+<td>FandolHei</td>
+</tr>
+<tr class="odd">
+<td>中文二级标题（楷体）</td>
+<td>KaiTi</td>
+<td>Kaiti SC</td>
+<td>FandolKai</td>
+</tr>
+<tr class="even">
+<td>西文和数字</td>
+<td>
+<code>font</code>：中文报告为Times New
+Roman，英文报告为Arial（没有时用Liberation Serif或Sans，再没有时用Latin
+Modern）</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>中文字体没有粗体字形：与Word一样，加粗的中文（如标题）通过加粗笔画实现。</p>
+<p><strong>编译。</strong>安装了tinytex包（<code>install.packages("tinytex")</code>；如果本机没有LaTeX，再运行<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::install_tinytex()</a></code>）时，用<code>tinytex::latexmk(engine = "xelatex")</code>生成PDF，第一次运行时会自动安装缺少的LaTeX宏包（ctex、xeCJK、booktabs、longtable、needspace、xurl等）；没有tinytex时，系统路径中须有<code>xelatex</code>。要修改LaTeX版本的文字，编辑<code>.tex</code>文件后重新编译即可，例如<code>tinytex::xelatex("reports/FAO34_report_zh.tex")</code>。</p>
+<div class="callout-tip">
+<p>如果tinytex因为本机的TeX Live比在线仓库旧而无法安装宏包（提示”Local
+TeX Live (2024) is older than remote repository”），可以更新TeX
+Live（<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::reinstall_tinytex()</a></code>），或从对应年份的存档安装宏包：<code>tlmgr --repository https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final install ctex</code>。</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="引文与参考文献">🔖 引文与参考文献<a class="anchor" aria-label="anchor" href="#%E5%BC%95%E6%96%87%E4%B8%8E%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"></a>
@@ -1215,7 +1319,7 @@ al.”。FAO格式参照FAO出版物（如FAO
 <h2 id="cmsy">📉 CMSY++资源评估<a class="anchor" aria-label="anchor" href="#cmsy"></a>
 </h2>
 <p><code>cmsy = TRUE</code>时，主要种类还会用CMSY++（<code><a href="../../reference/cmsy_area.html">cmsy_area()</a></code>）进行资源评估：评估对象为近10年渔获量最高的<code>top_n</code>个鉴定到种的物种条目，或指定的<code>cmsy_top</code>个。CMSY++需要JAGS，用<code><a href="../../reference/cmsy_setup.html">cmsy_setup()</a></code>安装一次即可；未安装时<code><a href="../../reference/fao_report.html">fao_report()</a></code>会报错并给出提示。评估需要几分钟。</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/cmsy_setup.html">cmsy_setup</a></span><span class="op">(</span><span class="op">)</span>                          <span class="co"># 只需运行一次：安装JAGS和CMSY++所需的R包</span></span>
 <span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
@@ -1250,7 +1354,7 @@ al.”。FAO格式参照FAO出版物（如FAO
 <strong>小结</strong>；附件中还有<strong>附表3</strong>生物学参考点（r、k、MSY、Fmsy、Bmsy、B/Bmsy、F/Fmsy）及其95%置信区间，<strong>附表4</strong>先验参数（恢复力、r和k的范围、首年、中间年份和末年的B/k先验），<strong>附表5</strong>先验参数的来源（r先验来源、B/k先验来源、物种在FishBase或SeaLifeBase中的页面），其后列出FishBase数据、CMSY++代码与用户指南以及FAO数据的链接。</li>
 </ul>
 <p>CMSY++的全部结果（输入文件、运行结果、图和表）保存在报告旁边的<code>cmsy/</code>文件夹中，如<code>reports/cmsy/Atlantic__Eastern_Central/</code>，其中有<code>cmsy_result.rds</code>。如需重新生成报告（例如改变章节或修改模板之后），把这个结果传给<code>cmsy</code>即可，不必再运行CMSY++，此时<code>cmsy_</code>设置不再起作用。<code><a href="../../reference/cmsy_area.html">cmsy_area()</a></code>的结果也可以同样传入：</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cmsy34</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"reports"</span>, <span class="st">"cmsy"</span>, <span class="st">"Atlantic__Eastern_Central"</span>, <span class="st">"cmsy_result.rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="va">cmsy34</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
@@ -1275,7 +1379,7 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 <tbody>
 <tr class="odd">
 <td><code>file</code></td>
-<td>Word文件的路径</td>
+<td>所写文件的路径，按<code>docx</code>、<code>latex</code>、<code>pdf</code>命名</td>
 </tr>
 <tr class="even">
 <td><code>sections</code></td>
@@ -1312,7 +1416,7 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">report</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "file"           "sections"       "main_species"   "main_countries"</span></span>
 <span><span class="co">#&gt; [5] "analyses"</span></span>
@@ -1429,7 +1533,7 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">analyses</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "total"     "species"   "countries" "groups"    "status"    "quality"  </span></span>
 <span><span class="co">#&gt; [7] "diversity" "fleets"</span></span>
@@ -1487,7 +1591,7 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 <h2 id="修改报告措辞">✏️ 修改报告措辞<a class="anchor" aria-label="anchor" href="#%E4%BF%AE%E6%94%B9%E6%8A%A5%E5%91%8A%E6%8E%AA%E8%BE%9E"></a>
 </h2>
 <p>报告的全部文字都来自<code>inst/extdata/report_text.csv</code>，每段文字一行，列为<code>key</code>、<code>en</code>和<code>zh</code>：</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">texts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"report_text.csv"</span>, package <span class="op">=</span> <span class="st">"faofishingreport"</span><span class="op">)</span>,</span>
 <span>                  fileEncoding <span class="op">=</span> <span class="st">"UTF-8"</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">texts</span><span class="op">)</span></span>
@@ -1537,7 +1641,7 @@ et al., 2013)”。</li>
 <code>*...*</code>写为斜体（<code>*P*</code>、学名），<code>^...^</code>写为上标，<code>~...~</code>写为下标，例如<code>HHI = ∑(100*p*~i~)^2^</code>。</li>
 </ul>
 <p>参考文献在<code>inst/extdata/report_references.csv</code>中：</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">refs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"report_references.csv"</span>, package <span class="op">=</span> <span class="st">"faofishingreport"</span><span class="op">)</span>,</span>
 <span>                 fileEncoding <span class="op">=</span> <span class="st">"UTF-8"</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span></span>
 <span><span class="fu">show_table</span><span class="op">(</span><span class="va">refs</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"key"</span>, <span class="st">"type"</span>, <span class="st">"author"</span>, <span class="st">"year"</span>, <span class="st">"title"</span><span class="op">)</span><span class="op">]</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
@@ -1702,7 +1806,7 @@ London: Charles Griffin.</p>
 global catch data for inferences on the world’s marine fisheries.
 <em>Fish and Fisheries</em> 14(3): 293–311. <a href="https://doi.org/10.1111/j.1467-2979.2012.00469.x" class="external-link">doi:10.1111/j.1467-2979.2012.00469.x</a></p>
 <p>Lin, H. (2026). faofishingreport: Analyse and report FAO Global
-Capture Production statistics. R package version 0.3.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
+Capture Production statistics. R package version 0.4.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
 <p>Mann, H.B. (1945). Nonparametric tests against trend.
 <em>Econometrica</em> 13(3): 245–259. <a href="https://doi.org/10.2307/1907187" class="external-link">doi:10.2307/1907187</a></p>
 <p>R Core Team (2026). R: A language and environment for statistical
@@ -1811,7 +1915,7 @@ of Biodiversity Loss on Ocean Ecosystem Services. <em>Science</em>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -32,6 +32,7 @@ mean_temperature_catch(
     "WoRMS valid name (synonym)", "manual"),
   match = NULL,
   sst = fao_setting("sst"),
+  by = c("area", "division"),
   plot = TRUE,
   table = TRUE,
   lang = NULL,
@@ -130,9 +131,20 @@ mean_temperature_catch(
   “ersst5” unless changed. The SST data used is printed, shown in the
   chart legend and given in the column `sst_source` of the yearly table.
 
+- `by`:
+
+  “area”（默认）表示按FAO主要渔区计算，“division”表示按[`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md)渔获数据中的分区计算（见“按分区计算”一节）。
+
+  English
+
+  “area” (default) for the FAO major areas, or “division” for the
+  divisions of the catch data of
+  [`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md)
+  (see Divisions).
+
 - `plot`:
 
-  逻辑值。为TRUE（默认）时，图表保存在figures/png/summary/。
+  逻辑值。为TRUE（默认）时，图表保存在`figures/png/summary/`。
 
   English
 
@@ -141,7 +153,7 @@ mean_temperature_catch(
 
 - `table`:
 
-  逻辑值。为TRUE（默认）时，表格保存在tables/。
+  逻辑值。为TRUE（默认）时，表格保存在`tables/`。
 
   English
 
@@ -161,7 +173,7 @@ mean_temperature_catch(
 
 - `pptx`:
 
-  逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在figures/pptx/summary/。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。
+  逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在`figures/pptx/summary/`。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。
 
   English
 
@@ -191,20 +203,21 @@ mean_temperature_catch(
 
 以不可见方式返回一个由三个数据框组成的列表：
 
-- **yearly**：每个渔区每年一行：MTC、覆盖率（百分比）、覆盖率是否低于`min_coverage`、SST（渔区平均值及渔区内第10至第90百分位数的范围）及所用的SST产品、所用条目数、总渔获量以及所用条目的渔获量；
+- **yearly**：每个渔区（或分区）每年一行：MTC、覆盖率（百分比）、覆盖率是否低于`min_coverage`、SST（渔区平均值及渔区内第10至第90百分位数的范围）、所用的SST产品和所用SST表中的空间单元（`sst_unit`）、所用条目数、总渔获量以及所用条目的渔获量；
 - **trend**：每个渔区每个时段一行：MTC和SST的斜率（°C/十年）、MTC的Mann-Kendall检验，以及MTC与SST在原序列之间和逐年差分之间的相关；
 - **species**：每个渔区每个FAO物种条目一行：偏好温度、渔获量、在整个时段MTC中的权重和贡献（°C）、匹配情况、链接，以及供用户记录核对情况的`checked`和`note`列。
 
-图表保存在`figures/png/summary/`：`<label>_mtc.png`（MTC与SST及SST在渔区内的范围；只有一个渔区时，下方还有覆盖率），有多个渔区时还有`<label>_mtc_coverage.png`。表格保存在`tables/`：`<label>_mtc.csv`、`<label>_mtc_trend.csv`和`<label>_mtc_species.csv`。
+图表保存在`figures/png/summary/`：`<label>_mtc.png`（MTC与SST及SST在渔区内的范围；只有一个渔区时，下方还有覆盖率），有多个渔区时还有`<label>_mtc_coverage.png`。表格保存在`tables/`：`<label>_mtc.csv`、`<label>_mtc_trend.csv`和`<label>_mtc_species.csv`。`by = "division"`时，文件名中的`_mtc`改为`_mtc_divisions`。
 
 English
 
 Invisibly, a list of three data frames:
 
-- **yearly**: one row per area and year: MTC, coverage (percent),
-  whether the coverage is below `min_coverage`, SST (mean and 10th-90th
-  percentile range in the area) and its product, number of items used,
-  total catch and catch of the items used;
+- **yearly**: one row per area (or division) and year: MTC, coverage
+  (percent), whether the coverage is below `min_coverage`, SST (mean and
+  10th-90th percentile range in the area), its product and the unit of
+  the SST table used (`sst_unit`), number of items used, total catch and
+  catch of the items used;
 - **trend**: one row per area and period: slopes of the MTC and SST (°C
   per decade), the Mann-Kendall test of the MTC, and the correlation of
   MTC and SST for the series and for their year-to-year differences;
@@ -217,7 +230,8 @@ Charts are saved in `figures/png/summary/`: `<label>_mtc.png` (MTC and
 SST with its range in the area; for a single area with the coverage
 below) and, for several areas, `<label>_mtc_coverage.png`. Tables are
 saved in `tables/`: `<label>_mtc.csv`, `<label>_mtc_trend.csv` and
-`<label>_mtc_species.csv`.
+`<label>_mtc_species.csv`. With `by = "division"`, `_mtc` in the file
+names becomes `_mtc_divisions`.
 
 ## 详细说明
 
@@ -378,6 +392,30 @@ relation that acts only over decades (Pyper and Peterman 1998). In the
 Adriatic Sea, the relation of MTC with SST was no longer significant
 once autocorrelation was accounted for (Kamberi et al. 2025).
 
+## 按分区计算
+
+`by = "division"`并使用按分区的渔获数据时（[`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md)，例如地中海和黑海的GFCM分区；Tsikliras和Stergiou（2014）用的是地中海西部、中部和东部的GFCM数据），本函数对每个分区计算MTC，并与该分区的SST（`fao_area_sst(level = "division")`）比较。在FAO地图上没有边界的分区使用所在亚区的SST（例如34.1.9
+“Northern coastal, not
+known”使用34.1，51.3.1阿曼海使用51.3）；`sst_unit`列给出实际使用的单元。不是具体海域的代码（例如37.0.0
+Tunas、37.9.0 Not known）没有SST。在内置ERSST
+v5的2°网格上，有些分区只有几个网格（少于5个时，本函数会指出是哪些分区）；这些分区更适合使用分辨率更高的SST产品（给出其NetCDF文件的路径）。
+
+English
+
+With `by = "division"` and catch data by division
+([`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md),
+e.g. the GFCM divisions of the Mediterranean and Black Sea; Tsikliras
+and Stergiou 2014 used GFCM data of the western, central and eastern
+Mediterranean), the MTC is calculated for each division and compared
+with the SST of the division (`fao_area_sst(level = "division")`).
+Divisions without a boundary on the FAO map use the SST of their subarea
+(e.g. 34.1.9 “Northern coastal, not known” uses 34.1, 51.3.1 Oman Sea
+uses 51.3); the column `sst_unit` gives the unit used. Codes that are
+not places (e.g. 37.0.0 Tunas, 37.9.0 Not known) have no SST. On the 2°
+grid of the built-in ERSST v5, some divisions have only a few cells (the
+function says which); a finer SST product, given as the path of its
+NetCDF files, suits them better.
+
 ## 结果解读
 
 MTC的变化可能来自海洋变暖或变冷，也可能来自捕捞物种、渔场、渔具、市场、管理和统计上报方式的变化。例如，在阿拉伯湾，带鱼（largehead
@@ -490,6 +528,9 @@ mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern_Centra
 mean_temperature_catch(FAO34$area_data, sst = "D:/data/HadISST_sst.nc", label = "FAO34_hadisst")
 download_sst_data("cobe2")
 mean_temperature_catch(FAO34$area_data, sst = "cobe2", label = "FAO34_cobe2")
+
+# The GFCM divisions of the Mediterranean and Black Sea
+mean_temperature_catch(load_fao_divisions("GFCM"), by = "division")
 
 # The period studied by Cheung et al. (2013)
 mean_temperature_catch(subset(FAO34$area_data, Year >= 1970 & Year <= 2006),

@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,8 +52,11 @@
     <li><a class="dropdown-item" href="../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="../articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="../articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="../articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="../articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -98,7 +101,7 @@ catch</strong> (MTC).</p>
 major marine fishing areas. Every call says which SST data it uses:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sst34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="st">"34"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; SST: NOAA ERSST v5, built into the package (2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.</span></span>
+<span><span class="co">#&gt; SST: NOAA ERSST v5, built into the package (FAO major areas; 2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sst34</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"area_en"</span>, <span class="st">"year"</span>, <span class="st">"sst_mean"</span>, <span class="st">"sst_p10"</span>, <span class="st">"sst_p90"</span>, <span class="st">"sst_min_month"</span>, <span class="st">"sst_max_month"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                     area_en year sst_mean sst_p10 sst_p90 sst_min_month</span></span>
 <span><span class="co">#&gt; 1 Atlantic, Eastern Central 1950   24.510  20.834  27.147        23.620</span></span>
@@ -426,6 +429,118 @@ only. The areas are those of the FAO map in the package (the 19 marine
 areas of the CWP handbook). Values over the Arctic Sea and the Antarctic
 areas partly reflect sea ice rather than measured water temperature.</p>
 </div>
+<div class="section level3">
+<h3 id="subareas-and-divisions-extension">🧩 Subareas and divisions (extension)<a class="anchor" aria-label="anchor" href="#subareas-and-divisions-extension"></a>
+</h3>
+<p><code>fao_area_sst(level = "division")</code> gives the SST of the
+FAO subareas and divisions, the units of the catch data by division
+(<code><a href="../reference/load_fao_divisions.html">load_fao_divisions()</a></code>, see <a href="data.html">💾 FAO
+data</a>). The built-in ERSST v5 table covers the subareas and divisions
+of areas 34, 37, 47 and 51; downloaded products and your own NetCDF
+files give all of them.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">div</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span>level <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; SST: NOAA ERSST v5, built into the package (FAO subareas and divisions of areas 34, 37, 47 and 51; 2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.</span></span>
+<span><span class="fu">show_table</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">div</span>, <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html" class="external-link">startsWith</a></span><span class="op">(</span><span class="va">area_code</span>, <span class="st">"37."</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">year</span> <span class="op">==</span> <span class="fl">2024</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"area_code"</span>, <span class="st">"area_en"</span>, <span class="st">"sst_mean"</span>, <span class="st">"n_cells"</span><span class="op">)</span><span class="op">]</span>, n <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left"></th>
+<th align="left">area_code</th>
+<th align="left">area_en</th>
+<th align="right">sst_mean</th>
+<th align="right">n_cells</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">1215</td>
+<td align="left">37.1</td>
+<td align="left">Western subarea</td>
+<td align="right">19.96</td>
+<td align="right">31</td>
+</tr>
+<tr class="even">
+<td align="left">1291</td>
+<td align="left">37.1.1</td>
+<td align="left">Balearic</td>
+<td align="right">19.95</td>
+<td align="right">16</td>
+</tr>
+<tr class="odd">
+<td align="left">1367</td>
+<td align="left">37.1.2</td>
+<td align="left">Gulf of Lion</td>
+<td align="right">18.88</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="left">1443</td>
+<td align="left">37.1.3</td>
+<td align="left">Sardinia</td>
+<td align="right">20.19</td>
+<td align="right">16</td>
+</tr>
+<tr class="odd">
+<td align="left">1519</td>
+<td align="left">37.2</td>
+<td align="left">Central subarea</td>
+<td align="right">21.60</td>
+<td align="right">32</td>
+</tr>
+<tr class="even">
+<td align="left">1595</td>
+<td align="left">37.2.1</td>
+<td align="left">Adriatic</td>
+<td align="right">19.69</td>
+<td align="right">6</td>
+</tr>
+<tr class="odd">
+<td align="left">1671</td>
+<td align="left">37.2.2</td>
+<td align="left">Ionian</td>
+<td align="right">21.76</td>
+<td align="right">28</td>
+</tr>
+<tr class="even">
+<td align="left">1747</td>
+<td align="left">37.3</td>
+<td align="left">Eastern subarea</td>
+<td align="right">22.38</td>
+<td align="right">26</td>
+</tr>
+<tr class="odd">
+<td align="left">1823</td>
+<td align="left">37.3.1</td>
+<td align="left">Aegean</td>
+<td align="right">21.46</td>
+<td align="right">13</td>
+</tr>
+<tr class="even">
+<td align="left">1899</td>
+<td align="left">37.3.2</td>
+<td align="left">Levant</td>
+<td align="right">22.96</td>
+<td align="right">15</td>
+</tr>
+<tr class="odd">
+<td align="left">1975</td>
+<td align="left">37.4</td>
+<td align="left">Black Sea subarea</td>
+<td align="right">16.97</td>
+<td align="right">17</td>
+</tr>
+<tr class="even">
+<td align="left">2051</td>
+<td align="left">37.4.1</td>
+<td align="left">Marmara Sea</td>
+<td align="right">20.58</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>Many divisions are small for a 2° grid: the Sea of Marmara and the
+Sea of Azov have one or two cells. A finer product, given as the path of
+its NetCDF files, suits divisions better.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="mean-temperature-of-the-catch">🐟 Mean temperature of the catch<a class="anchor" aria-label="anchor" href="#mean-temperature-of-the-catch"></a>
@@ -445,7 +560,7 @@ its catch in year
 both sums are over the items that have a preferred temperature. A rising
 MTC means that species of warmer waters make up a larger part of the
 catch.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">FAO34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">mtc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span></span>
 <span><span class="va">mtc</span><span class="op">$</span><span class="va">trend</span>      <span class="co"># slopes (°C per decade), Mann-Kendall test, correlation with SST</span></span></code></pre></div>
@@ -576,6 +691,19 @@ product by area and year), <code>trend</code> (slopes, Mann-Kendall
 tests and correlations by area and period) and <code>species</code> (one
 row per area and FAO species item).</p>
 <div class="section level3">
+<h3 id="by-division-extension">🧩 By division (extension)<a class="anchor" aria-label="anchor" href="#by-division-extension"></a>
+</h3>
+<p>With catch data by division, <code>by = "division"</code> gives the
+MTC of each division, compared with the SST of the division:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">med</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_fao_divisions.html">load_fao_divisions</a></span><span class="op">(</span><span class="st">"GFCM"</span><span class="op">)</span></span>
+<span><span class="va">mtc_divisions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">med</span>, by <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span></span></code></pre></div>
+<p>Divisions without a boundary on the FAO map use the SST of their
+subarea (column <code>sst_unit</code>), codes that are not places
+(e.g. 37.0.0 Tunas) have no SST, and the function says which divisions
+have fewer than 5 grid cells.</p>
+</div>
+<div class="section level3">
 <h3 id="what-the-package-does-and-what-you-must-check">⚠️ What the package does, and what you must check<a class="anchor" aria-label="anchor" href="#what-the-package-does-and-what-you-must-check"></a>
 </h3>
 <p>The package computes the MTC, its trends and its comparison with SST.
@@ -605,7 +733,7 @@ correction in the corrections file of <code><a href="../reference/fishbase_match
 which every later run applies.</li>
 <li>Run the function again with the checked table:</li>
 </ol>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mtc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, match <span class="op">=</span> <span class="st">"tables/Atlantic__Eastern_Central_mtc_species.csv"</span><span class="op">)</span></span></code></pre></div>
 <p>Until every item used has been checked, the function says how much of
 the catch has been checked, and the chart caption says that the
@@ -702,9 +830,10 @@ contribution, match, links, <code>checked</code> and
 </h2>
 <p><code><a href="../reference/fao_report.html">fao_report()</a></code> adds a section on the mean temperature of
 the catch with <code>mtc = TRUE</code> (see <a href="report.html">📝
-Assessment report in Word</a>). The report uses the FishBase data
-bundled with the package (<code>mtc_version = "builtin"</code>), so it
-needs no download and gives the same values on every computer;
+Assessment report: Word, LaTeX and PDF</a>). The report uses the
+FishBase data bundled with the package
+(<code>mtc_version = "builtin"</code>), so it needs no download and
+gives the same values on every computer;
 <code>mtc_version = "latest"</code> uses the newest FishBase release
 instead. The other settings of <code><a href="../reference/mean_temperature_catch.html">mean_temperature_catch()</a></code> are
 given with the prefix <code>mtc_</code>,
@@ -712,7 +841,7 @@ e.g. <code>mtc_sst = "hadisst1"</code> or
 <code>mtc_match = "&lt;checked species table&gt;"</code>. The species
 used, with their matches and links, are returned as
 <code>report$mtc_species</code> for checking:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, mtc <span class="op">=</span> <span class="cn">TRUE</span>, mtc_min_coverage <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></span>
 <span><span class="va">report</span><span class="op">$</span><span class="va">mtc_species</span></span></code></pre></div>
 </div>
@@ -812,7 +941,7 @@ hydrological series. <em>Hydrological Processes</em> 16: 1807–1829. <a href="h
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">

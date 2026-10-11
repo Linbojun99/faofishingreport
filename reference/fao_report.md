@@ -15,6 +15,7 @@ fao_report(
   area,
   ...,
   file = NULL,
+  format = "docx",
   lang = NULL,
   title = NULL,
   report_no = 1,
@@ -95,12 +96,29 @@ fao_report(
   `cmsy_settings = list(n.iter = 100000)`. A name that is not an
   argument of the function gives an error listing its arguments. The
   arguments the report sets itself (`area_data`, `area_name`, `area`,
-  `lang`, `table` and `pptx`) cannot be changed.
+  `lang`, `table` and `pptx`) cannot be changed, nor can `pelagic_by`
+  and `mtc_by` (the analyses by division use the data of
+  [`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md),
+  an extension that is not part of the report).
 
 - file:
 
-  The Word file to write. Default is
-  `reports/FAO<code>_report_<lang>.docx` in the working directory.
+  The file to write. Default is `reports/FAO<code>_report_<lang>.docx`
+  in the working directory. The other formats get the same name with
+  `.tex` and `.pdf`.
+
+- format:
+
+  The formats to write, one or more of "docx" (default: Word), "latex"
+  (a `.tex` file with its figures in the folder `<name>_figures/` next
+  to it, compiled with XeLaTeX; Chinese reports use the ctexart class)
+  and "pdf" (the LaTeX file compiled to PDF with XeLaTeX, through the
+  tinytex package when it is installed, which also installs missing
+  LaTeX packages). The analyses run once for all formats, and the
+  formats have the same text, figures, tables and references. Fonts are
+  taken from those of the computer: for Chinese, FangSong, SimHei and
+  KaiTi on Windows, STFangsong, Heiti SC and Kaiti SC on macOS, else the
+  Fandol fonts of TeX Live.
 
 - lang:
 
@@ -218,20 +236,21 @@ fao_report(
 
 ## Value
 
-Invisibly, a list of class `fao_report` with the path of the Word file
-(`file`), the sections in the report (`sections`) and the tables of the
-report as data frames: `main_species` and `main_countries`, the species
-of the mean temperature of the catch with their FishBase matches
-(`mtc_species`), the results of all analyses (`analyses`), and with
-CMSY++ `cmsy_reference_points` (r, k, MSY, Fmsy, Bmsy, B/Bmsy and F/Fmsy
-with 95% confidence limits), `cmsy_priors` (resilience, r, k and B/k
-priors, their sources and the links to FishBase or SeaLifeBase, the
-FishBase data, the CMSY++ code and the FAO data) and the full CMSY++
-result `cmsy`. Assign it, e.g. `report <- fao_report(...)`, to look at
-the tables (`View(report$cmsy_priors)`). With `cmsy = TRUE`, all CMSY++
-results (runs, charts and tables) are kept in the folder `cmsy/` next to
-the report, with `cmsy_result.rds` to write the report again without
-running CMSY++ (`cmsy = readRDS("cmsy/<area>/cmsy_result.rds")`).
+Invisibly, a list of class `fao_report` with the paths of the files
+written (`file`, named by format: `docx`, `latex`, `pdf`), the sections
+in the report (`sections`) and the tables of the report as data frames:
+`main_species` and `main_countries`, the species of the mean temperature
+of the catch with their FishBase matches (`mtc_species`), the results of
+all analyses (`analyses`), and with CMSY++ `cmsy_reference_points` (r,
+k, MSY, Fmsy, Bmsy, B/Bmsy and F/Fmsy with 95% confidence limits),
+`cmsy_priors` (resilience, r, k and B/k priors, their sources and the
+links to FishBase or SeaLifeBase, the FishBase data, the CMSY++ code and
+the FAO data) and the full CMSY++ result `cmsy`. Assign it, e.g.
+`report <- fao_report(...)`, to look at the tables
+(`View(report$cmsy_priors)`). With `cmsy = TRUE`, all CMSY++ results
+(runs, charts and tables) are kept in the folder `cmsy/` next to the
+report, with `cmsy_result.rds` to write the report again without running
+CMSY++ (`cmsy = readRDS("cmsy/<area>/cmsy_result.rds")`).
 
 ## Details
 

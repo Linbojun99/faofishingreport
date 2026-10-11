@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -54,8 +54,11 @@
     <li><a class="dropdown-item" href="articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -95,7 +98,7 @@
 <li>🔬 <strong>Analyses from the literature</strong>: catch shocks (Cottrell et al. 2019; Gephart et al. 2017), fishery collapses (Mullon et al. 2005; Worm et al. 2006) with a random null model, synchrony and portfolio effect (Loreau &amp; de Mazancourt 2008).</li>
 <li>🌡️ <strong>FishBase and sea temperature</strong>: FishBase and SeaLifeBase traits matched to FAO species (data snapshots of the <a href="https://github.com/ropensci/rfishbase" class="external-link">rfishbase</a> project), sea surface temperature of the FAO areas, and the mean temperature of the catch (Cheung et al. 2013).</li>
 <li>📉 <strong>CMSY++ stock assessment</strong> of the main species (Froese et al. 2023; code of its authors from <a href="https://github.com/SISTA16/cmsyPlusPlus" class="external-link uri">https://github.com/SISTA16/cmsyPlusPlus</a>, bundled unchanged), with JAGS set up for your computer, charts, projections and tables of reference points and priors.</li>
-<li>📝 <strong>Word assessment report in one call</strong>: <code><a href="reference/fao_report.html">fao_report()</a></code> writes a report in Chinese or English (cover, abstract, data and methods, results, conclusions, references, appendix), with every analysis switched on or off and the settings of each function given with a prefix.</li>
+<li>📝 <strong>Assessment report in one call</strong>: <code><a href="reference/fao_report.html">fao_report()</a></code> writes a report in Chinese or English, as Word, LaTeX or PDF (cover, abstract, data and methods, results, conclusions, references, appendix), with every analysis switched on or off and the settings of each function given with a prefix.</li>
 <li>🌐 <strong>English, Chinese or bilingual</strong> charts with the official FAO Chinese names.</li>
 <li>🎨 <strong>Your style</strong>: themes, colour palettes, map projections (Robinson, Mollweide, Equal Earth, …) and Pacific-centred maps, set once with <code><a href="reference/fao_settings.html">fao_settings()</a></code>.</li>
 <li>💻 <strong>Windows, macOS and Linux</strong>: a Chinese font is chosen automatically; tables open in Excel with Chinese names intact.</li>
@@ -137,8 +140,9 @@
 <span><span class="co"># CMSY++ for the ten main species (run cmsy_setup() once before)</span></span>
 <span><span class="fu"><a href="reference/cmsy_area.html">cmsy_area</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, top <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># A Word assessment report of the area, in Chinese, with CMSY++ and catch shocks</span></span>
-<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span>, shocks <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># An assessment report of the area, in Chinese, with CMSY++ and catch shocks,</span></span>
+<span><span class="co"># as Word and PDF (LaTeX)</span></span>
+<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span>, shocks <span class="op">=</span> <span class="cn">TRUE</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docx"</span>, <span class="st">"pdf"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Charts are saved in <code>figures/png/</code> (and, if you want, editable PowerPoint in <code>figures/pptx/</code>), tables in <code>tables/</code>.</p>
 </div>
 <div class="section level2">
@@ -532,7 +536,11 @@
 <li>Licence: <a href="https://creativecommons.org/licenses/by/4.0/" class="external-link">CC BY 4.0</a>, with the <a href="https://www.fao.org/contact-us/terms/db-terms-of-use/en" class="external-link">FAO terms of use</a>.</li>
 <li>
 <code><a href="reference/fao_data_info.html">fao_data_info()</a></code> shows the release your analyses use and how to cite it.</li>
+<li>FAO websites: <a href="https://www.fao.org/home/en" class="external-link">FAO</a>, <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT data</a> and the <a href="https://www.fao.org/fishery/static/Data/" class="external-link">FAO fishery data files</a>.</li>
 </ul>
+<blockquote>
+<p>This package is not affiliated with FAO; the data come from FAO.</p>
+</blockquote>
 </div>
 <div class="section level2">
 <h2 id="pencil-citation">📝 Citation<a class="anchor" aria-label="anchor" href="#pencil-citation"></a>
@@ -555,6 +563,21 @@
 <ul class="list-unstyled">
 <li><a href="https://github.com/Linbojun99/faofishingreport/" class="external-link">Browse source code</a></li>
 <li><a href="https://github.com/Linbojun99/faofishingreport/issues" class="external-link">Report a bug</a></li>
+</ul>
+</div>
+
+<div class="data-sources">
+<h2 data-toc-skip>Data sources</h2>
+<ul class="list-unstyled">
+<li>
+<ul>
+<li><a href="https://www.fao.org/home/en" class="external-link">FAO</a></li>
+<li><a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT data</a></li>
+<li><a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">FAO Global Capture Production</a></li>
+<li><a href="https://www.fao.org/fishery/static/Data/" class="external-link">FAO fishery data files</a></li>
+</ul>
+<p>This package is not affiliated with FAO; the data come from FAO.</p>
+</li>
 </ul>
 </div>
 
@@ -599,7 +622,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">

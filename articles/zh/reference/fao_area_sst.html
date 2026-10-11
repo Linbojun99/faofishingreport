@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,8 +52,11 @@
     <li><a class="dropdown-item" href="../../../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="../../../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="../../../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="../../../articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="../../../articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="../../../articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="../../../articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../../../news/index.html">Changelog</a></li>
@@ -109,6 +112,7 @@ It always says which SST data it uses.</p>
 <code class="sourceCode R"><span><span class="fu"><a href="../../../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span></span>
 <span>  area <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sst <span class="op">=</span> <span class="fu">fao_setting</span><span class="op">(</span><span class="st">"sst"</span><span class="op">)</span>,</span>
+<span>  level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"area"</span>, <span class="st">"division"</span><span class="op">)</span>,</span>
 <span>  variable <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  data_dir <span class="op">=</span> <span class="fu"><a href="../../../reference/fao_data_dir.html">fao_data_dir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -138,6 +142,18 @@ The SST data: “ersst5” (built in), the name of a product downloaded with
 <code><a href="../../../reference/download_sst_data.html">download_sst_data()</a></code>, or the path of a NetCDF file or of a
 folder of NetCDF files. Default is the <code>sst</code> setting of
 <code><a href="../../../reference/fao_settings.html">fao_settings()</a></code>, “ersst5” unless changed.
+</details>
+</dd>
+<dt><code>level</code></dt>
+<dd>
+“area”（默认）表示19个FAO主要海洋渔区，“division”表示FAO亚区和分区（例如”37.1.1”，巴利阿里），与<code><a href="../../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>的渔获数据一致（见“亚区和分区”一节）。
+<details class="fao-en"><summary>
+English
+</summary>
+“area” (default) for the 19 FAO major marine areas, or “division” for
+the FAO subareas and divisions (e.g. “37.1.1”, Balearic), as in the
+catch data of <code><a href="../../../reference/load_fao_divisions.html">load_fao_divisions()</a></code> (see Subareas and
+divisions).
 </details>
 </dd>
 <dt><code>variable</code></dt>
@@ -226,6 +242,26 @@ name, e.g. <code>sst = "hadisst1"</code>.</li>
 </ul></details>
 </div>
 <div class="section level2">
+<h2 id="亚区和分区">亚区和分区<a class="anchor" aria-label="anchor" href="#%E4%BA%9A%E5%8C%BA%E5%92%8C%E5%88%86%E5%8C%BA"></a>
+</h2>
+<p><code>level = "division"</code>时，表中每个FAO亚区和分区（以本包所带的FAO地图<code>inst/extdata/FAO_AREAS_CWP.shp</code>为准）每年一行：<code>area_code</code>是其代码（例如”34.1.1”，或亚区”34.2”），<code>area_en</code>是其名称。内置的ERSST
+v5表包含34、37、47和51区的亚区和分区，即按分区的渔获数据（<code><a href="../../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>）所涉及的渔区；由下载的产品或你自己的文件计算的表包含全部亚区和分区。很多分区对于2°网格来说太小（见<code>n_cells</code>；例如亚速海和马尔马拉海没有或只有几个网格），所以分区更适合使用分辨率更高的SST产品（给出其NetCDF文件的路径）。</p>
+<details class="fao-en"><summary>
+English
+</summary><p>With <code>level = "division"</code>, the table has one row per FAO
+subarea and division of the FAO map in the package
+(<code>inst/extdata/FAO_AREAS_CWP.shp</code>): <code>area_code</code> is
+its code (e.g. “34.1.1” or the subarea “34.2”) and <code>area_en</code>
+its name. The built-in ERSST v5 table covers the subareas and divisions
+of areas 34, 37, 47 and 51, those of the catch data by division
+(<code><a href="../../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>); tables from downloaded products or
+your own files cover all of them. Many divisions are small for a 2° grid
+(see <code>n_cells</code>; e.g. the Sea of Azov or the Sea of Marmara
+have none or a few cells), so a finer SST product, given as the path of
+its NetCDF files, suits divisions better.</p>
+</details>
+</div>
+<div class="section level2">
 <h2 id="渔区平均值的计算方法">渔区平均值的计算方法<a class="anchor" aria-label="anchor" href="#%E6%B8%94%E5%8C%BA%E5%B9%B3%E5%9D%87%E5%80%BC%E7%9A%84%E8%AE%A1%E7%AE%97%E6%96%B9%E6%B3%95"></a>
 </h2>
 <ul>
@@ -312,7 +348,11 @@ v2.1 <a href="https://www.ncei.noaa.gov/products/optimum-interpolation-sst" clas
 <span><span class="co"># Your own NetCDF file (e.g. HadISST_sst.nc downloaded from the Met Office), for one call ...</span></span>
 <span><span class="fu"><a href="../../../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="st">"34"</span>, sst <span class="op">=</span> <span class="st">"D:/data/HadISST_sst.nc"</span><span class="op">)</span></span>
 <span><span class="co"># ... or for the whole session, including mean_temperature_catch()</span></span>
-<span><span class="fu"><a href="../../../reference/fao_settings.html">fao_settings</a></span><span class="op">(</span>sst <span class="op">=</span> <span class="st">"D:/data/HadISST_sst.nc"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../../../reference/fao_settings.html">fao_settings</a></span><span class="op">(</span>sst <span class="op">=</span> <span class="st">"D:/data/HadISST_sst.nc"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Subareas and divisions, e.g. those of the Mediterranean and Black Sea</span></span>
+<span><span class="va">div</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span>level <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">div</span>, <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html" class="external-link">startsWith</a></span><span class="op">(</span><span class="va">area_code</span>, <span class="st">"37."</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">year</span> <span class="op">==</span> <span class="fl">2024</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
@@ -321,7 +361,7 @@ v2.1 <a href="https://www.ncei.noaa.gov/products/optimum-interpolation-sst" clas
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">

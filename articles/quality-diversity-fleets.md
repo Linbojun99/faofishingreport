@@ -271,8 +271,8 @@ fleets](https://linbojun99.github.io/faofishingreport/articles/literature-analys
 [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
 writes data quality, diversity and concentration, and coastal and
 distant-water fleets into the Word report of a fishing area (see [📝
-Assessment report in
-Word](https://linbojun99.github.io/faofishingreport/articles/report.md)):
+Assessment report: Word, LaTeX and
+PDF](https://linbojun99.github.io/faofishingreport/articles/report.md)):
 they are the sections `quality`, `diversity` and `fleets`, all on by
 default. Their settings are given with the section name as prefix
 (`quality_` for

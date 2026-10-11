@@ -15,7 +15,7 @@ marked in grey, such as other data sources, the discussion and other references.
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,8 +36,11 @@ marked in grey, such as other data sources, the discussion and other references.
     <li><a class="dropdown-item" href="../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="../articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="../articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="../articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="../articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><a class="nav-link" href="../#lang" aria-label="Switch language / 切换语言">中文</a></li>
@@ -70,6 +73,7 @@ marked in grey, such as other data sources, the discussion and other references.
 <span>  <span class="va">area</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  format <span class="op">=</span> <span class="st">"docx"</span>,</span>
 <span>  lang <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  report_no <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -125,12 +129,25 @@ the number of distant-water countries profiled, default 3, or their names) and
 <code>countries_line_linewidth = 1</code>, <code>status_smooth = TRUE</code>, <code>cmsy_top = 5</code> or
 <code>cmsy_settings = list(n.iter = 100000)</code>. A name that is not an argument of the
 function gives an error listing its arguments. The arguments the report sets itself
-(<code>area_data</code>, <code>area_name</code>, <code>area</code>, <code>lang</code>, <code>table</code> and <code>pptx</code>) cannot be changed.</p></dd>
+(<code>area_data</code>, <code>area_name</code>, <code>area</code>, <code>lang</code>, <code>table</code> and <code>pptx</code>) cannot be changed, nor
+can <code>pelagic_by</code> and <code>mtc_by</code> (the analyses by division use the data of
+<code><a href="load_fao_divisions.html">load_fao_divisions()</a></code>, an extension that is not part of the report).</p></dd>
 
 
 <dt id="arg-file">file<a class="anchor" aria-label="anchor" href="#arg-file"></a></dt>
-<dd><p>The Word file to write. Default is <code>reports/FAO&lt;code&gt;_report_&lt;lang&gt;.docx</code> in the
-working directory.</p></dd>
+<dd><p>The file to write. Default is <code>reports/FAO&lt;code&gt;_report_&lt;lang&gt;.docx</code> in the
+working directory. The other formats get the same name with <code>.tex</code> and <code>.pdf</code>.</p></dd>
+
+
+<dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>
+<dd><p>The formats to write, one or more of "docx" (default: Word), "latex" (a <code>.tex</code>
+file with its figures in the folder <code>&lt;name&gt;_figures/</code> next to it, compiled with XeLaTeX;
+Chinese reports use the ctexart class) and "pdf" (the LaTeX file compiled to PDF with
+XeLaTeX, through the tinytex package when it is installed, which also installs missing
+LaTeX packages). The analyses run once for all formats, and the formats have the same
+text, figures, tables and references. Fonts are taken from those of the computer: for
+Chinese, FangSong, SimHei and KaiTi on Windows, STFangsong, Heiti SC and Kaiti SC on macOS,
+else the Fandol fonts of TeX Live.</p></dd>
 
 
 <dt id="arg-lang">lang<a class="anchor" aria-label="anchor" href="#arg-lang"></a></dt>
@@ -218,7 +235,8 @@ write the report without running CMSY++ again. CMSY++ needs JAGS: see <code><a h
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Invisibly, a list of class <code>fao_report</code> with the path of the Word file (<code>file</code>), the
+    <p>Invisibly, a list of class <code>fao_report</code> with the paths of the files written (<code>file</code>,
+named by format: <code>docx</code>, <code>latex</code>, <code>pdf</code>), the
 sections in the report (<code>sections</code>) and
 the tables of the report as data frames: <code>main_species</code> and <code>main_countries</code>, the
 species of the mean temperature of the catch with their FishBase matches
@@ -285,7 +303,7 @@ Scientific names of species and genera are in italics.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">

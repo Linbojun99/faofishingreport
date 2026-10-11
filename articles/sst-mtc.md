@@ -16,7 +16,7 @@ call says which SST data it uses:
 ``` r
 
 sst34 <- fao_area_sst("34")
-#> SST: NOAA ERSST v5, built into the package (2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.
+#> SST: NOAA ERSST v5, built into the package (FAO major areas; 2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.
 head(sst34[, c("area_en", "year", "sst_mean", "sst_p10", "sst_p90", "sst_min_month", "sst_max_month")])
 #>                     area_en year sst_mean sst_p10 sst_p90 sst_min_month
 #> 1 Atlantic, Eastern Central 1950   24.510  20.834  27.147        23.620
@@ -160,6 +160,43 @@ only. The areas are those of the FAO map in the package (the 19 marine
 areas of the CWP handbook). Values over the Arctic Sea and the Antarctic
 areas partly reflect sea ice rather than measured water temperature.
 
+### 🧩 Subareas and divisions (extension)
+
+`fao_area_sst(level = "division")` gives the SST of the FAO subareas and
+divisions, the units of the catch data by division
+([`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md),
+see [💾 FAO
+data](https://linbojun99.github.io/faofishingreport/articles/data.md)).
+The built-in ERSST v5 table covers the subareas and divisions of areas
+34, 37, 47 and 51; downloaded products and your own NetCDF files give
+all of them.
+
+``` r
+
+div <- fao_area_sst(level = "division")
+#> SST: NOAA ERSST v5, built into the package (FAO subareas and divisions of areas 34, 37, 47 and 51; 2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.
+show_table(subset(div, startsWith(area_code, "37.") & year == 2024)[, c("area_code", "area_en", "sst_mean", "n_cells")], n = 12)
+```
+
+|      | area_code | area_en           | sst_mean | n_cells |
+|:-----|:----------|:------------------|---------:|--------:|
+| 1215 | 37.1      | Western subarea   |    19.96 |      31 |
+| 1291 | 37.1.1    | Balearic          |    19.95 |      16 |
+| 1367 | 37.1.2    | Gulf of Lion      |    18.88 |       6 |
+| 1443 | 37.1.3    | Sardinia          |    20.19 |      16 |
+| 1519 | 37.2      | Central subarea   |    21.60 |      32 |
+| 1595 | 37.2.1    | Adriatic          |    19.69 |       6 |
+| 1671 | 37.2.2    | Ionian            |    21.76 |      28 |
+| 1747 | 37.3      | Eastern subarea   |    22.38 |      26 |
+| 1823 | 37.3.1    | Aegean            |    21.46 |      13 |
+| 1899 | 37.3.2    | Levant            |    22.96 |      15 |
+| 1975 | 37.4      | Black Sea subarea |    16.97 |      17 |
+| 2051 | 37.4.1    | Marmara Sea       |    20.58 |       1 |
+
+Many divisions are small for a 2° grid: the Sea of Marmara and the Sea
+of Azov have one or two cells. A finer product, given as the path of its
+NetCDF files, suits divisions better.
+
 ## 🐟 Mean temperature of the catch
 
 The mean temperature of the catch (MTC; Cheung et al. 2013) is the
@@ -224,6 +261,22 @@ year-to-year differences.
 The function returns `yearly` (MTC, coverage, SST and its product by
 area and year), `trend` (slopes, Mann-Kendall tests and correlations by
 area and period) and `species` (one row per area and FAO species item).
+
+### 🧩 By division (extension)
+
+With catch data by division, `by = "division"` gives the MTC of each
+division, compared with the SST of the division:
+
+``` r
+
+med <- load_fao_divisions("GFCM")
+mtc_divisions <- mean_temperature_catch(med, by = "division")
+```
+
+Divisions without a boundary on the FAO map use the SST of their subarea
+(column `sst_unit`), codes that are not places (e.g. 37.0.0 Tunas) have
+no SST, and the function says which divisions have fewer than 5 grid
+cells.
 
 ### ⚠️ What the package does, and what you must check
 
@@ -311,8 +364,8 @@ preferred temperatures have not all been checked.
 
 [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
 adds a section on the mean temperature of the catch with `mtc = TRUE`
-(see [📝 Assessment report in
-Word](https://linbojun99.github.io/faofishingreport/articles/report.md)).
+(see [📝 Assessment report: Word, LaTeX and
+PDF](https://linbojun99.github.io/faofishingreport/articles/report.md)).
 The report uses the FishBase data bundled with the package
 (`mtc_version = "builtin"`), so it needs no download and gives the same
 values on every computer; `mtc_version = "latest"` uses the newest

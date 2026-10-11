@@ -150,6 +150,29 @@ results.
 - [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
   : Assessment Report of an FAO Fishing Area
 
+## 🧩 Extensions: other FAO datasets
+
+FAO fishery statistics other than global capture production: catch by
+subarea and division from regional fishery bodies (also used by
+`pelagic_demersal(by = "division")` and
+`mean_temperature_catch(by = "division")`), trade and employment, and
+how they compare with the catch. Not part of the Word report.
+
+- [`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md)
+  : Catch by Division: FAO Data of the Regional Fishery Bodies
+- [`load_fao_trade()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_trade.md)
+  : Trade of Aquatic Products: FAO Data
+- [`catch_trade()`](https://linbojun99.github.io/faofishingreport/reference/catch_trade.md)
+  : Catch and Trade of the Species Groups Mostly Caught
+- [`fao_capture_groups()`](https://linbojun99.github.io/faofishingreport/reference/fao_capture_groups.md)
+  : Species Groups Mostly Caught, Not Farmed
+- [`load_fao_employment()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_employment.md)
+  : Employment in Fisheries and Aquaculture: FAO Data
+- [`employment_summary()`](https://linbojun99.github.io/faofishingreport/reference/employment_summary.md)
+  : Employment in Fisheries and Aquaculture by Year
+- [`catch_per_fisher()`](https://linbojun99.github.io/faofishingreport/reference/catch_per_fisher.md)
+  : Catch per Fisher
+
 ## 🎨 Settings and language
 
 Chart style, map projection, colours, fonts and Chinese names.

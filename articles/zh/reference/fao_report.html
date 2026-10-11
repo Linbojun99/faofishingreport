@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,8 +52,11 @@
     <li><a class="dropdown-item" href="../../../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="../../../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="../../../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="../../../articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="../../../articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="../../../articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="../../../articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../../../news/index.html">Changelog</a></li>
@@ -112,6 +115,7 @@ discussion and other references.</p>
 <span>  <span class="va">area</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  file <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  format <span class="op">=</span> <span class="st">"docx"</span>,</span>
 <span>  lang <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  title <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  report_no <span class="op">=</span> <span class="fl">1</span>,</span>
@@ -157,7 +161,7 @@ or its code, e.g. 34.
 </dd>
 <dt><code>...</code></dt>
 <dd>
-各项分析的设置，以章节名作为前缀命名：<code>total_</code>对应<code><a href="../../../reference/fishing_area_data.html">fishing_area_data()</a></code>，<code>species_</code>对应<code><a href="../../../reference/fishing_area_species.html">fishing_area_species()</a></code>，<code>countries_</code>对应<code><a href="../../../reference/fishing_area_country.html">fishing_area_country()</a></code>，<code>groups_</code>对应<code><a href="../../../reference/species_group_composition.html">species_group_composition()</a></code>，<code>status_</code>对应<code><a href="../../../reference/stock_status.html">stock_status()</a></code>，<code>quality_</code>对应<code><a href="../../../reference/data_quality.html">data_quality()</a></code>，<code>diversity_</code>对应<code><a href="../../../reference/diversity_concentration.html">diversity_concentration()</a></code>，<code>fleets_</code>对应<code><a href="../../../reference/coastal_distant.html">coastal_distant()</a></code>，<code>shocks_</code>对应<code><a href="../../../reference/catch_shocks.html">catch_shocks()</a></code>，<code>collapse_</code>对应<code><a href="../../../reference/collapse_analysis.html">collapse_analysis()</a></code>（另有<code>collapse_seed</code>，即其随机序列的随机数种子，默认为1），<code>synchrony_</code>对应<code><a href="../../../reference/catch_synchrony.html">catch_synchrony()</a></code>，<code>pelagic_</code>对应<code><a href="../../../reference/pelagic_demersal.html">pelagic_demersal()</a></code>，<code>mtc_</code>对应<code><a href="../../../reference/mean_temperature_catch.html">mean_temperature_catch()</a></code>（除非指定了其他版本，报告使用<code>mtc_version = "builtin"</code>，即本包自带的FishBase数据），<code>distant_</code>对应<code><a href="../../../reference/distant_water_profile.html">distant_water_profile()</a></code>（另有<code>distant_countries</code>，即要介绍的远洋捕捞国数量，默认为3，即近5年在该渔区远洋渔获量最大的3个国家；也可以给出这些国家的英文名称），<code>cmsy_</code>对应<code><a href="../../../reference/cmsy_area.html">cmsy_area()</a></code>（以及<code><a href="../../../reference/cmsy_input.html">cmsy_input()</a></code>）。例如<code>species_h_value = 0.2</code>、<code>countries_line_linewidth = 1</code>、<code>status_smooth = TRUE</code>、<code>cmsy_top = 5</code>或<code>cmsy_settings = list(n.iter = 100000)</code>。如果某个名称不是对应函数的参数，会报错并列出该函数的参数。报告自行设定的参数（<code>area_data</code>、<code>area_name</code>、<code>area</code>、<code>lang</code>、<code>table</code>和<code>pptx</code>）不能通过前缀更改。
+各项分析的设置，以章节名作为前缀命名：<code>total_</code>对应<code><a href="../../../reference/fishing_area_data.html">fishing_area_data()</a></code>，<code>species_</code>对应<code><a href="../../../reference/fishing_area_species.html">fishing_area_species()</a></code>，<code>countries_</code>对应<code><a href="../../../reference/fishing_area_country.html">fishing_area_country()</a></code>，<code>groups_</code>对应<code><a href="../../../reference/species_group_composition.html">species_group_composition()</a></code>，<code>status_</code>对应<code><a href="../../../reference/stock_status.html">stock_status()</a></code>，<code>quality_</code>对应<code><a href="../../../reference/data_quality.html">data_quality()</a></code>，<code>diversity_</code>对应<code><a href="../../../reference/diversity_concentration.html">diversity_concentration()</a></code>，<code>fleets_</code>对应<code><a href="../../../reference/coastal_distant.html">coastal_distant()</a></code>，<code>shocks_</code>对应<code><a href="../../../reference/catch_shocks.html">catch_shocks()</a></code>，<code>collapse_</code>对应<code><a href="../../../reference/collapse_analysis.html">collapse_analysis()</a></code>（另有<code>collapse_seed</code>，即其随机序列的随机数种子，默认为1），<code>synchrony_</code>对应<code><a href="../../../reference/catch_synchrony.html">catch_synchrony()</a></code>，<code>pelagic_</code>对应<code><a href="../../../reference/pelagic_demersal.html">pelagic_demersal()</a></code>，<code>mtc_</code>对应<code><a href="../../../reference/mean_temperature_catch.html">mean_temperature_catch()</a></code>（除非指定了其他版本，报告使用<code>mtc_version = "builtin"</code>，即本包自带的FishBase数据），<code>distant_</code>对应<code><a href="../../../reference/distant_water_profile.html">distant_water_profile()</a></code>（另有<code>distant_countries</code>，即要介绍的远洋捕捞国数量，默认为3，即近5年在该渔区远洋渔获量最大的3个国家；也可以给出这些国家的英文名称），<code>cmsy_</code>对应<code><a href="../../../reference/cmsy_area.html">cmsy_area()</a></code>（以及<code><a href="../../../reference/cmsy_input.html">cmsy_input()</a></code>）。例如<code>species_h_value = 0.2</code>、<code>countries_line_linewidth = 1</code>、<code>status_smooth = TRUE</code>、<code>cmsy_top = 5</code>或<code>cmsy_settings = list(n.iter = 100000)</code>。如果某个名称不是对应函数的参数，会报错并列出该函数的参数。报告自行设定的参数（<code>area_data</code>、<code>area_name</code>、<code>area</code>、<code>lang</code>、<code>table</code>和<code>pptx</code>）不能通过前缀更改，<code>pelagic_by</code>和<code>mtc_by</code>也不能设置（按分区的分析使用<code><a href="../../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>的数据，属于不纳入报告的扩展功能）。
 <details class="fao-en"><summary>
 English
 </summary>
@@ -189,18 +193,41 @@ profiled, default 3, or their names) and <code>cmsy_</code> for
 an argument of the function gives an error listing its arguments. The
 arguments the report sets itself (<code>area_data</code>,
 <code>area_name</code>, <code>area</code>, <code>lang</code>,
-<code>table</code> and <code>pptx</code>) cannot be changed.
+<code>table</code> and <code>pptx</code>) cannot be changed, nor can
+<code>pelagic_by</code> and <code>mtc_by</code> (the analyses by
+division use the data of <code><a href="../../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>, an extension
+that is not part of the report).
 </details>
 </dd>
 <dt><code>file</code></dt>
 <dd>
-要写入的Word文件。默认为工作目录下的<code>reports/FAO&lt;code&gt;_report_&lt;lang&gt;.docx</code>。
+要写入的文件。默认为工作目录下的<code>reports/FAO&lt;code&gt;_report_&lt;lang&gt;.docx</code>。其他格式使用相同的文件名，扩展名为<code>.tex</code>和<code>.pdf</code>。
 <details class="fao-en"><summary>
 English
 </summary>
-The Word file to write. Default is
+The file to write. Default is
 <code>reports/FAO&lt;code&gt;_report_&lt;lang&gt;.docx</code> in the
-working directory.
+working directory. The other formats get the same name with
+<code>.tex</code> and <code>.pdf</code>.
+</details>
+</dd>
+<dt><code>format</code></dt>
+<dd>
+要输出的格式，可以是”docx”（默认，Word）、“latex”（<code>.tex</code>文件，其图片保存在旁边的<code>&lt;name&gt;_figures/</code>文件夹中，用XeLaTeX编译；中文报告使用ctexart文档类）和”pdf”（用XeLaTeX把LaTeX文件编译为PDF；安装了tinytex包时通过它编译，并自动安装缺少的LaTeX宏包）中的一个或多个。各项分析只运行一次，各种格式的文字、图表、表格和参考文献完全相同。字体取自本机已安装的字体：中文在Windows上为仿宋、黑体和楷体（FangSong、SimHei、KaiTi），在macOS上为STFangsong、Heiti
+SC和Kaiti SC，其他系统使用TeX Live自带的Fandol字体。
+<details class="fao-en"><summary>
+English
+</summary>
+The formats to write, one or more of “docx” (default: Word), “latex” (a
+<code>.tex</code> file with its figures in the folder
+<code>&lt;name&gt;_figures/</code> next to it, compiled with XeLaTeX;
+Chinese reports use the ctexart class) and “pdf” (the LaTeX file
+compiled to PDF with XeLaTeX, through the tinytex package when it is
+installed, which also installs missing LaTeX packages). The analyses run
+once for all formats, and the formats have the same text, figures,
+tables and references. Fonts are taken from those of the computer: for
+Chinese, FangSong, SimHei and KaiTi on Windows, STFangsong, Heiti SC and
+Kaiti SC on macOS, else the Fandol fonts of TeX Live.
 </details>
 </dd>
 <dt><code>lang</code></dt>
@@ -386,15 +413,16 @@ report without running CMSY++ again. CMSY++ needs JAGS: see
 <div class="section level2">
 <h2 id="返回值">返回值<a class="anchor" aria-label="anchor" href="#%E8%BF%94%E5%9B%9E%E5%80%BC"></a>
 </h2>
-<p>以不可见方式返回一个<code>fao_report</code>类的列表，包含Word文件的路径（<code>file</code>）、报告中包含的章节（<code>sections</code>），以及报告中以数据框形式给出的表格：<code>main_species</code>（主要物种）和<code>main_countries</code>（主要捕捞国家），渔获平均温度所用的物种及其FishBase匹配结果（<code>mtc_species</code>），全部分析的结果（<code>analyses</code>）；有CMSY++评估时，还包括<code>cmsy_reference_points</code>（r、k、MSY、Fmsy、Bmsy、B/Bmsy和F/Fmsy及其95%置信限）、<code>cmsy_priors</code>（恢复力、r、k和B/k先验及其来源，以及指向FishBase或SeaLifeBase、FishBase数据、CMSY++代码和FAO数据的链接）和完整的CMSY++结果<code>cmsy</code>。将结果赋值给一个变量，例如<code>report &lt;- fao_report(...)</code>，即可查看这些表格（<code>View(report$cmsy_priors)</code>）。<code>cmsy = TRUE</code>时，CMSY++的全部结果（各次运行、图表和表格）保存在报告旁边的<code>cmsy/</code>文件夹中，其中的<code>cmsy_result.rds</code>可用于不再运行CMSY++而重新生成报告（<code>cmsy = readRDS("cmsy/&lt;area&gt;/cmsy_result.rds")</code>）。</p>
+<p>以不可见方式返回一个<code>fao_report</code>类的列表，包含所写文件的路径（<code>file</code>，按格式命名：<code>docx</code>、<code>latex</code>、<code>pdf</code>）、报告中包含的章节（<code>sections</code>），以及报告中以数据框形式给出的表格：<code>main_species</code>（主要物种）和<code>main_countries</code>（主要捕捞国家），渔获平均温度所用的物种及其FishBase匹配结果（<code>mtc_species</code>），全部分析的结果（<code>analyses</code>）；有CMSY++评估时，还包括<code>cmsy_reference_points</code>（r、k、MSY、Fmsy、Bmsy、B/Bmsy和F/Fmsy及其95%置信限）、<code>cmsy_priors</code>（恢复力、r、k和B/k先验及其来源，以及指向FishBase或SeaLifeBase、FishBase数据、CMSY++代码和FAO数据的链接）和完整的CMSY++结果<code>cmsy</code>。将结果赋值给一个变量，例如<code>report &lt;- fao_report(...)</code>，即可查看这些表格（<code>View(report$cmsy_priors)</code>）。<code>cmsy = TRUE</code>时，CMSY++的全部结果（各次运行、图表和表格）保存在报告旁边的<code>cmsy/</code>文件夹中，其中的<code>cmsy_result.rds</code>可用于不再运行CMSY++而重新生成报告（<code>cmsy = readRDS("cmsy/&lt;area&gt;/cmsy_result.rds")</code>）。</p>
 <details class="fao-en"><summary>
 English
-</summary><p>Invisibly, a list of class <code>fao_report</code> with the path of
-the Word file (<code>file</code>), the sections in the report
-(<code>sections</code>) and the tables of the report as data frames:
-<code>main_species</code> and <code>main_countries</code>, the species
-of the mean temperature of the catch with their FishBase matches
-(<code>mtc_species</code>), the results of all analyses
+</summary><p>Invisibly, a list of class <code>fao_report</code> with the paths of
+the files written (<code>file</code>, named by format:
+<code>docx</code>, <code>latex</code>, <code>pdf</code>), the sections
+in the report (<code>sections</code>) and the tables of the report as
+data frames: <code>main_species</code> and <code>main_countries</code>,
+the species of the mean temperature of the catch with their FishBase
+matches (<code>mtc_species</code>), the results of all analyses
 (<code>analyses</code>), and with CMSY++
 <code>cmsy_reference_points</code> (r, k, MSY, Fmsy, Bmsy, B/Bmsy and
 F/Fmsy with 95% confidence limits), <code>cmsy_priors</code>
@@ -478,7 +506,7 @@ the package source: edit them to change the wording.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">

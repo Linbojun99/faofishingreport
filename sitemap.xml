@@ -13,6 +13,7 @@
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/species-countries.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/sst-mtc.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/status-trends.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/articles/trade-employment.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/cmsy.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/customise.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/data.html</loc></url>
@@ -23,8 +24,10 @@
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/literature-analyses.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/quality-diversity-fleets.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/area_overview.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/catch_per_fisher.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/catch_shocks.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/catch_synchrony.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/catch_trade.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/check_fao_update.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/check_fishbase_update.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/cmsy_area.html</loc></url>
@@ -54,7 +57,9 @@
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/download_fao_data.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/download_fishbase_data.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/download_sst_data.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/employment_summary.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fao_area_sst.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fao_capture_groups.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fao_data_dir.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fao_data_info.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fao_font.html</loc></url>
@@ -71,6 +76,9 @@
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fishing_area_species.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/index.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/load_fao_data.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/load_fao_divisions.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/load_fao_employment.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/load_fao_trade.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/mean_temperature_catch.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/peak_trend.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/pelagic_demersal.html</loc></url>
@@ -82,12 +90,15 @@
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/species-countries.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/sst-mtc.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/status-trends.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/trade-employment.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/authors.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/index.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/news/index.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/area_overview.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/reference/catch_per_fisher.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/catch_shocks.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/catch_synchrony.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/reference/catch_trade.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/check_fao_update.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/check_fishbase_update.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/cmsy_area.html</loc></url>
@@ -117,7 +128,9 @@
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/download_fao_data.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/download_fishbase_data.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/download_sst_data.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/reference/employment_summary.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/fao_area_sst.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/reference/fao_capture_groups.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/fao_data_info.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/fao_font.html</loc></url>
@@ -135,6 +148,9 @@
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/fishing_area_species.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/index.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/load_fao_data.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/reference/load_fao_employment.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/reference/load_fao_trade.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/mean_temperature_catch.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/peak_trend.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/pelagic_demersal.html</loc></url>

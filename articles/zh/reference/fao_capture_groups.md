@@ -1,0 +1,100 @@
+# fao_capture_groups(): 以捕捞为主（而非养殖）的物种类群
+
+英文原页：[`fao_capture_groups()`](https://linbojun99.github.io/faofishingreport/reference/fao_capture_groups.md)
+
+## 说明
+
+该函数计算每个水生动物ISSCAAP物种类群的捕捞产量占全球产量（捕捞和水产养殖）的比例：`years`期间的最低比例及其年份，以及第一年和最后一年的比例，并判断该类群是否算作以捕捞为主：在`years`的每一年中，捕捞至少占其全球产量的`min_capture_pct`%。[`catch_trade()`](https://linbojun99.github.io/faofishingreport/reference/catch_trade.md)只对这些类群比较贸易与渔获量，因为贸易统计无法区分产品来自捕捞还是养殖。
+
+English
+
+This function gives, for each ISSCAAP species group of aquatic animals,
+the share of capture in the world production (capture and aquaculture):
+the lowest share over `years` and its year, and the shares in the first
+and last year, and whether the group counts as mostly caught: capture
+made up at least `min_capture_pct` percent of its world production in
+every year of `years`.
+[`catch_trade()`](https://linbojun99.github.io/faofishingreport/reference/catch_trade.md)
+compares trade with catch only for these groups, because trade
+statistics do not tell whether a product was caught or farmed.
+
+## 用法
+
+``` r
+
+fao_capture_groups(min_capture_pct = 90, years = NULL)
+```
+
+## 参数
+
+- `min_capture_pct`:
+
+  类群计入所需的、每一年都要达到的最低捕捞占比（占全球产量的百分比）。默认为90。
+
+  English
+
+  The lowest share of capture (percent of world production) in every
+  year for a group to count. Default is 90.
+
+- `years`:
+
+  所用的年份。默认为NULL，即表中的全部年份（1976–2024年）。
+
+  English
+
+  The years. Default is NULL, all years of the table (1976 to 2024).
+
+## 返回值
+
+一个数据框，每个有产量的水生动物ISSCAAP类群一行：`isscaap_code`、`isscaap_en`、`isscaap_zh`，`capture_pct_min`和`year_min`（捕捞占比的最低值及其年份），`capture_pct_first`和`capture_pct_last`（第一年和最后一年的捕捞占比），以及`counted`（以捕捞为主的类群为TRUE），按类群代码排序。
+
+English
+
+A data frame with one row per ISSCAAP group of aquatic animals with
+production: `isscaap_code`, `isscaap_en`, `isscaap_zh`,
+`capture_pct_min` and `year_min` (the lowest share and its year),
+`capture_pct_first` and `capture_pct_last` (the shares in the first and
+last year), and `counted` (TRUE for the groups mostly caught), sorted by
+code.
+
+## 详细说明
+
+这些比例来自FAO全球产量数据（捕捞和水产养殖，活重吨）的2026.1.0版本，从1976年（贸易数据的第一年）起内置于本包中。FAO在其水生动物汇总表中不包括的类群（哺乳动物、鳄类、珍珠、珊瑚、海绵和水生植物）不计入。
+
+按默认的90%和1976–2024年，计入的类群为鳕类、鲱和沙丁鱼类、金枪鱼类、其他中上层鱼类、其他底层鱼类、鲨鳐类、西鲱类、龙虾类、帝王蟹类、磷虾类、其他海洋甲壳类、鱿鱼和章鱼类，以及鲎类。过去以捕捞为主、如今部分或大部分来自养殖的类群不计入：虾类（从1986年起捕捞占比低于90%）、蟹类（从2000年起）、鲆鲽类（从2004年起）、其他沿岸鱼类（从2005年起）和鲑鳟类（捕捞占比1976年为81%，2024年为12%）。“Marine
+fishes not
+identified”（未鉴定的海洋鱼类）不计入，因为2022–2024年每年捕捞占其产量的比例都低于90%（89.65%–89.97%）。
+
+English
+
+The shares come from the FAO global production data (capture and
+aquaculture, tonnes live weight), release 2026.1.0, built into the
+package from 1976 (the first year of the trade data). The groups FAO
+leaves out of its summary tables of aquatic animals (mammals,
+crocodiles, pearls, corals, sponges and aquatic plants) are not counted.
+
+With the default 90 percent and the years 1976 to 2024, the groups
+counted are the cods, herrings and sardines, tunas, miscellaneous
+pelagic and demersal fishes, sharks and rays, shads, lobsters, king
+crabs, krill, miscellaneous marine crustaceans, squids and octopuses,
+and horseshoe crabs. Groups once mostly caught but now partly or largely
+farmed are not counted: shrimps (capture below 90 percent from 1986),
+crabs (from 2000), flounders (from 2004), miscellaneous coastal fishes
+(from 2005) and salmons (81 percent caught in 1976, 12 percent in 2024).
+“Marine fishes not identified” is not counted because capture made up
+less than 90 percent of its production in each year from 2022 to 2024
+(89.65 to 89.97 percent).
+
+## 参考文献
+
+FAO. Global production statistics (capture and aquaculture), release
+2026.1.0. <https://www.fao.org/fishery/static/Data/>
+
+## 示例
+
+``` r
+
+fao_capture_groups()
+fao_capture_groups(years = 1976:1990)      # shrimps were then mostly caught
+fao_capture_groups(min_capture_pct = 80)
+```

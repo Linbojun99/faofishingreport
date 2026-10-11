@@ -1,4 +1,4 @@
-# 📝 Assessment report in Word
+# 📝 Assessment report: Word, LaTeX and PDF
 
 📦 **Data**: [FAO Global Capture
 Production](https://www.fao.org/fishery/collection/capture/en), release
@@ -11,10 +11,10 @@ shows the release you use and how to cite it.
 
 [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
 writes the assessment report of one FAO major fishing area as a Word
-file, in Chinese or English, in one call. It runs the analyses of the
-package on the area, writes their results into text made from templates,
-adds the charts and tables with numbered captions, and lists the
-references it cites.
+file (and, if asked, as LaTeX and PDF), in Chinese or English, in one
+call. It runs the analyses of the package on the area, writes their
+results into text made from templates, adds the charts and tables with
+numbered captions, and lists the references it cites.
 
 ``` r
 
@@ -34,7 +34,7 @@ Chinese reports). Check the generated text before you use it.
 
 report <- fao_report(34, file = "FAO34_report_en.docx", lang = "en")
 report
-#> FAO report: /tmp/RtmpVAWPcJ/faofishingreport_site_17a304a2bbf4d/FAO34_report_en.docx
+#> FAO report: /tmp/RtmpY2pYAp/faofishingreport_site_1b53056353401/FAO34_report_en.docx
 #> Sections: total, species, countries, groups, status, quality, diversity, fleets
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -244,7 +244,7 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 | FAO. (2026b). FishStat: Global capture production 1950–2024 (Release 2026.1.0) \[Data set\]. <https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip> |
 | Kendall, M. G. (1975). Rank correlation methods (4th ed.). Charles Griffin. |
 | Kleisner, K., Zeller, D., Froese, R., & Pauly, D. (2013). Using global catch data for inferences on the world’s marine fisheries. Fish and Fisheries, 14(3), 293–311. <https://doi.org/10.1111/j.1467-2979.2012.00469.x> |
-| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.3.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
+| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.4.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
 | Mann, H. B. (1945). Nonparametric tests against trend. Econometrica, 13(3), 245–259. <https://doi.org/10.2307/1907187> |
 | R Core Team. (2026). R: A language and environment for statistical computing \[Computer software\]. R Foundation for Statistical Computing. <https://www.R-project.org/> |
 | Rhoades, S. A. (1993). The Herfindahl-Hirschman index. Federal Reserve Bulletin, 79(3), 188–189. |
@@ -257,7 +257,8 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 |----|----|----|
 | `area` | (required) | The FAO major fishing area: its code, e.g. `34`, or its English name, e.g. `"Atlantic, Eastern Central"`. An unknown area gives an error that lists the marine areas. |
 | `...` |  | Settings of the analyses, named with the section as prefix, e.g. `species_h_value = 0.2` (see [⚙️ Settings of the analyses](#settings)) |
-| `file` | `reports/FAO<code>_report_<lang>.docx` | The Word file to write. Its folder is created if needed. |
+| `file` | `reports/FAO<code>_report_<lang>.docx` | The file to write; its folder is created if needed. The other formats get the same name with `.tex` and `.pdf`. |
+| `format` | `"docx"` | One or more of `"docx"`, `"latex"` and `"pdf"` (see [🖨️ Word, LaTeX and PDF](#formats)) |
 | `lang` | `NULL`: the language of [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md) | `"zh"` (Chinese) or `"en"` (English); `"both"` gives a Chinese report |
 | `title` | made from the area | e.g. “Assessment of Marine Capture Production in FAO Major Fishing Area 34 (Atlantic, Eastern Central)” |
 | `report_no` | `1` | Number of the report: “Report 1” (“报告一” in Chinese reports, with Chinese numerals up to 99), and the first number of the figures and tables (Figure 1-1, Table 1-1) |
@@ -339,7 +340,7 @@ and stock status plots with smoothed catches:
 short <- fao_report(34, file = "FAO34_short.docx", lang = "en", quality = FALSE, diversity = FALSE,
                     fleets = FALSE, pelagic = TRUE, status_smooth = TRUE)
 short
-#> FAO report: /tmp/RtmpVAWPcJ/faofishingreport_site_17a304a2bbf4d/FAO34_short.docx
+#> FAO report: /tmp/RtmpY2pYAp/faofishingreport_site_1b53056353401/FAO34_short.docx
 #> Sections: total, species, countries, groups, status, pelagic
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -381,7 +382,7 @@ show_table(data.frame(reference = short_word$text[short_word$style_name == "FAO 
 | Hondorp, D. W., Breitburg, D. L., & Davias, L. A. (2010). Eutrophication and Fisheries: Separating the Effects of Nitrogen Loads and Hypoxia on the Pelagic-to-Demersal Ratio and other Measures of Landings Composition. Marine and Coastal Fisheries, 2(1), 339–361. <https://doi.org/10.1577/C09-020.1> |
 | Kendall, M. G. (1975). Rank correlation methods (4th ed.). Charles Griffin. |
 | Kleisner, K., Zeller, D., Froese, R., & Pauly, D. (2013). Using global catch data for inferences on the world’s marine fisheries. Fish and Fisheries, 14(3), 293–311. <https://doi.org/10.1111/j.1467-2979.2012.00469.x> |
-| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.3.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
+| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.4.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
 | Mann, H. B. (1945). Nonparametric tests against trend. Econometrica, 13(3), 245–259. <https://doi.org/10.2307/1907187> |
 | R Core Team. (2026). R: A language and environment for statistical computing \[Computer software\]. R Foundation for Statistical Computing. <https://www.R-project.org/> |
 | Zeileis, A., Kleiber, C., Krämer, W., & Hornik, K. (2003). Testing and dating of structural changes in practice. Computational Statistics & Data Analysis, 44(1-2), 109–123. <https://doi.org/10.1016/S0167-9473(03)00030-6> |
@@ -479,6 +480,60 @@ they are, without the Chinese spacing rule.
 The headings have outline levels 1 and 2, so they show in the navigation
 pane of Word and in a table of contents inserted in Word. The title and
 author are also stored in the properties of the file.
+
+## 🖨️ Word, LaTeX and PDF
+
+`format` chooses the files to write: `"docx"` (default), `"latex"` and
+`"pdf"`, one or more. The analyses run once, and all formats have the
+same text, figures, tables, captions and references.
+
+``` r
+
+fao_report(34, lang = "zh", format = c("docx", "pdf"))      # Word and PDF
+fao_report(34, lang = "en", format = "latex")                # the LaTeX source only
+report <- fao_report(34, format = c("docx", "latex", "pdf"))
+report$file                                                  # named docx, latex and pdf
+```
+
+| `format` | Files written (for `fao_report(34, lang = "zh")`) | What it is |
+|----|----|----|
+| `"docx"` | `reports/FAO34_report_zh.docx` | The Word file described in this article |
+| `"latex"` | `reports/FAO34_report_zh.tex` and the folder `reports/FAO34_report_zh_figures/` | The XeLaTeX source of the same report, with its figures as PNG files. Chinese reports use the `ctexart` class, English reports the `article` class. |
+| `"pdf"` | `reports/FAO34_report_zh.pdf` (and the `.tex`) | The LaTeX source compiled with XeLaTeX, with bookmarks for the headings |
+
+The LaTeX version follows the format of the Word file (see [📐
+Format](#format)): A4 pages with the same margins, the same fonts and
+sizes, line spacing 1.5, three-line tables (booktabs, single line
+spacing, columns sized to their contents and running over pages),
+numbered captions, the cover without page number and pages numbered from
+1 on the title page. The fonts are those installed on the computer:
+
+|  | Windows | macOS | Linux |
+|----|----|----|----|
+| Chinese body text (仿宋) | FangSong | STFangsong | FandolFang (TeX Live) |
+| Chinese headings and captions (黑体) | SimHei | Heiti SC | FandolHei |
+| Chinese subsection headings (楷体) | KaiTi | Kaiti SC | FandolKai |
+| Latin text and numbers | `font`: Times New Roman in Chinese reports, Arial in English reports (else Liberation Serif or Sans, else Latin Modern) |  |  |
+
+Chinese fonts have no bold face: as in Word, bold Chinese text (the
+titles) is made by thickening the strokes.
+
+**Compiling.** With the tinytex package (`install.packages("tinytex")`,
+then
+[`tinytex::install_tinytex()`](https://rdrr.io/pkg/tinytex/man/install_tinytex.html)
+if you have no LaTeX), the PDF is made with
+`tinytex::latexmk(engine = "xelatex")`, which installs missing LaTeX
+packages (ctex, xeCJK, booktabs, longtable, needspace, xurl, …) on the
+first run. Without tinytex, `xelatex` must be on the system path. To
+change the text of the LaTeX version, edit the `.tex` file and compile
+it again, e.g. `tinytex::xelatex("reports/FAO34_report_zh.tex")`.
+
+If tinytex cannot install a package because your TeX Live is older than
+the online repository (“Local TeX Live (2024) is older than remote
+repository”), update TeX Live
+([`tinytex::reinstall_tinytex()`](https://rdrr.io/pkg/tinytex/man/install_tinytex.html)),
+or install the packages from the archive of your TeX Live year:
+`tlmgr --repository https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final install ctex`.
 
 ## 🔖 Citations and references
 
@@ -606,7 +661,7 @@ A list of class `fao_report`, returned invisibly:
 
 | Element | Content |
 |----|----|
-| `file` | Path of the Word file |
+| `file` | Paths of the files written, named `docx`, `latex` and `pdf` |
 | `sections` | The sections switched on |
 | `main_species` | Main species of the last five years: name in the report language, English and scientific names, mean yearly catch (t), share of the catch (%), peak year, catch of the last year as % of the peak, 10-year trend (“up”, “down” or “none”) |
 | `main_countries` | The same for the main fishing countries |
@@ -773,7 +828,7 @@ Fisheries* 14(3): 293–311.
 [doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
 
 Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture
-Production statistics. R package version 0.3.0.
+Production statistics. R package version 0.4.0.
 <https://linbojun99.github.io/faofishingreport/>
 
 Mann, H.B. (1945). Nonparametric tests against trend. *Econometrica*

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>📝 Assessment report in Word • faofishingreport</title>
+<title>📝 Assessment report: Word, LaTeX and PDF • faofishingreport</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
 <link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
@@ -16,9 +16,9 @@
 <script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<script src="../extra.js"></script><meta property="og:title" content="📝 Assessment report in Word">
-<meta name="description" content="fao_report(): a Word assessment report of an FAO fishing area in Chinese or English in one call. Its contents, arguments, sections and their settings, format, citation styles, the CMSY++ part, the tables it returns and the templates of its text.">
-<meta property="og:description" content="fao_report(): a Word assessment report of an FAO fishing area in Chinese or English in one call. Its contents, arguments, sections and their settings, format, citation styles, the CMSY++ part, the tables it returns and the templates of its text.">
+<script src="../extra.js"></script><meta property="og:title" content="📝 Assessment report: Word, LaTeX and PDF">
+<meta name="description" content="fao_report(): an assessment report of an FAO fishing area in Chinese or English in one call, as Word, LaTeX or PDF. Its contents, arguments, sections and their settings, format, citation styles, the CMSY++ part, the tables it returns and the templates of its text.">
+<meta property="og:description" content="fao_report(): an assessment report of an FAO fishing area in Chinese or English in one call, as Word, LaTeX or PDF. Its contents, arguments, sections and their settings, format, citation styles, the CMSY++ part, the tables it returns and the templates of its text.">
 <meta property="og:image" content="https://linbojun99.github.io/faofishingreport/logo.png">
 </head>
 <body>
@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,8 +52,11 @@
     <li><a class="dropdown-item" href="../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="../articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="../articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="../articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="../articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -76,7 +79,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>📝 Assessment report in Word</h1>
+      <img src="../logo.png" class="logo" alt=""><h1>📝 Assessment report: Word, LaTeX and PDF</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/Linbojun99/faofishingreport/blob/main/vignettes/articles/report.Rmd" class="external-link"><code>vignettes/articles/report.Rmd</code></a></small>
@@ -96,10 +99,11 @@ Licence <a href="https://creativecommons.org/licenses/by/4.0/" class="external-l
 to cite it.
 </div>
 <p><code><a href="../reference/fao_report.html">fao_report()</a></code> writes the assessment report of one FAO
-major fishing area as a Word file, in Chinese or English, in one call.
-It runs the analyses of the package on the area, writes their results
-into text made from templates, adds the charts and tables with numbered
-captions, and lists the references it cites.</p>
+major fishing area as a Word file (and, if asked, as LaTeX and PDF), in
+Chinese or English, in one call. It runs the analyses of the package on
+the area, writes their results into text made from templates, adds the
+charts and tables with numbered captions, and lists the references it
+cites.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span><span class="op">)</span>                                                  <span class="co"># language of fao_settings()</span></span>
 <span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, author <span class="op">=</span> <span class="st">"Hongyu Lin"</span><span class="op">)</span></span>
@@ -116,7 +120,7 @@ Chinese reports). Check the generated text before you use it.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_report_en.docx"</span>, lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmpVAWPcJ/faofishingreport_site_17a304a2bbf4d/FAO34_report_en.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmpY2pYAp/faofishingreport_site_1b53056353401/FAO34_report_en.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, quality, diversity, fleets</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -580,7 +584,7 @@ fisheries. Fish and Fisheries, 14(3), 293–311. <a href="https://doi.org/10.111
 </tr>
 <tr class="even">
 <td align="left">Lin, H. (2026). faofishingreport: Analyse and report
-FAO Global Capture Production statistics. R package version 0.3.0
+FAO Global Capture Production statistics. R package version 0.4.0
 [Computer software]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>
 </td>
 </tr>
@@ -645,9 +649,18 @@ Settings of the analyses</a>)</td>
 <tr class="odd">
 <td><code>file</code></td>
 <td><code>reports/FAO&lt;code&gt;_report_&lt;lang&gt;.docx</code></td>
-<td>The Word file to write. Its folder is created if needed.</td>
+<td>The file to write; its folder is created if needed. The other
+formats get the same name with <code>.tex</code> and
+<code>.pdf</code>.</td>
 </tr>
 <tr class="even">
+<td><code>format</code></td>
+<td><code>"docx"</code></td>
+<td>One or more of <code>"docx"</code>, <code>"latex"</code> and
+<code>"pdf"</code> (see <a href="#formats">🖨️ Word, LaTeX and
+PDF</a>)</td>
+</tr>
+<tr class="odd">
 <td><code>lang</code></td>
 <td>
 <code>NULL</code>: the language of <code><a href="../reference/fao_settings.html">fao_settings()</a></code>
@@ -656,46 +669,46 @@ Settings of the analyses</a>)</td>
 <code>"zh"</code> (Chinese) or <code>"en"</code> (English);
 <code>"both"</code> gives a Chinese report</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>title</code></td>
 <td>made from the area</td>
 <td>e.g. “Assessment of Marine Capture Production in FAO Major Fishing
 Area 34 (Atlantic, Eastern Central)”</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>report_no</code></td>
 <td><code>1</code></td>
 <td>Number of the report: “Report 1” (“报告一” in Chinese reports, with
 Chinese numerals up to 99), and the first number of the figures and
 tables (Figure 1-1, Table 1-1)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>author</code></td>
 <td>
 <code>NULL</code>: “Author”</td>
 <td>The author on the cover, under the title and in the properties of
 the file</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>affiliation</code></td>
 <td>
 <code>NULL</code>: no line</td>
 <td>The affiliation on the cover</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>project</code></td>
 <td>
 <code>NULL</code>: “Project Report”</td>
 <td>The text at the top of the cover (“课题报告” in Chinese
 reports)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>date</code></td>
 <td><code><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date()</a></code></td>
 <td>The date on the cover, written as YYYY-MM-DD; also the access date
 in the references to R and faofishingreport</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>font</code></td>
 <td>
 <code>NULL</code>: “Times New Roman” in Chinese reports, “Arial” in
@@ -703,33 +716,33 @@ English reports</td>
 <td>The font of Latin script and numbers; in English reports, of all
 text</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>font_zh</code></td>
 <td><code>"FangSong"</code></td>
 <td>The Chinese font of the body text, title, tables and references;
 headings and captions stay in SimHei and KaiTi</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>citation</code></td>
 <td><code>"apa"</code></td>
 <td>Citation style of English reports: <code>"apa"</code> or
 <code>"fao"</code>. Chinese reports always use numbered citations (GB/T
 7714).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>top_n</code></td>
 <td><code>10</code></td>
 <td>Number of main species and countries in the tables and charts, and
 of species assessed with CMSY++ (unless <code>cmsy_top</code> is
 given)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>data_version</code></td>
 <td><code>"latest"</code></td>
 <td>The FAO release to use, as in <code><a href="../reference/load_fao_data.html">load_fao_data()</a></code>
 </td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>
 <code>total</code>, <code>species</code>, <code>countries</code>,
 <code>groups</code>, <code>status</code>, <code>quality</code>,
@@ -739,7 +752,7 @@ given)</td>
 <td>Sections switched on by default (see <a href="#sections">🧩
 Sections</a>)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>
 <code>shocks</code>, <code>collapse</code>, <code>synchrony</code>,
 <code>pelagic</code>, <code>mtc</code>, <code>distant</code>
@@ -747,7 +760,7 @@ Sections</a>)</td>
 <td><code>FALSE</code></td>
 <td>Sections switched off by default</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>cmsy</code></td>
 <td><code>FALSE</code></td>
 <td>
@@ -964,7 +977,7 @@ on, and stock status plots with smoothed catches:</p>
 <code class="sourceCode R"><span><span class="va">short</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_short.docx"</span>, lang <span class="op">=</span> <span class="st">"en"</span>, quality <span class="op">=</span> <span class="cn">FALSE</span>, diversity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                    fleets <span class="op">=</span> <span class="cn">FALSE</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span>, status_smooth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">short</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmpVAWPcJ/faofishingreport_site_17a304a2bbf4d/FAO34_short.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmpY2pYAp/faofishingreport_site_1b53056353401/FAO34_short.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, pelagic</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -1045,7 +1058,7 @@ fisheries. Fish and Fisheries, 14(3), 293–311. <a href="https://doi.org/10.111
 </tr>
 <tr class="odd">
 <td align="left">Lin, H. (2026). faofishingreport: Analyse and report
-FAO Global Capture Production statistics. R package version 0.3.0
+FAO Global Capture Production statistics. R package version 0.4.0
 [Computer software]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>
 </td>
 </tr>
@@ -1306,6 +1319,122 @@ navigation pane of Word and in a table of contents inserted in Word. The
 title and author are also stored in the properties of the file.</p>
 </div>
 <div class="section level2">
+<h2 id="formats">🖨️ Word, LaTeX and PDF<a class="anchor" aria-label="anchor" href="#formats"></a>
+</h2>
+<p><code>format</code> chooses the files to write: <code>"docx"</code>
+(default), <code>"latex"</code> and <code>"pdf"</code>, one or more. The
+analyses run once, and all formats have the same text, figures, tables,
+captions and references.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docx"</span>, <span class="st">"pdf"</span><span class="op">)</span><span class="op">)</span>      <span class="co"># Word and PDF</span></span>
+<span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"en"</span>, format <span class="op">=</span> <span class="st">"latex"</span><span class="op">)</span>                <span class="co"># the LaTeX source only</span></span>
+<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docx"</span>, <span class="st">"latex"</span>, <span class="st">"pdf"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">report</span><span class="op">$</span><span class="va">file</span>                                                  <span class="co"># named docx, latex and pdf</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th><code>format</code></th>
+<th>Files written (for <code>fao_report(34, lang = "zh")</code>)</th>
+<th>What it is</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code>"docx"</code></td>
+<td><code>reports/FAO34_report_zh.docx</code></td>
+<td>The Word file described in this article</td>
+</tr>
+<tr class="even">
+<td><code>"latex"</code></td>
+<td>
+<code>reports/FAO34_report_zh.tex</code> and the folder
+<code>reports/FAO34_report_zh_figures/</code>
+</td>
+<td>The XeLaTeX source of the same report, with its figures as PNG
+files. Chinese reports use the <code>ctexart</code> class, English
+reports the <code>article</code> class.</td>
+</tr>
+<tr class="odd">
+<td><code>"pdf"</code></td>
+<td>
+<code>reports/FAO34_report_zh.pdf</code> (and the
+<code>.tex</code>)</td>
+<td>The LaTeX source compiled with XeLaTeX, with bookmarks for the
+headings</td>
+</tr>
+</tbody>
+</table>
+<p>The LaTeX version follows the format of the Word file (see <a href="#format">📐 Format</a>): A4 pages with the same margins, the same
+fonts and sizes, line spacing 1.5, three-line tables (booktabs, single
+line spacing, columns sized to their contents and running over pages),
+numbered captions, the cover without page number and pages numbered from
+1 on the title page. The fonts are those installed on the computer:</p>
+<table class="table">
+<colgroup>
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+</colgroup>
+<thead><tr class="header">
+<th></th>
+<th>Windows</th>
+<th>macOS</th>
+<th>Linux</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Chinese body text (仿宋)</td>
+<td>FangSong</td>
+<td>STFangsong</td>
+<td>FandolFang (TeX Live)</td>
+</tr>
+<tr class="even">
+<td>Chinese headings and captions (黑体)</td>
+<td>SimHei</td>
+<td>Heiti SC</td>
+<td>FandolHei</td>
+</tr>
+<tr class="odd">
+<td>Chinese subsection headings (楷体)</td>
+<td>KaiTi</td>
+<td>Kaiti SC</td>
+<td>FandolKai</td>
+</tr>
+<tr class="even">
+<td>Latin text and numbers</td>
+<td>
+<code>font</code>: Times New Roman in Chinese reports, Arial in
+English reports (else Liberation Serif or Sans, else Latin Modern)</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Chinese fonts have no bold face: as in Word, bold Chinese text (the
+titles) is made by thickening the strokes.</p>
+<p><strong>Compiling.</strong> With the tinytex package
+(<code>install.packages("tinytex")</code>, then
+<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::install_tinytex()</a></code> if you have no LaTeX), the PDF
+is made with <code>tinytex::latexmk(engine = "xelatex")</code>, which
+installs missing LaTeX packages (ctex, xeCJK, booktabs, longtable,
+needspace, xurl, …) on the first run. Without tinytex,
+<code>xelatex</code> must be on the system path. To change the text of
+the LaTeX version, edit the <code>.tex</code> file and compile it again,
+e.g. <code>tinytex::xelatex("reports/FAO34_report_zh.tex")</code>.</p>
+<div class="callout-tip">
+<p>If tinytex cannot install a package because your TeX Live is older
+than the online repository (“Local TeX Live (2024) is older than remote
+repository”), update TeX Live
+(<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::reinstall_tinytex()</a></code>), or install the packages
+from the archive of your TeX Live year:
+<code>tlmgr --repository https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final install ctex</code>.</p>
+</div>
+</div>
+<div class="section level2">
 <h2 id="citations-and-references">🔖 Citations and references<a class="anchor" aria-label="anchor" href="#citations-and-references"></a>
 </h2>
 <p>The references are listed only when the text cites them. The FAO
@@ -1409,7 +1538,7 @@ years, or <code>cmsy_top</code> of them. CMSY++ needs JAGS, installed
 once with <code><a href="../reference/cmsy_setup.html">cmsy_setup()</a></code>; without it,
 <code><a href="../reference/fao_report.html">fao_report()</a></code> stops with a message. The assessment takes a
 few minutes.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cmsy_setup.html">cmsy_setup</a></span><span class="op">(</span><span class="op">)</span>                          <span class="co"># once: JAGS and the R packages of CMSY++</span></span>
 <span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"en"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
@@ -1469,7 +1598,7 @@ sections or after editing the templates, give that result to
 <code>cmsy</code> instead of <code>TRUE</code>; CMSY++ does not run
 again and the <code>cmsy_</code> settings are not used. The result of
 <code><a href="../reference/cmsy_area.html">cmsy_area()</a></code> can be given in the same way:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cmsy34</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"reports"</span>, <span class="st">"cmsy"</span>, <span class="st">"Atlantic__Eastern_Central"</span>, <span class="st">"cmsy_result.rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"en"</span>, cmsy <span class="op">=</span> <span class="va">cmsy34</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
@@ -1496,7 +1625,9 @@ the results are indicative.</p>
 <tbody>
 <tr class="odd">
 <td><code>file</code></td>
-<td>Path of the Word file</td>
+<td>Paths of the files written, named <code>docx</code>,
+<code>latex</code> and <code>pdf</code>
+</td>
 </tr>
 <tr class="even">
 <td><code>sections</code></td>
@@ -1546,7 +1677,7 @@ guide and the FAO data</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">report</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "file"           "sections"       "main_species"   "main_countries"</span></span>
 <span><span class="co">#&gt; [5] "analyses"</span></span>
@@ -1663,7 +1794,7 @@ guide and the FAO data</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">analyses</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "total"     "species"   "countries" "groups"    "status"    "quality"  </span></span>
 <span><span class="co">#&gt; [7] "diversity" "fleets"</span></span>
@@ -1731,7 +1862,7 @@ guide and the FAO data</td>
 <code>inst/extdata/report_text.csv</code>, one row per piece of text
 with the columns <code>key</code>, <code>en</code> and
 <code>zh</code>:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">texts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"report_text.csv"</span>, package <span class="op">=</span> <span class="st">"faofishingreport"</span><span class="op">)</span>,</span>
 <span>                  fileEncoding <span class="op">=</span> <span class="st">"UTF-8"</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">texts</span><span class="op">)</span></span>
@@ -1789,7 +1920,7 @@ e.g. <code>HHI = ∑(100*p*~i~)^2^</code>.</li>
 </ul>
 <p>The references are in
 <code>inst/extdata/report_references.csv</code>:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">refs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"report_references.csv"</span>, package <span class="op">=</span> <span class="st">"faofishingreport"</span><span class="op">)</span>,</span>
 <span>                 fileEncoding <span class="op">=</span> <span class="st">"UTF-8"</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span></span>
 <span><span class="fu">show_table</span><span class="op">(</span><span class="va">refs</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"key"</span>, <span class="st">"type"</span>, <span class="st">"author"</span>, <span class="st">"year"</span>, <span class="st">"title"</span><span class="op">)</span><span class="op">]</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
@@ -1966,7 +2097,7 @@ London: Charles Griffin.</p>
 global catch data for inferences on the world’s marine fisheries.
 <em>Fish and Fisheries</em> 14(3): 293–311. <a href="https://doi.org/10.1111/j.1467-2979.2012.00469.x" class="external-link">doi:10.1111/j.1467-2979.2012.00469.x</a></p>
 <p>Lin, H. (2026). faofishingreport: Analyse and report FAO Global
-Capture Production statistics. R package version 0.3.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
+Capture Production statistics. R package version 0.4.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
 <p>Mann, H.B. (1945). Nonparametric tests against trend.
 <em>Econometrica</em> 13(3): 245–259. <a href="https://doi.org/10.2307/1907187" class="external-link">doi:10.2307/1907187</a></p>
 <p>R Core Team (2026). R: A language and environment for statistical
@@ -2076,7 +2207,7 @@ of Biodiversity Loss on Ocean Ecosystem Services. <em>Science</em>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">

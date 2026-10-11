@@ -35,12 +35,12 @@ country and species, in English, Chinese or both.
   <https://github.com/SISTA16/cmsyPlusPlus>, bundled unchanged), with
   JAGS set up for your computer, charts, projections and tables of
   reference points and priors.
-- 📝 **Word assessment report in one call**:
+- 📝 **Assessment report in one call**:
   [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
-  writes a report in Chinese or English (cover, abstract, data and
-  methods, results, conclusions, references, appendix), with every
-  analysis switched on or off and the settings of each function given
-  with a prefix.
+  writes a report in Chinese or English, as Word, LaTeX or PDF (cover,
+  abstract, data and methods, results, conclusions, references,
+  appendix), with every analysis switched on or off and the settings of
+  each function given with a prefix.
 - 🌐 **English, Chinese or bilingual** charts with the official FAO
   Chinese names.
 - 🎨 **Your style**: themes, colour palettes, map projections (Robinson,
@@ -93,8 +93,9 @@ mean_temperature_catch(FAO34$area_data, version = "builtin")
 # CMSY++ for the ten main species (run cmsy_setup() once before)
 cmsy_area("Atlantic, Eastern Central", top = 10)
 
-# A Word assessment report of the area, in Chinese, with CMSY++ and catch shocks
-report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE)
+# An assessment report of the area, in Chinese, with CMSY++ and catch shocks,
+# as Word and PDF (LaTeX)
+report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE, format = c("docx", "pdf"))
 ```
 
 Charts are saved in `figures/png/` (and, if you want, editable
@@ -265,6 +266,11 @@ catches 1950–2024), downloaded on 10 October 2026 from
   use](https://www.fao.org/contact-us/terms/db-terms-of-use/en).
 - [`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
   shows the release your analyses use and how to cite it.
+- FAO websites: [FAO](https://www.fao.org/home/en), [FAOSTAT
+  data](https://www.fao.org/faostat/en/#data) and the [FAO fishery data
+  files](https://www.fao.org/fishery/static/Data/).
+
+> This package is not affiliated with FAO; the data come from FAO.
 
 ## 📝 Citation
 

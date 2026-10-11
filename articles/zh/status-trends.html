@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,8 +52,11 @@
     <li><a class="dropdown-item" href="../../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="../../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="../../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="../../articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="../../articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="../../articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="../../articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../../news/index.html">Changelog</a></li>
@@ -1531,6 +1534,12 @@ al. 2010）、小型中上层鱼本身的自然波动以及报告方式都会�
 <td><code>NULL</code></td>
 </tr>
 <tr class="odd">
+<td><code>by</code></td>
+<td>
+<code>"area"</code>，或<code>"division"</code>（用于<code><a href="../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>的分区渔获数据，🧩扩展功能）</td>
+<td><code>"area"</code></td>
+</tr>
+<tr class="even">
 <td>
 <code>area_data</code>、<code>plot</code>、<code>table</code>、<code>lang</code>、<code>pptx</code>、<code>label</code>
 </td>
@@ -1541,13 +1550,23 @@ al. 2010）、小型中上层鱼本身的自然波动以及报告方式都会�
 </tbody>
 </table>
 <p>内陆渔区会被剔除，并给出提示。输出：图<code>&lt;label&gt;_pelagic_demersal_ratio.png</code>（逐年P/D，每个渔区一个分图）、<code>&lt;label&gt;_pelagic_demersal.png</code>和<code>..._share.png</code>（中上层鱼、底层鱼和其他渔获），表格<code>&lt;label&gt;_pelagic_demersal.csv</code>、<code>..._decades.csv</code>和<code>..._groups.csv</code>；函数返回<code>yearly</code>、<code>decades</code>和<code>groups</code>。</p>
+<div class="section level3">
+<h3 id="按分区计算扩展功能">🧩 按分区计算（扩展功能）<a class="anchor" aria-label="anchor" href="#%E6%8C%89%E5%88%86%E5%8C%BA%E8%AE%A1%E7%AE%97%E6%89%A9%E5%B1%95%E5%8A%9F%E8%83%BD"></a>
+</h3>
+<p>de Leiva Moreno et
+al. (2000)比较的是地中海和黑海的各个分区。区域渔业组织的分区渔获数据中有同样的分区，用<code><a href="../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>读取（这是本包的扩展功能，不纳入Word报告；其他数据集见<a href="trade-employment.html">🚢 贸易与就业</a>）：</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../../reference/pelagic_demersal.html">pelagic_demersal</a></span><span class="op">(</span><span class="fu"><a href="../../reference/load_fao_divisions.html">load_fao_divisions</a></span><span class="op">(</span><span class="st">"GFCM"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span></span></code></pre></div>
+<p>在2026.1.0版数据中，1980年代的平均P/D在爱奥尼亚海（0.6）和黎凡特海（0.4）低于1，在亚得里亚海约为4，在黑海约为18，分别落在de
+Leiva Moreno et al. (2000)给出的贫营养、中营养和富营养海域的范围内。</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="写入word报告">📝 写入Word报告<a class="anchor" aria-label="anchor" href="#%E5%86%99%E5%85%A5word%E6%8A%A5%E5%91%8A"></a>
 </h2>
 <p><code><a href="../../reference/fao_report.html">fao_report()</a></code>可以把这些分析写进某个渔区的Word报告（见<a href="report.html">📝
-一键生成Word评估报告</a>）。ISSCAAP类群（<code>groups = TRUE</code>）和资源状态图（<code>status = TRUE</code>）默认就是报告的章节；中上层鱼/底层鱼渔获比用<code>pelagic = TRUE</code>加入。各函数的设置以章节名为前缀传入，例如<code>status_smooth = TRUE</code>就是<code><a href="../../reference/stock_status.html">stock_status()</a></code>的<code>smooth = TRUE</code>：</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+一键生成评估报告（Word、LaTeX、PDF）</a>）。ISSCAAP类群（<code>groups = TRUE</code>）和资源状态图（<code>status = TRUE</code>）默认就是报告的章节；中上层鱼/底层鱼渔获比用<code>pelagic = TRUE</code>加入。各函数的设置以章节名为前缀传入，例如<code>status_smooth = TRUE</code>就是<code><a href="../../reference/stock_status.html">stock_status()</a></code>的<code>smooth = TRUE</code>：</p>
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span>, status_smooth <span class="op">=</span> <span class="cn">TRUE</span>, pelagic_definition <span class="op">=</span> <span class="st">"grainger_garcia"</span><span class="op">)</span></span></code></pre></div>
 <p>报告中主要物种表和主要国家表的趋势由<code><a href="../../reference/peak_trend.html">peak_trend()</a></code>计算；<code><a href="../../reference/area_overview.html">area_overview()</a></code>和<code><a href="../../reference/regime_shift.html">regime_shift()</a></code>不在报告中。</p>
 </div>
@@ -1603,7 +1622,7 @@ Statistics &amp; Data Analysis</em> 44: 109–123. <a href="https://doi.org/10.1
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">

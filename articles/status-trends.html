@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,8 +52,11 @@
     <li><a class="dropdown-item" href="../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="../articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="../articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="../articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="../articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -1637,6 +1640,13 @@ e.g. <code>"Herrings, sardines, anchovies"</code>) instead of those of
 <td><code>NULL</code></td>
 </tr>
 <tr class="odd">
+<td><code>by</code></td>
+<td>
+<code>"area"</code>, or <code>"division"</code> for the catch by
+division of <code><a href="../reference/load_fao_divisions.html">load_fao_divisions()</a></code> (🧩 extension)</td>
+<td><code>"area"</code></td>
+</tr>
+<tr class="even">
 <td>
 <code>area_data</code>, <code>plot</code>, <code>table</code>,
 <code>lang</code>, <code>pptx</code>, <code>label</code>
@@ -1655,19 +1665,35 @@ tables <code>&lt;label&gt;_pelagic_demersal.csv</code>,
 <code>..._decades.csv</code> and <code>..._groups.csv</code>; the
 function returns <code>yearly</code>, <code>decades</code> and
 <code>groups</code>.</p>
+<div class="section level3">
+<h3 id="by-division-extension">🧩 By division (extension)<a class="anchor" aria-label="anchor" href="#by-division-extension"></a>
+</h3>
+<p>De Leiva Moreno et al. (2000) compared the divisions of the
+Mediterranean and Black Sea. The same units are available from the catch
+data of regional fishery bodies, loaded with
+<code><a href="../reference/load_fao_divisions.html">load_fao_divisions()</a></code> (an extension of the package, not part
+of the Word report; see <a href="trade-employment.html">🚢 Trade and
+employment</a> for the other datasets):</p>
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/pelagic_demersal.html">pelagic_demersal</a></span><span class="op">(</span><span class="fu"><a href="../reference/load_fao_divisions.html">load_fao_divisions</a></span><span class="op">(</span><span class="st">"GFCM"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span></span></code></pre></div>
+<p>In release 2026.1.0, the mean P/D of the 1980s is below 1 in the
+Ionian (0.6) and the Levant (0.4), about 4 in the Adriatic and about 18
+in the Black Sea, within the ranges de Leiva Moreno et al. (2000) found
+for oligotrophic, mesotrophic and eutrophic seas.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="in-the-word-report">📝 In the Word report<a class="anchor" aria-label="anchor" href="#in-the-word-report"></a>
 </h2>
 <p><code><a href="../reference/fao_report.html">fao_report()</a></code> writes these analyses into the Word report
-of a fishing area (see <a href="report.html">📝 Assessment report in
-Word</a>). The ISSCAAP groups (<code>groups = TRUE</code>) and the stock
-status plots (<code>status = TRUE</code>) are sections by default; the
-pelagic/demersal ratio is added with <code>pelagic = TRUE</code>. The
-settings of a function are given with the section name as prefix, e.g.
-<code>status_smooth = TRUE</code> is <code>smooth = TRUE</code> of
-<code><a href="../reference/stock_status.html">stock_status()</a></code>:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+of a fishing area (see <a href="report.html">📝 Assessment report: Word,
+LaTeX and PDF</a>). The ISSCAAP groups (<code>groups = TRUE</code>) and
+the stock status plots (<code>status = TRUE</code>) are sections by
+default; the pelagic/demersal ratio is added with
+<code>pelagic = TRUE</code>. The settings of a function are given with
+the section name as prefix, e.g. <code>status_smooth = TRUE</code> is
+<code>smooth = TRUE</code> of <code><a href="../reference/stock_status.html">stock_status()</a></code>:</p>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span>, status_smooth <span class="op">=</span> <span class="cn">TRUE</span>, pelagic_definition <span class="op">=</span> <span class="st">"grainger_garcia"</span><span class="op">)</span></span></code></pre></div>
 <p><code><a href="../reference/peak_trend.html">peak_trend()</a></code> gives the trends in the tables of the main
 species and countries of the report; <code><a href="../reference/area_overview.html">area_overview()</a></code> and
@@ -1725,7 +1751,7 @@ Statistics &amp; Data Analysis</em> 44: 109–123. <a href="https://doi.org/10.1
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">

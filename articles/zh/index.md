@@ -40,9 +40,9 @@ Production）按渔区、国家和物种整理成报告用的图表、地图和�
   等 2023；采用其作者发布的代码
   <https://github.com/SISTA16/cmsyPlusPlus>，原样内置），自动为本机配置
   JAGS，输出图表、预测以及生物学参考点和先验参数表。
-- 📝 **一键生成 Word
-  评估报告**：[`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
-  生成中文或英文报告（封面、摘要、数据来源与分析方法、结果、结论、参考文献和附件），每项分析都可以单独开关，各函数的设置用前缀传入。
+- 📝
+  **一键生成评估报告**：[`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
+  生成中文或英文报告，可输出Word、LaTeX或PDF（封面、摘要、数据来源与分析方法、结果、结论、参考文献和附件），每项分析都可以单独开关，各函数的设置用前缀传入。
 - 🌐 **中文、英文或中英双语**图表，国家、物种、渔区名使用 FAO
   官方中文名。
 - 🎨 **自定义风格**：主题、色板、地图投影（Robinson、Mollweide、Equal
@@ -96,8 +96,8 @@ mean_temperature_catch(FAO34$area_data, version = "builtin")
 # 前 10 个主要物种的 CMSY++ 评估（先运行一次 cmsy_setup()）
 cmsy_area("Atlantic, Eastern Central", top = 10)
 
-# 一键生成中文 Word 评估报告，包含 CMSY++ 和渔获骤变
-report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE)
+# 一键生成中文评估报告，包含 CMSY++ 和渔获骤变，输出 Word 和 PDF（LaTeX）
+report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE, format = c("docx", "pdf"))
 ```
 
 图表保存在工作目录的 `figures/png/`（需要时也可以同时输出可编辑的
@@ -205,7 +205,7 @@ PowerPoint 到 `figures/pptx/`），表格保存在 `tables/`。
 
 | 函数 | 用途 |
 |----|----|
-| [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md) | 一键生成某个渔区的中文或英文 Word 评估报告，每项分析都可以单独开关 |
+| [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md) | 一键生成某个渔区的中文或英文评估报告（Word、LaTeX、PDF），每项分析都可以单独开关 |
 
 **🎨 设置与语言**
 
@@ -237,8 +237,10 @@ PowerPoint 到 `figures/pptx/`），表格保存在 `tables/`。
   物种特征](https://linbojun99.github.io/faofishingreport/articles/zh/fishbase.md)
 - [📉 CMSY++
   资源评估](https://linbojun99.github.io/faofishingreport/articles/zh/cmsy.md)
-- [📝 一键生成 Word
-  评估报告](https://linbojun99.github.io/faofishingreport/articles/zh/report.md)
+- [📝
+  一键生成评估报告（Word、LaTeX、PDF）](https://linbojun99.github.io/faofishingreport/articles/zh/report.md)
+- 🧩 扩展（不纳入Word报告）：[🚢
+  贸易与就业](https://linbojun99.github.io/faofishingreport/articles/zh/trade-employment.md)
 - [🎨
   自定义图表与地图](https://linbojun99.github.io/faofishingreport/articles/zh/customise.md)
 
@@ -266,6 +268,9 @@ Capture Production）统计 **2026.1.0 版**（FAO 于 2026 年 3 月 30
   数据库使用条款](https://www.fao.org/contact-us/terms/db-terms-of-use/en)。
 - [`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
   显示你的分析所用的版本及引用格式。
+- FAO网站：[FAO](https://www.fao.org/home/zh)、[FAOSTAT数据](https://www.fao.org/faostat/zh/#data)和[FAO渔业数据文件](https://www.fao.org/fishery/static/Data/)。
+
+> 本包与FAO无关联，数据来源为FAO。
 
 ## 📝 引用
 

@@ -79,13 +79,13 @@
   assessments of FAO catch series with the bundled CMSY++ code, FishBase
   priors and JAGS.
 
-- [📝 Assessment report in
-  Word](https://linbojun99.github.io/faofishingreport/articles/report.md):
+- [📝 Assessment report: Word, LaTeX and
+  PDF](https://linbojun99.github.io/faofishingreport/articles/report.md):
 
-  fao_report(): a Word assessment report of an FAO fishing area in
-  Chinese or English in one call. Its contents, arguments, sections and
-  their settings, format, citation styles, the CMSY++ part, the tables
-  it returns and the templates of its text.
+  fao_report(): an assessment report of an FAO fishing area in Chinese
+  or English in one call, as Word, LaTeX or PDF. Its contents,
+  arguments, sections and their settings, format, citation styles, the
+  CMSY++ part, the tables it returns and the templates of its text.
 
 - [🎨 Customise charts and
   maps](https://linbojun99.github.io/faofishingreport/articles/customise.md):
@@ -154,15 +154,33 @@
 
   cmsy_area()、cmsy_system()、cmsy_setup()、cmsy_install_jags()、cmsy_download_jags()、cmsy_jags_versions()、cmsy_sources()、cmsy_priors()、cmsy_input()、cmsy_defaults()、cmsy_run()、cmsy_plot()、cmsy_forecast()、cmsy_compare()和cmsy_tables()：用包内置的CMSY++代码、FishBase先验和JAGS，对FAO渔获序列做仅渔获量评估。
 
-- [📝 一键生成 Word
-  评估报告](https://linbojun99.github.io/faofishingreport/articles/zh/report.md):
+- [📝
+  一键生成评估报告（Word、LaTeX、PDF）](https://linbojun99.github.io/faofishingreport/articles/zh/report.md):
 
-  fao_report()：一次调用即可生成某个FAO渔区的中文或英文Word评估报告。本文介绍报告的内容、参数、各分析章节及其设置、格式、引文格式、CMSY++部分、返回的表格以及报告文字的模板。
+  fao_report()：一次调用即可生成某个FAO渔区的中文或英文评估报告（Word、LaTeX或PDF）。本文介绍报告的内容、参数、各分析章节及其设置、格式、引文格式、CMSY++部分、返回的表格以及报告文字的模板。
 
 - [🎨
   自定义图表与地图](https://linbojun99.github.io/faofishingreport/articles/zh/customise.md):
 
   fao_settings()：语言、主题、色板、地图投影与中心、字体、网格线、分辨率、PowerPoint输出和数据文件夹。
+
+### 🧩 Extensions · 扩展
+
+Other FAO datasets, not part of the Word report ·
+FAO其他数据集，不纳入Word报告
+
+- [🚢 Trade and
+  employment](https://linbojun99.github.io/faofishingreport/articles/trade-employment.md):
+
+  load_fao_trade(), catch_trade(), fao_capture_groups(),
+  load_fao_employment(), employment_summary() and catch_per_fisher():
+  how much of a country’s catch is exported, and how many people fish
+  and farm, from two more FAO datasets.
+
+- [🚢
+  贸易与就业](https://linbojun99.github.io/faofishingreport/articles/zh/trade-employment.md):
+
+  load_fao_trade()、catch_trade()、fao_capture_groups()、load_fao_employment()、employment_summary()和catch_per_fisher()：用FAO另外两个数据集看一国渔获有多少出口，以及有多少人从事捕捞和养殖。
 
 ### 中文函数参考
 

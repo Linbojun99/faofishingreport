@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,8 +52,11 @@
     <li><a class="dropdown-item" href="../../../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="../../../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="../../../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="../../../articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="../../../articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="../../../articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="../../../articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../../../news/index.html">Changelog</a></li>
@@ -115,6 +118,7 @@ around Europe.</p>
 <span>  definition <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"de_leiva_moreno"</span>, <span class="st">"grainger_garcia"</span><span class="op">)</span>,</span>
 <span>  pelagic <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  demersal <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"area"</span>, <span class="st">"division"</span><span class="op">)</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  lang <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -160,9 +164,22 @@ sardines, anchovies”) counted as pelagic and demersal instead of those
 of <code>definition</code>. Default is NULL.
 </details>
 </dd>
+<dt><code>by</code></dt>
+<dd>
+“area”（默认）表示按FAO主要渔区计算，“division”表示按<code><a href="../../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>渔获数据中的分区计算（例如地中海和黑海的GFCM分区，即de
+Leiva Moreno等（2000）所用的单元）。
+<details class="fao-en"><summary>
+English
+</summary>
+“area” (default) for the FAO major areas, or “division” for the
+divisions of the catch data of <code><a href="../../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>
+(e.g. the GFCM divisions of the Mediterranean and Black Sea, the units
+of de Leiva Moreno et al. 2000).
+</details>
+</dd>
 <dt><code>plot</code></dt>
 <dd>
-逻辑值。为TRUE（默认）时，图表保存在figures/png/summary/。
+逻辑值。为TRUE（默认）时，图表保存在<code>figures/png/summary/</code>。
 <details class="fao-en"><summary>
 English
 </summary>
@@ -172,7 +189,7 @@ A logical value. If TRUE (default), charts are saved in
 </dd>
 <dt><code>table</code></dt>
 <dd>
-逻辑值。为TRUE（默认）时，表格保存在tables/。
+逻辑值。为TRUE（默认）时，表格保存在<code>tables/</code>。
 <details class="fao-en"><summary>
 English
 </summary>
@@ -193,7 +210,7 @@ language set with <code><a href="../../../reference/fao_settings.html">fao_setti
 </dd>
 <dt><code>pptx</code></dt>
 <dd>
-逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在figures/pptx/summary/。默认为FALSE，可以用<code>fao_settings(pptx = TRUE)</code>为所有函数统一更改。
+逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在<code>figures/pptx/summary/</code>。默认为FALSE，可以用<code>fao_settings(pptx = TRUE)</code>为所有函数统一更改。
 <details class="fao-en"><summary>
 English
 </summary>
@@ -227,7 +244,7 @@ the country) of the data.
 <li>
 <strong>groups</strong>：数据中的ISSCAAP类群、每个类群的计法及其渔获量。</li>
 </ul>
-<p>图表保存在<code>figures/png/summary/</code>：<code>&lt;label&gt;_pelagic_demersal_ratio.png</code>（逐年P/D，每个渔区一个分图），以及<code>&lt;label&gt;_pelagic_demersal.png</code>和<code>..._share.png</code>（中上层、底层和其他渔获量）。表格保存在<code>tables/</code>：<code>&lt;label&gt;_pelagic_demersal.csv</code>、<code>..._decades.csv</code>和<code>..._groups.csv</code>。</p>
+<p><code>by = "division"</code>时，<code>area</code>和<code>area_en</code>为各分区，<code>area_code</code>为分区代码，文件名中的<code>_pelagic_demersal</code>改为<code>_pelagic_demersal_divisions</code>（例如<code>&lt;label&gt;_pelagic_demersal_divisions_ratio.png</code>）。图表保存在<code>figures/png/summary/</code>：<code>&lt;label&gt;_pelagic_demersal_ratio.png</code>（逐年P/D，每个渔区一个分图），以及<code>&lt;label&gt;_pelagic_demersal.png</code>和<code>..._share.png</code>（中上层、底层和其他渔获量）。表格保存在<code>tables/</code>：<code>&lt;label&gt;_pelagic_demersal.csv</code>、<code>..._decades.csv</code>和<code>..._groups.csv</code>。</p>
 <details class="fao-en"><summary>
 English
 </summary><p>Invisibly, a list of three data frames:</p>
@@ -244,7 +261,12 @@ and highest yearly P/D, and the catch of the decade;</li>
 <strong>groups</strong>: the ISSCAAP groups of the data, how each is
 counted and its catch.</li>
 </ul>
-<p>Charts are saved in <code>figures/png/summary/</code>:
+<p>With <code>by = "division"</code>, <code>area</code> and
+<code>area_en</code> hold the divisions, <code>area_code</code> their
+codes, and <code>_pelagic_demersal</code> in the file names becomes
+<code>_pelagic_demersal_divisions</code> (e.g.
+<code>&lt;label&gt;_pelagic_demersal_divisions_ratio.png</code>). Charts
+are saved in <code>figures/png/summary/</code>:
 <code>&lt;label&gt;_pelagic_demersal_ratio.png</code> (P/D by year, one
 panel per area), and <code>&lt;label&gt;_pelagic_demersal.png</code> and
 <code>..._share.png</code> (pelagic, demersal and other catch). Tables
@@ -332,6 +354,8 @@ Leiva Moreno等，2000；Hondorp等，2010）。</li>
 <li>报告方式：未鉴定到种的渔获量（“Marine fishes not
 identified”，在结果中为<code>unidentified_pct</code>）可能大多是底层鱼类（Grainger和Garcia，1996），而且其比例随时间变化。FAO捕捞产量数据既不包括水产养殖，也不包括丢弃的渔获。</li>
 </ul>
+<p><code>by = "division"</code>时，对<code><a href="../../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>渔获数据中的每个分区分别计算P/D。不是具体海域的代码，例如”37.0.0
+Tunas”或”37.9.0 Not known”，作为单独的单元保留。</p>
 <p>在把P/D的变化归因于营养盐之前，应结合各类群的渔获量（类群表和渔获组成图）一起解读。没有捕捞任何中上层类群的渔区（例如南极各渔区，那里的磷虾不计入），P/D为0；图表采用对数刻度，不显示这些年份。</p>
 <details class="fao-en"><summary>
 English
@@ -359,6 +383,10 @@ identified”, shown as <code>unidentified_pct</code>) is probably mostly
 demersal (Grainger and Garcia 1996), and its share changes over time.
 The FAO capture data contain neither aquaculture nor discards.</li>
 </ul>
+<p>With <code>by = "division"</code>, the ratio is calculated for each
+division of the catch data of <code><a href="../../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>. Codes
+that are not places, such as “37.0.0 Tunas” or “37.9.0 Not known”, are
+kept as their own units.</p>
 <p>Read the ratio together with the catch of each group (the group table
 and the composition chart) before attributing a change to nutrients.
 Where no pelagic group is caught (e.g. the Antarctic areas, where krill
@@ -407,6 +435,9 @@ landings composition. Marine and Coastal Fisheries 2: 339-361. <a href="https://
 <span>                 demersal <span class="op">=</span> <span class="fu"><a href="../../../reference/fao_pd_groups.html">fao_pd_groups</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">isscaap_en</span><span class="op">[</span><span class="fu"><a href="../../../reference/fao_pd_groups.html">fao_pd_groups</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">de_leiva_moreno</span> <span class="op">==</span> <span class="st">"demersal"</span><span class="op">]</span>,</span>
 <span>                 label <span class="op">=</span> <span class="st">"FAO37_small_medium_pelagic"</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># The GFCM divisions of the Mediterranean and Black Sea</span></span>
+<span><span class="fu"><a href="../../../reference/pelagic_demersal.html">pelagic_demersal</a></span><span class="op">(</span><span class="fu"><a href="../../../reference/load_fao_divisions.html">load_fao_divisions</a></span><span class="op">(</span><span class="st">"GFCM"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># All FAO major marine fishing areas, one panel per area</span></span>
 <span><span class="va">marine</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="fu"><a href="../../../reference/load_fao_data.html">load_fao_data</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">FAO.major.fishing.area..Name.</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="../../../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">area_en</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../../../reference/pelagic_demersal.html">pelagic_demersal</a></span><span class="op">(</span><span class="va">marine</span>, label <span class="op">=</span> <span class="st">"marine_areas"</span><span class="op">)</span></span></code></pre></div>
@@ -418,7 +449,7 @@ landings composition. Marine and Coastal Fisheries 2: 339-361. <a href="https://
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">

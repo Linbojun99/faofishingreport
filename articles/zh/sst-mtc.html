@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,8 +52,11 @@
     <li><a class="dropdown-item" href="../../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="../../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="../../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="../../articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="../../articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="../../articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="../../articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../../news/index.html">Changelog</a></li>
@@ -94,7 +97,7 @@
 <p><code><a href="../../reference/fao_area_sst.html">fao_area_sst()</a></code>返回19个FAO主要海洋渔区的逐年SST。每次调用都会说明用的是哪一套SST数据：</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sst34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="st">"34"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; SST: NOAA ERSST v5, built into the package (2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.</span></span>
+<span><span class="co">#&gt; SST: NOAA ERSST v5, built into the package (FAO major areas; 2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sst34</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"area_en"</span>, <span class="st">"year"</span>, <span class="st">"sst_mean"</span>, <span class="st">"sst_p10"</span>, <span class="st">"sst_p90"</span>, <span class="st">"sst_min_month"</span>, <span class="st">"sst_max_month"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                     area_en year sst_mean sst_p10 sst_p90 sst_min_month</span></span>
 <span><span class="co">#&gt; 1 Atlantic, Eastern Central 1950   24.510  20.834  27.147        23.620</span></span>
@@ -380,6 +383,112 @@ al. 2021），数值和趋势会有一定差异。换一种产品重复分析�
 </h3>
 <p>每个格点按它与各个FAO主要渔区重叠的面积（在球面上计算）加权，计入它所覆盖的每个渔区。位于两个渔区交界处的格点由两边共享，沿岸格点只计算海洋部分。渔区边界来自包内的FAO渔区地图（CWP手册中的19个海洋渔区）。北冰洋和南极渔区的数值有一部分反映的是海冰，而不是实测的水温。</p>
 </div>
+<div class="section level3">
+<h3 id="亚区和分区扩展功能">🧩 亚区和分区（扩展功能）<a class="anchor" aria-label="anchor" href="#%E4%BA%9A%E5%8C%BA%E5%92%8C%E5%88%86%E5%8C%BA%E6%89%A9%E5%B1%95%E5%8A%9F%E8%83%BD"></a>
+</h3>
+<p><code>fao_area_sst(level = "division")</code>给出FAO亚区和分区的海表温度，对应按分区的渔获数据（<code><a href="../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>，见<a href="data.html">💾 FAO数据</a>）。内置的ERSST
+v5表包含34、37、47和51区的亚区和分区；下载的产品和你自己的NetCDF文件会给出全部亚区和分区。</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">div</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span>level <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; SST: NOAA ERSST v5, built into the package (FAO subareas and divisions of areas 34, 37, 47 and 51; 2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.</span></span>
+<span><span class="fu">show_table</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">div</span>, <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html" class="external-link">startsWith</a></span><span class="op">(</span><span class="va">area_code</span>, <span class="st">"37."</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">year</span> <span class="op">==</span> <span class="fl">2024</span><span class="op">)</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"area_code"</span>, <span class="st">"area_en"</span>, <span class="st">"sst_mean"</span>, <span class="st">"n_cells"</span><span class="op">)</span><span class="op">]</span>, n <span class="op">=</span> <span class="fl">12</span><span class="op">)</span></span></code></pre></div>
+<table class="table">
+<thead><tr class="header">
+<th align="left"></th>
+<th align="left">area_code</th>
+<th align="left">area_en</th>
+<th align="right">sst_mean</th>
+<th align="right">n_cells</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">1215</td>
+<td align="left">37.1</td>
+<td align="left">Western subarea</td>
+<td align="right">19.96</td>
+<td align="right">31</td>
+</tr>
+<tr class="even">
+<td align="left">1291</td>
+<td align="left">37.1.1</td>
+<td align="left">Balearic</td>
+<td align="right">19.95</td>
+<td align="right">16</td>
+</tr>
+<tr class="odd">
+<td align="left">1367</td>
+<td align="left">37.1.2</td>
+<td align="left">Gulf of Lion</td>
+<td align="right">18.88</td>
+<td align="right">6</td>
+</tr>
+<tr class="even">
+<td align="left">1443</td>
+<td align="left">37.1.3</td>
+<td align="left">Sardinia</td>
+<td align="right">20.19</td>
+<td align="right">16</td>
+</tr>
+<tr class="odd">
+<td align="left">1519</td>
+<td align="left">37.2</td>
+<td align="left">Central subarea</td>
+<td align="right">21.60</td>
+<td align="right">32</td>
+</tr>
+<tr class="even">
+<td align="left">1595</td>
+<td align="left">37.2.1</td>
+<td align="left">Adriatic</td>
+<td align="right">19.69</td>
+<td align="right">6</td>
+</tr>
+<tr class="odd">
+<td align="left">1671</td>
+<td align="left">37.2.2</td>
+<td align="left">Ionian</td>
+<td align="right">21.76</td>
+<td align="right">28</td>
+</tr>
+<tr class="even">
+<td align="left">1747</td>
+<td align="left">37.3</td>
+<td align="left">Eastern subarea</td>
+<td align="right">22.38</td>
+<td align="right">26</td>
+</tr>
+<tr class="odd">
+<td align="left">1823</td>
+<td align="left">37.3.1</td>
+<td align="left">Aegean</td>
+<td align="right">21.46</td>
+<td align="right">13</td>
+</tr>
+<tr class="even">
+<td align="left">1899</td>
+<td align="left">37.3.2</td>
+<td align="left">Levant</td>
+<td align="right">22.96</td>
+<td align="right">15</td>
+</tr>
+<tr class="odd">
+<td align="left">1975</td>
+<td align="left">37.4</td>
+<td align="left">Black Sea subarea</td>
+<td align="right">16.97</td>
+<td align="right">17</td>
+</tr>
+<tr class="even">
+<td align="left">2051</td>
+<td align="left">37.4.1</td>
+<td align="left">Marmara Sea</td>
+<td align="right">20.58</td>
+<td align="right">1</td>
+</tr>
+</tbody>
+</table>
+<p>很多分区对2°网格来说太小：马尔马拉海和亚速海只有一两个格点。用分辨率更高的产品（给出其NetCDF文件路径）更适合分区。</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="渔获平均温度">🐟 渔获平均温度<a class="anchor" aria-label="anchor" href="#%E6%B8%94%E8%8E%B7%E5%B9%B3%E5%9D%87%E6%B8%A9%E5%BA%A6"></a>
@@ -388,7 +497,7 @@ al. 2021），数值和趋势会有一定差异。换一种产品重复分析�
 al. 2013）是渔获物种偏好温度的平均值，按渔获量加权：</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mi>T</mi><msub><mi>C</mi><mi>t</mi></msub><mo>=</mo><mfrac><mrow><munder><mo>∑</mo><mi>i</mi></munder><msub><mi>T</mi><mi>i</mi></msub><msub><mi>C</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub></mrow><mrow><munder><mo>∑</mo><mi>i</mi></munder><msub><mi>C</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">MTC_t = \frac{\sum_i T_i C_{i,t}}{\sum_i C_{i,t}}</annotation></semantics></math></p>
 <p>其中<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>i</mi></msub><annotation encoding="application/x-tex">T_i</annotation></semantics></math>是物种<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>的偏好温度，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>C</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub><annotation encoding="application/x-tex">C_{i,t}</annotation></semantics></math>是它在第<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>年的渔获量；两个求和都只包括有偏好温度的条目。MTC上升，说明喜暖物种在渔获中所占的比例变大。</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">FAO34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">mtc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span></span>
 <span><span class="va">mtc</span><span class="op">$</span><span class="va">trend</span>      <span class="co"># 斜率（°C/十年）、Mann-Kendall检验、与SST的相关</span></span></code></pre></div>
@@ -487,18 +596,25 @@ al. 2013的研究时段从1970年开始）</td>
 </table>
 <p>函数返回<code>yearly</code>（各渔区逐年的MTC、覆盖率、SST及所用产品）、<code>trend</code>（各渔区各时段的斜率、Mann-Kendall检验和相关）和<code>species</code>（每个渔区每个FAO物种条目一行）。</p>
 <div class="section level3">
+<h3 id="按分区扩展功能">🧩 按分区（扩展功能）<a class="anchor" aria-label="anchor" href="#%E6%8C%89%E5%88%86%E5%8C%BA%E6%89%A9%E5%B1%95%E5%8A%9F%E8%83%BD"></a>
+</h3>
+<p>有了按分区的渔获数据，<code>by = "division"</code>会给出每个分区的渔获平均温度，并与该分区的海表温度对比：</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">med</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/load_fao_divisions.html">load_fao_divisions</a></span><span class="op">(</span><span class="st">"GFCM"</span><span class="op">)</span></span>
+<span><span class="va">mtc_divisions</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">med</span>, by <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span></span></code></pre></div>
+<p>在FAO地图上没有边界的分区使用所在亚区的海表温度（见<code>sst_unit</code>列）；不是具体海域的代码（如37.0.0金枪鱼）没有海表温度；海温格点少于5个的分区，函数会给出提示。</p>
+</div>
+<div class="section level3">
 <h3 id="包做什么你必须核对什么">⚠️ 包做什么，你必须核对什么<a class="anchor" aria-label="anchor" href="#%E5%8C%85%E5%81%9A%E4%BB%80%E4%B9%88%E4%BD%A0%E5%BF%85%E9%A1%BB%E6%A0%B8%E5%AF%B9%E4%BB%80%E4%B9%88"></a>
 </h3>
 <p>本包负责计算MTC、它的趋势以及与SST的对比。各物种的偏好温度<strong>没有经过本包核对</strong>：它们是按FAO学名自动匹配FishBase或SeaLifeBase（<code>TempPrefMean</code>）得到的初配结果，并附有核对用的网址。不同数据库之间的物种名并不总能对上（Grenié
 et
 al. 2023），所以每个匹配和偏好温度是否正确，需要你查阅这些网页和文献后自行判断，然后才能使用结果：</p>
-<ol style="list-style-type: decimal">
-<li>打开物种表<code>tables/&lt;label&gt;_mtc_species.csv</code>。表按渔获量从大到小排序，越靠前的条目越重要。</li>
-<li>对每个参与计算的条目（<code>used</code>为TRUE），打开<code>url</code>（匹配到的FishBase或SeaLifeBase物种页面）、<code>search_url</code>和<code>worms_url</code>（世界海洋物种名录）。核对两点：匹配到的物种是否就是这个FAO条目，偏好温度对该渔区的种群是否合理。</li>
-<li>在<code>checked</code>列写上核对人或日期。值不对就改<code>temp_pref_mean</code>，并在<code>note</code>写明出处（如果要给原本不参与计算的条目，如属一级的条目，赋一个值，还要把它的<code>match_type</code>改为<code>"manual"</code>）；也可以把更正写进<code><a href="../../reference/fishbase_match.html">fishbase_match()</a></code>的更正文件，之后每次运行都会自动采用。</li>
-<li>用核对后的表重新运行：</li>
-</ol>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<p>1.打开物种表<code>tables/&lt;label&gt;_mtc_species.csv</code>。表按渔获量从大到小排序，越靠前的条目越重要。
+2.对每个参与计算的条目（<code>used</code>为TRUE），打开<code>url</code>（匹配到的FishBase或SeaLifeBase物种页面）、<code>search_url</code>和<code>worms_url</code>（世界海洋物种名录）。核对两点：匹配到的物种是否就是这个FAO条目，偏好温度对该渔区的种群是否合理。
+3.在<code>checked</code>列写上核对人或日期。值不对就改<code>temp_pref_mean</code>，并在<code>note</code>写明出处（如果要给原本不参与计算的条目，如属一级的条目，赋一个值，还要把它的<code>match_type</code>改为<code>"manual"</code>）；也可以把更正写进<code><a href="../../reference/fishbase_match.html">fishbase_match()</a></code>的更正文件，之后每次运行都会自动采用。
+4.用核对后的表重新运行：</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">mtc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, match <span class="op">=</span> <span class="st">"tables/Atlantic__Eastern_Central_mtc_species.csv"</span><span class="op">)</span></span></code></pre></div>
 <p>在所有参与计算的条目都核对完之前，函数会提示已核对的渔获占比，图注也会写明“偏好温度为自动初配结果，尚未全部经用户核对”。</p>
 </div>
@@ -574,8 +690,8 @@ et al. 2025）。</li>
 <h2 id="写入word报告">📝 写入Word报告<a class="anchor" aria-label="anchor" href="#%E5%86%99%E5%85%A5word%E6%8A%A5%E5%91%8A"></a>
 </h2>
 <p><code><a href="../../reference/fao_report.html">fao_report()</a></code>用<code>mtc = TRUE</code>加入渔获平均温度一节（见<a href="report.html">📝
-一键生成Word评估报告</a>）。报告使用包内置的FishBase数据（<code>mtc_version = "builtin"</code>），不需要下载，在任何电脑上得到的数值都相同；<code>mtc_version = "latest"</code>则改用最新的FishBase版本。<code><a href="../../reference/mean_temperature_catch.html">mean_temperature_catch()</a></code>的其他设置以<code>mtc_</code>为前缀传入，例如<code>mtc_sst = "hadisst1"</code>或<code>mtc_match = "&lt;核对过的物种表&gt;"</code>。报告用到的物种及其匹配和链接以<code>report$mtc_species</code>返回，方便核对：</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+一键生成评估报告（Word、LaTeX、PDF）</a>）。报告使用包内置的FishBase数据（<code>mtc_version = "builtin"</code>），不需要下载，在任何电脑上得到的数值都相同；<code>mtc_version = "latest"</code>则改用最新的FishBase版本。<code><a href="../../reference/mean_temperature_catch.html">mean_temperature_catch()</a></code>的其他设置以<code>mtc_</code>为前缀传入，例如<code>mtc_sst = "hadisst1"</code>或<code>mtc_match = "&lt;核对过的物种表&gt;"</code>。报告用到的物种及其匹配和链接以<code>report$mtc_species</code>返回，方便核对：</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, mtc <span class="op">=</span> <span class="cn">TRUE</span>, mtc_min_coverage <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></span>
 <span><span class="va">report</span><span class="op">$</span><span class="va">mtc_species</span></span></code></pre></div>
 </div>
@@ -675,7 +791,7 @@ hydrological series. <em>Hydrological Processes</em> 16: 1807–1829. <a href="h
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">

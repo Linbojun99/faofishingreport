@@ -94,6 +94,18 @@
 |----|----|
 | [`fao_report()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/fao_report.md) | FAO渔区评估报告 |
 
+## 🧩 扩展：FAO其他数据集
+
+| 函数 | 说明 |
+|----|----|
+| [`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/load_fao_divisions.md) | 按分区的渔获量：区域渔业组织的FAO数据 |
+| [`load_fao_trade()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/load_fao_trade.md) | 水产品贸易：FAO数据 |
+| [`catch_trade()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/catch_trade.md) | 以捕捞为主的物种类群的渔获量与贸易 |
+| [`fao_capture_groups()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/fao_capture_groups.md) | 以捕捞为主（而非养殖）的物种类群 |
+| [`load_fao_employment()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/load_fao_employment.md) | 渔业与水产养殖就业：FAO数据 |
+| [`employment_summary()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/employment_summary.md) | 渔业与水产养殖逐年就业情况 |
+| [`catch_per_fisher()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/catch_per_fisher.md) | 人均渔获 |
+
 ## 🎨 设置与语言
 
 | 函数 | 说明 |

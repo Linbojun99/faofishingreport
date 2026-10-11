@@ -3,8 +3,10 @@ pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   articles/zh/reference/area_overview: zh/reference/area_overview.html
+  articles/zh/reference/catch_per_fisher: zh/reference/catch_per_fisher.html
   articles/zh/reference/catch_shocks: zh/reference/catch_shocks.html
   articles/zh/reference/catch_synchrony: zh/reference/catch_synchrony.html
+  articles/zh/reference/catch_trade: zh/reference/catch_trade.html
   articles/zh/reference/check_fao_update: zh/reference/check_fao_update.html
   articles/zh/reference/check_fishbase_update: zh/reference/check_fishbase_update.html
   articles/zh/reference/cmsy_area: zh/reference/cmsy_area.html
@@ -40,7 +42,9 @@ articles:
   articles/zh/reference/download_fao_data: zh/reference/download_fao_data.html
   articles/zh/reference/download_fishbase_data: zh/reference/download_fishbase_data.html
   articles/zh/reference/download_sst_data: zh/reference/download_sst_data.html
+  articles/zh/reference/employment_summary: zh/reference/employment_summary.html
   articles/zh/reference/fao_area_sst: zh/reference/fao_area_sst.html
+  articles/zh/reference/fao_capture_groups: zh/reference/fao_capture_groups.html
   articles/zh/reference/fao_data_dir: zh/reference/fao_data_dir.html
   articles/zh/reference/fao_data_info: zh/reference/fao_data_info.html
   articles/zh/reference/fao_font: zh/reference/fao_font.html
@@ -66,6 +70,9 @@ articles:
   articles/literature-analyses: literature-analyses.html
   articles/zh/literature-analyses: zh/literature-analyses.html
   articles/zh/reference/load_fao_data: zh/reference/load_fao_data.html
+  articles/zh/reference/load_fao_divisions: zh/reference/load_fao_divisions.html
+  articles/zh/reference/load_fao_employment: zh/reference/load_fao_employment.html
+  articles/zh/reference/load_fao_trade: zh/reference/load_fao_trade.html
   articles/zh/reference/mean_temperature_catch: zh/reference/mean_temperature_catch.html
   articles/zh/reference/peak_trend: zh/reference/peak_trend.html
   articles/zh/reference/pelagic_demersal: zh/reference/pelagic_demersal.html
@@ -83,7 +90,9 @@ articles:
   articles/status-trends: status-trends.html
   articles/zh/status-trends: zh/status-trends.html
   articles/zh/reference/stock_status: zh/reference/stock_status.html
-last_built: 2026-10-11T08:10Z
+  articles/trade-employment: trade-employment.html
+  articles/zh/trade-employment: zh/trade-employment.html
+last_built: 2026-10-11T09:55Z
 urls:
   reference: https://linbojun99.github.io/faofishingreport/reference
   article: https://linbojun99.github.io/faofishingreport/articles

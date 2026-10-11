@@ -510,6 +510,7 @@ P/D high.
 |----|----|----|
 | `definition` | Groups counted as pelagic and demersal: `"de_leiva_moreno"` or `"grainger_garcia"` | `"de_leiva_moreno"` |
 | `pelagic`, `demersal` | Your own ISSCAAP groups (English names as in the FAO data, e.g. `"Herrings, sardines, anchovies"`) instead of those of `definition` | `NULL` |
+| `by` | `"area"`, or `"division"` for the catch by division of [`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md) (🧩 extension) | `"area"` |
 | `area_data`, `plot`, `table`, `lang`, `pptx`, `label` | See [Common arguments](#common-arguments) |  |
 
 Inland areas are left out with a message. Output:
@@ -519,12 +520,33 @@ and other catch), and the tables `<label>_pelagic_demersal.csv`,
 `..._decades.csv` and `..._groups.csv`; the function returns `yearly`,
 `decades` and `groups`.
 
+### 🧩 By division (extension)
+
+De Leiva Moreno et al. (2000) compared the divisions of the
+Mediterranean and Black Sea. The same units are available from the catch
+data of regional fishery bodies, loaded with
+[`load_fao_divisions()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_divisions.md)
+(an extension of the package, not part of the Word report; see [🚢 Trade
+and
+employment](https://linbojun99.github.io/faofishingreport/articles/trade-employment.md)
+for the other datasets):
+
+``` r
+
+pelagic_demersal(load_fao_divisions("GFCM"), by = "division")
+```
+
+In release 2026.1.0, the mean P/D of the 1980s is below 1 in the Ionian
+(0.6) and the Levant (0.4), about 4 in the Adriatic and about 18 in the
+Black Sea, within the ranges de Leiva Moreno et al. (2000) found for
+oligotrophic, mesotrophic and eutrophic seas.
+
 ## 📝 In the Word report
 
 [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
 writes these analyses into the Word report of a fishing area (see [📝
-Assessment report in
-Word](https://linbojun99.github.io/faofishingreport/articles/report.md)).
+Assessment report: Word, LaTeX and
+PDF](https://linbojun99.github.io/faofishingreport/articles/report.md)).
 The ISSCAAP groups (`groups = TRUE`) and the stock status plots
 (`status = TRUE`) are sections by default; the pelagic/demersal ratio is
 added with `pelagic = TRUE`. The settings of a function are given with

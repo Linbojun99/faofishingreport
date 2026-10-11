@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,8 +52,11 @@
     <li><a class="dropdown-item" href="../../../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
     <li><a class="dropdown-item" href="../../../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
     <li><a class="dropdown-item" href="../../../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
-    <li><a class="dropdown-item" href="../../../articles/report.html">📝 Assessment report in Word</a></li>
+    <li><a class="dropdown-item" href="../../../articles/report.html">📝 Assessment report: Word, LaTeX and PDF</a></li>
     <li><a class="dropdown-item" href="../../../articles/customise.html">🎨 Customise charts and maps</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>🧩 Extensions: other FAO datasets</h6></li>
+    <li><a class="dropdown-item" href="../../../articles/trade-employment.html">🚢 Trade and employment</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../../../news/index.html">Changelog</a></li>
@@ -117,6 +120,7 @@ warmer waters make up a larger part of the catch.</p>
 <span>    <span class="st">"WoRMS valid name (synonym)"</span>, <span class="st">"manual"</span><span class="op">)</span>,</span>
 <span>  match <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  sst <span class="op">=</span> <span class="fu">fao_setting</span><span class="op">(</span><span class="st">"sst"</span><span class="op">)</span>,</span>
+<span>  by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"area"</span>, <span class="st">"division"</span><span class="op">)</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  lang <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -218,9 +222,20 @@ changed. The SST data used is printed, shown in the chart legend and
 given in the column <code>sst_source</code> of the yearly table.
 </details>
 </dd>
+<dt><code>by</code></dt>
+<dd>
+“area”（默认）表示按FAO主要渔区计算，“division”表示按<code><a href="../../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>渔获数据中的分区计算（见“按分区计算”一节）。
+<details class="fao-en"><summary>
+English
+</summary>
+“area” (default) for the FAO major areas, or “division” for the
+divisions of the catch data of <code><a href="../../../reference/load_fao_divisions.html">load_fao_divisions()</a></code> (see
+Divisions).
+</details>
+</dd>
 <dt><code>plot</code></dt>
 <dd>
-逻辑值。为TRUE（默认）时，图表保存在figures/png/summary/。
+逻辑值。为TRUE（默认）时，图表保存在<code>figures/png/summary/</code>。
 <details class="fao-en"><summary>
 English
 </summary>
@@ -230,7 +245,7 @@ A logical value. If TRUE (default), charts are saved in
 </dd>
 <dt><code>table</code></dt>
 <dd>
-逻辑值。为TRUE（默认）时，表格保存在tables/。
+逻辑值。为TRUE（默认）时，表格保存在<code>tables/</code>。
 <details class="fao-en"><summary>
 English
 </summary>
@@ -251,7 +266,7 @@ language set with <code><a href="../../../reference/fao_settings.html">fao_setti
 </dd>
 <dt><code>pptx</code></dt>
 <dd>
-逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在figures/pptx/summary/。默认为FALSE，可以用<code>fao_settings(pptx = TRUE)</code>为所有函数统一更改。
+逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在<code>figures/pptx/summary/</code>。默认为FALSE，可以用<code>fao_settings(pptx = TRUE)</code>为所有函数统一更改。
 <details class="fao-en"><summary>
 English
 </summary>
@@ -289,22 +304,24 @@ The directory where downloaded data is stored. Default is
 <p>以不可见方式返回一个由三个数据框组成的列表：</p>
 <ul>
 <li>
-<strong>yearly</strong>：每个渔区每年一行：MTC、覆盖率（百分比）、覆盖率是否低于<code>min_coverage</code>、SST（渔区平均值及渔区内第10至第90百分位数的范围）及所用的SST产品、所用条目数、总渔获量以及所用条目的渔获量；</li>
+<strong>yearly</strong>：每个渔区（或分区）每年一行：MTC、覆盖率（百分比）、覆盖率是否低于<code>min_coverage</code>、SST（渔区平均值及渔区内第10至第90百分位数的范围）、所用的SST产品和所用SST表中的空间单元（<code>sst_unit</code>）、所用条目数、总渔获量以及所用条目的渔获量；</li>
 <li>
 <strong>trend</strong>：每个渔区每个时段一行：MTC和SST的斜率（°C/十年）、MTC的Mann-Kendall检验，以及MTC与SST在原序列之间和逐年差分之间的相关；</li>
 <li>
 <strong>species</strong>：每个渔区每个FAO物种条目一行：偏好温度、渔获量、在整个时段MTC中的权重和贡献（°C）、匹配情况、链接，以及供用户记录核对情况的<code>checked</code>和<code>note</code>列。</li>
 </ul>
-<p>图表保存在<code>figures/png/summary/</code>：<code>&lt;label&gt;_mtc.png</code>（MTC与SST及SST在渔区内的范围；只有一个渔区时，下方还有覆盖率），有多个渔区时还有<code>&lt;label&gt;_mtc_coverage.png</code>。表格保存在<code>tables/</code>：<code>&lt;label&gt;_mtc.csv</code>、<code>&lt;label&gt;_mtc_trend.csv</code>和<code>&lt;label&gt;_mtc_species.csv</code>。</p>
+<p>图表保存在<code>figures/png/summary/</code>：<code>&lt;label&gt;_mtc.png</code>（MTC与SST及SST在渔区内的范围；只有一个渔区时，下方还有覆盖率），有多个渔区时还有<code>&lt;label&gt;_mtc_coverage.png</code>。表格保存在<code>tables/</code>：<code>&lt;label&gt;_mtc.csv</code>、<code>&lt;label&gt;_mtc_trend.csv</code>和<code>&lt;label&gt;_mtc_species.csv</code>。<code>by = "division"</code>时，文件名中的<code>_mtc</code>改为<code>_mtc_divisions</code>。</p>
 <details class="fao-en"><summary>
 English
 </summary><p>Invisibly, a list of three data frames:</p>
 <ul>
 <li>
-<strong>yearly</strong>: one row per area and year: MTC, coverage
-(percent), whether the coverage is below <code>min_coverage</code>, SST
-(mean and 10th-90th percentile range in the area) and its product,
-number of items used, total catch and catch of the items used;</li>
+<strong>yearly</strong>: one row per area (or division) and year:
+MTC, coverage (percent), whether the coverage is below
+<code>min_coverage</code>, SST (mean and 10th-90th percentile range in
+the area), its product and the unit of the SST table used
+(<code>sst_unit</code>), number of items used, total catch and catch of
+the items used;</li>
 <li>
 <strong>trend</strong>: one row per area and period: slopes of the
 MTC and SST (°C per decade), the Mann-Kendall test of the MTC, and the
@@ -322,7 +339,9 @@ area; for a single area with the coverage below) and, for several areas,
 <code>&lt;label&gt;_mtc_coverage.png</code>. Tables are saved in
 <code>tables/</code>: <code>&lt;label&gt;_mtc.csv</code>,
 <code>&lt;label&gt;_mtc_trend.csv</code> and
-<code>&lt;label&gt;_mtc_species.csv</code>.</p>
+<code>&lt;label&gt;_mtc_species.csv</code>. With
+<code>by = "division"</code>, <code>_mtc</code> in the file names
+becomes <code>_mtc_divisions</code>.</p>
 </details>
 </div>
 <div class="section level2">
@@ -486,6 +505,31 @@ al. 2025).</p>
 </details>
 </div>
 <div class="section level2">
+<h2 id="按分区计算">按分区计算<a class="anchor" aria-label="anchor" href="#%E6%8C%89%E5%88%86%E5%8C%BA%E8%AE%A1%E7%AE%97"></a>
+</h2>
+<p><code>by = "division"</code>并使用按分区的渔获数据时（<code><a href="../../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>，例如地中海和黑海的GFCM分区；Tsikliras和Stergiou（2014）用的是地中海西部、中部和东部的GFCM数据），本函数对每个分区计算MTC，并与该分区的SST（<code>fao_area_sst(level = "division")</code>）比较。在FAO地图上没有边界的分区使用所在亚区的SST（例如34.1.9
+“Northern coastal, not
+known”使用34.1，51.3.1阿曼海使用51.3）；<code>sst_unit</code>列给出实际使用的单元。不是具体海域的代码（例如37.0.0
+Tunas、37.9.0 Not known）没有SST。在内置ERSST
+v5的2°网格上，有些分区只有几个网格（少于5个时，本函数会指出是哪些分区）；这些分区更适合使用分辨率更高的SST产品（给出其NetCDF文件的路径）。</p>
+<details class="fao-en"><summary>
+English
+</summary><p>With <code>by = "division"</code> and catch data by division
+(<code><a href="../../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>, e.g. the GFCM divisions of the
+Mediterranean and Black Sea; Tsikliras and Stergiou 2014 used GFCM data
+of the western, central and eastern Mediterranean), the MTC is
+calculated for each division and compared with the SST of the division
+(<code>fao_area_sst(level = "division")</code>). Divisions without a
+boundary on the FAO map use the SST of their subarea (e.g. 34.1.9
+“Northern coastal, not known” uses 34.1, 51.3.1 Oman Sea uses 51.3); the
+column <code>sst_unit</code> gives the unit used. Codes that are not
+places (e.g. 37.0.0 Tunas, 37.9.0 Not known) have no SST. On the 2° grid
+of the built-in ERSST v5, some divisions have only a few cells (the
+function says which); a finer SST product, given as the path of its
+NetCDF files, suits them better.</p>
+</details>
+</div>
+<div class="section level2">
 <h2 id="结果解读">结果解读<a class="anchor" aria-label="anchor" href="#%E7%BB%93%E6%9E%9C%E8%A7%A3%E8%AF%BB"></a>
 </h2>
 <p>MTC的变化可能来自海洋变暖或变冷，也可能来自捕捞物种、渔场、渔具、市场、管理和统计上报方式的变化。例如，在阿拉伯湾，带鱼（largehead
@@ -573,6 +617,9 @@ Register of Marine Species. <a href="https://www.marinespecies.org" class="exter
 <span><span class="fu"><a href="../../../reference/download_sst_data.html">download_sst_data</a></span><span class="op">(</span><span class="st">"cobe2"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../../../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, sst <span class="op">=</span> <span class="st">"cobe2"</span>, label <span class="op">=</span> <span class="st">"FAO34_cobe2"</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># The GFCM divisions of the Mediterranean and Black Sea</span></span>
+<span><span class="fu"><a href="../../../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="fu"><a href="../../../reference/load_fao_divisions.html">load_fao_divisions</a></span><span class="op">(</span><span class="st">"GFCM"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># The period studied by Cheung et al. (2013)</span></span>
 <span><span class="fu"><a href="../../../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, <span class="va">Year</span> <span class="op">&gt;=</span> <span class="fl">1970</span> <span class="op">&amp;</span> <span class="va">Year</span> <span class="op">&lt;=</span> <span class="fl">2006</span><span class="op">)</span>,</span>
 <span>                       label <span class="op">=</span> <span class="st">"FAO34_1970_2006"</span><span class="op">)</span></span>
@@ -588,7 +635,7 @@ Register of Marine Species. <a href="https://www.marinespecies.org" class="exter
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Hongyu Lin.</p>
+  <p>Developed by Hongyu Lin. Data: <a href="https://www.fao.org/home/en" class="external-link">FAO</a> · <a href="https://www.fao.org/faostat/en/#data" class="external-link">FAOSTAT</a> · <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a>. This package is not affiliated with FAO; the data come from FAO. 本包与FAO无关联，数据来源为FAO。</p>
 </div>
 
 <div class="pkgdown-footer-right">
