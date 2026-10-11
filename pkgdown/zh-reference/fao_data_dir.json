@@ -1,0 +1,22 @@
+{
+  "topic": "fao_data_dir",
+  "rd_md5": "8ef842b51bbb3f2e4b345eb0eb10e806",
+  "stale": false,
+  "en": {
+    "title": "Directory for Downloaded FAO Data",
+    "description": "Returns the directory where `download_fao_data()` and `download_fishbase_data()` save data\nand where all functions look for it: the folder set with `fao_settings(data_dir = ...)`, else\nthe environment variable `FAOFISHINGREPORT_DATA_DIR`, else the user data folder of R\n(`tools::R_user_dir(\"faofishingreport\", \"data\")`).",
+    "details": "To use the same folder in every R session, e.g. a cloud folder shared by several computers or\na team, add a line `FAOFISHINGREPORT_DATA_DIR=<folder>` to the `.Renviron` file in your home\nfolder (`file.path(Sys.getenv(\"HOME\"), \".Renviron\")`) and restart R.",
+    "value": "A character string with the directory path.",
+    "arguments": {},
+    "sections": {}
+  },
+  "zh": {
+    "title": "下载的FAO数据的保存目录",
+    "description": "返回`download_fao_data()`和`download_fishbase_data()`保存数据、所有函数查找数据的目录：优先使用`fao_settings(data_dir = ...)`设置的文件夹，其次是环境变量`FAOFISHINGREPORT_DATA_DIR`，否则为R的用户数据文件夹（`tools::R_user_dir(\"faofishingreport\", \"data\")`）。",
+    "details": "如果要在每个R会话中都使用同一个文件夹，例如由多台电脑或一个团队共享的云端文件夹，可以在用户主目录的`.Renviron`文件（`file.path(Sys.getenv(\"HOME\"), \".Renviron\")`）中加一行`FAOFISHINGREPORT_DATA_DIR=<文件夹>`，然后重启R。",
+    "value": "一个字符串，即该目录的路径。",
+    "arguments": {},
+    "sections": {},
+    "section_titles": {}
+  }
+}

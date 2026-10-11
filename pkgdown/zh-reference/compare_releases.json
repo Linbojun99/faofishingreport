@@ -1,0 +1,44 @@
+{
+  "topic": "compare_releases",
+  "rd_md5": "d9bd819a5190ee6c81b15161257f005e",
+  "stale": false,
+  "en": {
+    "title": "Compare Two FAO Data Releases",
+    "description": "This function compares two releases of the FAO Global Capture Production data record by record\n(country, species item, fishing area and year) and lists the historical data that were\nrevised between them: records whose catch changed, records added for years the older release\nalready covered, and records removed. It summarises the revisions by year and by country and\nshows how the total catch of each year changed.",
+    "details": "FAO revises earlier years when countries send corrected or more complete data (Garibaldi 2012).\nZeller and Pauly (2018) call \"presentist bias\" the practice of applying improvements in\nreporting to recent years only, without revising the earlier years, which makes the time series\nshow an increase that did not happen. Comparing releases shows which years and countries were\nrevised and how far back the revisions reach. No published study has compared successive\nFishStat releases record by record in this way; the comparison is a tool of this package, and\nthe two papers above give the background.\n\nReleases are compared on the names used by the package (matched through FAO codes when a\nrelease is downloaded). A record removed under one species item and added under another with\nthe same country, area, year and catch (e.g. when FAO renames or splits a species item) is\nmarked \"reclassified\" and is not counted as a revision of the catch. Download older releases\nfirst with `download_fao_data(version = ...)`; `check_fao_update()` lists them.",
+    "value": "Invisibly, a list with `by_year` (catch in both releases and the revisions of each\nyear), `by_country` (revisions by country, without reclassified records), `records`\n(every revised, added, removed or reclassified record) and `releases` (the two releases\ncompared).",
+    "arguments": {
+      "old, new": "The releases to compare, e.g. \"2025.1.0\" and \"2026.1.0\", or \"bundled\" for the\ndata bundled with the package. Default is the newest release available on this computer\nfor `new`, and the one before it for `old`.",
+      "area_name, country_name": "Optional FAO fishing areas and countries to compare. Default is\nNULL, all.",
+      "tolerance": "Changes of at most this many tonnes are ignored. Default is 0.5 (rounding).",
+      "top_n": "The number of countries with the largest revisions in the country chart. Default is 10.",
+      "plot": "A logical value. If TRUE (default), charts are saved in `figures/png/summary/`.",
+      "table": "A logical value. If TRUE (default), tables are saved in `tables/`.",
+      "lang": "The language of the chart text and names: \"en\" (English), \"zh\" (Chinese) or\n\"both\" (Chinese and English). Default is NULL, which uses the language set with\n`fao_settings()` (\"en\" unless changed).",
+      "pptx": "A logical value. If TRUE, charts are also saved as editable PowerPoint files in\n`figures/pptx/summary/`. Default is FALSE, which can be changed for all functions with\n`fao_settings(pptx = TRUE)`.",
+      "label": "The name used in the output file names. Default is the fishing area (or the\ncountry) of the data.",
+      "data_dir": "The directory where downloaded releases are stored. Default is `fao_data_dir()`."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "比较两个FAO数据版本",
+    "description": "本函数逐条记录（国家、物种条目、渔区和年份）比较FAO全球捕捞产量（Global Capture Production）数据的两个版本，并列出两个版本之间修订过的历史数据：产量有变化的记录、在旧版本已涵盖的年份中新增的记录，以及被删除的记录。它按年份和国家汇总这些修订，并显示每年总产量的变化。",
+    "details": "各国提交更正或更完整的数据后，FAO会修订往年的数据（Garibaldi，2012）。Zeller和Pauly（2018）把只在近年数据中采用报告方面的改进、而不修订往年数据的做法称为“现时偏差”（presentist bias），这种做法会使时间序列显示出实际上并未发生的增长。比较不同版本可以看出哪些年份和国家的数据被修订过，以及修订追溯到多早。尚无已发表的研究以这种方式逐条记录比较FishStat的相继版本；这一比较是本包提供的工具，上述两篇论文提供了背景。\n\n版本之间按本包使用的名称进行比较（下载版本时通过FAO代码匹配名称）。如果一条记录从一个物种条目下删除，又以相同的国家、渔区、年份和产量出现在另一个物种条目下（例如FAO重命名或拆分了某个物种条目），则标记为\"reclassified\"（重新归类），不计为产量的修订。请先用`download_fao_data(version = ...)`下载较早的版本；`check_fao_update()`可以列出这些版本。",
+    "value": "以不可见方式返回一个列表，包括`by_year`（两个版本中每年的产量及每年的修订）、`by_country`（按国家统计的修订，不含重新归类的记录）、`records`（每条修订、新增、删除或重新归类的记录）和`releases`（比较的两个版本）。",
+    "arguments": {
+      "old, new": "要比较的版本，例如\"2025.1.0\"和\"2026.1.0\"，或用\"bundled\"表示本包自带的数据。`new`默认为本机上可用的最新版本，`old`默认为它之前的一个版本。",
+      "area_name, country_name": "可选，要比较的FAO渔区和国家。默认为NULL，即全部。",
+      "tolerance": "变化量不超过这一吨数时忽略不计。默认为0.5（舍入误差）。",
+      "top_n": "国家图中显示的修订量最大的国家数。默认为10。",
+      "plot": "逻辑值。为TRUE（默认）时，图表保存在figures/png/summary/。",
+      "table": "逻辑值。为TRUE（默认）时，表格保存在tables/。",
+      "lang": "图表文字和名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL，即使用`fao_settings()`设置的语言（未更改时为\"en\"）。",
+      "pptx": "逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在figures/pptx/summary/。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。",
+      "label": "输出文件名中使用的名称。默认由`area_name`和`country_name`中给出的渔区和国家组成（两者都未给出时为\"fao\"）。",
+      "data_dir": "下载的数据版本的保存目录。默认为`fao_data_dir()`。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "topic": "cmsy_tables",
+  "rd_md5": "d86b8cb9ceba75645d1a44b23fe8b8ff",
+  "stale": false,
+  "en": {
+    "title": "Tables of CMSY++ Priors and Results for Reports",
+    "description": "This function makes the two tables that CMSY++ studies usually give: the priors of each stock\n(years used, r and k ranges, MSY prior, and the B/k priors of the first, intermediate and last\nyears, with their sources) and the results (r, k, MSY, Fmsy and Bmsy with their 95%\nconfidence limits, last-year B/Bmsy and F/Fmsy, Kobe probabilities and status). Values are\nrounded and ranges written as \"low-high\", with the column names in the chosen language.",
+    "details": "",
+    "value": "Invisibly, a list with the data frames `priors` and `results`. The results give the\nstatus in the two classes of FAO (2026) for catch-only results and in the five classes\nof Palomares et al. (2018).",
+    "arguments": {
+      "result": "The result of `cmsy_run()`.",
+      "stocks": "Optional stocks to put in the tables: `Stock` identifiers or species, by English or\nChinese FAO name, scientific name or FAO 3-alpha code. Default is NULL, all stocks that ran.",
+      "table": "A logical value. If TRUE (default), the tables are saved in `tables/cmsy/`.",
+      "lang": "The language of the column names and other names of the tables: \"en\" (English),\n\"zh\" (Chinese) or \"both\". Default is NULL, which uses the language set with\n`fao_settings()` (\"en\" unless changed).",
+      "silent": "A logical value. If TRUE, the messages on how the stocks were matched are not\nprinted. Default is FALSE, or the value set with `fao_settings(silent = )`."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "报告用的CMSY++先验参数表和结果表",
+    "description": "本函数生成CMSY++研究通常给出的两个表格：各种群的先验（所用年份、r和k的范围、MSY先验，以及第一年、中间年份和最后一年的B/k先验及其来源）和结果（r、k、MSY、Fmsy和Bmsy及其95%置信限，最后一年的B/Bmsy和F/Fmsy、Kobe象限概率和状态）。数值经过舍入，范围写作\"low-high\"（下限-上限），列名使用所选的语言。",
+    "details": "",
+    "value": "以不可见方式返回一个列表，包含数据框`priors`和`results`。结果表同时按FAO（2026）对仅基于渔获量结果的两级分类和Palomares等（2018）的五级分类给出状态。",
+    "arguments": {
+      "result": "`cmsy_run()`的结果。",
+      "stocks": "要列入表格的种群（可选）：`Stock`标识，或物种的FAO英文或中文名称、学名或FAO三字母代码。默认为NULL，即所有已运行的种群。",
+      "table": "逻辑值。为TRUE（默认）时，表格保存在tables/cmsy/。",
+      "lang": "表格列名和名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL，即使用`fao_settings()`设置的语言（未更改时为\"en\"）。",
+      "silent": "逻辑值。为TRUE时不输出种群匹配情况的提示信息。默认为FALSE，或`fao_settings(silent = )`设置的值。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

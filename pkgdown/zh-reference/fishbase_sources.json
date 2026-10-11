@@ -1,0 +1,26 @@
+{
+  "topic": "fishbase_sources",
+  "rd_md5": "a38b6e7633598531bd0c8a77051d94c3",
+  "stale": false,
+  "en": {
+    "title": "Sources, Licences and Matching Rules of the FishBase Data",
+    "description": "This function lists where the FishBase, SeaLifeBase and WoRMS data used by the package come\nfrom, under which licence, how to cite them, which tables are downloaded and what they hold,\nand the rules (with their published sources) by which `fishbase_match()` matches FAO species\nitems to them. `download_fishbase_data()` prints a summary of the same information.",
+    "details": "",
+    "value": "Invisibly, a data frame with one row per data source, table or rule: `type`, `item`,\n`description`, `source` (citation or licence) and `link`.",
+    "arguments": {
+      "print": "A logical value. If TRUE (default), the list is printed."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "FishBase数据的来源、许可协议和匹配规则",
+    "description": "本函数列出本包使用的FishBase、SeaLifeBase和WoRMS数据的来源、适用的许可协议、引用方式、下载哪些数据表及其内容，以及`fishbase_match()`把FAO物种条目与这些数据匹配时所依据的规则（及其已发表的出处）。`download_fishbase_data()`会输出同样信息的摘要。",
+    "details": "",
+    "value": "以不可见方式返回一个数据框，每个数据来源、数据表或规则一行：`type`、`item`、`description`、`source`（引用或许可协议）和`link`。",
+    "arguments": {
+      "print": "逻辑值。为TRUE（默认）时输出该列表。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

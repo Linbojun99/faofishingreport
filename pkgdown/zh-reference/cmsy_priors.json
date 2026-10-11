@@ -1,0 +1,30 @@
+{
+  "topic": "cmsy_priors",
+  "rd_md5": "4228c2e1e0d521279c2572afd199b855",
+  "stale": false,
+  "en": {
+    "title": "FishBase and SeaLifeBase Priors for CMSY++",
+    "description": "This function searches the built-in table of CMSY++ priors for the FAO species items: the\nresilience of the species and, where available, the prior range of r (\"Prior r = ..., 95% CL\n= ...\", from the \"Estimates based on models\" section of the FishBase or SeaLifeBase species\npage). The table works offline. Every row gives the sources of its values as links, so each\nvalue can be checked online (`open = TRUE` opens the species pages):\n\n- **url**: the FishBase or SeaLifeBase page of the species, which shows its resilience and prior r (or a search of the database when the species was not found);\n- **data_url**: the table of the FishBase or SeaLifeBase release the value was read from (`estimate` for prior r, `stocks` for resilience);\n- **rule_url**: the CMSY++ user guide, whose Tables 1 and 2 turn these values into the r range.",
+    "details": "Species can be given by their English or Chinese FAO name, both together as shown with\n`lang = \"both\"` (e.g. \"Chinese (English)\"), scientific name, FishBase valid name or FAO 3-alpha\ncode. Each value is first matched exactly (ignoring case); otherwise every species whose names\ncontain it is returned.\n\nThe table was made from FishBase and SeaLifeBase release 26.06 for the species-level items of\nthe FAO capture statistics. Each FAO scientific name is looked up in FishBase (fishes) or\nSeaLifeBase (other animals) as a valid species name, then as a synonym in the database's own\nsynonym table; ambiguous synonyms and genus, family or higher groups get no values. The\n`match_type` column tells how each item was matched.\n\nThe r range given to CMSY++ follows its user guide (Froese et al. 2021):\n\n- the 95% confidence limits of FishBase's prior r when the species has one (\"Alternatively and better, get the prior range of r from the section 'Estimates based on models'\", user guide Table 1);\n- otherwise the range of the species' resilience (user guide Table 2): High 0.6-1.5, Medium 0.2-0.8, Low 0.05-0.5, Very low 0.015-0.1;\n- otherwise none: the user guide gives no default, so the prior has to come from the user (e.g. r close to 2 M or 2 Fmsy, user guide Table 1); see `priors` in `cmsy_input()`.\n\nWhen FishBase lists several stocks of a species with different resilience, the value of its\nspecies-wide stock (the first stock record, shown on the species page) is used and the other\nvalues are given in `resilience_note`.",
+    "value": "A data frame with one row per FAO species item.",
+    "arguments": {
+      "species": "Optional names to search for: English, Chinese or scientific names, or FAO\n3-alpha codes, or parts of them (e.g. \"Atlantic cod\", \"Gadus morhua\", \"COD\", \"cod\" or the\nChinese name). Default is NULL, all rows.",
+      "open": "A logical value. If TRUE, the FishBase or SeaLifeBase pages of the rows found (at\nmost 10) are opened in the browser. Default is FALSE.",
+      "lang": "The language of the `species_name` column: \"en\" (English), \"zh\" (Chinese) or\n\"both\". Default is NULL, the language set with `fao_settings()`. The `species_en` and\n`species_zh` columns always give both names."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "来自FishBase和SeaLifeBase的CMSY++先验",
+    "description": "本函数在内置的CMSY++先验表中查找FAO物种条目：物种的恢复力，以及（如有）r的先验范围（\"Prior r = ..., 95% CL = ...\"，取自FishBase或SeaLifeBase物种页面的\"Estimates based on models\"部分）。该表可离线使用。每一行都以链接形式给出其数值的来源，因此每个数值都可以在网上核对（`open = TRUE`会打开物种页面）：\n\n- **url**：该物种的FishBase或SeaLifeBase页面，页面上显示其恢复力和先验r（未找到该物种时，为数据库的搜索页面）；\n- **data_url**：读取该数值所用的FishBase或SeaLifeBase版本的数据表（先验r来自`estimate`表，恢复力来自`stocks`表）；\n- **rule_url**：CMSY++用户手册，其表1和表2说明如何把这些数值换算为r的范围。",
+    "details": "物种可以用FAO英文名或中文名、`lang = \"both\"`时显示的中英文名（例如\"中文名 (英文名)\"）、学名、FishBase有效名或FAO三字母代码给出。每个值先按完整名称精确匹配（不区分大小写）；没有精确匹配时，返回名称中包含该值的所有物种。\n\n该表根据FishBase和SeaLifeBase 26.06版，为FAO捕捞统计中种一级的物种条目编制。每个FAO学名先在FishBase（鱼类）或SeaLifeBase（其他动物）中作为有效种名查找，再在该数据库自己的同物异名表中作为异名查找；有歧义的异名，以及属、科或更高分类阶元的条目都不赋值。`match_type`列说明每个条目是如何匹配的。\n\n提供给CMSY++的r范围按照其用户手册（Froese等，2021）确定：\n\n- 物种在FishBase中有先验r时，用先验r的95%置信限（\"Alternatively and better, get the prior range of r from the section 'Estimates based on models'\"，用户手册表1）；\n- 否则用该物种恢复力对应的范围（用户手册表2）：High（高）0.6-1.5，Medium（中）0.2-0.8，Low（低）0.05-0.5，Very low（很低）0.015-0.1；\n- 否则不给范围：用户手册没有给出默认值，因此先验必须由用户提供（例如r接近2M或2Fmsy，用户手册表1）；见`cmsy_input()`中的`priors`。\n\n当FishBase列出某物种的多个种群且其恢复力不同时，使用该物种全物种范围的种群（即第一条种群记录，显示在物种页面上）的值，其他值在`resilience_note`中给出。",
+    "value": "一个数据框，每个FAO物种条目一行。",
+    "arguments": {
+      "species": "可选，要查找的名称：英文名、中文名或学名，或FAO三字母代码，也可以是名称的一部分（例如\"Atlantic cod\"、\"Gadus morhua\"、\"COD\"、\"cod\"或中文名）。默认为NULL，即返回所有行。",
+      "open": "逻辑值。为TRUE时，在浏览器中打开找到的各行（最多10行）的FishBase或SeaLifeBase页面。默认为FALSE。",
+      "lang": "`species_name`列使用的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL，即使用`fao_settings()`设置的语言。`species_en`和`species_zh`两列始终同时给出两种名称。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

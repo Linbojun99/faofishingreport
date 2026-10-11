@@ -1,0 +1,22 @@
+{
+  "topic": "fao_sst_products",
+  "rd_md5": "3e25b0945cbcbf178eaed0d0245f76f4",
+  "stale": false,
+  "en": {
+    "title": "Sea Surface Temperature Products",
+    "description": "This function lists the sea surface temperature (SST) products that the package knows: the\nbuilt-in NOAA ERSST v5, and the products that `download_sst_data()` can download. For each it\ngives the provider, grid, first year, data sources, treatment of sea ice, licence, the\nreference to cite and the approximate download size. Any other gridded SST in NetCDF files can\nalso be used by giving its path (see `fao_area_sst()`).",
+    "details": "- **ersst5 (built in, default)**: NOAA Extended Reconstructed SST version 5 (Huang et al. 2017): 2° x 2°, monthly, from 1854. In situ observations only (ships and buoys of ICOADS, Argo floats from 1999).\n- **hadisst1**: Met Office Hadley Centre HadISST1 (Rayner et al. 2003): 1° x 1°, monthly, from 1870. In situ observations (Met Office Marine Data Bank, with GTS reports from 1982; ICOADS monthly medians for 1871-1995), reconstructed by reduced-space optimal interpolation. The dataset description carries a warning (10 March 2016) that problems found in an analysis by D. Chelton and C. Risien may limit its use where high resolution or SST gradients matter (see References).\n- **cobe2**: Japan Meteorological Agency COBE-SST2 (Hirahara et al. 2014): 1° x 1°, monthly, from 1850. In situ SST and sea-ice observations; satellite observations are used to reconstruct variability in regions with few observations.\n- **oisst21**: NOAA Optimum Interpolation SST version 2.1 (Huang et al. 2021): daily 0.25° x 0.25° analysis from September 1981 (monthly means from NOAA PSL; averaged to 1° by the package). Satellite (AVHRR), ship, buoy and Argo observations. Only from 1982.\n\nOnly the table of ERSST v5 comes with the package, to keep it small; its data are also the\nsmallest to download (about 0.8 MB per year, against 3 to 11 MB for the others). The web page\nof each product is given in the column `homepage`.",
+    "value": "A data frame with one row per product: `product` (the name used as `sst`), `name`,\n`provider`, `grid`, `first_year` (first complete year), `data_sources`, `sea_ice`, `licence`,\n`citation`, `doi`, `homepage` (web page of the product), `download` (server and dataset),\n`mb_per_year` (approximate download size) and `built_in`.",
+    "arguments": {},
+    "sections": {}
+  },
+  "zh": {
+    "title": "海表温度数据产品",
+    "description": "本函数列出本包支持的海表温度（SST）数据产品：包内自带的NOAA ERSST v5，以及`download_sst_data()`可以下载的产品。对每种产品，它给出提供方、网格、起始年份、数据来源、海冰的处理方式、许可协议、应引用的文献和大致的下载量。其他任何NetCDF文件中的网格化SST数据，也可以通过给出其路径来使用（见`fao_area_sst()`）。",
+    "details": "- **ersst5（包内自带，默认）**：NOAA Extended Reconstructed SST version 5（Huang等，2017）：2° x 2°，逐月，1854年起。仅使用现场观测（ICOADS的船舶和浮标资料，1999年起加入Argo浮标）。\n- **hadisst1**：英国气象局哈得来中心（Met Office Hadley Centre）的HadISST1（Rayner等，2003）：1° x 1°，逐月，1870年起。使用现场观测（Met Office Marine Data Bank，1982年起加入GTS报告；1871–1995年使用ICOADS月中位数），用降维空间最优插值（reduced-space optimal interpolation）重建。该数据集的说明中附有一则警告（2016年3月10日）：D. Chelton和C. Risien的分析发现了一些问题，在需要高分辨率或涉及SST梯度的场合，这些问题可能会限制它的使用（见参考文献）。\n- **cobe2**：日本气象厅（Japan Meteorological Agency）的COBE-SST2（Hirahara等，2014）：1° x 1°，逐月，1850年起。使用现场SST和海冰观测；在观测稀少的区域，用卫星观测重建其变化。\n- **oisst21**：NOAA Optimum Interpolation SST version 2.1（Huang等，2021）：1981年9月起的逐日0.25° x 0.25°分析场（逐月平均值取自NOAA PSL；本包将其平均到1°）。使用卫星（AVHRR）、船舶、浮标和Argo观测。仅从1982年开始。\n\n为了控制包的大小，只有ERSST v5的数据表随包提供；它的数据也是下载量最小的（每年约0.8 MB，其他产品为3到11 MB）。各产品的网页见`homepage`列。",
+    "value": "一个数据框，每种产品一行：`product`（作为`sst`使用的名称）、`name`（名称）、`provider`（提供方）、`grid`（网格）、`first_year`（第一个完整年份）、`data_sources`（数据来源）、`sea_ice`（海冰的处理）、`licence`（许可协议）、`citation`（引用文献）、`doi`、`homepage`（产品网页）、`download`（下载所用的服务器和数据集）、`mb_per_year`（大致的下载量）和`built_in`（是否随包自带）。",
+    "arguments": {},
+    "sections": {},
+    "section_titles": {}
+  }
+}

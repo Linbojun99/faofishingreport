@@ -1,0 +1,32 @@
+{
+  "topic": "cmsy_system",
+  "rd_md5": "6d98309b782e8ec358b0591484baa0c1",
+  "stale": false,
+  "en": {
+    "title": "Check the Computer for CMSY++ and Choose the Settings for It",
+    "description": "This function finds the operating system, R version and processor of the computer, checks\nwhether JAGS and the R packages that CMSY++ needs are installed, and shows the settings that\n`cmsy_run()` will use on this system.",
+    "details": "The CMSY++ code (`CMSY++16.R`) was written on Windows. Its user guide (step 12) tells Mac users\nto change every `windows()` call to `quartz()` and `antialias = \"cleartype\"` to\n`antialias = \"default\"`, and to comment out `windows()` on other systems. The code tests for\nWindows with `grepl(\"win\", sysname)`, which is also true for macOS (\"Darwin\"), so on a Mac it\ncalls `windows()` and stops. `cmsy_run()` makes these changes automatically for the system\nfound here, in a copy of the code; the bundled original is never changed. The other changes,\nmade on every system, are listed in the `changes` element.\n\nThe system is detected automatically. To use the settings of another system (e.g. when the\ndetection is wrong), set `os`, or set it for the session with\n`options(faofishingreport.cmsy_os = \"macos\")`.",
+    "value": "Invisibly, a list with the system (`os`, `os_detected`, `arch`, `r_version`), the\ninstalled `jags` and `rjags` versions, the `packages` table, the recommended `jags_installer`\nand `rjags_source`, the chart `device` and `antialias` settings, and the `changes`\nmade to the CMSY++ code.",
+    "arguments": {
+      "os": "The operating system whose settings are used: \"auto\" (default, detect it),\n\"windows\", \"macos\" or \"linux\".",
+      "device": "Where CMSY++ draws its charts before saving them as JPEG files: \"file\"\n(default), an off-screen device that works on every system and in batch runs, or\n\"screen\", the system's own window (`windows()`, `quartz()` or `x11()`).",
+      "jags": "The JAGS version to recommend: \"recommended\" (default; the newest JAGS 4 release\nbuilt for this R version, which works with rjags from CRAN), \"latest\" (JAGS 5.0.0, which\nneeds rjags 5-x from SourceForge) or a version number such as \"4.3.2\".",
+      "silent": "A logical value. If TRUE, no summary is printed. Default is FALSE, or the value\nset with `fao_settings(silent = )`."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "检查本机的CMSY++运行环境并选择相应设置",
+    "description": "本函数查明电脑的操作系统、R版本和处理器，检查是否已安装JAGS和CMSY++所需的R包，并显示`cmsy_run()`在该系统上将使用的设置。",
+    "details": "CMSY++代码（`CMSY++16.R`）是在Windows上编写的。其用户手册（第12步）要求Mac用户把所有`windows()`调用改为`quartz()`，把`antialias = \"cleartype\"`改为`antialias = \"default\"`，在其他系统上则把`windows()`注释掉。代码用`grepl(\"win\", sysname)`判断是否为Windows，而这一判断在macOS（\"Darwin\"）上也为真，所以在Mac上代码会调用`windows()`并报错停止。`cmsy_run()`会针对本函数检测到的系统，在代码副本中自动完成这些修改；包内的原始代码始终不变。在所有系统上都会进行的其他修改也列在`changes`元素中。\n\n系统是自动检测的。如需使用其他系统的设置（例如检测有误时），可以设置`os`，或用`options(faofishingreport.cmsy_os = \"macos\")`为本次R会话设置。",
+    "value": "以不可见方式返回一个列表，包括系统信息（`os`、`os_detected`、`arch`、`r_version`）、已安装的`jags`和`rjags`版本、`packages`表、推荐的`jags_installer`和`rjags_source`、图表的`device`和`antialias`设置，以及对CMSY++代码所做的修改`changes`。",
+    "arguments": {
+      "os": "采用哪个操作系统的设置：\"auto\"（默认，自动检测）、\"windows\"、\"macos\"或\"linux\"。",
+      "device": "CMSY++把图表保存为JPEG文件之前在哪里绘制图表：\"file\"（默认），即在所有系统上和批处理运行中都能使用的离屏绘图设备；或\"screen\"，即系统自己的绘图窗口（`windows()`、`quartz()`或`x11()`）。",
+      "jags": "推荐的JAGS版本：\"recommended\"（默认；针对当前R版本编译的最新JAGS 4版本，可与CRAN上的rjags配合使用）、\"latest\"（JAGS 5.0.0，需要SourceForge上的rjags 5-x）或版本号，例如\"4.3.2\"。",
+      "silent": "逻辑值。为TRUE时不输出汇总信息。默认为FALSE，或`fao_settings(silent = )`设置的值。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

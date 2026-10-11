@@ -1,0 +1,38 @@
+{
+  "topic": "coastal_distant",
+  "rd_md5": "2b99a618f3015b2ad931cf2522e4075c",
+  "stale": false,
+  "en": {
+    "title": "Catch by Coastal Countries and Distant-Water Fleets",
+    "description": "This function splits the catch in each FAO marine fishing area between countries that border\nthe area (coastal countries) and countries that do not (distant-water fleets), and shows the\nmain distant-water countries over time.",
+    "details": "A country is coastal to an area if its land, including overseas territories, lies within 20 km\nof the FAO area boundary (see `data-raw/build_coastal_countries.R`). Former countries such as\nthe USSR take the coastline of their successor states. Catch by \"Other nei\" is shown as unknown.\nInland fishing areas are left out.",
+    "value": "Invisibly, a list with `yearly` (catch by coastal and distant-water countries),\n`distant` (catch by distant-water country) and `table`.",
+    "arguments": {
+      "area_data": "FAO catch data: `fishing_area_data()$area_data`, or any subset of\n`load_fao_data()` (e.g. one country, or several fishing areas).",
+      "top_n": "The number of distant-water countries shown separately. Default is 8.",
+      "plot": "A logical value. If TRUE (default), charts are saved in `figures/png/summary/`.",
+      "table": "A logical value. If TRUE (default), tables are saved in `tables/`.",
+      "lang": "The language of the chart text and names: \"en\" (English), \"zh\" (Chinese) or\n\"both\" (Chinese and English). Default is NULL, which uses the language set with\n`fao_settings()` (\"en\" unless changed).",
+      "pptx": "A logical value. If TRUE, charts are also saved as editable PowerPoint files in\n`figures/pptx/summary/`. Default is FALSE, which can be changed for all functions with\n`fao_settings(pptx = TRUE)`.",
+      "label": "The name used in the output file names. Default is the fishing area (or the\ncountry) of the data."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "沿岸国与远洋捕捞国的渔获量",
+    "description": "该函数把每个FAO海洋渔区的渔获量分为两部分：濒临该渔区的国家（沿岸国）和不濒临该渔区的国家（远洋捕捞船队），并展示主要远洋捕捞国的渔获量随时间的变化。",
+    "details": "若一个国家的陆地（包括海外领土）位于FAO渔区边界20 km以内，即视为该渔区的沿岸国（见`data-raw/build_coastal_countries.R`）。苏联等已不存在的国家采用其继承国的海岸线。以\"Other nei\"上报的渔获量显示为未知。内陆渔区不纳入分析。",
+    "value": "以不可见方式返回一个列表，包含`yearly`（沿岸国和远洋捕捞国的渔获量）、`distant`（各远洋捕捞国的渔获量）和`table`。",
+    "arguments": {
+      "area_data": "FAO渔获数据：`fishing_area_data()$area_data`，或`load_fao_data()`的任意子集（例如一个国家，或几个渔区）。",
+      "top_n": "单独显示的远洋捕捞国数量。默认为8。",
+      "plot": "逻辑值。为TRUE（默认）时，图表保存在figures/png/summary/。",
+      "table": "逻辑值。为TRUE（默认）时，表格保存在tables/。",
+      "lang": "图表文字和名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL，即使用`fao_settings()`设置的语言（未更改时为\"en\"）。",
+      "pptx": "逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在figures/pptx/summary/。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。",
+      "label": "输出文件名中使用的名称。默认为数据所属的渔区（或国家）。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

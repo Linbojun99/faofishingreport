@@ -1,0 +1,32 @@
+{
+  "topic": "fishbase_table",
+  "rd_md5": "5cdfa9db55f402548a6d6ba594ea3e13",
+  "stale": false,
+  "en": {
+    "title": "Read a FishBase or SeaLifeBase Table",
+    "description": "This function returns one table of FishBase or SeaLifeBase, such as \"species\" (names, habitat,\nmaximum length, ...) or \"estimate\" (trophic level, temperature preference, ...). It is read\nfrom the copy downloaded on this computer:\n\n- when the computer is online, the newest release is looked up first, and the table is downloaded if it is not on this computer yet;\n- when the computer is offline (or with `fao_settings(online = FALSE)`), the newest downloaded release that has the table is used, with a message.\n\nReleases are fixed snapshots, so a downloaded table is identical to the one online.",
+    "details": "",
+    "value": "A data frame, with the attributes `fishbase_server`, `fishbase_version` and `source_url`.",
+    "arguments": {
+      "table": "The table name, e.g. \"species\", \"estimate\", \"ecology\", \"synonyms\" or \"families\".\n`check_fishbase_update()` shows how many tables a release has; see the rfishbase\ndocumentation for what they contain.",
+      "server": "\"fishbase\" (default) or \"sealifebase\".",
+      "version": "The release, e.g. \"26.06\". Default is \"latest\".",
+      "data_dir": "The directory where downloaded data is stored. Default is `fao_data_dir()`."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "读取FishBase或SeaLifeBase数据表",
+    "description": "本函数返回FishBase或SeaLifeBase的一张数据表，例如\"species\"（名称、栖息类型、最大体长……）或\"estimate\"（营养级、温度偏好……）。数据表从本机已下载的副本读取：\n\n- 电脑联网时，先查询网上最新的版本；本机还没有这张表时，先下载；\n- 电脑离线时（或设置了`fao_settings(online = FALSE)`时），使用本机已下载、且含有这张表的最新版本，并给出提示信息。\n\n各版本都是固定的快照，所以下载的数据表与网上的完全相同。",
+    "details": "",
+    "value": "一个数据框，带有属性`fishbase_server`、`fishbase_version`和`source_url`。",
+    "arguments": {
+      "table": "表名，例如\"species\"、\"estimate\"、\"ecology\"、\"synonyms\"或\"families\"。`check_fishbase_update()`可以显示一个版本有多少张数据表；各表的内容见rfishbase包的文档。",
+      "server": "\"fishbase\"（默认）或\"sealifebase\"。",
+      "version": "版本，例如\"26.06\"。默认为\"latest\"。",
+      "data_dir": "下载数据的保存目录。默认为`fao_data_dir()`。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

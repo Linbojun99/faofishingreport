@@ -1,0 +1,32 @@
+{
+  "topic": "download_fao_data",
+  "rd_md5": "39a01d86806e66aa575479fda0c9c4ea",
+  "stale": false,
+  "en": {
+    "title": "Download an FAO Global Capture Production Release",
+    "description": "This function downloads a Global Capture Production release from FAO,\nconverts it to the same long format as the data bundled with the package\n(`Global_Production_long`), and saves it as an `.rds` file in `data_dir`.",
+    "details": "Country and species names are matched through their FAO codes to the names\nused by the bundled data, so the result works with the existing analysis\nfunctions and Chinese name tables. Only quantities in tonnes live weight are\nkept, as in the bundled data.",
+    "value": "Invisibly, a data frame with the columns of `Global_Production_long`.",
+    "arguments": {
+      "version": "The release to download, e.g. \"2026.1.0\". Default is \"latest\".",
+      "data_dir": "The directory where the converted data is saved. Default is `fao_data_dir()`.",
+      "overwrite": "A logical value. If FALSE (default), a release that was already\ndownloaded is read from disk instead of being downloaded again.",
+      "quiet": "A logical value. If TRUE, progress messages are not printed. Default is FALSE."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "下载FAO全球捕捞产量数据的某个版本",
+    "description": "该函数从FAO下载全球捕捞产量（Global Capture Production）的某个版本，将其转换为与包自带数据（`Global_Production_long`）相同的长格式，并以`.rds`文件保存在`data_dir`中。",
+    "details": "国家和物种名称通过其FAO代码匹配到包自带数据所用的名称，因此结果可以直接用于现有的分析函数和中文名称表。与包自带数据一样，只保留以活重吨计的产量。",
+    "value": "以不可见方式返回一个数据框，其列与`Global_Production_long`相同。",
+    "arguments": {
+      "version": "要下载的版本，如\"2026.1.0\"。默认为\"latest\"，即线上最新版本。FAO服务器上没有的版本会报错，并列出可用的版本。",
+      "data_dir": "转换后数据的保存目录。默认为`fao_data_dir()`。",
+      "overwrite": "逻辑值。为FALSE（默认）时，已经下载过的版本直接从磁盘读取，不再重新下载；为TRUE时重新下载。",
+      "quiet": "逻辑值。为TRUE时不显示进度信息。默认为FALSE。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

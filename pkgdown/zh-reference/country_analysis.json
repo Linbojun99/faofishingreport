@@ -1,0 +1,48 @@
+{
+  "topic": "country_analysis",
+  "rd_md5": "2f4b8d0a8f34721b4e14d8dedbadd1c9",
+  "stale": false,
+  "en": {
+    "title": "Analyze and Plot the Global Catch of a Country",
+    "description": "This function takes a country name, analyzes the catch of that country in all\nFAO fishing areas, and identifies the top species and fishing areas\nbased on production within the specified rank range.",
+    "details": "",
+    "value": "A list with `country_species_ranked` (yearly catch of the ranked species),\n`country_species_ranked_coefs_data` (periods between breakpoints of each species),\n`table` (catch by species and FAO area), `country_species_area_total` (total catch of\neach species in each area) and `country_yearly_area_production` (yearly catch in each\narea). Charts and tables are saved if `plot` and `table` are TRUE.",
+    "arguments": {
+      "country_name": "A string specifying the country to be analyzed.",
+      "rank_range": "A numeric vector of length 2 specifying the rank range of species to be analyzed.",
+      "plot": "A logical value indicating whether to generate and save plots.",
+      "table": "A logical value indicating whether to generate and save tables",
+      "timeseries_analysis": "A logical value indicating whether to analysis timeseries.",
+      "time_analysis_text_displacement": "The number of years after the first year of data at which\nthe percentage labels are placed in the faceted time series plot. Default is 10.",
+      "h_value": "The minimum segment size passed to `strucchange::breakpoints()`: a fraction of\nthe series length (default 0.15) or a number of years.",
+      "ZH": "A logical value. If TRUE, chart text and names are in Chinese. Default is FALSE. `ZH = TRUE` is the same as `lang = \"zh\"`.",
+      "fill_scale": "The colour palette of the map. Default is NULL, which uses `map_palette` of\n`fao_settings()` (\"deep-orange\" unless changed); see `?fao_settings` for the choices.",
+      "lang": "The language of the chart text and names: \"en\" (English), \"zh\" (Chinese) or \"both\"\n(Chinese and English). Default is NULL, which uses \"zh\" if `ZH = TRUE`, and otherwise the language\nset with `fao_settings()` (\"en\" unless changed).",
+      "data_version": "The FAO data release to use: \"latest\" (default) uses the newest of the\nreleases downloaded with `download_fao_data()` and the data bundled with the package;\n\"bundled\" uses the data bundled with the package; or a release such as \"2026.1.0\".",
+      "pptx": "A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are\nalso saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be\nchanged for all functions with `fao_settings(pptx = TRUE)`."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "分析并绘制某个国家的全球渔获量",
+    "description": "该函数接收一个国家名称，分析该国在全部FAO渔区的渔获量，并按产量找出排名在指定范围内的主要物种和渔区（排名范围`rank_range`只用于物种；渔区图表包括该国作业的全部渔区）。",
+    "details": "",
+    "value": "一个列表，包含`country_species_ranked`（排名范围内各物种逐年的产量）、`country_species_ranked_coefs_data`（各物种相邻突变点之间的时段）、`table`（按物种和FAO渔区统计的产量）、`country_species_area_total`（各物种在各渔区的总产量）和`country_yearly_area_production`（各渔区逐年的产量）。`plot`和`table`为TRUE时保存图表和表格。",
+    "arguments": {
+      "country_name": "字符串，要分析的国家（FAO的英文国家名，与数据中一致，如\"Morocco\"）。",
+      "rank_range": "长度为2的数值向量，指定要分析的物种的排名范围（按该国历年总产量排序）。默认为`c(1, 10)`。",
+      "plot": "逻辑值，是否生成并保存图表。默认为TRUE。",
+      "table": "逻辑值，是否生成表格并保存到`tables/`目录。默认为TRUE。",
+      "timeseries_analysis": "逻辑值，决定物种分面图的内容：为TRUE（默认）时显示线性趋势线和突变点（相邻突变点之间各时段的平均产量）；为FALSE时显示平滑（loess）曲线。",
+      "time_analysis_text_displacement": "分面时间序列图中占比标签的位置：标签放在数据首个年份（所选物种首次有产量的年份）之后第几年处。默认为10。",
+      "h_value": "突变点检验（`strucchange::breakpoints()`的参数`h`）中相邻突变点之间时段的最短长度：小于1时为占序列长度的比例，大于等于1时为年数。默认为0.15，即每个时段至少占序列长度的15%。",
+      "ZH": "逻辑值。为TRUE时，图表文字和名称使用中文。默认为FALSE。`ZH = TRUE`等同于`lang = \"zh\"`。",
+      "fill_scale": "地图的色板。默认为NULL，即使用`fao_settings()`的`map_palette`（未更改时为\"deep-orange\"）；可选的色板见`?fao_settings`。",
+      "lang": "图表文字和名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL：`ZH = TRUE`时使用\"zh\"，否则使用`fao_settings()`设置的语言（未更改时为\"en\"）。",
+      "data_version": "所用的FAO数据版本：\"latest\"（默认）为用`download_fao_data()`下载的各版本与包自带数据中最新的一个；\"bundled\"为包自带的数据；也可以指定具体版本，如\"2026.1.0\"。",
+      "pptx": "逻辑值。图表总是以PNG格式保存在figures/png/；为TRUE时还另存为可编辑的PowerPoint文件，保存在figures/pptx/。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

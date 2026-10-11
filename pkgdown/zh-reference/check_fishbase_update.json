@@ -1,0 +1,30 @@
+{
+  "topic": "check_fishbase_update",
+  "rd_md5": "9895010ae87d28b15f856999929f5f82",
+  "stale": false,
+  "en": {
+    "title": "Check for the Latest FishBase and SeaLifeBase Releases",
+    "description": "This function lists the FishBase and SeaLifeBase releases published online (the static\nsnapshots used by the rfishbase package) and compares the newest with the releases downloaded\non this computer.",
+    "details": "",
+    "value": "Invisibly, a data frame with one row per server: newest online release (NA when\noffline), newest downloaded release, number of tables online and downloaded, and whether an\nupdate is available (`update_available`: TRUE when nothing has been downloaded or a newer\nrelease is online; a release of which only the tables the package needs were downloaded is\nup to date).",
+    "arguments": {
+      "server": "\"fishbase\", \"sealifebase\" or both (default).",
+      "data_dir": "The directory where downloaded data is stored. Default is `fao_data_dir()`.",
+      "quiet": "A logical value. If TRUE, no message is printed. Default is FALSE."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "检查FishBase和SeaLifeBase的最新版本",
+    "description": "本函数列出网上发布的FishBase和SeaLifeBase版本（rfishbase包使用的静态快照），并把其中最新的版本与本机已下载的版本进行比较。",
+    "details": "",
+    "value": "以不可见方式返回一个数据框，每个数据库（`server`）一行：网上最新的版本（离线时为NA）、本机已下载的最新版本、网上和本机已下载的数据表数量，以及是否有可用的更新（`update_available`：本机没有已下载的版本或网上有更新的版本时为TRUE；某个版本只下载了本包所需的数据表时，也视为最新）。",
+    "arguments": {
+      "server": "\"fishbase\"、\"sealifebase\"或两者（默认）。",
+      "data_dir": "下载数据的保存目录。默认为`fao_data_dir()`。",
+      "quiet": "逻辑值。为TRUE时不显示任何信息。默认为FALSE。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

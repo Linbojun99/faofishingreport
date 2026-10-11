@@ -1,0 +1,28 @@
+{
+  "topic": "load_fao_data",
+  "rd_md5": "8d88c170937af17501fa08f910a1b74a",
+  "stale": false,
+  "en": {
+    "title": "Load FAO Global Capture Production Data",
+    "description": "This function loads a release downloaded with `download_fao_data()`, or the\ndata bundled with the package.",
+    "details": "",
+    "value": "A data frame with the columns of `Global_Production_long`.",
+    "arguments": {
+      "version": "The release to load, e.g. \"2026.1.0\". Default is \"latest\", the\nnewest of the downloaded releases and the bundled data. Use \"bundled\" for the\ndata bundled with the package.",
+      "data_dir": "The directory where downloaded releases are stored. Default is `fao_data_dir()`."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "读取FAO全球捕捞产量数据",
+    "description": "该函数读取用`download_fao_data()`下载的某个版本，或包自带的数据。",
+    "details": "",
+    "value": "一个数据框，其列与`Global_Production_long`相同。",
+    "arguments": {
+      "version": "要读取的版本，如\"2026.1.0\"。默认为\"latest\"，即已下载的各版本与包自带数据中最新的一个。使用\"bundled\"读取包自带的数据。指定的版本尚未下载时会报错。",
+      "data_dir": "下载的数据版本的保存目录。默认为`fao_data_dir()`。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

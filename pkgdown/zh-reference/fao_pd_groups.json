@@ -1,0 +1,22 @@
+{
+  "topic": "fao_pd_groups",
+  "rd_md5": "60d17005f57d571c3fd395ae0587d107",
+  "stale": false,
+  "en": {
+    "title": "Pelagic and Demersal Species Groups",
+    "description": "This function lists the ISSCAAP species groups of marine fishes and crustaceans, and how each\nis counted by the two definitions of `pelagic_demersal()`: \"pelagic\", \"demersal\" or \"not\ncounted\". ISSCAAP groups not listed (molluscs, diadromous and freshwater fishes, mammals,\nplants, other invertebrates) are not counted by either definition.",
+    "details": "",
+    "value": "A data frame with one row per group: `isscaap_code`, `isscaap_en` (the name used in\nthe FAO data), `de_leiva_moreno` and `grainger_garcia`.",
+    "arguments": {},
+    "sections": {}
+  },
+  "zh": {
+    "title": "中上层与底层物种类群",
+    "description": "本函数列出海洋鱼类和甲壳类的ISSCAAP物种类群，以及`pelagic_demersal()`的两种定义对每个类群的计法：\"pelagic\"（中上层）、\"demersal\"（底层）或\"not counted\"（不计入）。未列出的ISSCAAP类群（软体动物、洄游性鱼类和淡水鱼类、哺乳动物、植物、其他无脊椎动物）在两种定义中都不计入。",
+    "details": "",
+    "value": "一个数据框，每个类群一行：`isscaap_code`、`isscaap_en`（FAO数据中使用的名称）、`de_leiva_moreno`和`grainger_garcia`。",
+    "arguments": {},
+    "sections": {},
+    "section_titles": {}
+  }
+}

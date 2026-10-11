@@ -1,0 +1,28 @@
+{
+  "topic": "fao_data_info",
+  "rd_md5": "d9ef6633399ff33b7e8afe3aa233b557",
+  "stale": false,
+  "en": {
+    "title": "Information on the FAO Data Used",
+    "description": "Shows which FAO Global Capture Production release the analyses use (the release that\n`load_fao_data()` loads), when FAO published it, the years it covers, where it was\ndownloaded from, its licence and a citation, e.g. for the data section of a report.",
+    "details": "",
+    "value": "A list of class `fao_data_info` with `release`, `release_date` (publication date\non the FAO website), `years`, `source` (\"bundled\" with the package or \"downloaded\"), `url`,\n`download_date`, `licence`, `terms` and `citation`. Printing it shows a summary.",
+    "arguments": {
+      "version": "The release to load, e.g. \"2026.1.0\". Default is \"latest\", the\nnewest of the downloaded releases and the bundled data. Use \"bundled\" for the\ndata bundled with the package.",
+      "data_dir": "The directory where downloaded releases are stored. Default is `fao_data_dir()`."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "所用FAO数据的信息",
+    "description": "显示分析所用的FAO全球捕捞产量数据版本（即`load_fao_data()`读取的版本）、FAO发布该版本的日期、数据覆盖的年份、下载地址、许可证和引用格式，例如用于报告的数据部分。",
+    "details": "",
+    "value": "一个`fao_data_info`类的列表，包含`release`（版本号）、`release_date`（在FAO网站上的发布日期）、`years`（首末年份）、`source`（\"bundled\"表示包自带，\"downloaded\"表示已下载）、`url`（下载地址）、`download_date`（下载日期）、`licence`（许可证）、`terms`（使用条款）和`citation`（引用格式）。打印该对象时显示一份摘要。",
+    "arguments": {
+      "version": "要读取的版本，如\"2026.1.0\"。默认为\"latest\"，即已下载的各版本与包自带数据中最新的一个。使用\"bundled\"读取包自带的数据。指定的版本尚未下载时会报错。",
+      "data_dir": "下载的数据版本的保存目录。默认为`fao_data_dir()`。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

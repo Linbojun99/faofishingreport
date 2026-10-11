@@ -1,0 +1,44 @@
+{
+  "topic": "catch_shocks",
+  "rd_md5": "2b73ca2ae45ee29e82b1df323815654d",
+  "stale": false,
+  "en": {
+    "title": "Catch Shocks",
+    "description": "This function finds the years in which catch fell abruptly (\"shocks\") in each catch series,\nwith the method of Cottrell et al. (2019) or Gephart et al. (2017), and counts how often shocks\noccur by year, by FAO fishing area, by country or by species group.",
+    "details": "Each series (e.g. the catch of one country in one FAO area) is smoothed, and the residuals from\nthe smooth are regressed on the residuals of the year before (a lag-1 regression). Years whose\nCook's distance in that regression exceeds a threshold are candidate shocks; only those in which\ncatch fell below the level of the preceding years are kept:\n\n- **\"cottrell2019\" (default)**: LOESS with span 0.6, Cook's distance above 0.3; the loss is measured against the median catch of the previous 7 years, so the first 7 years of a series cannot be shocks (Cottrell et al. 2019, Methods, and their code at <https://github.com/cottrellr/shocks>).\n- **\"gephart2017\"**: lowess with span 2/3, Cook's distance above 0.35; the loss is measured against the mean catch of the previous 5 years (Gephart et al. 2017, section 2, and their code at <https://github.com/jagephart/Shock_Detection>).\n\nA shock has recovered in the first later year in which catch is back to at least 95% of that\nbaseline. The yearly shock frequency is the number of shocks in a year divided by the number of\nseries with catch in that year (Cottrell et al. 2019); the shock rate of an area, country or\nspecies group is the number of shocks divided by the number of its series (Gephart et al. 2017).\n\nBoth studies analysed national totals (all species and areas of a country); with `by = \"country\"` and the data of all areas (`load_fao_data()`) the series are the same. Neither study\nstates a minimum series length; `min_years` is a choice of this package, as is ending the series\nof countries that no longer exist (e.g. the USSR) in their last year with catch, so that the end\nof a country is not counted as a shock. Highly variable series\n(e.g. Peruvian anchoveta) may show no shocks because large changes are usual in them (Gephart et\nal. 2017).",
+    "value": "Invisibly, a list with `shocks` (one row per shock: year, catch, baseline, loss, Cook's\ndistance and years to recovery), `by_year` (number of series, shocks and shock frequency\nin each year), `by_group` (shock rate by area, country, species group and so on) and\n`series` (the series analysed).",
+    "arguments": {
+      "area_data": "FAO catch data: `fishing_area_data()$area_data`, or any subset of\n`load_fao_data()` (e.g. one country, or several fishing areas).",
+      "by": "What a series is: one or more of \"country\", \"area\" and \"species\". Default is\n`c(\"country\", \"area\")`: the catch of each country in each FAO area.",
+      "method": "\"cottrell2019\" (default) or \"gephart2017\".",
+      "min_years": "Series with catch in fewer years are left out. Default is 20.",
+      "top_n": "The number of series with the largest catch shown in the timeline chart. Default is 25.",
+      "plot": "A logical value. If TRUE (default), charts are saved in `figures/png/summary/`.",
+      "table": "A logical value. If TRUE (default), tables are saved in `tables/`.",
+      "lang": "The language of the chart text and names: \"en\" (English), \"zh\" (Chinese) or\n\"both\" (Chinese and English). Default is NULL, which uses the language set with\n`fao_settings()` (\"en\" unless changed).",
+      "pptx": "A logical value. If TRUE, charts are also saved as editable PowerPoint files in\n`figures/pptx/summary/`. Default is FALSE, which can be changed for all functions with\n`fao_settings(pptx = TRUE)`.",
+      "label": "The name used in the output file names. Default is the fishing area (or the\ncountry) of the data."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "渔获骤变",
+    "description": "本函数用Cottrell等（2019）或Gephart等（2017）的方法，找出每条渔获量序列中渔获量骤然下降的年份（“骤变”），并按年份、FAO渔区、国家或物种类群统计骤变发生的频繁程度。",
+    "details": "每条序列（例如一个国家在一个FAO渔区的渔获量）先做平滑，再把平滑后的残差对前一年的残差做回归（滞后1期回归）。在该回归中库克距离（Cook's distance）超过阈值的年份为候选骤变；其中只保留渔获量低于前几年水平的年份：\n\n- **\"cottrell2019\"（默认）**：LOESS平滑，span为0.6，库克距离大于0.3；损失量以前7年渔获量的中位数为基线计算，因此序列的前7年不可能出现骤变（Cottrell等，2019，Methods部分；其代码见<https://github.com/cottrellr/shocks>）。\n- **\"gephart2017\"**：lowess平滑，span为2/3，库克距离大于0.35；损失量以前5年渔获量的平均值为基线计算（Gephart等，2017，第2节；其代码见<https://github.com/jagephart/Shock_Detection>）。\n\n骤变之后，渔获量首次回到该基线至少95%的那一年即为恢复。逐年骤变频率是某年的骤变次数除以该年有渔获量的序列数（Cottrell等，2019）；一个渔区、国家或物种类群的骤变率是其骤变次数除以其序列数（Gephart等，2017）。\n\n两项研究分析的都是国家总量（一个国家所有物种和所有渔区的合计）；使用`by = \"country\"`和全部渔区的数据（`load_fao_data()`）时，序列与之相同。两项研究都没有规定序列的最短长度；`min_years`是本包的设定。同样由本包设定的是：已不存在的国家（例如苏联）的序列在其最后一个有渔获量的年份结束，以免把国家的消失计为一次骤变。波动很大的序列（例如秘鲁鳀）可能检测不到骤变，因为大幅变化在这类序列中很常见（Gephart等，2017）。",
+    "value": "以不可见方式返回一个列表，包括`shocks`（每次骤变一行：年份、渔获量、基线、损失量、库克距离和恢复所需的年数）、`by_year`（每年的序列数、骤变次数和骤变频率）、`by_group`（按渔区、国家、物种类群等统计的骤变率）和`series`（分析的序列）。",
+    "arguments": {
+      "area_data": "FAO渔获数据：`fishing_area_data()$area_data`，或`load_fao_data()`的任意子集（例如一个国家，或几个渔区）。",
+      "by": "一条序列由什么构成：\"country\"、\"area\"和\"species\"中的一个或多个。默认为`c(\"country\", \"area\")`，即每个国家在每个FAO渔区的渔获量。",
+      "method": "\"cottrell2019\"（默认）或\"gephart2017\"。",
+      "min_years": "有渔获量的年数少于此值的序列不纳入分析。默认为20。",
+      "top_n": "时间线图中显示的渔获量最大的序列数。默认为25。",
+      "plot": "逻辑值。为TRUE（默认）时，图表保存在figures/png/summary/。",
+      "table": "逻辑值。为TRUE（默认）时，表格保存在tables/。",
+      "lang": "图表文字和名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL，即使用`fao_settings()`设置的语言（未更改时为\"en\"）。",
+      "pptx": "逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在figures/pptx/summary/。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。",
+      "label": "输出文件名中使用的名称。默认为数据所属的渔区（或国家）。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "topic": "fishbase_match",
+  "rd_md5": "cf37422df0144b7f67c9ec0f03eca320",
+  "stale": false,
+  "en": {
+    "title": "Match FAO Species Items to FishBase and SeaLifeBase",
+    "description": "This function goes through the FAO species items of the data one by one, looks each up in\nFishBase (fishes) or SeaLifeBase (other aquatic animals and plants) by the scientific name in\nthe FAO species list, and returns the matched record with its trophic level, temperature\npreference, habitat, maximum length and vulnerability to fishing. Only matches that follow a\npublished rule are made; every row gives the rule and its source, and links to the FishBase,\nSeaLifeBase or WoRMS pages, so each match can be checked and, if wrong, corrected (see\nCorrections). Items that cannot be matched by these rules are not filled in: they are marked\nas failed, with links for searching the name online.",
+    "details": "",
+    "value": "Invisibly, a data frame with one row per FAO species item.",
+    "arguments": {
+      "area_data": "FAO catch data: `fishing_area_data()$area_data`, or any subset of\n`load_fao_data()`. Default is NULL, all species in `load_fao_data()`.",
+      "version": "The FishBase and SeaLifeBase release, e.g. \"26.06\". Default is \"latest\": the\nnewest online release when online (its tables are downloaded as needed), else the newest\ndownloaded release, else the table built into the package. \"builtin\" always uses the\nbuilt-in table, made with the same rules (see `fishbase_sources()` for its release).",
+      "corrections": "Path of the corrections file (see Corrections), or FALSE for none.",
+      "table": "A logical value. If TRUE (default), tables are saved in `tables/`.",
+      "lang": "The language of the chart text and names: \"en\" (English), \"zh\" (Chinese) or\n\"both\" (Chinese and English). Default is NULL, which uses the language set with\n`fao_settings()` (\"en\" unless changed).",
+      "label": "The name used in the output file names. Default is the fishing area (or the\ncountry) of the data.",
+      "data_dir": "The directory where downloaded data is stored. Default is `fao_data_dir()`."
+    },
+    "sections": {
+      "Matching rules": "Fishes (FAO major group PISCES) are looked up in FishBase first and all other items in\nSeaLifeBase first, following Branch et al. (2010, Supplementary Information p. 1).\n\n1. **exact**: the FAO scientific name is a valid species name in the database.\n2. **synonym**: the FAO name is listed as a synonym (status \"synonym\") of one valid species in the database's synonym table. Misapplied names are never used, since they are misidentifications and not aliases (Froese and Pauly 2000, \"The SYNONYMS table\"); names that the table marks as ambiguous, or that point to several species, are not matched.\n3. **WoRMS valid name**: a name not found by rules 1-2 is looked up online in the World Register of Marine Species (WoRMS), which the FAO ASFIS list follows for most groups (FAO 2026, pp. 1-3). Only an exact WoRMS record with status \"accepted\" or with a single valid name is used; the valid name is then matched by rules 1-2 or 4. Results are saved in `worms_lookup.csv` in the `fishbase` folder of `data_dir` and reused when the computer is offline.\n4. **genus, family, order, class, phylum**: an FAO item above species level (e.g. \"Sardinella spp\" or \"Sparidae\") takes the unweighted mean trophic level of the species of that taxon in the database (Branch et al. 2010, Supplementary Information p. 1; Liang and Pauly 2017). Temperature preference, habitat, length and vulnerability are left empty for these items, since studies of the mean temperature of the catch exclude items above species level (Tsikliras and Stergiou 2014; Liang et al. 2018).\n5. **plant (TL 1)**: aquatic plants (FAO major group PLANTAE AQUATICAE) have a trophic level of 1 (Pauly et al. 1998).\n\nItems that name several taxa (e.g. \"Sepiidae, Sepiolidae\") are not matched, since there is no\npublished rule for them. Species not found by these rules are not given the values of their\ngenus. The `status` column is \"matched\", \"failed\" or \"pending online check\" (offline and not\nlooked up in WoRMS before).\n\nThe trophic levels are the FishBase and SeaLifeBase estimates (table \"estimate\", column\nTroph), which come from diet studies or, when these are missing, from related species and\nbody size (Froese and Pauly 2000, \"The FOOD ITEMS table\", boxes 25-26). Temperature preferences (column TempPrefMean) are means of the\nAquaMaps distribution of the species (FishBase reference 123201); note that Cheung et al.\n(2013) used medians.\n\nRows are sorted by catch, with the share and cumulative share of the catch, so checking the\nfirst rows covers most of the catch. The table is saved in `tables/`, with empty `checked` and\n`note` columns for recording the checks.",
+      "Corrections": "Wrong or missing matches can be corrected in a CSV file (by default `corrections.csv` in the\n`fishbase` folder of `data_dir`; a template is created there the first time). Each row has the\n`alpha3` code of the FAO item and either a `database` (\"FishBase\" or \"SeaLifeBase\") and\n`SpecCode` of the record to use, or values to use directly (`trophic_level`,\n`temp_pref_mean`, `habitat`, `max_length_cm`, `vulnerability`), or both; `note` should give\nthe source (e.g. \"TL 3.5 for Marine fishes nei, Pauly et al. 1998\"). Corrections are applied\nevery time the function runs, so a team sharing `data_dir` shares them."
+    }
+  },
+  "zh": {
+    "title": "将FAO物种条目与FishBase、SeaLifeBase匹配",
+    "description": "本函数逐个处理数据中的FAO物种条目，按FAO物种名录中的学名在FishBase（鱼类）或SeaLifeBase（其他水生动物和植物）中查找，返回匹配到的记录及其营养级、温度偏好、栖息类型、最大体长和对捕捞的脆弱性。只按已发表的规则进行匹配；每一行都给出所用的规则及其出处，并附有FishBase、SeaLifeBase或WoRMS页面的链接，以便核对每个匹配，发现错误时加以更正（见“更正”一节）。无法按这些规则匹配的条目不填数值：它们被标为匹配失败，并附有在网上搜索该名称的链接。",
+    "details": "",
+    "value": "以不可见方式返回一个数据框，每个FAO物种条目一行。",
+    "arguments": {
+      "area_data": "FAO渔获数据：`fishing_area_data()$area_data`，或`load_fao_data()`的任意子集。默认为NULL，即`load_fao_data()`中的全部物种。",
+      "version": "FishBase和SeaLifeBase的版本，例如\"26.06\"。默认为\"latest\"：联网时使用网上最新的版本（按需下载其数据表），否则使用本机已下载的最新版本，再没有时使用包内自带的数据表。\"builtin\"表示始终使用包内自带的数据表，它按同样的规则生成（其版本见`fishbase_sources()`）。",
+      "corrections": "更正文件的路径（见“更正”一节），FALSE表示不使用更正。默认为NULL，即`data_dir`中`fishbase`文件夹里的`corrections.csv`。",
+      "table": "逻辑值。为TRUE（默认）时，表格保存在tables/。",
+      "lang": "图表文字和名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL，即使用`fao_settings()`设置的语言（未更改时为\"en\"）。",
+      "label": "输出文件名中使用的名称。默认为数据所属的渔区（或国家）。",
+      "data_dir": "下载数据的保存目录。默认为`fao_data_dir()`。"
+    },
+    "sections": {
+      "Matching rules": "鱼类（FAO大类PISCES）先在FishBase中查找，其他所有条目先在SeaLifeBase中查找，依据Branch等（2010，补充材料第1页）。\n\n1. **exact**（精确匹配）：FAO学名是数据库中的有效种名。\n2. **synonym**（同物异名）：FAO名称在数据库的同物异名表中被列为某一个有效种的同物异名（状态为\"synonym\"）。误用名（misapplied name）一律不用，因为它们是错误鉴定，而不是别名（Froese和Pauly，2000，“The SYNONYMS table”）；同物异名表中标为歧义的名称，以及指向多个物种的名称，不予匹配。\n3. **WoRMS valid name**（WoRMS有效名）：按规则1和2找不到的名称，联网到世界海洋物种名录（WoRMS）中查询；FAO的ASFIS名录在大多数类群上遵循WoRMS（FAO，2026，第1–3页）。只采用状态为\"accepted\"、或只对应一个有效名的WoRMS精确匹配记录；然后用这个有效名按规则1、2或4重新匹配。查询结果保存在`data_dir`中`fishbase`文件夹里的`worms_lookup.csv`，电脑离线时重复使用。\n4. **genus, family, order, class, phylum**（属、科、目、纲、门）：种以上的FAO条目（如\"Sardinella spp\"或\"Sparidae\"）取数据库中该分类单元所有物种营养级的未加权平均值（Branch等，2010，补充材料第1页；Liang和Pauly，2017）。这些条目的温度偏好、栖息类型、体长和脆弱性留空，因为渔获平均温度的研究都不使用种以上的条目（Tsikliras和Stergiou，2014；Liang等，2018）。\n5. **plant (TL 1)**（植物，营养级为1）：水生植物（FAO大类PLANTAE AQUATICAE）的营养级为1（Pauly等，1998）。\n\n包含多个分类单元的条目（如\"Sepiidae, Sepiolidae\"）不予匹配，因为没有针对这种情况的已发表规则。按这些规则找不到的物种，不借用其所属属的数值。`status`列为\"matched\"（已匹配）、\"failed\"（匹配失败）或\"pending online check\"（待联网核查：电脑离线，且此前没有在WoRMS中查询过）。\n\n营养级是FishBase和SeaLifeBase的估计值（\"estimate\"表的Troph列），来自食性研究；没有食性研究时，根据近缘物种和体长估算（Froese和Pauly，2000，“The FOOD ITEMS table”，专栏25和26）。温度偏好（TempPrefMean列）是各物种AquaMaps分布范围内的平均值（FishBase文献123201）；注意Cheung等（2013）用的是中位数。\n\n各行按渔获量排序，并给出渔获占比和累计占比，所以核对前几行就覆盖了大部分渔获。该表保存在`tables/`中，带有空的`checked`和`note`列，用于记录核对情况。",
+      "Corrections": "错误或缺失的匹配可以在一个CSV文件中更正（默认为`data_dir`中`fishbase`文件夹里的`corrections.csv`；第一次运行时会在那里创建一个模板）。每行给出FAO条目的`alpha3`代码（三字母代码），以及要使用的记录的`database`（\"FishBase\"或\"SeaLifeBase\"）和`SpecCode`，或者直接使用的数值（`trophic_level`、`temp_pref_mean`、`habitat`、`max_length_cm`、`vulnerability`），或者两者都给出；`note`应写明出处（例如\"TL 3.5 for Marine fishes nei, Pauly et al. 1998\"）。每次运行本函数都会应用这些更正，所以共用同一个`data_dir`的团队也共用这些更正。"
+    },
+    "section_titles": {
+      "Matching rules": "匹配规则",
+      "Corrections": "更正"
+    }
+  }
+}

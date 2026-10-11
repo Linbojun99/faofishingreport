@@ -1,0 +1,36 @@
+{
+  "topic": "download_fishbase_data",
+  "rd_md5": "09d4de3d5c288b11899b03fb74414f8e",
+  "stale": false,
+  "en": {
+    "title": "Download FishBase and SeaLifeBase Data",
+    "description": "This function downloads the tables of a FishBase and/or SeaLifeBase release (the static\nsnapshots of the database tables used by the rfishbase package, as parquet files) to\n`data_dir`, so they can be used offline. By default it downloads the tables the package uses\n(species, estimate, families, synonyms, stocks and faoareas: about 15 MB for each database);\na complete release takes about 140 MB for FishBase and 110 MB for SeaLifeBase.",
+    "details": "Downloading beforehand is optional: functions that use FishBase data, such as\n`fishbase_match()`, look online for the newest release first and download the tables they\nneed. When the computer is offline they use the newest release downloaded here, and when\nnothing has been downloaded, `fishbase_match()` uses the table built into the package. Tables\nalready downloaded are skipped, so an interrupted download can be resumed by running the\nfunction again.\n\nReading the tables needs the nanoparquet package (`install.packages(\"nanoparquet\")`).\nFishBase and SeaLifeBase data are licensed CC BY-NC 4.0 by the FishBase team: they can be\nused with attribution, but not commercially.",
+    "value": "Invisibly, a data frame with one row per table: server, version, table, size and\nstatus (\"downloaded\", \"already downloaded\" or \"failed\").",
+    "arguments": {
+      "server": "\"fishbase\", \"sealifebase\" or both (default).",
+      "version": "The release to download, e.g. \"26.06\". Default is \"latest\".",
+      "tables": "\"needed\" (default) for the tables the package uses, \"all\" for every table, or\ntable names, e.g. `c(\"species\", \"estimate\")`.",
+      "data_dir": "The directory where the data is saved. Default is `fao_data_dir()`.",
+      "overwrite": "A logical value. If TRUE, tables already downloaded are downloaded again.\nDefault is FALSE.",
+      "quiet": "A logical value. If TRUE, progress messages are not printed. Default is FALSE."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "下载FishBase和SeaLifeBase数据表",
+    "description": "本函数把FishBase和/或SeaLifeBase某个版本的数据表（rfishbase包使用的数据库表静态快照，parquet文件格式）下载到`data_dir`，以便离线使用。默认下载本包用到的数据表（species、estimate、families、synonyms、stocks和faoareas：每个数据库约15 MB）；一个完整的版本，FishBase约140 MB，SeaLifeBase约110 MB。",
+    "details": "提前下载不是必需的：使用FishBase数据的函数（如`fishbase_match()`）会先在网上查找最新的版本，并下载所需的数据表。电脑离线时，它们使用在这里下载的最新版本；什么都没有下载时，`fishbase_match()`使用包内自带的数据表。已下载的数据表会跳过，所以下载中断后，重新运行本函数即可接着下载。\n\n读取这些数据表需要nanoparquet包（`install.packages(\"nanoparquet\")`）。FishBase和SeaLifeBase的数据由FishBase团队以CC BY-NC 4.0许可协议发布：注明出处即可使用，但不得用于商业用途。",
+    "value": "以不可见方式返回一个数据框，每张数据表一行：数据库（server）、版本（version）、表名（table）、大小（size，字节）和状态（status）；状态为\"downloaded\"（已下载）、\"already downloaded\"（此前已下载）或\"failed\"（下载失败）。",
+    "arguments": {
+      "server": "\"fishbase\"、\"sealifebase\"或两者（默认）。",
+      "version": "要下载的版本，例如\"26.06\"。默认为\"latest\"（网上最新的版本）。",
+      "tables": "\"needed\"（默认）表示本包用到的数据表，\"all\"表示全部数据表，也可以给出表名，例如`c(\"species\", \"estimate\")`。",
+      "data_dir": "保存数据的目录。默认为`fao_data_dir()`。",
+      "overwrite": "逻辑值。为TRUE时，已下载的数据表会重新下载。默认为FALSE。",
+      "quiet": "逻辑值。为TRUE时不显示进度信息。默认为FALSE。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "topic": "peak_trend",
+  "rd_md5": "36ac03af60062198d80872562234a199",
+  "stale": false,
+  "en": {
+    "title": "Peak Catch and Recent Trend",
+    "description": "This function finds, for the total catch and for the main species, countries or fishing areas,\nthe year and size of the peak catch, the catch in the last year as a percentage of the peak,\nand the trend over the last `recent_years` years: the average annual growth rate, and a\nMann-Kendall trend test (Kendall's tau between year and catch).",
+    "details": "",
+    "value": "Invisibly, a data frame with one row per series (the first row is the total).",
+    "arguments": {
+      "area_data": "FAO catch data: `fishing_area_data()$area_data`, or any subset of\n`load_fao_data()` (e.g. one country, or several fishing areas).",
+      "by": "What to compare: \"species\" (default), \"country\" or \"area\".",
+      "top_n": "The number of species, countries or areas with the largest total catch to include.\nDefault is 10; use `Inf` for all.",
+      "recent_years": "The number of most recent years used for the trend. Default is 10.",
+      "plot": "A logical value. If TRUE (default), charts are saved in `figures/png/summary/`.",
+      "table": "A logical value. If TRUE (default), tables are saved in `tables/`.",
+      "lang": "The language of the chart text and names: \"en\" (English), \"zh\" (Chinese) or\n\"both\" (Chinese and English). Default is NULL, which uses the language set with\n`fao_settings()` (\"en\" unless changed).",
+      "pptx": "A logical value. If TRUE, charts are also saved as editable PowerPoint files in\n`figures/pptx/summary/`. Default is FALSE, which can be changed for all functions with\n`fao_settings(pptx = TRUE)`.",
+      "label": "The name used in the output file names. Default is the fishing area (or the\ncountry) of the data."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "峰值渔获量与近期趋势",
+    "description": "该函数针对总渔获量以及主要物种、国家或渔区，找出峰值渔获量出现的年份和数值、最后一年渔获量占峰值的百分比，以及最近`recent_years`年的趋势：年均增长率，以及Mann-Kendall趋势检验（年份与渔获量之间的Kendall τ）。",
+    "details": "",
+    "value": "以不可见方式返回一个数据框，每个序列一行（第一行为总渔获量）。",
+    "arguments": {
+      "area_data": "FAO渔获数据：`fishing_area_data()$area_data`，或`load_fao_data()`的任意子集（例如一个国家，或几个渔区）。",
+      "by": "比较的对象：\"species\"（物种，默认）、\"country\"（国家）或\"area\"（渔区）。",
+      "top_n": "纳入总渔获量最大的物种、国家或渔区的个数。默认为10；用`Inf`表示全部。",
+      "recent_years": "计算趋势所用的最近年数。默认为10。",
+      "plot": "逻辑值。为TRUE（默认）时，图表保存在figures/png/summary/。",
+      "table": "逻辑值。为TRUE（默认）时，表格保存在tables/。",
+      "lang": "图表文字和名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL，即使用`fao_settings()`设置的语言（未更改时为\"en\"）。",
+      "pptx": "逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在figures/pptx/summary/。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。",
+      "label": "输出文件名中使用的名称。默认为数据所属的渔区（或国家）。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

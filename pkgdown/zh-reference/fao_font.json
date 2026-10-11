@@ -1,0 +1,26 @@
+{
+  "topic": "fao_font",
+  "rd_md5": "141c58c01d1802fa883b2cd2189457bb",
+  "stale": false,
+  "en": {
+    "title": "Font Used for Chart Text",
+    "description": "This function returns the font used for all chart text. The font is chosen\nfor the operating system so that Chinese text displays correctly: \"Songti SC\"\non macOS, \"SimSun\" on Windows and \"Noto Serif CJK SC\" on Linux. If that font\nis not installed, the next available Chinese font is used.",
+    "details": "",
+    "value": "The font family name.",
+    "arguments": {
+      "family": "Optional font family to use from now on, e.g. \"Microsoft YaHei\".\nThe choice can also be set with `options(faofishingreport.font = \"...\")`."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "图表文字的字体",
+    "description": "该函数返回所有图表文字使用的字体。字体按操作系统选择，以便正确显示中文：macOS上为\"Songti SC\"，Windows上为\"SimSun\"，Linux上为\"Noto Serif CJK SC\"。如果该字体未安装，则使用下一个可用的中文字体（都没有时使用\"sans\"）。",
+    "details": "",
+    "value": "字体族的名称。",
+    "arguments": {
+      "family": "可选，从现在起（在本次R会话中）使用的字体族，如\"Microsoft YaHei\"。默认为NULL，即不改变字体，只返回当前字体。也可以用`options(faofishingreport.font = \"...\")`设置字体。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

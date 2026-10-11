@@ -176,6 +176,13 @@ articles:
   - articles/zh/cmsy
   - articles/zh/report
   - articles/zh/customise
+- title: "中文函数参考"
+  desc: "全部函数的中文说明，附英文原文对照（由 data-raw/make_zh_reference.R 生成）。"
+  contents:
+  - articles/zh/reference/index
+- title: internal
+  contents:
+  - starts_with("articles/zh/reference/")
 
 news:
   one_page: true

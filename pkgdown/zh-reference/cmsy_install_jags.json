@@ -1,0 +1,34 @@
+{
+  "topic": "cmsy_install_jags",
+  "rd_md5": "025c788ef249de6d5aba9300b3b9ffe8",
+  "stale": false,
+  "en": {
+    "title": "Download and Open the JAGS Installer",
+    "description": "This function downloads the JAGS installer that matches the operating system and R version\n(see `cmsy_jags_versions()` and `cmsy_download_jags()`), checks its size and checksums, and\nopens it: the `.exe` installer on\nWindows and the `.pkg` installer on macOS. On Linux it downloads the source code and shows\nhow to install JAGS with the package manager or from source. An installer placed in the\npackage folder `inst/jags/` (installed as `jags/`) is used instead of downloading.",
+    "details": "",
+    "value": "Invisibly, the path of the downloaded installer.",
+    "arguments": {
+      "version": "The JAGS version: \"recommended\" (default), \"latest\" or a version number.",
+      "os": "The operating system whose settings are used: \"auto\" (default, detect it),\n\"windows\", \"macos\" or \"linux\".",
+      "open": "A logical value. If TRUE (default), the installer is opened.",
+      "data_dir": "The directory where downloads are kept. Default is `fao_data_dir()`.",
+      "silent": "A logical value. If TRUE, no summary is printed. Default is FALSE, or the value\nset with `fao_settings(silent = )`."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "下载并打开JAGS安装程序",
+    "description": "本函数下载与操作系统和R版本匹配的JAGS安装程序（见`cmsy_jags_versions()`和`cmsy_download_jags()`），核对文件大小和校验值，然后打开它：Windows上是`.exe`安装程序，macOS上是`.pkg`安装程序。在Linux上则下载源代码，并说明如何用包管理器或从源代码安装JAGS。如果在包的`inst/jags/`文件夹（安装后为`jags/`）中放有安装程序，则直接使用该文件，不再下载。",
+    "details": "",
+    "value": "以不可见方式返回所下载安装程序的路径。",
+    "arguments": {
+      "version": "JAGS版本：\"recommended\"（默认）、\"latest\"或版本号。",
+      "os": "采用哪个操作系统的设置：\"auto\"（默认，自动检测）、\"windows\"、\"macos\"或\"linux\"。",
+      "open": "逻辑值。为TRUE（默认）时打开安装程序。",
+      "data_dir": "下载文件的保存目录。默认为`fao_data_dir()`。",
+      "silent": "逻辑值。为TRUE时不输出汇总信息。默认为FALSE，或`fao_settings(silent = )`设置的值。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

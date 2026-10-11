@@ -1,0 +1,36 @@
+{
+  "topic": "area_overview",
+  "rd_md5": "7a774e4e18f20d683ab9f1c5cf5215bd",
+  "stale": false,
+  "en": {
+    "title": "Overview of All FAO Marine Fishing Areas",
+    "description": "This function compares the FAO major marine fishing areas: their catch over time, peak year,\ncatch in the last year as a percentage of the peak, and recent trend (see `peak_trend()`).",
+    "details": "",
+    "value": "Invisibly, a data frame with one row per area (the first row is the total).",
+    "arguments": {
+      "recent_years": "The number of most recent years used for the trend. Default is 10.",
+      "plot": "A logical value. If TRUE (default), charts are saved in `figures/png/summary/`.",
+      "table": "A logical value. If TRUE (default), tables are saved in `tables/`.",
+      "lang": "The language of the chart text and names: \"en\" (English), \"zh\" (Chinese) or\n\"both\" (Chinese and English). Default is NULL, which uses the language set with\n`fao_settings()` (\"en\" unless changed).",
+      "pptx": "A logical value. If TRUE, charts are also saved as editable PowerPoint files in\n`figures/pptx/summary/`. Default is FALSE, which can be changed for all functions with\n`fao_settings(pptx = TRUE)`.",
+      "data_version": "The FAO data release to use; see `fishing_area_data()`."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "全部FAO海洋渔区概览",
+    "description": "该函数对比各FAO主要海洋渔区：各渔区渔获量随时间的变化、峰值年份、最后一年渔获量占峰值的百分比，以及近期趋势（见`peak_trend()`）。",
+    "details": "",
+    "value": "以不可见方式返回一个数据框，每个渔区一行（第一行为总渔获量）。",
+    "arguments": {
+      "recent_years": "计算趋势所用的最近年数。默认为10。",
+      "plot": "逻辑值。为TRUE（默认）时，图表保存在figures/png/summary/。",
+      "table": "逻辑值。为TRUE（默认）时，表格保存在tables/。",
+      "lang": "图表文字和名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL，即使用`fao_settings()`设置的语言（未更改时为\"en\"）。",
+      "pptx": "逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在figures/pptx/summary/。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。",
+      "data_version": "使用的FAO数据版本；见`fishing_area_data()`。默认为\"latest\"。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

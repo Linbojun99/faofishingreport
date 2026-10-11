@@ -1,0 +1,28 @@
+{
+  "topic": "check_fao_update",
+  "rd_md5": "eb2bd313a71df49197d58ade42880284",
+  "stale": false,
+  "en": {
+    "title": "Check for the Latest FAO Global Capture Production Release",
+    "description": "This function reads the FAO fishery data index, lists the Global Capture\nProduction releases published online, and compares the newest release with\nthe data bundled with the package and the data downloaded on this computer.",
+    "details": "",
+    "value": "Invisibly, a list with `latest` (newest online version), `bundled`\n(version bundled with the package), `local` (newest downloaded version, or NA\nif none), `update_available` (logical) and `releases` (a data frame of all\nonline releases).",
+    "arguments": {
+      "data_dir": "The directory where downloaded releases are stored. Default is `fao_data_dir()`.",
+      "quiet": "A logical value. If TRUE, no message is printed. Default is FALSE."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "检查FAO全球捕捞产量数据的最新版本",
+    "description": "该函数读取FAO渔业数据索引，列出线上发布的全球捕捞产量（Global Capture Production）各个版本，并把最新版本与包自带的数据以及本机已下载的数据进行比较。",
+    "details": "",
+    "value": "以不可见方式返回一个列表，包含`latest`（线上最新版本）、`bundled`（包自带数据的版本）、`local`（已下载的最新版本，没有则为NA）、`update_available`（逻辑值，线上最新版本比包自带数据和已下载数据都新时为TRUE）和`releases`（线上所有版本组成的数据框：版本号`version`、发布日期`date`、文件大小`size`和下载地址`url`）。",
+    "arguments": {
+      "data_dir": "下载的数据版本的保存目录。默认为`fao_data_dir()`。",
+      "quiet": "逻辑值。为TRUE时不显示任何信息。默认为FALSE。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}
