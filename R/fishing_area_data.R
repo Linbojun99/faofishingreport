@@ -140,7 +140,7 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
                            color=area_color2) +
         ggplot2::geom_segment(data = coefs_data,
                               ggplot2::aes(x = start_year, xend = end_year, y = intercept/1e6, yend = intercept/1e6),
-                     color = "black",linetype="solid",size=1.5,alpha=0.5) +
+                     color = "black",linetype="solid",linewidth = 1.5,alpha=0.5) +
         ggplot2::geom_vline(data = coefs_data, ggplot2::aes(xintercept = start_year), linetype = "dashed", color = "black",linewidth=1) +
         fao_base_theme() +
         ggplot2::scale_x_continuous(breaks = year_breaks,expand = c(0,0)) +
@@ -156,7 +156,7 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
         ggplot2::labs(x=xlab, y=ylab)
       fao_save_plot(p1, "fishing_trend", width = 12, height = 6, pptx = pptx)
             coefs_data<-tibble::as_tibble(coefs_data)
-            print(paste("Mutation point detection:",coefs_data))
+            fao_verbose_message(paste("Mutation point detection:",coefs_data))
   }
     else{
     p1 <- ggplot2::ggplot() +
@@ -194,8 +194,8 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
     merged_data = merged_data %>%
       dplyr::mutate(mean_Percentage_area = mean(Percentage_area, na.rm=TRUE))
 
-    print(merged_data)
-    print(paste("Total percentage of area:", total_Percentage_area))
+    fao_verbose_print(merged_data)
+    fao_verbose_message(paste("Total percentage of area:", total_Percentage_area))
 
     # Plotting percentage
     percentage_plot <- ggplot2::ggplot() +

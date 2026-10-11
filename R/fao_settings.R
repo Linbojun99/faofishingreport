@@ -167,22 +167,24 @@ fao_scale_discrete <- function(aesthetic = "colour") {
 # Continuous fill scale for maps using the chosen map palette
 fao_scale_fill_map <- function(palette = NULL, na.value = fao_setting("map_land")) {
   if (is.null(palette)) palette <- fao_setting("map_palette")
+  # a colour bar long enough that its labels do not overlap when the legend is at the bottom
+  guide <- ggplot2::guide_colourbar(barwidth = grid::unit(15, "lines"), barheight = grid::unit(0.8, "lines"))
   material <- c("red", "pink", "purple", "deep-purple", "indigo", "blue", "light-blue", "cyan", "teal",
                 "green", "light-green", "lime", "yellow", "amber", "orange", "deep-orange", "brown",
                 "grey", "blue-grey")
   viridis <- c("viridis", "magma", "plasma", "inferno", "cividis", "mako", "rocket", "turbo")
   if (length(palette) > 1) {
-    ggplot2::scale_fill_gradientn(colours = palette, na.value = na.value)
+    ggplot2::scale_fill_gradientn(colours = palette, na.value = na.value, guide = guide)
   } else if (palette %in% material) {
-    ggsci::scale_fill_material(palette, na.value = na.value)
+    ggsci::scale_fill_material(palette, na.value = na.value, guide = guide)
   } else if (palette %in% viridis) {
-    ggplot2::scale_fill_viridis_c(option = palette, direction = -1, na.value = na.value)
+    ggplot2::scale_fill_viridis_c(option = palette, direction = -1, na.value = na.value, guide = guide)
   } else if (palette %in% rownames(RColorBrewer::brewer.pal.info)) {
-    ggplot2::scale_fill_distiller(palette = palette, direction = 1, na.value = na.value)
+    ggplot2::scale_fill_distiller(palette = palette, direction = 1, na.value = na.value, guide = guide)
   } else {
     colors <- tryCatch(grDevices::hcl.colors(9, palette, rev = TRUE), error = function(e) {
       stop("Unknown map palette \"", palette, "\"; see ?fao_settings.", call. = FALSE)
     })
-    ggplot2::scale_fill_gradientn(colours = colors, na.value = na.value)
+    ggplot2::scale_fill_gradientn(colours = colors, na.value = na.value, guide = guide)
   }
 }

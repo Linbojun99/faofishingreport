@@ -49,3 +49,12 @@ test_that("breakpoint periods start after and end at the breakpoints", {
   # years of the series, also when a year is missing
   expect_identical(fao_bp_periods(2, c(2000L, 2001L, 2003L, 2004L))$start_year, c(2000L, 2003L))
 })
+
+test_that("intermediate tables are printed only when asked", {
+  withr::local_options(faofishingreport.verbose = NULL)
+  expect_silent(fao_verbose_print(data.frame(a = 1)))
+  expect_silent(fao_verbose_message("count"))
+  withr::local_options(faofishingreport.verbose = TRUE)
+  expect_output(fao_verbose_print(data.frame(a = 1)), "a")
+  expect_message(fao_verbose_message("count"), "count")
+})

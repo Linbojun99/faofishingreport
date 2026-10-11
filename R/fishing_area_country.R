@@ -89,7 +89,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
     dplyr::filter(total_tonnes > 0) %>%
     nrow()
 
-  print(paste("The total number of country with non-zero catch over the years is:", unique_country_count))
+  fao_verbose_message(paste("The total number of country with non-zero catch over the years is:", unique_country_count))
 
   area_country_table <- area_country %>%
     dplyr::mutate(Decade = fao_decade(Year))
@@ -120,9 +120,9 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
 
 
   # 输出结果
-  print(decade_avg_production_country)
-  print(recent_production_country)
-  print(percentage_of_total_country)
+  fao_verbose_print(decade_avg_production_country)
+  fao_verbose_print(recent_production_country)
+  fao_verbose_print(percentage_of_total_country)
   # 检查并创建 'tables' 目录
   if (!dir.exists("tables")) {
     dir.create("tables")
@@ -173,9 +173,9 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
     dplyr::select(-Total_Tonnes, -Percentage)  # 删除不需要的列
 
   # 输出结果
-  print(decade_avg_production_country_ranked)
-  print(recent_production_country_ranked)
-  print(percentage_of_total_country_ranked)
+  fao_verbose_print(decade_avg_production_country_ranked)
+  fao_verbose_print(recent_production_country_ranked)
+  fao_verbose_print(percentage_of_total_country_ranked)
 
 
 
@@ -252,7 +252,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
   # 现在，你可以使用coefs_data来创建分面图
 
     # 输出结果
-  print(final_data)
+  fao_verbose_print(final_data)
   if (table) {
     fao_write_csv(final_data, "tables/country_ranked_table.csv")
     fao_write_csv(coefs_data, "tables/country_coefs_data.csv")
@@ -299,7 +299,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
                            hjust = text_hjust, vjust = text_vjust, size = text_size, color = text_color) +
         ggplot2::geom_segment(data = coefs_data,
                               ggplot2::aes(x = start_year, xend = end_year, y = intercept/1e6, yend = intercept/1e6),
-                              color = "black",linetype="solid",size=1.5,alpha=0.5) +
+                              color = "black",linetype="solid",linewidth = 1.5,alpha=0.5) +
         ggplot2::geom_vline(data = coefs_data, ggplot2::aes(xintercept = start_year, group = Country..Name.), linetype = "dashed", color = "black",linewidth=1) +
         fao_base_theme() +
         fao_scale_discrete("colour")+

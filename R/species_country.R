@@ -349,7 +349,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
                            hjust = 0.9, vjust = -4, size = 4.5, color = "black") +
         ggplot2::geom_segment(data = coefs_data,
                               ggplot2::aes(x = start_year, xend = end_year, y = intercept/1e6, yend = intercept/1e6),
-                              color = "black",linetype="solid",size=1.5,alpha=0.5) +
+                              color = "black",linetype="solid",linewidth = 1.5,alpha=0.5) +
         ggplot2::geom_vline(data = coefs_data, ggplot2::aes(xintercept = start_year, group = Country..Name.), linetype = "dashed", color = "black",linewidth=1) +
         fao_base_theme() +
         fao_scale_discrete("colour")+
@@ -434,7 +434,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
       dplyr::filter(total_tonnes > 0) %>%
       nrow()
 
-    print(paste("The total number of country with non-zero catch over the years is:", unique_country_count))
+    fao_verbose_message(paste("The total number of country with non-zero catch over the years is:", unique_country_count))
 
     species_country_table <- species_data %>%
       dplyr::mutate(Decade = fao_decade(Year))
@@ -465,9 +465,9 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
 
 
     # 输出结果
-    print(decade_avg_production_country)
-    print(recent_production_country)
-    print(percentage_of_total_country)
+    fao_verbose_print(decade_avg_production_country)
+    fao_verbose_print(recent_production_country)
+    fao_verbose_print(percentage_of_total_country)
     # 检查并创建 'tables' 目录
     if (!dir.exists("tables")) {
       dir.create("tables")
@@ -487,9 +487,9 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
       dplyr::select(-country_production,-percentage_country)  # 删除不需要的列
 
     # 输出结果
-    print(decade_avg_production_country_ranked)
-    print(recent_production_country_ranked)
-    print(percentage_of_total_country_ranked)
+    fao_verbose_print(decade_avg_production_country_ranked)
+    fao_verbose_print(recent_production_country_ranked)
+    fao_verbose_print(percentage_of_total_country_ranked)
 
     # 将 decade_avg_production_country_ranked 数据框重塑为宽格式
     decade_avg_wide <- decade_avg_production_country_ranked %>%
@@ -510,7 +510,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
       dplyr::left_join(percentage_of_total_country_ranked, by = "Country..Name.")
 
     # 输出结果
-    print(final_data)
+    fao_verbose_print(final_data)
     if (table) {
       filename <- paste0(gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_table.csv")
       fao_write_csv(final_data, paste0("tables/", filename))

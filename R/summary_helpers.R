@@ -135,3 +135,15 @@ fao_bp_periods <- function(breaks, years) {
   breaks <- breaks[!is.na(breaks)]
   data.frame(start_year = years[c(1, breaks + 1)], end_year = years[c(breaks, length(years))])
 }
+
+# The older functions of fishing areas, species and countries print their intermediate tables only
+# when asked with options(faofishingreport.verbose = TRUE); the tables are also returned and saved
+fao_verbose_print <- function(x) {
+  if (isTRUE(getOption("faofishingreport.verbose", FALSE))) print(x)
+  invisible(x)
+}
+
+fao_verbose_message <- function(text) {
+  if (isTRUE(getOption("faofishingreport.verbose", FALSE))) message(text)
+  invisible(text)
+}
