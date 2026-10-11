@@ -54,3 +54,10 @@ other_country_group,Other groups,其余分组
 other_distant,Other distant-water countries,其余远洋捕捞国
 peak_year_note,Peak year in brackets,括号内为峰值年份
 n_stocks_note,{n} stocks,共{n}个种群
+mtc,Mean temperature of the catch,渔获平均温度
+sst,Sea surface temperature,海表温度
+temperature_c,Temperature (°C),温度 (°C)
+mtc_coverage,Catch with a preferred temperature (%),有偏好温度的渔获占比 (%)
+mtc_faded_note,Faded: years in which less than {n}% of the catch has a preferred temperature,浅色：有偏好温度的渔获不足{n}%的年份
+sst_range,SST range in the area (10th-90th percentile),渔区内海表温度范围（10%-90%分位）
+mtc_unchecked_note,Preferred temperatures are automatic first matches and have not all been checked by the user,偏好温度为自动初配结果，尚未全部经用户核对

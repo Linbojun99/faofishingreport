@@ -38,6 +38,8 @@ navbar:
         href: articles/species-countries.html
       - text: "📈 Composition, stock status and trends"
         href: articles/status-trends.html
+      - text: "📉 CMSY++ stock assessment"
+        href: articles/cmsy.html
       - text: "🔍 Data quality, diversity and fleets"
         href: articles/quality-diversity-fleets.html
       - text: "🎨 Customise charts and maps"
@@ -83,6 +85,29 @@ reference:
   - country_group_summary
   - regime_shift
   - coastal_distant
+- title: "🌡️ FishBase and temperature"
+  desc: Species traits from FishBase and SeaLifeBase, sea surface temperature, and the mean temperature of the catch.
+  contents:
+  - check_fishbase_update
+  - download_fishbase_data
+  - fishbase_table
+  - fishbase_match
+  - fishbase_sources
+  - fao_sst_products
+  - download_sst_data
+  - fao_area_sst
+  - mean_temperature_catch
+- title: "📉 CMSY++ stock assessment"
+  desc: Catch-only stock assessment with the bundled CMSY++ code, FishBase priors and JAGS set up for the operating system.
+  contents:
+  - cmsy_system
+  - cmsy_setup
+  - cmsy_install_jags
+  - cmsy_sources
+  - cmsy_priors
+  - cmsy_input
+  - cmsy_run
+  - cmsy_plot
 - title: "🎨 Settings and language"
   desc: Chart style, map projection, colours, fonts and Chinese names.
   contents:
@@ -99,6 +124,7 @@ articles:
   - articles/fishing-areas
   - articles/species-countries
   - articles/status-trends
+  - articles/cmsy
   - articles/quality-diversity-fleets
   - articles/customise
 - title: "中文文档"
@@ -109,6 +135,7 @@ articles:
   - articles/zh/fishing-areas
   - articles/zh/species-countries
   - articles/zh/status-trends
+  - articles/zh/cmsy
   - articles/zh/quality-diversity-fleets
   - articles/zh/customise
 

@@ -12,3 +12,4 @@
 ^codecov\.yml$
 ^research_notes$
 ^reports$
+^dev$

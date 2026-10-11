@@ -40,6 +40,9 @@ fao_settings(..., reset = FALSE)
   \item{data_dir}{Folder where `download_fao_data()` saves FAO releases and where all
     functions look for them, e.g. a folder shared by a team. Default is NULL, the user data
     folder of R; see `fao_data_dir()`.}
+  \item{online}{Whether functions may connect to the internet to look for the newest FishBase
+    release (see `fishbase_table()`). Default is TRUE; use FALSE to work offline with the
+    downloaded copy, e.g. on a slow connection.}
 }}
 
 \item{reset}{A logical value. If TRUE, all settings go back to their defaults first.}

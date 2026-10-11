@@ -2,13 +2,21 @@ Package: faofishingreport
 Type: Package
 Title: Analyse and Report FAO Global Capture Production Statistics
 Version: 0.2.0
-Authors@R: person("Hongyu", "Lin", email = "linbojun99@gmail.com", role = c("aut", "cre"))
+Authors@R: c(
+    person("Hongyu", "Lin", email = "linbojun99@gmail.com", role = c("aut", "cre")),
+    person("Rainer", "Froese", role = c("ctb", "cph"), comment = "CMSY++ code, neural network and user guide in inst/cmsy (CC BY 4.0)"),
+    person("Gianpaolo", "Coro", role = c("ctb", "cph"), comment = "CMSY++ code in inst/cmsy"),
+    person("Henning", "Winker", role = c("ctb", "cph"), comment = "CMSY++ code in inst/cmsy"),
+    person("Nazli", "Demirel", role = c("ctb", "cph"), comment = "CMSY++ user guide in inst/cmsy"))
 Description: Analyses FAO Global Capture Production statistics by fishing area,
     country and species, and exports charts (PNG and editable PowerPoint) and
     tables for reports. Includes breakpoint analysis of catch time series,
     checks for and downloads the latest FAO data release, and draws charts in
     English, Chinese or both, using official FAO Chinese names and a Chinese
-    font chosen for the operating system.
+    font chosen for the operating system. Runs the catch-only stock assessment
+    method CMSY++ (Froese et al. 2023 <doi:10.3897/aiep.53.105910>) on the catch
+    series, with the bundled CMSY++ code, priors from FishBase and SeaLifeBase,
+    and JAGS installed and the code adapted for the operating system.
 License: GPL-3
 URL: https://linbojun99.github.io/faofishingreport/, https://github.com/Linbojun99/faofishingreport
 BugReports: https://github.com/Linbojun99/faofishingreport/issues
@@ -19,15 +27,26 @@ Imports:
     rnaturalearthdata,
     ragg,
     systemfonts,
+    jsonlite,
     readr,
     tidyr,
     tibble,
     rlang,
+    parallel,
     stats,
     tools,
     utils
 Suggests:
+    coda,
+    conicfit,
     eoffice,
+    gplots,
+    mvtnorm,
+    nanoparquet,
+    ncdf4,
+    neuralnet,
+    R2jags,
+    rjags,
     testthat (>= 3.0.0),
     withr,
     knitr,

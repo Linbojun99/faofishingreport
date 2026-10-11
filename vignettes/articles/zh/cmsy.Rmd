@@ -1,0 +1,147 @@
+---
+title: "📉 CMSY++ 仅渔获量资源评估"
+description: >
+  cmsy_system()、cmsy_setup()、cmsy_priors()、cmsy_input()、cmsy_run() 和 cmsy_plot()：用包内置的 CMSY++ 代码、FishBase 先验和 JAGS，对 FAO 渔获序列做仅渔获量评估。
+---
+
+```{r setup, include = FALSE}
+source("../_setup.R")
+FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+```
+
+```{r}
+fao_settings(lang = "zh")
+```
+
+CMSY++（Froese 等 2023）根据渔获量序列、内禀增长率 r 的先验和相对生物量 B/k 的先验，估计 MSY、Bmsy、Fmsy，以及每年的相对生物量 B/Bmsy 和相对捕捞强度 F/Fmsy。本包内置了 CMSY++ 的官方代码（`CMSY++16.R`，2021 年 1 月版）、神经网络文件和用户手册，由几个函数完成从环境安装到出图的全部步骤。
+
+::: {.alert .alert-warning}
+**FishStat 只有渔获量，没有 CPUE。** FAO 捕捞产量数据不含 CPUE、调查生物量等丰度指数，所以每个种群都只能走 CMSY++ 的仅渔获量路线（CMSY，`btype = "None"`），不会运行贝叶斯 Schaefer 模型（BSM）。这时结果主要取决于 B/k 先验。独立检验发现，在默认先验下，仅渔获量方法对种群状态的判断精度有限（Free 等 2020；Ovando 等 2021；Kell 等 2022）。因此结果只是**指示性的**，不能替代正式的种群评估。按照 FAO（2026）的做法，状态只分两类：**最大可持续捕捞**（最后一年 B/Bmsy ≥ 0.8）和**过度捕捞**（B/Bmsy < 0.8），不使用仅渔获量结果判定"低度捕捞"。
+:::
+
+## 💻 第一步：检查电脑并自动调整设置
+
+CMSY++ 的代码是在 Windows 上写的。用户手册第 12 步要求 Mac 用户把所有 `windows()` 改成 `quartz()`，把 `antialias = "cleartype"` 改成 `"default"`。代码用 `grepl("win", sysname)` 判断是不是 Windows，而 macOS 的系统名 "Darwin" 中也含有 "win"，所以在 Mac 上会调用 `windows()` 并报错。`cmsy_system()` 检测当前系统、R 版本、处理器、JAGS 和所需的 R 包，并列出 `cmsy_run()` 将在这个系统上使用的设置：
+
+```{r}
+sys <- cmsy_system()
+```
+
+```{r}
+show_table(sys$changes)
+```
+
+这些修改只作用于每次运行时写入运行目录的代码副本（`CMSY++16_faofishingreport.R`，修改清单见同目录下的 `code_changes.csv`），包内的原始文件始终不变。默认使用离屏绘图设备，在任何系统上都能直接保存 JPEG 图，不会弹出窗口；`device = "screen"` 则改用系统自己的绘图窗口（Windows 上是 `windows()`，macOS 上是 `quartz()`，Linux 上是 `x11()`）。如果自动检测有误，可以手动指定系统：
+
+```{r, eval = FALSE}
+cmsy_system(os = "windows")                         # 查看 Windows 下的设置
+options(faofishingreport.cmsy_os = "macos")         # 本次会话内都按 macOS 设置
+```
+
+## 🧰 第二步：安装 JAGS 和 R 包
+
+```{r, eval = FALSE}
+cmsy_setup()
+```
+
+`cmsy_setup()` 依次完成以下工作，每一步安装前都会先询问：
+
+1. 从 CRAN 安装缺少的 R 包：R2jags、rjags、coda、gplots、mvtnorm、neuralnet、conicfit。原代码依赖的 snpar 已于 2022-05-10 从 CRAN 下架，本包用一段相同的近似游程检验代码代替了它。
+2. 按当前系统和 R 版本，从固定链接下载 JAGS 安装程序，核对文件大小和 MD5 后打开安装程序：Windows 上是 `.exe`，macOS 上是 `.pkg`；Linux 上下载源码，并显示安装命令。JAGS 是独立程序，安装完成后需要重启 R，再运行一次 `cmsy_setup()` 检查。
+3. 核对包内 CMSY++ 文件的校验值。
+
+默认安装 JAGS 4.3.2（Windows 上 R 低于 4.5、或 macOS 上 R 低于 4.3 时安装 4.3.1），因为 CRAN 上的 rjags 4-17 只支持 JAGS 4。最新的 JAGS 5.0.0 需要使用 SourceForge 上的 rjags 5-3，可以这样安装：`cmsy_setup(jags = "latest")`。如果把安装程序放进源码包的 `inst/jags/` 文件夹，安装时会直接使用这些文件，不再联网下载。
+
+每个组件的版本、下载链接、文件大小、MD5、SHA-256、许可证和引用文献，都可以用 `cmsy_sources()` 查看：
+
+```{r}
+src <- cmsy_sources()
+show_table(src[, c("component", "version", "platform", "file", "license", "url")], n = 30)
+```
+
+## 🐟 第三步：r 先验（FishBase 和 SeaLifeBase）
+
+包里内置了一张表，收录 FAO 捕捞统计中所有种一级的物种（3,155 个）在 FishBase 或 SeaLifeBase（26.06 版）中的恢复力（resilience）和先验 r，可以离线搜索。搜索支持英文名、中文名、学名或 FAO 三字母代码，每一行都附有来源页面的链接：
+
+```{r}
+cod <- cmsy_priors("Gadus morhua")
+show_table(cod[, c("species_name", "scientific_name", "SpecCode", "resilience", "prior_r",
+                   "r_low", "r_high", "r_source", "url")])
+```
+
+`open = TRUE` 会在浏览器中打开对应的 FishBase 页面，方便核对数值：`cmsy_priors("沙丁鱼", open = TRUE)`。
+
+r 的先验范围按照 CMSY++ 用户手册确定：
+
+| 情况 | r 范围 | 依据 |
+|---|---|---|
+| 物种在 FishBase / SeaLifeBase 有先验 r（"Estimates based on models"） | 先验 r 的 95% 置信限 | 用户手册表 1（"更好的做法"） |
+| 只有恢复力 | 高 0.6–1.5；中 0.2–0.8；低 0.05–0.5；很低 0.015–0.1 | 用户手册表 2 |
+| 两者都没有 | 无默认值，需要由用户提供（如 r ≈ 2M 或 r ≈ 2Fmsy） | 用户手册表 1 |
+
+FAO 学名先按有效种名匹配，再按数据库自己的同物异名表匹配。有歧义的异名，以及属、科一级的条目，都不赋值。
+
+```{r}
+priors <- cmsy_priors()
+table(priors$match_type)
+table(!is.na(priors$r_source))
+```
+
+## 🧾 第四步：把 FAO 数据转成 CMSY++ 输入文件
+
+```{r}
+input <- cmsy_input(FAO34$area_data)
+input
+```
+
+`cmsy_input()` 生成 CMSY++ 需要的两个文件：渔获文件（`Stock`、`yr`、`ct`、`bt`）和 ID 文件（每个种群一行，包含先验和设置）。同时把这两个文件和种群表、被排除种群表保存在 `tables/cmsy/`。处理规则如下：
+
+- **种群**：默认为某个物种在某个渔区内所有国家渔获的合计（`by = "area"`）；`by = "country"` 则按国家分开。只使用鉴定到种、以吨计的条目。
+- **年份**：用户手册要求年份连续、不能有缺口。序列从第一个有渔获的年份开始，到最后一个有渔获的年份结束；中间缺报或为零的年份用相邻年份线性插值补齐，并记录补齐的年数。
+- **排除**：少于 `min_years` 年（默认 10 年，因为 CMSY++ 的默认先验要用到序列前 10 年和后 10 年）、总渔获低于 `min_catch` 吨、补齐年份超过 `max_filled`（默认 20%），或没有任何 r 先验的种群。
+
+```{r}
+show_table(input$stocks[, c("Stock", "species_name", "first_year", "last_year", "filled_years",
+                            "Resilience", "r.low", "r.hi", "r_source")])
+table(input$excluded$reason)
+```
+
+如果有专家判断，可以用 `priors` 替换默认值。例如按用户手册表 3 设置最后一年的 B/k 先验，或给没有 FishBase 值的种群指定恢复力：
+
+```{r, eval = FALSE}
+input <- cmsy_input(FAO34$area_data, priors = data.frame(
+  alpha3   = c("PIL", "SAA"),
+  endb.low = c(0.2, 0.01),
+  endb.hi  = c(0.6, 0.4)
+))
+input <- cmsy_input(FAO34$area_data, default_resilience = "Medium")  # 没有 FishBase 值的种群统一用"中"
+```
+
+## ▶️ 第五步：运行 CMSY++
+
+```{r, eval = FALSE}
+result <- cmsy_run(input, stocks = c("PIL_34", "SAA_34"), seed = 1)
+result$summary
+```
+
+每个种群在 `cmsy/<渔区>/<种群>/` 下有独立的文件夹，并在单独的 R 进程中运行。文件夹里保留了 CMSY++ 的全部原始输出：分析图 `_AN.jpg`、管理图 `_MAN.jpg`、Kobe 图 `_KOBE.jpg`、`cmsy_output.csv`、`cmsy_<种群>.rdata` 和运行日志 `log.txt`。在 macOS（Apple 芯片，R 4.6，JAGS 4.3.2）上，每个种群约需 20 秒；`parallel` 参数控制同时运行几个种群。
+
+`result$summary` 每个种群一行，包括 MSY、Bmsy、Fmsy、r、k 及其 95% 置信限，最后一年的 B/Bmsy 和 F/Fmsy 及其置信限，Kobe 四个象限的概率，B/Bmsy < 0.8 的概率（`p_overfished`），状态，r 先验的来源，以及 CMSY++ 自己给出的提示（如"起始年渔获很低，起始生物量可能偏低也可能未开发"，以及建议的起始年 `suggested_start_year`）。`result$series` 是逐年结果，`result$sources` 记录本次运行使用的 CMSY++、JAGS、R、各 R 包、FAO 数据和 FishBase 的版本与链接，方便在报告中注明。
+
+## 📊 第六步：图表
+
+```{r, eval = FALSE}
+cmsy_plot(result, lang = "zh")
+```
+
+每个种群生成两幅图：渔获量、B/Bmsy、F/Fmsy 的时间序列（含 95% 置信带，参考线为 Bmsy、0.8 Bmsy 和 0.5 Bmsy），以及最后一年的 Kobe 图；另外还有一幅所有种群最后一年 B/Bmsy 的总览图。图表保存在 `figures/png/cmsy/`，`pptx = TRUE` 时同时导出可编辑的 PowerPoint。
+
+## 📚 参考文献
+
+- Froese R, Winker H, Coro G, Palomares MLD, Tsikliras AC, Dimarchopoulou D, Touloumis K, Demirel N, Vianna GMS, Scarcella G, Schijns R, Liang C, Pauly D (2023). New developments in the analysis of catch time series as the basis for fish stock assessments: the CMSY++ method. *Acta Ichthyologica et Piscatoria* 53: 173–189. <https://doi.org/10.3897/aiep.53.105910>
+- Froese R, Demirel N, Coro G, Winker H (2021). *User Guide for CMSY++*. GEOMAR, 17 pp. <https://oceanrep.geomar.de/id/eprint/52147/>（包内副本：`system.file("cmsy", "CMSYUserGuideMarch2021.pdf", package = "faofishingreport")`）
+- Free CM, Jensen OP, Anderson SC, et al. (2020). Blood from a stone: performance of catch-only methods in estimating stock biomass status. *Fisheries Research* 223: 105452. <https://doi.org/10.1016/j.fishres.2019.105452>
+- Ovando D, Hilborn R, Monnahan C, et al. (2021). Improving estimates of the state of global fisheries depends on better data. *Fish and Fisheries* 22(6): 1377–1391. <https://doi.org/10.1111/faf.12593>
+- Kell LT, Sharma R, Winker H (2022). Artefact and artifice: evaluation of the skill of catch-only methods for classifying stock status. *Frontiers in Marine Science* 9: 762203. <https://doi.org/10.3389/fmars.2022.762203>
+- FAO (2026). *The State of World Fisheries and Aquaculture 2026*，专栏 1.3（评估分级与状态分类）。
+- Plummer M (2003). JAGS: a program for analysis of Bayesian graphical models using Gibbs sampling. DSC 2003. <https://mcmc-jags.sourceforge.io/>
