@@ -284,7 +284,7 @@ Besides the settings, the analysis functions have their own arguments; `lang`, `
 | `species_country()`, `country_species()`, `country_analysis()` | [🐟 Species and countries](species-countries.html) |
 | `check_fao_update()`, `download_fao_data()`, `load_fao_data()`, `fao_data_info()`, `fao_translate()` | [💾 FAO data](data.html) |
 | Summary analyses, e.g. `stock_status()`, `peak_trend()` | [📈 Composition, stock status and trends](status-trends.html), [🔍 Data quality, diversity and fleets](quality-diversity-fleets.html) |
-| `fao_report()` | [📝 Assessment report in Word](report.html) |
+| `fao_report()` | [📝 Assessment report: Word, LaTeX and PDF](report.html) |
 
 ## 📝 Translations
 

@@ -1,6 +1,6 @@
 {
   "topic": "fao_area_sst",
-  "rd_md5": "2dbe83972ed80c73e23daf2193a12a9f",
+  "rd_md5": "c3ccf18e21408f06b7e7c28eaa037fef",
   "stale": false,
   "en": {
     "title": "Sea Surface Temperature of the FAO Major Fishing Areas",
@@ -10,11 +10,13 @@
     "arguments": {
       "area": "FAO area codes (e.g. \"34\") or names as in the FAO data (e.g. \"Atlantic, Eastern\nCentral\"). Default is NULL, all areas.",
       "sst": "The SST data: \"ersst5\" (built in), the name of a product downloaded with\n`download_sst_data()`, or the path of a NetCDF file or of a folder of NetCDF files.\nDefault is the `sst` setting of `fao_settings()`, \"ersst5\" unless changed.",
+      "level": "\"area\" (default) for the 19 FAO major marine areas, or \"division\" for the FAO\nsubareas and divisions (e.g. \"37.1.1\", Balearic), as in the catch data of\n`load_fao_divisions()` (see Subareas and divisions).",
       "variable": "The name of the SST variable in your NetCDF files. Default is NULL, found from\nits name.",
       "data_dir": "The directory where downloaded data and computed tables are stored. Default is\n`fao_data_dir()`."
     },
     "sections": {
       "Which SST data": "- **Built in (default): NOAA ERSST v5**: The package comes with the yearly SST of the 19 areas from 1950, computed from NOAA Extended Reconstructed SST version 5 (Huang et al. 2017): a monthly reconstruction on a 2° x 2° grid (about 220 km) from in situ observations only (ships and buoys of ICOADS, Argo floats from 1999). It is the smallest of the common SST products, needs no download, and is consistent over the whole period; its grid is coarse for small areas such as the Mediterranean and Black Sea (`n_cells` gives the number of grid cells of each area).\n- **Your own NetCDF files**: Give the path of a NetCDF file, or of a folder of NetCDF files, as `sst`, or once for the session with `fao_settings(sst = \"path\")`. The files must hold a gridded SST with longitude, latitude and time, monthly or daily (e.g. HadISST, COBE-SST2, OISST, ERSST, or a model output). The yearly area means are computed the first time, which can take a few minutes, and saved in the `sst` folder of `data_dir`; later calls with the same files read the saved table. Reading NetCDF files needs the ncdf4 package.\n- **Downloaded with download_sst_data()**: `download_sst_data()` downloads one of the products listed by `fao_sst_products()` (HadISST1, COBE-SST2, OISST v2.1, or the newest years of ERSST v5) and computes its table; it is then used by its name, e.g. `sst = \"hadisst1\"`.",
+      "Subareas and divisions": "With `level = \"division\"`, the table has one row per FAO subarea and division of the FAO map in\nthe package (`inst/extdata/FAO_AREAS_CWP.shp`): `area_code` is its code (e.g. \"34.1.1\" or the\nsubarea \"34.2\") and `area_en` its name. The built-in ERSST v5 table covers the subareas and\ndivisions of areas 34, 37, 47 and 51, those of the catch data by division\n(`load_fao_divisions()`); tables from downloaded products or your own files cover all of them.\nMany divisions are small for a 2° grid (see `n_cells`; e.g. the Sea of Azov or the Sea of\nMarmara have none or a few cells), so a finer SST product, given as the path of its NetCDF\nfiles, suits divisions better.",
       "How the area means are computed": "- Files: the SST variable is found by its name (\"sst\", \"analysed_sst\", \"tos\", ...) unless given as `variable`; longitudes may run from -180 to 180 or from 0 to 360; values in kelvin are converted to °C; if there are several depths, the first (the surface) is used. Values below -5 °C, which some products use to mark sea ice (-1000 in HadISST1), are set to -1.8 °C, the value other products give under sea ice. Daily values are averaged by month.\n- Grids finer than 1° are first averaged to about 1° (mean of the cells with a value).\n- Each grid cell counts for each FAO major area it overlaps (`inst/extdata/FAO_AREAS_CWP.shp`, the 19 marine areas), weighted by the area of the overlap computed on the sphere, so cells on a boundary are shared and coastal cells count for their sea part only.\n- `sst_mean` is the mean of the 12 monthly area means; `sst_p10` and `sst_p90` are the weighted 10th and 90th percentiles of the yearly mean SST of the cells (the range within the area); `sst_min_month` and `sst_max_month` are the coldest and warmest monthly area means (the seasonal range; in areas on both sides of the equator the seasons of the two hemispheres partly cancel, so this range is narrow there). Only years with all 12 months are kept.\n\nValues over the Arctic Sea and the Antarctic areas partly reflect sea ice rather than measured\nwater temperature. SST products use different observations and methods, so their values and\ntrends differ somewhat; repeating an analysis with a second product shows how much a result\ndepends on the product."
     }
   },
@@ -26,15 +28,18 @@
     "arguments": {
       "area": "FAO渔区代码（例如\"34\"），或FAO数据中的渔区名称（例如\"Atlantic, Eastern Central\"）。默认为NULL，即全部渔区。",
       "sst": "SST数据：\"ersst5\"（包内自带）、用`download_sst_data()`下载的产品名称，或者一个NetCDF文件的路径或存放NetCDF文件的文件夹路径。默认为`fao_settings()`中的`sst`设置，未更改时为\"ersst5\"。",
+      "level": "\"area\"（默认）表示19个FAO主要海洋渔区，\"division\"表示FAO亚区和分区（例如\"37.1.1\"，巴利阿里），与`load_fao_divisions()`的渔获数据一致（见“亚区和分区”一节）。",
       "variable": "你的NetCDF文件中SST变量的名称。默认为NULL，即按变量名自动识别。",
       "data_dir": "保存下载数据和计算结果表的目录。默认为`fao_data_dir()`。"
     },
     "sections": {
       "Which SST data": "- **包内自带（默认）：NOAA ERSST v5**：本包自带19个渔区1950年以来的逐年SST，由NOAA Extended Reconstructed SST version 5（Huang等，2017）计算得到。这是一套2° x 2°网格（约220 km）的逐月重建数据，仅使用现场观测（ICOADS的船舶和浮标资料，1999年起加入Argo浮标）。它是常用SST产品中最小的，无需下载，整个时段前后一致；但对于地中海和黑海这样的小渔区，它的网格偏粗（`n_cells`给出每个渔区的网格数）。\n- **你自己的NetCDF文件**：把一个NetCDF文件的路径，或存放NetCDF文件的文件夹路径，作为`sst`给出，或者用`fao_settings(sst = \"path\")`为本次R会话统一设置。文件中必须有带经度、纬度和时间维度的网格化SST，逐月或逐日均可（例如HadISST、COBE-SST2、OISST、ERSST，或模式输出）。渔区逐年平均值在第一次使用时计算（可能需要几分钟），并保存在`data_dir`的`sst`文件夹中；之后用同样的文件调用时，直接读取保存的结果表。读取NetCDF文件需要ncdf4包。\n- **用`download_sst_data()`下载**：`download_sst_data()`下载`fao_sst_products()`所列的一种产品（HadISST1、COBE-SST2、OISST v2.1，或ERSST v5的最新年份），并计算其数据表；之后按名称使用，例如`sst = \"hadisst1\"`。",
+      "Subareas and divisions": "`level = \"division\"`时，表中每个FAO亚区和分区（以本包所带的FAO地图`inst/extdata/FAO_AREAS_CWP.shp`为准）每年一行：`area_code`是其代码（例如\"34.1.1\"，或亚区\"34.2\"），`area_en`是其名称。内置的ERSST v5表包含34、37、47和51区的亚区和分区，即按分区的渔获数据（`load_fao_divisions()`）所涉及的渔区；由下载的产品或你自己的文件计算的表包含全部亚区和分区。很多分区对于2°网格来说太小（见`n_cells`；例如亚速海和马尔马拉海没有或只有几个网格），所以分区更适合使用分辨率更高的SST产品（给出其NetCDF文件的路径）。",
       "How the area means are computed": "- 文件：SST变量按名称识别（\"sst\"、\"analysed_sst\"、\"tos\"等），除非用`variable`指定；经度可以是-180到180，也可以是0到360；以开尔文为单位的值换算成°C；有多个深度层时，使用第一层（表层）。低于-5 °C的值（有些产品用这种值标记海冰，HadISST1用-1000）设为-1.8 °C，即其他产品在海冰下给出的值。逐日数据先按月平均。\n- 细于1°的网格先平均到约1°（取有值网格的平均）。\n- 每个网格计入它所重叠的每个FAO主要渔区（`inst/extdata/FAO_AREAS_CWP.shp`，19个海洋渔区），权重为在球面上计算的重叠面积，因此位于边界上的网格由相邻渔区共享，沿岸网格只计算其海洋部分。\n- `sst_mean`是12个月渔区平均值的平均；`sst_p10`和`sst_p90`是各网格年平均SST的加权第10和第90百分位数（渔区内的范围）；`sst_min_month`和`sst_max_month`是最冷月和最暖月的渔区平均值（季节范围；在横跨赤道的渔区，南北两个半球的季节会部分抵消，所以这个范围较窄）。只保留12个月齐全的年份。\n\n北冰洋渔区和南极各渔区的数值，有一部分反映的是海冰，而不是实测的水温。不同的SST产品使用不同的观测和方法，所以它们的数值和趋势会有一定差异；换用另一种产品重复分析，可以看出结果在多大程度上依赖所选的产品。"
     },
     "section_titles": {
       "Which SST data": "使用哪一套SST数据",
+      "Subareas and divisions": "亚区和分区",
       "How the area means are computed": "渔区平均值的计算方法"
     }
   }

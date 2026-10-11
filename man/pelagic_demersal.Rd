@@ -9,6 +9,7 @@ pelagic_demersal(
   definition = c("de_leiva_moreno", "grainger_garcia"),
   pelagic = NULL,
   demersal = NULL,
+  by = c("area", "division"),
   plot = TRUE,
   table = TRUE,
   lang = NULL,
@@ -26,6 +27,10 @@ pelagic_demersal(
 \item{pelagic, demersal}{ISSCAAP groups (English names as in the FAO data, e.g. "Herrings,
 sardines, anchovies") counted as pelagic and demersal instead of those of \code{definition}.
 Default is NULL.}
+
+\item{by}{"area" (default) for the FAO major areas, or "division" for the divisions of the
+catch data of \code{load_fao_divisions()} (e.g. the GFCM divisions of the Mediterranean and
+Black Sea, the units of de Leiva Moreno et al. 2000).}
 
 \item{plot}{A logical value. If TRUE (default), charts are saved in \verb{figures/png/summary/}.}
 
@@ -52,6 +57,9 @@ as pelagic or demersal, and the share of unidentified marine fishes;}
 catch of the decade;}
 \item{groups}{the ISSCAAP groups of the data, how each is counted and its catch.}
 }
+With \code{by = "division"}, \code{area} and \code{area_en} hold the divisions, \code{area_code} their codes, and
+\verb{_pelagic_demersal} in the file names becomes \verb{_pelagic_demersal_divisions} (e.g.
+\verb{<label>_pelagic_demersal_divisions_ratio.png}).
 Charts are saved in \verb{figures/png/summary/}: \verb{<label>_pelagic_demersal_ratio.png} (P/D by
 year, one panel per area), and \verb{<label>_pelagic_demersal.png} and \code{..._share.png} (pelagic,
 demersal and other catch). Tables are saved in \verb{tables/}: \verb{<label>_pelagic_demersal.csv},
@@ -118,6 +126,10 @@ species can drive the ratio (Grainger and Garcia 1996; Hondorp et al. 2010).
 \code{unidentified_pct}) is probably mostly demersal (Grainger and Garcia 1996), and its share
 changes over time. The FAO capture data contain neither aquaculture nor discards.
 }
+With \code{by = "division"}, the ratio is calculated for each division of the catch data of
+\code{load_fao_divisions()}. Codes that are not places, such as "37.0.0 Tunas" or "37.9.0 Not
+known", are kept as their own units.
+
 Read the ratio together with the catch of each group (the group table and the composition
 chart) before attributing a change to nutrients. Where no pelagic group is caught (e.g. the
 Antarctic areas, where krill is not counted), P/D is 0; the chart, on a log scale, leaves such
@@ -139,6 +151,9 @@ pelagic_demersal(FAO37$area_data,
                  pelagic = c("Herrings, sardines, anchovies", "Miscellaneous pelagic fishes"),
                  demersal = fao_pd_groups()$isscaap_en[fao_pd_groups()$de_leiva_moreno == "demersal"],
                  label = "FAO37_small_medium_pelagic")
+
+# The GFCM divisions of the Mediterranean and Black Sea
+pelagic_demersal(load_fao_divisions("GFCM"), by = "division")
 
 # All FAO major marine fishing areas, one panel per area
 marine <- subset(load_fao_data(), FAO.major.fishing.area..Name. \%in\% fao_area_sst()$area_en)

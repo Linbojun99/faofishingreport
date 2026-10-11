@@ -51,7 +51,7 @@ They return their results invisibly: assign them (`x <- catch_shocks(...)`) to u
 ## 📝 In the Word report
 
 `fao_report()` can add four of these analyses to the Word report of a fishing area (see
-[📝 Assessment report in Word](report.html)). They are switched off by default:
+[📝 Assessment report: Word, LaTeX and PDF](report.html)). They are switched off by default:
 
 ```{r, eval = FALSE}
 fao_report(34, shocks = TRUE, collapse = TRUE, synchrony = TRUE, distant = TRUE)

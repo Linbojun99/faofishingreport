@@ -1,0 +1,252 @@
+---
+title: "🚢 Trade and employment"
+description: >
+  load_fao_trade(), catch_trade(), fao_capture_groups(), load_fao_employment(), employment_summary() and
+  catch_per_fisher(): how much of a country's catch is exported, and how many people fish and farm, from
+  two more FAO datasets.
+---
+
+```{r setup, include = FALSE}
+source("_setup.R")
+# Charts made beforehand by data-raw/trade_employment_article_figures.R (the site does not download the
+# 16 MB trade data when it is built)
+fig_dir <- normalizePath(file.path("figures", "trade-employment", "en"))
+show_png <- function(file) {
+  knitr::asis_output(sprintf('<figure class="fao-figure"><img src="%s" alt="%s" loading="lazy"></figure>',
+                             knitr::image_uri(file.path(fig_dir, file)), file))
+}
+```
+
+::: {.alert .alert-info}
+**🧩 Extension.** This article uses FAO datasets other than global capture production (trade,
+employment, and the catch by division of regional fishery bodies). These functions are an
+extension of the package: they are not part of the Word report written by `fao_report()`.
+:::
+
+Besides the catch, FAO publishes the **trade** of aquatic products and the **employment** in fisheries
+and aquaculture on the same data index (<https://www.fao.org/fishery/static/Data/>). Both can be joined
+to the catch data: trade by country, ISSCAAP species group and year, employment by country and year.
+This article shows the functions that do it, what the data can and cannot say, and the published work
+they follow.
+
+## 🚢 Trade data
+
+`load_fao_trade()` downloads the newest release of the FAO trade statistics the first time (16 MB;
+converting takes about ten seconds), keeps it in the data folder and returns one row per country,
+commodity, flow and year:
+
+```{r, eval = FALSE}
+trade <- load_fao_trade()
+norway <- subset(trade, Country..Name. == "Norway" & Trade.flow == "Exports" & Year == 2024)
+head(norway[order(-norway$Value), c("Commodity..Name.", "ISSCAAP.group..Name.", "Quantity", "Value")])
+```
+
+| Column | Meaning |
+|---|---|
+| `Country..Name.` | Reporting country, named as in the catch data |
+| `Commodity..Code.`, `Commodity..Name.` | Commodity of the ISSCFC classification (about 1,200 in use) |
+| `ISSCAAP.group..Code.`, `ISSCAAP.group..Name.` | The ISSCAAP species group of the commodity, as in the catch data |
+| `Trade.flow` | "Exports", "Imports" or "Re-exports" |
+| `Quantity` | Tonnes of **product weight** (fillets, frozen fish, fishmeal, ...), not live weight |
+| `Value` | Thousand US dollars (exports usually FOB, imports CIF) |
+| `Quantity.Type`, `Value.Type` | "actual", "estimate", "partner data" (taken from the reports of trade partners), ... |
+
+Four things to keep in mind (FAO metadata of the release):
+
+- **Product weight.** A tonne of fillets comes from two to three tonnes of fish, a tonne of fishmeal from
+  four to five. FAO publishes no conversion factors with the data.
+- **Caught or farmed?** A commodity does not tell. The two largest export groups in 2024, salmons and
+  shrimps, are mostly farmed.
+- **Re-exports** are reported by few countries (26 in 2024, not China), so most are counted as exports.
+- **Partners.** Catch landed abroad by a country's vessels counts as its export. Trade by partner
+  country (FI_Trade_Partners) starts only in 2019 and is not read by the package.
+
+## 🐟 Which species groups can be compared with the catch
+
+Because trade does not separate caught from farmed products, `catch_trade()` compares only the ISSCAAP
+groups that are **mostly caught**: capture at least 90% of their world production (capture and
+aquaculture) in every year analysed. `fao_capture_groups()` gives the shares, from the FAO global
+production data built into the package:
+
+```{r}
+groups <- fao_capture_groups()
+groups$capture_pct_min <- round(groups$capture_pct_min, 1)
+groups[groups$capture_pct_min >= 75, c("isscaap_code", "isscaap_en", "capture_pct_min", "year_min", "counted")]
+```
+
+From 1976 to 2024, 13 groups count: cods, herrings and sardines, tunas, miscellaneous pelagic and demersal
+fishes, sharks, shads, lobsters, king crabs, krill, miscellaneous marine crustaceans, squids and octopuses,
+and horseshoe crabs. They held 36% of the value of world exports in 2024. Shrimps (capture below 90% from
+1986), crabs (2000), flounders (2004) and "Marine fishes not identified" (89.7% in 2022-2024) do not.
+`min_capture_pct` and `years` change the rule; shrimps, for example, count for 1976-1985.
+
+## ⚖️ Catch and trade of a country: catch_trade()
+
+```{r, eval = FALSE}
+catch_trade(c("Norway", "Iceland", "Peru", "Thailand"), trade = trade, label = "four")
+catch_trade("Norway", trade = trade)          # also one panel per species group
+```
+
+```{r, echo = FALSE}
+show_png("four_catch_trade.png")
+```
+
+The table `yearly` of each country and year gives:
+
+| Column | Meaning |
+|---|---|
+| `catch_tonnes` | Catch of the groups compared (all FAO areas; live weight) |
+| `export_tonnes`, `import_tonnes`, `reexport_tonnes` | Trade of the same groups (product weight) |
+| `export_value`, `import_value`, `export_unit_value` | Thousand USD; USD per kg of product |
+| `export_catch_pct` | Exports (product weight) as % of the catch (live weight) |
+| `counted_catch_pct`, `counted_export_value_pct` | How much of the country's catch and export value the groups compared hold |
+| `estimated_export_value_pct` | Share of the export value estimated or taken from partner reports |
+| `meal_oil_export_tonnes` | Fishmeal and fish oil not assigned to a group compared (see below) |
+
+In 2024:
+
+| Country | Catch of the groups compared (t) | Exports (t, product weight) | Exports / catch | Share of the catch compared | Share of the export value compared |
+|---|---|---|---|---|---|
+| Norway | 2,061,767 | 962,671 | 47% | 89% | 19% |
+| Iceland | 970,014 | 384,696 | 40% | 96% | 64% |
+| Peru | 5,486,981 | 345,460 | 6% | 95% | 20% |
+| Thailand | 651,720 | 797,282 | 122% | 42% | 55% |
+
+- **Norway** exports about half of its catch of these groups (in product weight, so more in live
+  weight), but they are only a fifth of its export value: farmed salmon makes up three quarters.
+- **Peru** seems to export little, because its catch is mostly anchoveta reduced to fishmeal, and FAO
+  classes most fishmeal and fish oil as "Fishmeals, nei" and "Fish body oils, nei", in the group
+  "Marine fishes not identified". The function reports them separately: Peru exported 1.06 million tonnes
+  in 2024.
+- **Thailand** exports more than it catches and imports more than it exports: it processes imported
+  tuna. The function lists the groups and years where exports exceed the catch.
+
+```{r, echo = FALSE}
+show_png("Norway_catch_trade_groups.png")
+```
+
+With your own **conversion factors** (e.g. from EUMOFA or FAO Fisheries Circular 847), trade is converted
+to live weight equivalent and the apparent supply (catch + imports − exports − re-exports) is
+calculated, as in food balance sheets:
+
+```{r, eval = FALSE}
+factors <- data.frame(commodity_code = c("034.1.5.2.19", "034.4.1.5.2.19"), factor = c(1.17, 2.6))
+catch_trade("Norway", trade = trade, conversion = factors)
+```
+
+## 👥 Employment data
+
+`load_fao_employment()` downloads the FAO statistics of the people employed in the primary sector (under
+1 MB), by country, work area, working time, sex and year, from 1995, with FAO's notes on individual
+countries:
+
+```{r, eval = FALSE}
+employment <- load_fao_employment()
+notes <- attr(employment, "country_notes")
+notes$note[notes$country_en == "China"]
+```
+
+The numbers are **people, not full-time equivalents**. Working time is unknown for 38% and sex for 41%
+of the data. FAO imputations make up about 30% of the data and half of the people in 2024. Processing
+and subsistence are not published. FAO first disseminated this dataset in 2026, revises the whole series
+between releases, and its country notes explain breaks and definitions. For example, China reports its
+part-time and occasional workers of fishing and aquaculture together as "Unspecified", and its "Marine
+fishing, NEI" includes inland fishing in 1995-2006 and 2014-2020.
+
+## 📊 People in fisheries and aquaculture: employment_summary()
+
+```{r, eval = FALSE}
+employment_summary(employment = employment)                                   # the world
+employment_summary(c("Norway", "Peru", "China"), employment = employment, label = "three")
+```
+
+```{r, echo = FALSE}
+show_png("World_employment.png")
+```
+
+In 2024, 65.4 million people worked in fisheries and aquaculture: 35% in aquaculture, 26% in marine
+fishing, 30% in inland fishing and 9% in an unspecified work area. As in FAO (2024, 2026), the shares of
+women and of full-time workers are calculated among those whose sex or working time is known: 27% women
+(sex unknown for 38%) and 51% full time (working time unknown for 37%). Because the detail changes with
+reporting, the chart of shares also shows the unknowns:
+
+```{r, echo = FALSE}
+show_png("three_employment_composition.png")
+```
+
+## 🎣 Catch per fisher: catch_per_fisher()
+
+`catch_per_fisher()` divides the marine catch by the marine fishers (coastal, deep-sea and not
+specified), the inland catch by the inland fishers, and the whole catch by all fishers, as FAO did by
+region (FAO 2012, table 9). With `weights = "fte"`, fishers count as full-time equivalents with the
+weights of Scherrer et al. (2024): part time 60/95, occasional 15/95, full time and unknown 1.
+
+```{r, eval = FALSE}
+catch_per_fisher(c("Norway", "Iceland", "Peru", "Indonesia", "China", "India"), employment = employment,
+                 label = "six")
+catch_per_fisher("India", weights = "fte", employment = employment)
+```
+
+```{r, echo = FALSE}
+show_png("six_catch_per_fisher.png")
+```
+
+Marine catch per fisher in 2024 was 290 t in Iceland, 219 t in Norway and 95 t in Peru, but 2 to 3 t in
+India and Indonesia. Read it with the messages the function prints:
+
+- **Workers of unspecified work area** are not counted as fishers. In China they are 49% of the workers
+  (5.4 million), so its catch per fisher is too high, and its marine/inland split is not reliable
+  (country note). Use the catch per fisher of all fishing for China.
+- **Estimates carried forward.** All of India's fishers are estimated values, and their number is the same
+  as the year before in 9 of 30 years.
+- **Coverage.** Norway leaves out foreign crews on Norwegian vessels (country note). Catch is recorded by
+  the flag of the vessel.
+
+## 📚 What others did with these data
+
+- **Trade.** Studies of seafood trade networks mostly use UN Comtrade or BACI, because FAO trade by
+  partner starts only in 2019 (Gephart and Pace 2015; Gephart et al. 2024). FAO's own trade data are
+  used for:
+
+  - the share of production exported (FAO yearbook, appendix A-2; Golden et al. 2017);
+  - apparent consumption by mass balance (Zhao et al. 2024);
+  - unit values (Melnychuk et al. 2017);
+  - re-export hubs (Asche et al. 2022).
+
+  Their known problems are the ones above: product weight, caught and farmed mixed, re-exports, and
+  mirror data (Dent and Clarke 2015; Watson et al. 2016).
+- **Employment.** FAO presents trends, shares by work area and the composition by sex and working time
+  (FAO 2024, 2026), and production per worker (FAO 2012). Scherrer et al. (2024) followed marine catch per
+  fisher since 1950 with full-time equivalents. Surveys of small-scale fisheries found numbers close to
+  FAO's for full- and part-time fishers, with large differences in some countries (FAO, Duke University
+  and WorldFish 2023).
+
+The help pages of the functions give the full references.
+
+## References
+
+Asche, F. et al. (2022). China's seafood imports - Not for domestic consumption? *Science* 375: 386-388. <https://doi.org/10.1126/science.abl4756>
+
+Dent, F. and Clarke, S. (2015). *State of the global market for shark products.* FAO Fisheries and Aquaculture Technical Paper 590. <https://www.fao.org/3/i4795e/i4795e.pdf>
+
+FAO (2012). *The State of World Fisheries and Aquaculture 2012.* <https://www.fao.org/4/i2727e/i2727e.pdf>
+
+FAO (2024). *The State of World Fisheries and Aquaculture 2024.* <https://doi.org/10.4060/cd0683en>
+
+FAO (2026). *The State of World Fisheries and Aquaculture 2026.* <https://doi.org/10.4060/cd8357en>
+
+FAO, Duke University and WorldFish (2023). *Illuminating Hidden Harvests.* <https://doi.org/10.4060/cc4576en>
+
+Gephart, J.A. and Pace, M.L. (2015). Structure and evolution of the global seafood trade network. *Environmental Research Letters* 10: 125014. <https://doi.org/10.1088/1748-9326/10/12/125014>
+
+Gephart, J.A. et al. (2024). Globalization of wild capture and farmed aquatic foods. *Nature Communications* 15: 8026. <https://doi.org/10.1038/s41467-024-51965-8>
+
+Golden, C.D. et al. (2017). Does aquaculture support the needs of nutritionally vulnerable nations? *Frontiers in Marine Science* 4: 159. <https://doi.org/10.3389/fmars.2017.00159>
+
+Melnychuk, M.C., Clavelle, T., Owashi, B. and Strauss, K. (2017). Reconstruction of global ex-vessel prices of fished species. *ICES Journal of Marine Science* 74: 121-133. <https://doi.org/10.1093/icesjms/fsw169>
+
+Scherrer, K.J.N., Rousseau, Y., Teh, L.C.L., Sumaila, U.R. and Galbraith, E.D. (2024). Diminishing returns on labour in the global marine food system. *Nature Sustainability* 7: 45-52. <https://doi.org/10.1038/s41893-023-01249-8>
+
+Watson, R.A., Green, B.S., Tracey, S.R., Farmery, A. and Pitcher, T.J. (2016). Provenance of global seafood. *Fish and Fisheries* 17: 585-595. <https://doi.org/10.1111/faf.12129>
+
+Zhao, K., Gaines, S.D., García Molinos, J., Zhang, M. and Xu, J. (2024). Effect of trade on global aquatic food consumption patterns. *Nature Communications* 15: 1412. <https://doi.org/10.1038/s41467-024-45556-w>

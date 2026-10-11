@@ -317,8 +317,9 @@ fao_local_versions <- function(data_dir) {
   versions[order(numeric_version(versions))]
 }
 
-# Lists the Capture_<version>.zip files on the FAO data index, oldest first.
-fao_list_releases <- function() {
+# Lists the <prefix>_<version>.zip files on the FAO data index (Capture by default, or e.g.
+# FI_Regional), oldest first.
+fao_list_releases <- function(prefix = "Capture") {
   index <- tryCatch(
     readLines(fao_base_url, warn = FALSE, encoding = "UTF-8"),
     error = function(e) {
@@ -327,12 +328,12 @@ fao_list_releases <- function() {
     }
   )
 
-  pattern <- paste0('href="(Capture_([0-9]+\\.[0-9]+\\.[0-9]+)\\.zip)".*?',
+  pattern <- paste0('href="(', prefix, '_([0-9]+\\.[0-9]+\\.[0-9]+)\\.zip)".*?',
                     '([0-9]{4}-[0-9]{2}-[0-9]{2}) [0-9:]+.*?<td align="right">([^<]*)</td>')
   rows <- regmatches(index, regexec(pattern, index, perl = TRUE))
   rows <- do.call(rbind, rows[lengths(rows) == 5])
   if (is.null(rows)) {
-    stop("No Capture releases were found on the FAO data index (", fao_base_url, ").",
+    stop("No ", prefix, " releases were found on the FAO data index (", fao_base_url, ").",
          call. = FALSE)
   }
 

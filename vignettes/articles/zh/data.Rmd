@@ -267,6 +267,34 @@ fao_translate("Atlantic, Eastern Central", "area", "zh")
 
 FAO没有为ISSCAAP物种类群、大类和收入分组提供中文名称；本包的译名保存在`inst/extdata/group_names_zh.csv`，所有图表标签保存在`inst/extdata/chart_labels.csv`。如需修改措辞，可在包的源代码中编辑这些文件，然后重新安装。
 
+## 🧩 扩展：按分区的渔获
+
+本节和下一节使用全球捕捞产量以外的FAO数据集，属于本包的扩展功能，不纳入Word报告。
+
+FAO还为四个区域发布了按**分区**（区域渔业组织使用的FAO渔区下一级单元）统计的渔获：GFCM（37区，如37.1.1巴利阿里、37.2.1亚得里亚海、37.4.2黑海）、CECAF（34区）、东南大西洋（47区）和RECOFI（海湾、阿曼海和阿拉伯海西南部，属于51区的一部分）。`load_fao_divisions()`第一次使用时下载最新版本（约5 MB），保存在数据文件夹中，并按上面的格式返回，另外多三列：`Division`、`Division..Name.`和`Region`。
+
+```{r, eval = FALSE}
+med <- load_fao_divisions("GFCM")
+pelagic_demersal(med, by = "division")          # 每个分区一条 P/D 序列
+mean_temperature_catch(med, by = "division")    # 每个分区的渔获平均温度和海表温度
+```
+
+对GFCM、CECAF和东南大西洋，各分区渔获之和与FAO渔区的渔获几乎完全一致。有些代码不是具体海域："37.0.0 Tunas" 是按整个渔区报告的金枪鱼，"37.9.0 Not known" 是分区不明的渔获。
+
+## 🧩 扩展：贸易与就业数据
+
+FAO还发布水产品贸易和渔业与养殖就业数据：
+
+- `load_fao_trade()`：各国按商品和年份的出口、进口、转口，从1976年起，约16 MB；
+- `load_fao_employment()`：各国按工作领域、工作时间、性别的从业人数，从1995年起，不到1 MB。
+
+两个函数和`load_fao_divisions()`一样，第一次运行时下载数据并保存在数据文件夹。贸易数量是产品重量，不是活重；就业是人数，不是全时当量。把它们和渔获数据对接的分析（`catch_trade()`、`employment_summary()`、`catch_per_fisher()`）见[🚢 贸易与就业](trade-employment.html)。
+
+```{r, eval = FALSE}
+trade <- load_fao_trade()
+employment <- load_fao_employment()
+```
+
 ## ⚠️ 数据注意事项
 
 - **近几年的数据常为估算值。**某个国家尚未上报时，FAO会估算其产量。在34渔区，2024年约三分之一的产量是估算值；这些数值通常会在下一个版本中修订。`data_quality()`可以显示任一渔区的这一情况。

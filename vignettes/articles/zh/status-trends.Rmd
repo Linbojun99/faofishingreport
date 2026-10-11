@@ -206,13 +206,24 @@ show_table(fao_pd_groups(), n = 15)
 |---|---|---|
 | `definition` | 哪些类群算中上层鱼和底层鱼：`"de_leiva_moreno"`或`"grainger_garcia"` | `"de_leiva_moreno"` |
 | `pelagic`、`demersal` | 改用自己指定的ISSCAAP类群（使用FAO数据中的英文名，如`"Herrings, sardines, anchovies"`），代替`definition`的类群 | `NULL` |
+| `by` | `"area"`，或`"division"`（用于`load_fao_divisions()`的分区渔获数据，🧩扩展功能） | `"area"` |
 | `area_data`、`plot`、`table`、`lang`、`pptx`、`label` | 见[通用参数](#common-arguments) | |
 
 内陆渔区会被剔除，并给出提示。输出：图`<label>_pelagic_demersal_ratio.png`（逐年P/D，每个渔区一个分图）、`<label>_pelagic_demersal.png`和`..._share.png`（中上层鱼、底层鱼和其他渔获），表格`<label>_pelagic_demersal.csv`、`..._decades.csv`和`..._groups.csv`；函数返回`yearly`、`decades`和`groups`。
 
+### 🧩 按分区计算（扩展功能）
+
+de Leiva Moreno et al. (2000)比较的是地中海和黑海的各个分区。区域渔业组织的分区渔获数据中有同样的分区，用`load_fao_divisions()`读取（这是本包的扩展功能，不纳入Word报告；其他数据集见[🚢 贸易与就业](trade-employment.html)）：
+
+```{r, eval = FALSE}
+pelagic_demersal(load_fao_divisions("GFCM"), by = "division")
+```
+
+在2026.1.0版数据中，1980年代的平均P/D在爱奥尼亚海（0.6）和黎凡特海（0.4）低于1，在亚得里亚海约为4，在黑海约为18，分别落在de Leiva Moreno et al. (2000)给出的贫营养、中营养和富营养海域的范围内。
+
 ## 📝 写入Word报告
 
-`fao_report()`可以把这些分析写进某个渔区的Word报告（见[📝 一键生成Word评估报告](report.html)）。ISSCAAP类群（`groups = TRUE`）和资源状态图（`status = TRUE`）默认就是报告的章节；中上层鱼/底层鱼渔获比用`pelagic = TRUE`加入。各函数的设置以章节名为前缀传入，例如`status_smooth = TRUE`就是`stock_status()`的`smooth = TRUE`：
+`fao_report()`可以把这些分析写进某个渔区的Word报告（见[📝 一键生成评估报告（Word、LaTeX、PDF）](report.html)）。ISSCAAP类群（`groups = TRUE`）和资源状态图（`status = TRUE`）默认就是报告的章节；中上层鱼/底层鱼渔获比用`pelagic = TRUE`加入。各函数的设置以章节名为前缀传入，例如`status_smooth = TRUE`就是`stock_status()`的`smooth = TRUE`：
 
 ```{r, eval = FALSE}
 fao_report(34, pelagic = TRUE, status_smooth = TRUE, pelagic_definition = "grainger_garcia")

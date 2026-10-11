@@ -30,6 +30,16 @@
 #'     ERSST v5) and computes its table; it is then used by its name, e.g. `sst = "hadisst1"`.}
 #' }
 #'
+#' @section Subareas and divisions:
+#' With `level = "division"`, the table has one row per FAO subarea and division of the FAO map in
+#' the package (`inst/extdata/FAO_AREAS_CWP.shp`): `area_code` is its code (e.g. "34.1.1" or the
+#' subarea "34.2") and `area_en` its name. The built-in ERSST v5 table covers the subareas and
+#' divisions of areas 34, 37, 47 and 51, those of the catch data by division
+#' (`load_fao_divisions()`); tables from downloaded products or your own files cover all of them.
+#' Many divisions are small for a 2° grid (see `n_cells`; e.g. the Sea of Azov or the Sea of
+#' Marmara have none or a few cells), so a finer SST product, given as the path of its NetCDF
+#' files, suits divisions better.
+#'
 #' @section How the area means are computed:
 #' \itemize{
 #'   \item Files: the SST variable is found by its name ("sst", "analysed_sst", "tos", ...)
@@ -58,6 +68,9 @@
 #' @param sst The SST data: "ersst5" (built in), the name of a product downloaded with
 #'        `download_sst_data()`, or the path of a NetCDF file or of a folder of NetCDF files.
 #'        Default is the `sst` setting of `fao_settings()`, "ersst5" unless changed.
+#' @param level "area" (default) for the 19 FAO major marine areas, or "division" for the FAO
+#'        subareas and divisions (e.g. "37.1.1", Balearic), as in the catch data of
+#'        `load_fao_divisions()` (see Subareas and divisions).
 #' @param variable The name of the SST variable in your NetCDF files. Default is NULL, found from
 #'        its name.
 #' @param data_dir The directory where downloaded data and computed tables are stored. Default is
@@ -79,14 +92,21 @@
 #' fao_area_sst("34", sst = "D:/data/HadISST_sst.nc")
 #' # ... or for the whole session, including mean_temperature_catch()
 #' fao_settings(sst = "D:/data/HadISST_sst.nc")
+#'
+#' # Subareas and divisions, e.g. those of the Mediterranean and Black Sea
+#' div <- fao_area_sst(level = "division")
+#' subset(div, startsWith(area_code, "37.") & year == 2024)
 #' }
-fao_area_sst <- function(area = NULL, sst = fao_setting("sst"), variable = NULL, data_dir = fao_data_dir()) {
-  table <- fao_sst_source(sst, variable, data_dir)
+fao_area_sst <- function(area = NULL, sst = fao_setting("sst"), level = c("area", "division"), variable = NULL,
+                         data_dir = fao_data_dir()) {
+  level <- match.arg(level)
+  table <- fao_sst_source(sst, variable, data_dir, level)
   if (!is.null(area)) {
     area <- as.character(area)
     unknown <- setdiff(area, c(table$area_code, table$area_en))
     if (length(unknown) > 0) {
-      stop("Unknown FAO major marine fishing area: ", paste(unknown, collapse = ", "), ". Areas: ",
+      stop("Unknown FAO ", if (level == "area") "major marine fishing area" else "subarea or division", ": ",
+           paste(unknown, collapse = ", "), ". Codes: ",
            paste(unique(paste(table$area_code, table$area_en)), collapse = "; "), call. = FALSE)
     }
     table <- table[table$area_code %in% area | table$area_en %in% area, ]
@@ -255,9 +275,12 @@ download_sst_data <- function(product = "ersst5", years = NULL, data_dir = fao_d
   manifest <- utils::read.csv(file.path(dir, "files.csv"), colClasses = "character")
   table <- fao_sst_compute(files, "sst", data_dir, product = product, source = info$name,
                            date = max(manifest$downloaded), quiet = quiet)
-  fao_write_csv(table, file.path(dir, "fao_area_sst.csv"))
-  if (!quiet) message(info$name, ": area table with ", nrow(table), " rows, ", min(table$year), "-",
-                      max(table$year), ", saved in ", dir)
+  fao_write_csv(table, file.path(dir, fao_sst_table_file("area")))
+  divisions <- fao_sst_compute(files, "sst", data_dir, product = product, source = info$name,
+                               date = max(manifest$downloaded), quiet = quiet, level = "division")
+  fao_write_csv(divisions, file.path(dir, fao_sst_table_file("division")))
+  if (!quiet) message(info$name, ": tables of the areas (", nrow(table), " rows) and of the subareas and divisions (",
+                      nrow(divisions), " rows), ", min(table$year), "-", max(table$year), ", saved in ", dir)
   invisible(table)
 }
 
@@ -346,23 +369,43 @@ fao_sst_check_setting <- function(sst) {
   invisible(TRUE)
 }
 
-# The area table of the SST data `sst` (product name or NetCDF path), with a message saying which
-# data are used
-fao_sst_source <- function(sst, variable = NULL, data_dir = fao_data_dir()) {
+# The table (FAO major areas, or subareas and divisions) of the SST data `sst` (product name or
+# NetCDF path), with a message saying which data are used
+fao_sst_source <- function(sst, variable = NULL, data_dir = fao_data_dir(), level = "area") {
   fao_sst_check_setting(sst)
+  units <- if (level == "area") "FAO major areas" else "FAO subareas and divisions"
   if (length(sst) == 1 && sst %in% names(fao_sst_registry)) {
     info <- fao_sst_registry[[sst]]
-    local_file <- file.path(data_dir, "sst", sst, "fao_area_sst.csv")
+    local_file <- file.path(data_dir, "sst", sst, fao_sst_table_file(level))
+    raw_dir <- file.path(data_dir, "sst", sst, "raw")
+    # Products downloaded before the division tables existed: compute the table from the files
+    if (!file.exists(local_file) && level == "division" && file.exists(file.path(data_dir, "sst", sst, "files.csv"))) {
+      files <- list.files(raw_dir, pattern = paste0("^", sst, "_[0-9]{4}\\.nc$"), full.names = TRUE)
+      if (length(files) > 0) {
+        message("Computing the SST of the FAO subareas and divisions from the downloaded ", info$name, " files ...")
+        manifest <- utils::read.csv(file.path(data_dir, "sst", sst, "files.csv"), colClasses = "character")
+        fao_write_csv(fao_sst_compute(files, "sst", data_dir, product = sst, source = info$name,
+                                      date = max(manifest$downloaded), level = "division"), local_file)
+      }
+    }
     table <- if (file.exists(local_file)) fao_sst_read_table(local_file) else NULL
     if (sst == "ersst5") {
-      built_in <- fao_sst_read_table(system.file("extdata", "fao_area_sst.csv", package = "faofishingreport"))
-      if (is.null(table) || max(table$year) <= max(built_in$year)) {
-        message("SST: ", info$name, ", built into the package (", info$grid, "; ", info$data_sources, "; ",
-                min(built_in$year), "-", max(built_in$year), "; ", info$citation, "). ",
+      built_in <- fao_sst_read_table(system.file("extdata", fao_sst_table_file(level), package = "faofishingreport"))
+      # The built-in division table leaves out the columns that are the same on every row
+      if (!"source" %in% names(built_in)) {
+        area_table <- fao_sst_read_table(system.file("extdata", "fao_area_sst.csv", package = "faofishingreport"))
+        built_in <- cbind(product = "ersst5", built_in, source = info$name, downloaded = area_table$downloaded[1],
+                          stringsAsFactors = FALSE)
+      }
+      if (is.null(table)) {
+        message("SST: ", info$name, ", built into the package (", units,
+                if (level == "division") " of areas 34, 37, 47 and 51", "; ", info$grid, "; ", info$data_sources,
+                "; ", min(built_in$year), "-", max(built_in$year), "; ", info$citation, "). ",
                 "See ?fao_area_sst to use other SST data.")
         return(built_in)
       }
-      # the downloaded years replace the same years of the built-in table; the others are kept
+      # the downloaded table replaces the same years (and adds the subareas and divisions the built-in
+      # table lacks); the other years of the built-in table are kept
       columns <- intersect(names(built_in), names(table))
       keep <- !paste(built_in$area_code, built_in$year) %in% paste(table$area_code, table$year)
       table <- rbind(built_in[keep, columns], table[, columns])
@@ -376,16 +419,19 @@ fao_sst_source <- function(sst, variable = NULL, data_dir = fao_data_dir()) {
     } else {
       where <- "downloaded with download_sst_data()"
     }
-    message("SST: ", info$name, ", ", where, " (", info$grid, "; ", info$data_sources, "; ",
+    message("SST: ", info$name, ", ", where, " (", units, "; ", info$grid, "; ", info$data_sources, "; ",
             min(table$year), "-", max(table$year), "; ", info$citation, "), in ", dirname(local_file), ".")
     return(table)
   }
-  fao_sst_from_files(sst, variable, data_dir)
+  fao_sst_from_files(sst, variable, data_dir, level)
 }
+
+# File name of the table of a level: FAO major areas, or subareas and divisions
+fao_sst_table_file <- function(level) if (level == "area") "fao_area_sst.csv" else "fao_division_sst.csv"
 
 # Area table computed from the user's NetCDF files (a file, several files or a folder). The table
 # is saved in <data_dir>/sst/files/, under a name that changes when the files change.
-fao_sst_from_files <- function(path, variable, data_dir) {
+fao_sst_from_files <- function(path, variable, data_dir, level = "area") {
   fao_sst_check_ncdf4()
   files <- unlist(lapply(path, function(p) {
     if (dir.exists(p)) list.files(p, pattern = "\\.(nc|nc4|cdf|netcdf)$", full.names = TRUE, ignore.case = TRUE) else p
@@ -401,17 +447,18 @@ fao_sst_from_files <- function(path, variable, data_dir) {
   label <- if (length(path) == 1) basename(path) else paste0(basename(files[1]), " and ", length(files) - 1, " more")
   if (length(path) == 1 && dir.exists(path)) label <- paste0(label, " (", length(files), " files)")
   dir <- file.path(data_dir, "sst", "files", paste0(gsub("[^A-Za-z0-9_.-]", "_", basename(path[1])), "_", key))
-  table_file <- file.path(dir, "fao_area_sst.csv")
+  table_file <- file.path(dir, fao_sst_table_file(level))
+  units <- if (level == "area") "FAO areas" else "FAO subareas and divisions"
 
   if (file.exists(table_file)) {
     table <- fao_sst_read_table(table_file)
     info <- utils::read.csv(file.path(dir, "source.csv"), colClasses = "character")
   } else {
     meta <- fao_sst_nc_meta(files[1], variable)
-    message("Computing the yearly SST of the FAO areas from ", length(files), " NetCDF file(s) (variable '",
+    message("Computing the yearly SST of the ", units, " from ", length(files), " NetCDF file(s) (variable '",
             meta$variable, "'). This is done once; the result is saved in ", dir)
     table <- fao_sst_compute(files, meta$variable, data_dir, product = "user files", source = label,
-                             date = as.character(Sys.Date()), quiet = FALSE)
+                             date = as.character(Sys.Date()), quiet = FALSE, level = level)
     info <- data.frame(path = paste(path, collapse = "; "), files = length(files), variable = meta$variable,
                        title = meta$title, grid = meta$grid, years = paste(range(table$year), collapse = "-"),
                        computed = as.character(Sys.Date()), stringsAsFactors = FALSE)
@@ -421,7 +468,7 @@ fao_sst_from_files <- function(path, variable, data_dir) {
   }
   message("SST: your NetCDF file(s) ", info$path, " (variable '", info$variable, "'",
           if (!is.na(info$title) && info$title != "") paste0(", \"", info$title, "\""), "; ", info$grid, "; ",
-          info$years, "), area means computed ", info$computed, " and saved in ", dir, ".")
+          info$years, "), means of the ", units, " computed ", info$computed, " and saved in ", dir, ".")
   table
 }
 
@@ -588,7 +635,7 @@ fao_sst_year_months <- function(metas, year) {
 }
 
 # Area table (see ?fao_area_sst) of all complete years in the files
-fao_sst_compute <- function(files, variable, data_dir, product, source, date, quiet = FALSE) {
+fao_sst_compute <- function(files, variable, data_dir, product, source, date, quiet = FALSE, level = "area") {
   fao_sst_check_ncdf4()
   metas <- lapply(files, fao_sst_nc_meta, variable = variable)
   first <- metas[[1]]
@@ -614,13 +661,13 @@ fao_sst_compute <- function(files, variable, data_dir, product, source, date, qu
     months <- fao_sst_year_months(metas, years[k])
     if (is.null(months)) next
     if (n > 1) months <- fao_sst_block_mean(months, first$lon, first$lat, n)$sst
-    if (is.null(weights)) weights <- fao_sst_weights(lon, lat, as.vector(apply(!is.na(months), c(1, 2), any)), data_dir)
+    if (is.null(weights)) weights <- fao_sst_weights(lon, lat, as.vector(apply(!is.na(months), c(1, 2), any)), data_dir, level)
     rows[[length(rows) + 1]] <- fao_sst_area_stats(months, weights, years[k])
   }
   if (length(rows) == 0) stop("The NetCDF files have no complete year (12 months).", call. = FALSE)
   table <- cbind(product = product, do.call(rbind, rows), source = source, downloaded = date,
                  stringsAsFactors = FALSE)
-  table <- table[order(as.integer(table$area_code), table$year), ]
+  table <- table[order(as.integer(sub("\\..*$", "", table$area_code)), table$area_code, table$year), ]
   rownames(table) <- NULL
   table
 }
@@ -644,11 +691,12 @@ fao_sst_block_mean <- function(x, lon, lat, n) {
   list(sst = y, lon = colMeans(matrix(lon, nrow = n)), lat = colMeans(matrix(lat, nrow = n)))
 }
 
-# Weight of each grid cell in each FAO major area: the area of their overlap in km2, computed on
-# the sphere (planar areas in degrees are wrong for cells that cross the 180 degree meridian).
-# `sea` marks the cells with values. Saved in the sst folder of data_dir.
-fao_sst_weights <- function(lon, lat, sea, data_dir) {
-  key <- paste("km2", length(lon), length(lat), lon[1], lat[1], sum(sea), sep = "_")
+# Weight of each grid cell in each FAO major area (or in each subarea and division): the area of
+# their overlap in km2, computed on the sphere (planar areas in degrees are wrong for cells that
+# cross the 180 degree meridian). `sea` marks the cells with values. Saved in the sst folder of
+# data_dir.
+fao_sst_weights <- function(lon, lat, sea, data_dir, level = "area") {
+  key <- paste(c("km2", if (level == "division") "division", length(lon), length(lat), lon[1], lat[1], sum(sea)), collapse = "_")
   file <- file.path(data_dir, "sst", "weights", paste0(gsub("[^A-Za-z0-9_]", "_", key), ".rds"))
   if (file.exists(file)) return(readRDS(file))
   half_lon <- abs(lon[2] - lon[1]) / 2
@@ -665,7 +713,8 @@ fao_sst_weights <- function(lon, lat, sea, data_dir) {
   })
   grid <- sf::st_sf(cell = cells, geometry = sf::st_sfc(boxes, crs = 4326))
   areas <- sf::st_read(system.file("extdata", "FAO_AREAS_CWP.shp", package = "faofishingreport"), quiet = TRUE)
-  areas <- sf::st_make_valid(areas[areas$F_LEVEL == "MAJOR", c("F_CODE", "NAME_EN")])
+  levels <- if (level == "area") "MAJOR" else c("SUBAREA", "DIVISION")
+  areas <- sf::st_make_valid(areas[areas$F_LEVEL %in% levels, c("F_CODE", "NAME_EN")])
   use_s2 <- sf::sf_use_s2()
   suppressMessages(sf::sf_use_s2(TRUE))
   on.exit(suppressMessages(sf::sf_use_s2(use_s2)))

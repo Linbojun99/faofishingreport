@@ -523,7 +523,7 @@ CMSY++ [==================            ] 18/30 ( 60%) 00:51 elapsed, 00:34 left G
 
 ## 📝 写入Word报告
 
-`cmsy = TRUE`时，`fao_report()`会用CMSY++评估该渔区的主要物种（见[📝 一键生成Word评估报告](report.html)），并在报告中加入资源评估部分，给出每个物种的结果，以及参考点、先验及其来源的附表。它对报告的`top_n`个主要物种（默认10个）运行`cmsy_area()`，不做情景预测。`cmsy_area()`和`cmsy_input()`的设置以`cmsy_`为前缀传入，例如`cmsy_top = 5`、`cmsy_default_resilience = "Medium"`或`cmsy_settings = list(n.iter = 100000)`。CMSY++的全部结果（运行、图表和表格）保存在报告旁边的`cmsy/`文件夹中，其中的`cmsy_result.rds`可以用来重写报告而不必重新运行CMSY++：`cmsy = readRDS("cmsy/<渔区>/cmsy_result.rds")`，路径从工作目录算起（默认是`reports/cmsy/<渔区>/cmsy_result.rds`）。以前用`cmsy_area()`得到的结果也可以这样传入。
+`cmsy = TRUE`时，`fao_report()`会用CMSY++评估该渔区的主要物种（见[📝 一键生成评估报告（Word、LaTeX、PDF）](report.html)），并在报告中加入资源评估部分，给出每个物种的结果，以及参考点、先验及其来源的附表。它对报告的`top_n`个主要物种（默认10个）运行`cmsy_area()`，不做情景预测。`cmsy_area()`和`cmsy_input()`的设置以`cmsy_`为前缀传入，例如`cmsy_top = 5`、`cmsy_default_resilience = "Medium"`或`cmsy_settings = list(n.iter = 100000)`。CMSY++的全部结果（运行、图表和表格）保存在报告旁边的`cmsy/`文件夹中，其中的`cmsy_result.rds`可以用来重写报告而不必重新运行CMSY++：`cmsy = readRDS("cmsy/<渔区>/cmsy_result.rds")`，路径从工作目录算起（默认是`reports/cmsy/<渔区>/cmsy_result.rds`）。以前用`cmsy_area()`得到的结果也可以这样传入。
 
 ```{r, eval = FALSE}
 report <- fao_report(34, cmsy = TRUE, cmsy_top = 5)

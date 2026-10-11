@@ -56,6 +56,10 @@
 #'     `unidentified_pct`) is probably mostly demersal (Grainger and Garcia 1996), and its share
 #'     changes over time. The FAO capture data contain neither aquaculture nor discards.
 #' }
+#' With `by = "division"`, the ratio is calculated for each division of the catch data of
+#' `load_fao_divisions()`. Codes that are not places, such as "37.0.0 Tunas" or "37.9.0 Not
+#' known", are kept as their own units.
+#'
 #' Read the ratio together with the catch of each group (the group table and the composition
 #' chart) before attributing a change to nutrients. Where no pelagic group is caught (e.g. the
 #' Antarctic areas, where krill is not counted), P/D is 0; the chart, on a log scale, leaves such
@@ -64,6 +68,9 @@
 #' @inheritParams summary_params
 #' @param definition The groups counted as pelagic and demersal: "de_leiva_moreno" (default) or
 #'        "grainger_garcia" (see above and `fao_pd_groups()`).
+#' @param by "area" (default) for the FAO major areas, or "division" for the divisions of the
+#'        catch data of `load_fao_divisions()` (e.g. the GFCM divisions of the Mediterranean and
+#'        Black Sea, the units of de Leiva Moreno et al. 2000).
 #' @param pelagic,demersal ISSCAAP groups (English names as in the FAO data, e.g. "Herrings,
 #'        sardines, anchovies") counted as pelagic and demersal instead of those of `definition`.
 #'        Default is NULL.
@@ -76,6 +83,9 @@
 #'       catch of the decade;}
 #'     \item{groups}{the ISSCAAP groups of the data, how each is counted and its catch.}
 #'   }
+#'   With `by = "division"`, `area` and `area_en` hold the divisions, `area_code` their codes, and
+#'   `_pelagic_demersal` in the file names becomes `_pelagic_demersal_divisions` (e.g.
+#'   `<label>_pelagic_demersal_divisions_ratio.png`).
 #'   Charts are saved in `figures/png/summary/`: `<label>_pelagic_demersal_ratio.png` (P/D by
 #'   year, one panel per area), and `<label>_pelagic_demersal.png` and `..._share.png` (pelagic,
 #'   demersal and other catch). Tables are saved in `tables/`: `<label>_pelagic_demersal.csv`,
@@ -119,16 +129,21 @@
 #'                  demersal = fao_pd_groups()$isscaap_en[fao_pd_groups()$de_leiva_moreno == "demersal"],
 #'                  label = "FAO37_small_medium_pelagic")
 #'
+#' # The GFCM divisions of the Mediterranean and Black Sea
+#' pelagic_demersal(load_fao_divisions("GFCM"), by = "division")
+#'
 #' # All FAO major marine fishing areas, one panel per area
 #' marine <- subset(load_fao_data(), FAO.major.fishing.area..Name. %in% fao_area_sst()$area_en)
 #' pelagic_demersal(marine, label = "marine_areas")
 #' }
 pelagic_demersal <- function(area_data, definition = c("de_leiva_moreno", "grainger_garcia"),
-                             pelagic = NULL, demersal = NULL, plot = TRUE, table = TRUE, lang = NULL,
-                             pptx = getOption("faofishingreport.pptx", FALSE), label = NULL) {
+                             pelagic = NULL, demersal = NULL, by = c("area", "division"), plot = TRUE, table = TRUE,
+                             lang = NULL, pptx = getOption("faofishingreport.pptx", FALSE), label = NULL) {
   definition <- match.arg(definition)
+  by <- match.arg(by)
   lang <- fao_lang(lang)
-  name <- fao_summary_name(fao_summary_label(area_data, label), "pelagic_demersal")
+  name <- fao_summary_name(fao_summary_label(area_data, label),
+                           if (by == "division") "pelagic_demersal_divisions" else "pelagic_demersal")
   definitions <- fao_pd_groups()
   custom <- !is.null(pelagic) || !is.null(demersal)
   if (is.null(pelagic)) pelagic <- definitions$isscaap_en[definitions[[definition]] == "pelagic"]
@@ -148,14 +163,25 @@ pelagic_demersal <- function(area_data, definition = c("de_leiva_moreno", "grain
   if (nrow(data) == 0) stop("The data contains no marine fishing area.", call. = FALSE)
   data$class <- ifelse(data$isscaap_en %in% pelagic, "pelagic",
                        ifelse(data$isscaap_en %in% demersal, "demersal", "other"))
-
-  areas <- names(sort(tapply(data$Production, data$FAO.major.fishing.area..Name., sum, na.rm = TRUE), decreasing = TRUE))
+  # The spatial units: FAO major areas (sorted by catch) or divisions (sorted by code)
+  units <- fao_spatial_units(data, by)
+  data$unit <- units$name
+  data$unit_code <- units$code
+  areas <- if (by == "area") {
+    names(sort(tapply(data$Production, data$unit, sum, na.rm = TRUE), decreasing = TRUE))
+  } else {
+    unique(data$unit[order(data$unit_code)])
+  }
   years <- seq(min(data$Year), max(data$Year))
-  yearly <- do.call(rbind, lapply(areas, function(a) fao_pd_yearly(data[data$FAO.major.fishing.area..Name. == a, ], a, years)))
+  yearly <- do.call(rbind, lapply(areas, function(a) {
+    x <- data[data$unit == a, ]
+    cbind(area_code = x$unit_code[1], fao_pd_yearly(x, a, years), stringsAsFactors = FALSE)
+  }))
   decades <- do.call(rbind, lapply(areas, function(a) fao_pd_periods(yearly[yearly$area_en == a, ])))
+  decades <- cbind(area_code = yearly$area_code[match(decades$area_en, yearly$area_en)], decades, stringsAsFactors = FALSE)
   group_table <- fao_pd_group_table(data, pelagic, demersal, lang)
 
-  area_names <- stats::setNames(fao_translate(areas, "area", lang), areas)
+  area_names <- stats::setNames(if (by == "area") fao_translate(areas, "area", lang) else areas, areas)
   yearly <- cbind(area = unname(area_names[yearly$area_en]), yearly)
   decades <- cbind(area = unname(area_names[decades$area_en]), decades)
   rownames(yearly) <- rownames(decades) <- NULL
@@ -166,7 +192,8 @@ pelagic_demersal <- function(area_data, definition = c("de_leiva_moreno", "grain
     message(a, ": pelagic and demersal groups make up ",
             round(100 * sum(x$pelagic_tonnes + x$demersal_tonnes) / sum(x$total_tonnes)),
             "% of the catch, unidentified marine fishes ", round(100 * sum(x$unidentified_tonnes) / sum(x$total_tonnes)),
-            "%; mean P/D ", paste0(d$period, " ", format(round(d$pd_mean, 2), nsmall = 2), collapse = ", "))
+            "%; ", if (nrow(d) == 0) "no P/D (no demersal catch counted)" else
+              paste0("mean P/D ", paste0(d$period, " ", format(round(d$pd_mean, 2), nsmall = 2), collapse = ", ")))
   }
 
   # A ratio of 0 cannot be drawn on the log scale of the chart

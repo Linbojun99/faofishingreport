@@ -154,7 +154,7 @@ status <- stock_status(FAO34$area_data)
 fao_report(34, lang = "en")   # 在工作目录中生成reports/FAO34_report_en.docx
 ```
 
-报告默认包括总产量及其阶段、主要物种和主要国家、ISSCAAP类群、资源状态图、数据质量、渔获多样性，以及沿岸国与远洋捕捞；渔获骤变、渔业崩溃、同步性、中上层/底层比、渔获平均温度、远洋国家概况和CMSY++可以另外打开。把`lang`设为`"zh"`即生成中文报告。全部设置见[📝 一键生成Word评估报告](report.html)。
+报告默认包括总产量及其阶段、主要物种和主要国家、ISSCAAP类群、资源状态图、数据质量、渔获多样性，以及沿岸国与远洋捕捞；渔获骤变、渔业崩溃、同步性、中上层/底层比、渔获平均温度、远洋国家概况和CMSY++可以另外打开。把`lang`设为`"zh"`即生成中文报告。全部设置见[📝 一键生成评估报告（Word、LaTeX、PDF）](report.html)。
 
 ## ⚙️ 本文所用函数的设置
 
@@ -178,7 +178,7 @@ fao_report(34, lang = "en")   # 在工作目录中生成reports/FAO34_report_en.
 | `fishing_area_species()`、`fishing_area_country()` | `rank_range`、`timeseries_analysis`、`h_value`、线条和文字样式 | [🌊 渔区分析](fishing-areas.html) |
 | `species_country()` | `species_name`、`rank_range`、`h_value`、地图样式 | [🐟 物种与国家分析](species-countries.html) |
 | `stock_status()` | `taxon_levels`、`min_years`、`min_consecutive`、`min_catch`、`smooth` | [📈 类群结构、资源状态与趋势](status-trends.html) |
-| `fao_report()` | `area`、`lang`、`file`、各部分的开关、各项分析的设置 | [📝 一键生成Word评估报告](report.html) |
+| `fao_report()` | `area`、`lang`、`file`、各部分的开关、各项分析的设置 | [📝 一键生成评估报告（Word、LaTeX、PDF）](report.html) |
 | `fao_settings()`、`fao_font()` | `lang`、`theme`、`palette`、`map_projection`、`dpi`等 | [🎨 自定义图表与地图](customise.html) |
 
 ## 🧭 下一步
@@ -191,7 +191,8 @@ fao_report(34, lang = "en")   # 在工作目录中生成reports/FAO34_report_en.
 - [🌡️ 海表温度与渔获平均温度](sst-mtc.html)：渔区海表温度（内置或读取自己的NetCDF文件）与渔获平均温度
 - [🐠 FishBase与SeaLifeBase物种特征](fishbase.html)：将FAO物种条目与FishBase和SeaLifeBase匹配，并使用其物种特征
 - [📉 CMSY++资源评估](cmsy.html)：主要物种的仅基于渔获量的资源评估
-- [📝 一键生成Word评估报告](report.html)：把某个渔区的全部分析写成一份Word报告
+- [📝 一键生成评估报告（Word、LaTeX、PDF）](report.html)：把某个渔区的全部分析写成一份Word报告
+- 🧩 扩展（不纳入Word报告）：[🚢 贸易与就业](trade-employment.html)：进出口与渔获的对比、渔业与养殖从业人数、人均渔获
 - [🎨 自定义图表与地图](customise.html)：主题、色板、地图投影、字体和输出设置
 
 ## 📖 参考文献

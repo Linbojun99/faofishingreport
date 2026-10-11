@@ -208,6 +208,7 @@ groups_zh <- c("💾 FAO data" = "💾 FAO数据", "🌊 Fishing areas" = "🌊 
                "🐟 Species and countries" = "🐟 物种与国家", "📊 Summary analyses" = "📊 汇总分析",
                "🔬 Literature-based analyses" = "🔬 文献方法分析", "🌡️ FishBase and temperature" = "🌡️ FishBase与温度",
                "📉 CMSY++ stock assessment" = "📉 CMSY++资源评估", "📝 Reports" = "📝 报告",
+               "🧩 Extensions: other FAO datasets" = "🧩 扩展：FAO其他数据集",
                "🎨 Settings and language" = "🎨 设置与语言")
 
 # "<label>" in file names is written as text, not read as an HTML tag (code spans and <https://...>

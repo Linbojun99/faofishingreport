@@ -1,0 +1,53 @@
+{
+  "topic": "catch_per_fisher",
+  "rd_md5": "9f68624bb031bced354f0883fe3097ac",
+  "stale": false,
+  "en": {
+    "title": "Catch per Fisher",
+    "description": "This function divides the catch of a country by its number of fishers, by year: the marine catch\n(FAO marine areas) by the marine fishers (coastal, deep-sea and marine not specified), the\ninland catch by the inland fishers, and the whole catch by all fishers, from the FAO capture\nand employment statistics (`load_fao_data()` and `load_fao_employment()`). FAO reports\nproduction per fisher by region in The State of World Fisheries and Aquaculture (FAO 2012,\ntable 9) and in its studies of fisher numbers (FAO 1999); Scherrer et al. (2024) followed marine\ncatch per fisher worldwide since 1950.",
+    "details": "",
+    "value": "Invisibly, a list with `yearly` (one row per country and year: marine and inland catch,\nmarine, inland and all fishers, catch per fisher of each, the number of fishers as people,\nfish farmers, workers of unspecified work area and their share of all workers, the share of\nfishers in estimated values or with unknown working time, and whether the number of fishers is\nunchanged from the year before) and `notes` (FAO's notes on the countries). The chart\n`<label>_catch_per_fisher.png` is saved in `figures/png/summary/` and the table\n`<label>_catch_per_fisher.csv` in `tables/`.",
+    "arguments": {
+      "country_name": "One or more countries, as named in the FAO data (e.g. \"Norway\").",
+      "weights": "\"headcount\" (default) counts fishers as people; \"fte\" as full-time equivalents.",
+      "data": "Catch data in the format of `load_fao_data()`. Default is NULL, which loads\n`load_fao_data(data_version)`.",
+      "employment": "Employment data from `load_fao_employment()`. Default is NULL, which loads it.",
+      "plot": "A logical value. If TRUE (default), charts are saved in `figures/png/summary/`.",
+      "table": "A logical value. If TRUE (default), tables are saved in `tables/`.",
+      "lang": "The language of the chart text and names: \"en\" (English), \"zh\" (Chinese) or\n\"both\" (Chinese and English). Default is NULL, which uses the language set with\n`fao_settings()` (\"en\" unless changed).",
+      "pptx": "A logical value. If TRUE, charts are also saved as editable PowerPoint files in\n`figures/pptx/summary/`. Default is FALSE, which can be changed for all functions with\n`fao_settings(pptx = TRUE)`.",
+      "label": "The name used in the output file names. Default is the country, or\n\"selected_countries\" for several countries.",
+      "data_version": "The FAO data release of the catch data; see `load_fao_data()`. Default is\n\"latest\"."
+    },
+    "sections": {
+      "Counting fishers": "FAO counts people, not full-time equivalents: an occasional fisher counts as one, like a\nfull-time fisher. With `weights = \"fte\"`, fishers are counted as full-time equivalents with the\nweights of Scherrer et al. (2024; code on Zenodo): part time 60/95, occasional 15/95, and full\ntime and unknown working time 1. These are the middle of the CWP ranges of working time (30 to 90\npercent, below 30 percent) relative to the middle of the full-time range (90 to 100 percent).\nWhere working time is unknown, as for many countries, the two counts are equal.\n\nPeople whose work area is not specified are not counted as fishers: they can be fishers or\nfish farmers (in China, the part-time and occasional workers of both; FAO country note), so\ncatch per fisher is too high where many are unspecified. `unspecified_pct` gives their share of\nall workers. Fish farmers are not counted.",
+      "Reading the results": "- Catch is recorded by the flag of the vessel and fishers as the crews of national vessels (CWP handbook), but some countries leave out foreign crews (e.g. Norway; FAO country note), and the catch of distant-water fleets can come with few national fishers.\n- The marine and inland split follows each country's reporting; for example, FAO notes that China's marine fishers not specified include inland fishers in 1995-2006 and 2014-2020, so use the catch per fisher of all fishing for China.\n- Estimated values (by FAO or the country) are common (`fishers_estimated_pct`), and FAO's are often carried forward unchanged (FAO 2024, table T.39): `fishers_unchanged` marks years with the same number of fishers as the year before.\n- Surveys can find more or fewer fishers than FAO statistics (FAO, Duke University and WorldFish 2023, Annex B)."
+    }
+  },
+  "zh": {
+    "title": "人均渔获",
+    "description": "本函数逐年用一个国家的渔获量除以其渔民人数：海洋渔获量（FAO海洋渔区）除以海洋渔民（沿海、深海和未细分的海洋捕捞），内陆渔获量除以内陆渔民，全部渔获量除以全部渔民；数据来自FAO捕捞产量和就业统计（`load_fao_data()`和`load_fao_employment()`）。FAO在The State of World Fisheries and Aquaculture中按区域报告了人均产量（FAO，2012，表9），在其渔民人数研究中也有报告（FAO，1999）；Scherrer等（2024）追踪了全世界1950年以来的海洋人均渔获。",
+    "details": "",
+    "value": "以不可见方式返回一个列表，包括`yearly`（每个国家每年一行：海洋和内陆渔获量；海洋、内陆和全部渔民人数（按`weights`计）及各自的人均渔获；按人数计的渔民人数、养殖从业者人数、未说明工作领域的从业者人数及其占全部从业者的比例；渔民中估计值所占的比例和工作时间未知者所占的比例；以及渔民人数是否与上一年相同）和`notes`（FAO对这些国家的注释）。图表`<label>_catch_per_fisher.png`保存在`figures/png/summary/`，表格`<label>_catch_per_fisher.csv`保存在`tables/`。",
+    "arguments": {
+      "country_name": "一个或多个国家，名称与FAO数据中的一致（例如\"Norway\"）。",
+      "weights": "\"headcount\"（默认）按人数计算渔民；\"fte\"按全时当量计算。",
+      "data": "`load_fao_data()`格式的渔获数据。默认为NULL，即读取`load_fao_data(data_version)`。",
+      "employment": "`load_fao_employment()`返回的就业数据。默认为NULL，即自动读取。",
+      "plot": "逻辑值。为TRUE（默认）时，图表保存在`figures/png/summary/`。",
+      "table": "逻辑值。为TRUE（默认）时，表格保存在`tables/`。",
+      "lang": "图表文字和名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL，即使用`fao_settings()`设置的语言（未更改时为\"en\"）。",
+      "pptx": "逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在`figures/pptx/summary/`。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。",
+      "label": "输出文件名中使用的名称。默认为国家名称；有多个国家时为\"selected_countries\"。",
+      "data_version": "渔获数据所用的FAO数据版本；见`load_fao_data()`。默认为\"latest\"。"
+    },
+    "sections": {
+      "Counting fishers": "FAO按人数而不是按全时当量计算：一个临时渔民和一个全职渔民一样算作一人。`weights = \"fte\"`时，渔民按Scherrer等（2024；代码见Zenodo）的权重折算为全时当量：兼职60/95，临时15/95，全职和工作时间未知的按1。这些权重是CWP工作时间范围（30%至90%、不到30%）的中点，相对于全职范围（90%至100%）中点的比值。工作时间未知时（很多国家都是如此），两种计数结果相同。\n\n工作领域未说明的人员不计为渔民：他们可能是渔民，也可能是养殖从业者（在中国，是两者的兼职和临时从业者；见FAO国家注释），所以未说明工作领域的人员较多时，人均渔获偏高。`unspecified_pct`给出他们占全部从业者的比例。养殖从业者不计入。",
+      "Reading the results": "- 渔获量按渔船的船旗统计，渔民按本国渔船的船员统计（CWP手册），但有些国家不计外国船员（例如挪威；见FAO国家注释），而远洋船队的渔获可能只对应很少的本国渔民。\n- 海洋和内陆的划分取决于各国的报告方式；例如，FAO注明中国未细分的海洋渔民在1995–2006年和2014–2020年包含内陆渔民，所以中国应使用全部捕捞的人均渔获。\n- 估计值（由FAO或该国估计）很常见（`fishers_estimated_pct`），而FAO的估计值常常原样沿用（FAO，2024，表T.39）：`fishers_unchanged`标出渔民人数与上一年相同的年份。\n- 调查得到的渔民人数可能多于或少于FAO统计（FAO、Duke University和WorldFish，2023，附录B）。"
+    },
+    "section_titles": {
+      "Counting fishers": "渔民的计数方法",
+      "Reading the results": "如何解读结果"
+    }
+  }
+}

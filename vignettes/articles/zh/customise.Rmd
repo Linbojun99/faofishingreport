@@ -265,7 +265,7 @@ fishing_area_species(FAO34$area_data, pptx = TRUE)   # 或只对单次调用生�
 | `species_country()`、`country_species()`、`country_analysis()` | [🐟 物种与国家分析](species-countries.html) |
 | `check_fao_update()`、`download_fao_data()`、`load_fao_data()`、`fao_data_info()`、`fao_translate()` | [💾 FAO数据](data.html) |
 | 汇总分析，如`stock_status()`、`peak_trend()` | [📈 类群结构、资源状态与趋势](status-trends.html)、[🔍 数据质量、多样性与船队](quality-diversity-fleets.html) |
-| `fao_report()` | [📝 一键生成Word评估报告](report.html) |
+| `fao_report()` | [📝 一键生成评估报告（Word、LaTeX、PDF）](report.html) |
 
 ## 📝 翻译
 

@@ -23,7 +23,7 @@ description: >
 - 🔬 **文献方法分析**：渔获骤变（Cottrell 等 2019；Gephart 等 2017）、渔业崩溃（Mullon 等 2005；Worm 等 2006，附随机序列对照）、渔获同步性与组合效应（Loreau 和 de Mazancourt 2008）。
 - 🌡️ **FishBase 与海温**：FAO 物种与 FishBase、SeaLifeBase 物种特征的匹配（数据来自 [rfishbase](https://github.com/ropensci/rfishbase) 项目发布的数据表副本），FAO 渔区的海表温度，以及渔获平均温度（Cheung 等 2013）。
 - 📉 **CMSY++ 资源评估**：对主要物种进行仅基于渔获量的资源评估（Froese 等 2023；采用其作者发布的代码 <https://github.com/SISTA16/cmsyPlusPlus>，原样内置），自动为本机配置 JAGS，输出图表、预测以及生物学参考点和先验参数表。
-- 📝 **一键生成 Word 评估报告**：`fao_report()` 生成中文或英文报告（封面、摘要、数据来源与分析方法、结果、结论、参考文献和附件），每项分析都可以单独开关，各函数的设置用前缀传入。
+- 📝 **一键生成评估报告**：`fao_report()` 生成中文或英文报告，可输出Word、LaTeX或PDF（封面、摘要、数据来源与分析方法、结果、结论、参考文献和附件），每项分析都可以单独开关，各函数的设置用前缀传入。
 - 🌐 **中文、英文或中英双语**图表，国家、物种、渔区名使用 FAO 官方中文名。
 - 🎨 **自定义风格**：主题、色板、地图投影（Robinson、Mollweide、Equal Earth 等）和太平洋居中地图，用 `fao_settings()` 设置一次即可。
 - 💻 **Windows、macOS、Linux 通用**：自动选用系统里的中文字体，导出的表格用 Excel 打开中文不乱码。
@@ -66,8 +66,8 @@ mean_temperature_catch(FAO34$area_data, version = "builtin")
 # 前 10 个主要物种的 CMSY++ 评估（先运行一次 cmsy_setup()）
 cmsy_area("Atlantic, Eastern Central", top = 10)
 
-# 一键生成中文 Word 评估报告，包含 CMSY++ 和渔获骤变
-report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE)
+# 一键生成中文评估报告，包含 CMSY++ 和渔获骤变，输出 Word 和 PDF（LaTeX）
+report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE, format = c("docx", "pdf"))
 ```
 
 图表保存在工作目录的 `figures/png/`（需要时也可以同时输出可编辑的 PowerPoint 到 `figures/pptx/`），表格保存在 `tables/`。
@@ -174,7 +174,7 @@ report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE)
 
 | 函数 | 用途 |
 |---|---|
-| `fao_report()` | 一键生成某个渔区的中文或英文 Word 评估报告，每项分析都可以单独开关 |
+| `fao_report()` | 一键生成某个渔区的中文或英文评估报告（Word、LaTeX、PDF），每项分析都可以单独开关 |
 
 **🎨 设置与语言**
 
@@ -196,7 +196,8 @@ report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE)
 - [🌡️ 海表温度与渔获平均温度](sst-mtc.html)
 - [🐠 FishBase 与 SeaLifeBase 物种特征](fishbase.html)
 - [📉 CMSY++ 资源评估](cmsy.html)
-- [📝 一键生成 Word 评估报告](report.html)
+- [📝 一键生成评估报告（Word、LaTeX、PDF）](report.html)
+- 🧩 扩展（不纳入Word报告）：[🚢 贸易与就业](trade-employment.html)
 - [🎨 自定义图表与地图](customise.html)
 
 每篇文档最后都列出了所用方法和数据的参考文献及其 DOI 或网址。每个函数的参数说明见[函数参考](../../reference/index.html)（英文）。
@@ -209,6 +210,9 @@ report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE)
 - 物种名称：FAO [ASFIS 物种名录](https://www.fao.org/fishery/static/ASFIS/ASFIS_sp.zip)；国家、物种、渔区的中文名来自该版本数据附带的 FAO 代码表。
 - 许可证：[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)，并遵守 [FAO 数据库使用条款](https://www.fao.org/contact-us/terms/db-terms-of-use/en)。
 - `fao_data_info()` 显示你的分析所用的版本及引用格式。
+- FAO网站：[FAO](https://www.fao.org/home/zh)、[FAOSTAT数据](https://www.fao.org/faostat/zh/#data)和[FAO渔业数据文件](https://www.fao.org/fishery/static/Data/)。
+
+> 本包与FAO无关联，数据来源为FAO。
 
 ## 📝 引用
 

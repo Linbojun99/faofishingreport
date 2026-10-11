@@ -15,7 +15,29 @@ home:
     Analyse FAO Global Capture Production statistics by fishing area, country and
     species, and produce charts, maps and tables for reports in English or Chinese.
   sidebar:
-    structure: [links, license, citation, authors, dev]
+    structure: [links, fao, license, citation, authors, dev]
+    components:
+      fao:
+        title: Data sources
+        text: |
+          - [FAO](https://www.fao.org/home/en)
+          - [FAOSTAT data](https://www.fao.org/faostat/en/#data)
+          - [FAO Global Capture Production](https://www.fao.org/fishery/collection/capture/en)
+          - [FAO fishery data files](https://www.fao.org/fishery/static/Data/)
+
+          This package is not affiliated with FAO; the data come from FAO.
+
+footer:
+  structure:
+    left: [developed_by, fao]
+    right: [built_with]
+  components:
+    fao: >
+      Data: [FAO](https://www.fao.org/home/en) ·
+      [FAOSTAT](https://www.fao.org/faostat/en/#data) ·
+      [Global Capture Production](https://www.fao.org/fishery/collection/capture/en).
+      This package is not affiliated with FAO; the data come from FAO.
+      本包与 FAO 无关联，数据来源为 FAO。
 
 navbar:
   bg: primary
@@ -48,10 +70,14 @@ navbar:
         href: articles/fishbase.html
       - text: "📉 CMSY++ stock assessment"
         href: articles/cmsy.html
-      - text: "📝 Assessment report in Word"
+      - text: "📝 Assessment report: Word, LaTeX and PDF"
         href: articles/report.html
       - text: "🎨 Customise charts and maps"
         href: articles/customise.html
+      - text: -------
+      - text: "🧩 Extensions: other FAO datasets"
+      - text: "🚢 Trade and employment"
+        href: articles/trade-employment.html
     lang:
       text: "中文"
       href: "#lang"
@@ -138,6 +164,20 @@ reference:
   desc: A Word report of a fishing area, in Chinese or English, written from the results.
   contents:
   - fao_report
+- title: "🧩 Extensions: other FAO datasets"
+  desc: >
+    FAO fishery statistics other than global capture production: catch by subarea and division
+    from regional fishery bodies (also used by `pelagic_demersal(by = "division")` and
+    `mean_temperature_catch(by = "division")`), trade and employment, and how they compare with
+    the catch. Not part of the Word report.
+  contents:
+  - load_fao_divisions
+  - load_fao_trade
+  - catch_trade
+  - fao_capture_groups
+  - load_fao_employment
+  - employment_summary
+  - catch_per_fisher
 - title: "🎨 Settings and language"
   desc: Chart style, map projection, colours, fonts and Chinese names.
   contents:
@@ -176,6 +216,11 @@ articles:
   - articles/zh/cmsy
   - articles/zh/report
   - articles/zh/customise
+- title: "🧩 Extensions · 扩展"
+  desc: "Other FAO datasets, not part of the Word report · FAO其他数据集，不纳入Word报告"
+  contents:
+  - articles/trade-employment
+  - articles/zh/trade-employment
 - title: "中文函数参考"
   desc: "全部函数的中文说明，附英文原文对照（由 data-raw/make_zh_reference.R 生成）。"
   contents:

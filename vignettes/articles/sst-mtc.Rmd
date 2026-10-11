@@ -127,6 +127,21 @@ count for their sea part only. The areas are those of the FAO map in the package
 areas of the CWP handbook). Values over the Arctic Sea and the Antarctic areas partly reflect sea
 ice rather than measured water temperature.
 
+### 🧩 Subareas and divisions (extension)
+
+`fao_area_sst(level = "division")` gives the SST of the FAO subareas and divisions, the units of
+the catch data by division (`load_fao_divisions()`, see [💾 FAO data](data.html)). The built-in
+ERSST v5 table covers the subareas and divisions of areas 34, 37, 47 and 51; downloaded products
+and your own NetCDF files give all of them.
+
+```{r, message = TRUE}
+div <- fao_area_sst(level = "division")
+show_table(subset(div, startsWith(area_code, "37.") & year == 2024)[, c("area_code", "area_en", "sst_mean", "n_cells")], n = 12)
+```
+
+Many divisions are small for a 2° grid: the Sea of Marmara and the Sea of Azov have one or two
+cells. A finer product, given as the path of its NetCDF files, suits divisions better.
+
 ## 🐟 Mean temperature of the catch
 
 The mean temperature of the catch (MTC; Cheung et al. 2013) is the average preferred temperature
@@ -177,6 +192,20 @@ for the series and for their year-to-year differences.
 The function returns `yearly` (MTC, coverage, SST and its product by area and year), `trend`
 (slopes, Mann-Kendall tests and correlations by area and period) and `species` (one row per
 area and FAO species item).
+
+### 🧩 By division (extension)
+
+With catch data by division, `by = "division"` gives the MTC of each division, compared with the
+SST of the division:
+
+```{r, eval = FALSE}
+med <- load_fao_divisions("GFCM")
+mtc_divisions <- mean_temperature_catch(med, by = "division")
+```
+
+Divisions without a boundary on the FAO map use the SST of their subarea (column `sst_unit`),
+codes that are not places (e.g. 37.0.0 Tunas) have no SST, and the function says which divisions
+have fewer than 5 grid cells.
 
 ### ⚠️ What the package does, and what you must check
 
@@ -247,7 +276,7 @@ and the chart caption says that the preferred temperatures have not all been che
 ## 📝 In the Word report
 
 `fao_report()` adds a section on the mean temperature of the catch with `mtc = TRUE` (see
-[📝 Assessment report in Word](report.html)). The report uses the FishBase data bundled with the
+[📝 Assessment report: Word, LaTeX and PDF](report.html)). The report uses the FishBase data bundled with the
 package (`mtc_version = "builtin"`), so it needs no download and gives the same values on every
 computer; `mtc_version = "latest"` uses the newest FishBase release instead. The other settings
 of `mean_temperature_catch()` are given with the prefix `mtc_`, e.g. `mtc_sst = "hadisst1"` or

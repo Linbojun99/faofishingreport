@@ -24,9 +24,12 @@
     "🔬 Shocks, collapses, synchrony and fleets": "🔬 渔获骤变、渔业崩溃、同步性与远洋捕捞",
     "🐠 FishBase and SeaLifeBase traits": "🐠 FishBase 与 SeaLifeBase 物种特征",
     "📉 CMSY++ stock assessment": "📉 CMSY++ 资源评估",
-    "📝 Assessment report in Word": "📝 一键生成 Word 评估报告",
+    "📝 Assessment report: Word, LaTeX and PDF": "📝 一键生成评估报告（Word、LaTeX、PDF）",
+    "🚢 Trade and employment": "🚢 贸易与就业",
+    "🧩 Extensions: other FAO datasets": "🧩 扩展：FAO其他数据集",
     "🎨 Customise charts and maps": "🎨 自定义图表与地图",
     "On this page": "本页目录",
+    "Data sources": "数据来源",
     "Developed by": "开发者",
     "Site built with": "网站由"
   };
@@ -156,6 +159,7 @@
     "🔬 Literature-based analyses": "🔬 文献方法分析",
     "🌡️ FishBase and temperature": "🌡️ FishBase与温度",
     "📉 CMSY++ stock assessment": "📉 CMSY++资源评估",
+    "🧩 Extensions: other FAO datasets": "🧩 扩展：FAO其他数据集",
     "🎨 Settings and language": "🎨 设置与语言"
   };
 

@@ -179,7 +179,7 @@ By default the report has the total catch and its stages, the main species and c
 ISSCAAP groups, the stock status plots, the data quality, the diversity of the catch and the
 coastal and distant-water fleets. Catch shocks, collapses, synchrony, the pelagic/demersal ratio,
 the mean temperature of the catch, distant-water fleet profiles and CMSY++ can be switched on.
-See [📝 Assessment report in Word](report.html) for all its settings.
+See [📝 Assessment report: Word, LaTeX and PDF](report.html) for all its settings.
 
 ## ⚙️ Settings of the functions on this page
 
@@ -203,7 +203,7 @@ Every function has its own arguments as well; each article has a table of all of
 | `fishing_area_species()`, `fishing_area_country()` | `rank_range`, `timeseries_analysis`, `h_value`, line and text styles | [🌊 Fishing area analysis](fishing-areas.html) |
 | `species_country()` | `species_name`, `rank_range`, `h_value`, map style | [🐟 Species and countries](species-countries.html) |
 | `stock_status()` | `taxon_levels`, `min_years`, `min_consecutive`, `min_catch`, `smooth` | [📈 Composition, stock status and trends](status-trends.html) |
-| `fao_report()` | `area`, `lang`, `file`, sections switched on or off, settings of each analysis | [📝 Assessment report in Word](report.html) |
+| `fao_report()` | `area`, `lang`, `file`, sections switched on or off, settings of each analysis | [📝 Assessment report: Word, LaTeX and PDF](report.html) |
 | `fao_settings()`, `fao_font()` | `lang`, `theme`, `palette`, `map_projection`, `dpi`, ... | [🎨 Customise charts and maps](customise.html) |
 
 ## 🧭 Next steps
@@ -221,7 +221,9 @@ Every function has its own arguments as well; each article has a table of all of
 - [🐠 FishBase and SeaLifeBase traits](fishbase.html): match FAO species items to FishBase and
   SeaLifeBase and use their traits
 - [📉 CMSY++ stock assessment](cmsy.html): catch-only stock assessment of the main species
-- [📝 Assessment report in Word](report.html): the whole analysis of an area as a Word report
+- [📝 Assessment report: Word, LaTeX and PDF](report.html): the whole analysis of an area as a Word report
+- 🧩 Extension, not part of the Word report: [🚢 Trade and employment](trade-employment.html): exports and imports compared with the catch, people
+  in fisheries and aquaculture, and catch per fisher
 - [🎨 Customise charts and maps](customise.html): themes, palettes, map projections, fonts and output
 
 ## 📖 References

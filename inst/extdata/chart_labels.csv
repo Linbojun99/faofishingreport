@@ -104,3 +104,30 @@ other_catch,Other catch,其他渔获
 pd_class,Pelagic or demersal,中上层或底层
 pd_ratio,Pelagic/demersal ratio (P/D),中上层鱼/底层鱼渔获比 (P/D)
 pd_ratio_note,Log scale; dashed line: P/D = 1,对数刻度；虚线：P/D = 1
+thousand_tonnes,Thousand tonnes,千吨
+trade_catch,Catch (live weight),渔获（活重）
+trade_exports,Exports (product weight),出口（产品重量）
+trade_imports,Imports (product weight),进口（产品重量）
+trade_exports_lw,Exports (live weight equivalent),出口（活重当量）
+trade_imports_lw,Imports (live weight equivalent),进口（活重当量）
+catch_trade_note,Species groups mostly caught: capture at least {n}% of world production in every year,以捕捞为主的物种组：每年捕捞至少占全球产量的{n}%
+million_people,Million people,百万人
+thousand_people,Thousand people,千人
+emp_aquaculture,Aquaculture,水产养殖
+emp_marine,Marine fishing,海洋捕捞
+emp_inland,Inland fishing,内陆捕捞
+emp_unspecified,Work area unspecified,未区分领域
+emp_women_pct,Women (% of people with known sex),女性（占已知性别人数的%）
+emp_fulltime_pct,Full time (% of people with known working time),全职（占已知工作时间人数的%）
+emp_sex_unknown_pct,Sex unknown (% of all),性别未知（占全部的%）
+emp_time_unknown_pct,Working time unknown (% of all),工作时间未知（占全部的%）
+percent,Percent (%),百分比 (%)
+employment_note,"Number of people, not full-time equivalents (FAO employment data)",人数，非全时当量（FAO 就业数据）
+world,World,世界
+cpf_marine,Marine fishing,海洋捕捞
+cpf_inland,Inland fishing,内陆捕捞
+cpf_all,All fishing,全部捕捞
+cpf_headcount,Catch per fisher (tonnes),人均渔获（吨）
+cpf_fte,Catch per full-time equivalent fisher (tonnes),每全时当量渔民渔获（吨）
+cpf_note_headcount,Fishers counted as people: part-time and occasional fishers count as one,渔民按人数计：兼职和临时渔民也按一人计
+cpf_note_fte,"Full-time equivalents: part time 60/95, occasional 15/95, unknown 1 (Scherrer et al. 2024)",全时当量：兼职 60/95、临时 15/95、未知按 1（Scherrer et al. 2024）

@@ -99,6 +99,18 @@ description: "faofishingreport全部函数的中文说明"
 |---|---|
 | [`fao_report()`](fao_report.html) | FAO渔区评估报告 |
 
+## 🧩 扩展：FAO其他数据集
+
+| 函数 | 说明 |
+|---|---|
+| [`load_fao_divisions()`](load_fao_divisions.html) | 按分区的渔获量：区域渔业组织的FAO数据 |
+| [`load_fao_trade()`](load_fao_trade.html) | 水产品贸易：FAO数据 |
+| [`catch_trade()`](catch_trade.html) | 以捕捞为主的物种类群的渔获量与贸易 |
+| [`fao_capture_groups()`](fao_capture_groups.html) | 以捕捞为主（而非养殖）的物种类群 |
+| [`load_fao_employment()`](load_fao_employment.html) | 渔业与水产养殖就业：FAO数据 |
+| [`employment_summary()`](employment_summary.html) | 渔业与水产养殖逐年就业情况 |
+| [`catch_per_fisher()`](catch_per_fisher.html) | 人均渔获 |
+
 ## 🎨 设置与语言
 
 | 函数 | 说明 |

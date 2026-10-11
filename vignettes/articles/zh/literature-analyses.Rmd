@@ -43,7 +43,7 @@ FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 
 ## 📝 写入Word报告
 
-`fao_report()`可以把其中四项分析加入某个渔区的Word报告（见[📝 一键生成Word评估报告](report.html)）。这些章节默认关闭：
+`fao_report()`可以把其中四项分析加入某个渔区的Word报告（见[📝 一键生成评估报告（Word、LaTeX、PDF）](report.html)）。这些章节默认关闭：
 
 ```{r, eval = FALSE}
 fao_report(34, shocks = TRUE, collapse = TRUE, synchrony = TRUE, distant = TRUE)

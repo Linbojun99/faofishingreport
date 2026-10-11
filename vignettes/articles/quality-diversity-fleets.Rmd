@@ -174,7 +174,7 @@ and `table`. The profiles of the main distant-water countries are in
 ## 📝 In the Word report
 
 `fao_report()` writes data quality, diversity and concentration, and coastal and distant-water
-fleets into the Word report of a fishing area (see [📝 Assessment report in Word](report.html)):
+fleets into the Word report of a fishing area (see [📝 Assessment report: Word, LaTeX and PDF](report.html)):
 they are the sections `quality`, `diversity` and `fleets`, all on by default. Their settings are
 given with the section name as prefix (`quality_` for `data_quality()`, `diversity_` for
 `diversity_concentration()`, `fleets_` for `coastal_distant()`), and a section is left out with

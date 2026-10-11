@@ -1,0 +1,235 @@
+---
+title: "🚢 贸易与就业"
+description: >
+  load_fao_trade()、catch_trade()、fao_capture_groups()、load_fao_employment()、employment_summary()和catch_per_fisher()：用FAO另外两个数据集看一国渔获有多少出口，以及有多少人从事捕捞和养殖。
+---
+
+```{r setup, include = FALSE}
+source("../_setup.R")
+# 图表由 data-raw/trade_employment_article_figures.R 事先生成（构建网站时不下载 16 MB 的贸易数据）
+fig_dir <- normalizePath(file.path("..", "figures", "trade-employment", "zh"))
+show_png <- function(file) {
+  knitr::asis_output(sprintf('<figure class="fao-figure"><img src="%s" alt="%s" loading="lazy"></figure>',
+                             knitr::image_uri(file.path(fig_dir, file)), file))
+}
+```
+
+::: {.alert .alert-info}
+**🧩 扩展功能。**本文使用全球捕捞产量以外的FAO数据集（贸易、就业，以及区域渔业组织的分区渔获）。这些函数属于本包的扩展功能，不纳入`fao_report()`生成的Word报告。
+:::
+
+除捕捞产量外，FAO在同一个数据索引（<https://www.fao.org/fishery/static/Data/>）上还发布水产品**贸易**和渔业与养殖**就业**数据。两者都能和渔获数据对接：贸易按"国家 × ISSCAAP物种类群 × 年"，就业按"国家 × 年"。本文介绍相应的函数、这些数据能说明什么、不能说明什么，以及它们依据的已发表研究。
+
+## 🚢 贸易数据
+
+`load_fao_trade()`第一次运行时下载FAO贸易统计的最新版本（16 MB，转换约10秒），保存在数据文件夹，返回"国家 × 商品 × 流向 × 年"一行的数据：
+
+```{r, eval = FALSE}
+trade <- load_fao_trade()
+norway <- subset(trade, Country..Name. == "Norway" & Trade.flow == "Exports" & Year == 2024)
+head(norway[order(-norway$Value), c("Commodity..Name.", "ISSCAAP.group..Name.", "Quantity", "Value")])
+```
+
+| 列 | 含义 |
+|---|---|
+| `Country..Name.` | 报告国，名称与渔获数据一致 |
+| `Commodity..Code.`、`Commodity..Name.` | ISSCFC分类的商品（实际使用约1,200种） |
+| `ISSCAAP.group..Code.`、`ISSCAAP.group..Name.` | 商品所属的ISSCAAP物种类群，与渔获数据一致 |
+| `Trade.flow` | "Exports"（出口）、"Imports"（进口）或 "Re-exports"（转口） |
+| `Quantity` | **产品重量**（鱼片、冻鱼、鱼粉……）吨数，不是活重 |
+| `Value` | 千美元（出口一般按离岸价FOB，进口按到岸价CIF） |
+| `Quantity.Type`、`Value.Type` | "actual"（实报）、"estimate"（估计）、"partner data"（取自贸易伙伴的报告）等 |
+
+需要注意四点（FAO该版本的元数据）：
+
+- **产品重量。** 1吨鱼片约来自2～3吨鱼，1吨鱼粉约来自4～5吨鱼。FAO不随数据发布折算系数。
+- **捕捞还是养殖？** 商品代码不区分。2024年出口额最大的两组：鲑鳟和虾，主要来自养殖。
+- **转口**很少有国家单独报告（2024年26个国家，不含中国），大部分计入出口。
+- **贸易伙伴。** 本国渔船在外国港口上岸的渔获算作本国出口。分伙伴国的贸易数据（FI_Trade_Partners）2019年才开始，本包不读取。
+
+## 🐟 哪些物种组可以和渔获对比
+
+贸易数据分不出捕捞和养殖，所以`catch_trade()`只对比**以捕捞为主**的ISSCAAP组：在分析的每一年里，捕捞至少占该组全球产量（捕捞 + 养殖）的90%。`fao_capture_groups()`给出各组的捕捞占比，数据来自包内置的FAO全球产量统计：
+
+```{r}
+groups <- fao_capture_groups()
+groups$capture_pct_min <- round(groups$capture_pct_min, 1)
+groups[groups$capture_pct_min >= 75, c("isscaap_code", "isscaap_zh", "capture_pct_min", "year_min", "counted")]
+```
+
+1976–2024年共13组符合：
+
+- 鳕类、鲱和沙丁鱼类、金枪鱼类；
+- 其他中上层鱼类、其他底层鱼类、鲨鳐类、西鲱类；
+- 龙虾类、帝王蟹类、磷虾类、其他海洋甲壳类、头足类、鲎类。
+
+这13组占2024年全球出口额的36%。不符合的组和原因：
+
+| 组 | 捕捞占比低于90%的时间 |
+|---|---|
+| 虾类 | 从1986年起 |
+| 蟹类 | 从2000年起 |
+| 鲆鲽类 | 从2004年起 |
+| 未识别海水鱼 | 2022–2024年为89.7% |
+
+`min_capture_pct`和`years`可以改变规则，例如只看1976–1985年时虾类也计入。
+
+## ⚖️ 一国的渔获与贸易：catch_trade()
+
+```{r, eval = FALSE}
+catch_trade(c("Norway", "Iceland", "Peru", "Thailand"), trade = trade, label = "four")
+catch_trade("Norway", trade = trade)          # 另有按物种组分面板的图
+```
+
+```{r, echo = FALSE}
+show_png("four_catch_trade.png")
+```
+
+结果表`yearly`每个国家每年一行：
+
+| 列 | 含义 |
+|---|---|
+| `catch_tonnes` | 所对比各组的渔获（全部FAO渔区，活重） |
+| `export_tonnes`、`import_tonnes`、`reexport_tonnes` | 同一批组的出口、进口、转口（产品重量） |
+| `export_value`、`import_value`、`export_unit_value` | 千美元；每公斤产品的美元价格 |
+| `export_catch_pct` | 出口（产品重量）占渔获（活重）的百分比 |
+| `counted_catch_pct`、`counted_export_value_pct` | 所对比各组占该国渔获和出口额的比例 |
+| `estimated_export_value_pct` | 出口额中估计值或取自伙伴国报告的比例 |
+| `meal_oil_export_tonnes` | 没有归入所对比组的鱼粉和鱼油（见下文） |
+
+2024年：
+
+| 国家 | 所对比组的渔获（吨） | 出口（吨，产品重量） | 出口/渔获 | 占该国渔获 | 占该国出口额 |
+|---|---|---|---|---|---|
+| 挪威 | 2,061,767 | 962,671 | 47% | 89% | 19% |
+| 冰岛 | 970,014 | 384,696 | 40% | 96% | 64% |
+| 秘鲁 | 5,486,981 | 345,460 | 6% | 95% | 20% |
+| 泰国 | 651,720 | 797,282 | 122% | 42% | 55% |
+
+- **挪威**：这些组的渔获约有一半出口（按产品重量计，折成活重会更多），但只占出口额的五分之一，四分之三是养殖鲑鱼。
+- **秘鲁**：出口看起来很少，因为渔获主要是秘鲁鳀，加工成鱼粉，而FAO把大部分鱼粉和鱼油记为 "Fishmeals, nei" 和 "Fish body oils, nei"，归入"未识别海水鱼"组。函数把这部分单列：秘鲁2024年出口106万吨。
+- **泰国**：出口多于渔获，进口又多于出口，因为它加工进口的鱼（如金枪鱼）。函数会列出出口超过渔获的组和年数。
+
+```{r, echo = FALSE}
+show_png("Norway_catch_trade_groups.png")
+```
+
+提供自己的**折算系数**（例如来自EUMOFA或FAO渔业通报847）时，函数把贸易折成活重当量，并按食物平衡表的方法计算表观供给（渔获 + 进口 − 出口 − 转口）：
+
+```{r, eval = FALSE}
+factors <- data.frame(commodity_code = c("034.1.5.2.19", "034.4.1.5.2.19"), factor = c(1.17, 2.6))
+catch_trade("Norway", trade = trade, conversion = factors)
+```
+
+## 👥 就业数据
+
+`load_fao_employment()`下载FAO渔业与养殖初级部门就业人数统计（不到1 MB），按国家、工作领域、工作时间、性别和年份，从1995年起，并附FAO对各国的注释：
+
+```{r, eval = FALSE}
+employment <- load_fao_employment()
+notes <- attr(employment, "country_notes")
+notes$note[notes$country_en == "China"]
+```
+
+数据是**人数，不是全时当量**：
+
+- **未知比例：** 工作时间未知的占38%，性别未知的占41%。
+- **FAO估算：** 约占全部数据的30%，2024年覆盖一半的人数。
+- **不发布：** 加工和自给性渔业。
+- **版本：** FAO 2026年首次发布这个数据集，每次发布都会修订整个序列。
+
+各国注释解释了序列断点和定义差异。例如中国的捕捞和养殖兼职、临时工合在一起记为"未区分领域"，而"海洋捕捞未细分"在1995–2006年和2014–2020年包含内陆捕捞。
+
+## 📊 渔业与养殖从业人数：employment_summary()
+
+```{r, eval = FALSE}
+employment_summary(employment = employment)                                   # 全世界
+employment_summary(c("Norway", "Peru", "China"), employment = employment, label = "three")
+```
+
+```{r, echo = FALSE}
+show_png("World_employment.png")
+```
+
+2024年渔业与养殖共6,540万人：养殖35%，海洋捕捞26%，内陆捕捞30%，未区分领域9%。和FAO（2024、2026）一样，女性和全职的比例按已知性别、已知工作时间的人计算：
+
+- 女性占27%，性别未知的占38%；
+- 全职占51%，工作时间未知的占37%。
+
+可分项的细节随各国报告方式变化，所以比例图同时画出未知的比例：
+
+```{r, echo = FALSE}
+show_png("three_employment_composition.png")
+```
+
+## 🎣 人均渔获：catch_per_fisher()
+
+`catch_per_fisher()`计算三种人均渔获，做法同FAO按区域计算人均产量（FAO 2012，表9）：
+
+- 海洋渔获 ÷ 海洋渔民（沿海、深海和未细分）；
+- 内陆渔获 ÷ 内陆渔民；
+- 全部渔获 ÷ 全部渔民。
+
+`weights = "fte"`时按Scherrer et al.（2024）的权重折成全时当量：兼职60/95，临时15/95，全职和未知按1。
+
+```{r, eval = FALSE}
+catch_per_fisher(c("Norway", "Iceland", "Peru", "Indonesia", "China", "India"), employment = employment,
+                 label = "six")
+catch_per_fisher("India", weights = "fte", employment = employment)
+```
+
+```{r, echo = FALSE}
+show_png("six_catch_per_fisher.png")
+```
+
+2024年海洋人均渔获：冰岛290吨，挪威219吨，秘鲁95吨，而印度和印度尼西亚只有2～3吨。解读时要结合函数输出的提示：
+
+- **未区分领域的人员**不计为渔民。中国这部分占全部从业人员的49%（540万），所以人均渔获偏高；国家注释还说明它的海洋/内陆划分不可靠。中国应看全部捕捞的人均渔获。
+- **估计值沿用。** 印度的渔民人数全部是估计值，30年中有9年与上一年相同。
+- **统计范围。** 挪威的数字不含在挪威渔船上工作的外国船员（国家注释）。渔获按渔船船旗统计。
+
+## 📚 别人用这些数据做了什么
+
+- **贸易。** 研究水产品贸易网络的论文大多用UN Comtrade或BACI，因为FAO分伙伴国的数据2019年才开始（Gephart and Pace 2015；Gephart et al. 2024）。FAO自己的贸易数据用于四类分析：
+  - 出口占产量的比例（FAO年鉴附录A-2；Golden et al. 2017）；
+  - 质量平衡法算表观消费（Zhao et al. 2024）；
+  - 单位价值（Melnychuk et al. 2017）；
+  - 转口中心（Asche et al. 2022）。
+
+  已知的问题就是上文那几项：产品重量、捕捞与养殖混在一起、转口、镜像数据（Dent and Clarke 2015；Watson et al. 2016）。
+- **就业。** FAO发布：
+  - 人数趋势和各领域占比；
+  - 性别和工作时间的构成（FAO 2024、2026）；
+  - 人均产量（FAO 2012）。
+
+  Scherrer et al.（2024）用全时当量追踪了1950年以来的海洋人均渔获。小规模渔业的住户调查发现，全职和兼职渔民的人数与FAO统计接近，但个别国家差异很大（FAO、Duke University和WorldFish 2023）。
+
+完整参考文献见各函数的帮助页。
+
+## 参考文献
+
+Asche, F. et al. (2022). China's seafood imports - Not for domestic consumption? *Science* 375: 386-388. <https://doi.org/10.1126/science.abl4756>
+
+Dent, F. and Clarke, S. (2015). *State of the global market for shark products.* FAO Fisheries and Aquaculture Technical Paper 590. <https://www.fao.org/3/i4795e/i4795e.pdf>
+
+FAO (2012). *The State of World Fisheries and Aquaculture 2012.* <https://www.fao.org/4/i2727e/i2727e.pdf>
+
+FAO (2024). *The State of World Fisheries and Aquaculture 2024.* <https://doi.org/10.4060/cd0683en>
+
+FAO (2026). *The State of World Fisheries and Aquaculture 2026.* <https://doi.org/10.4060/cd8357en>
+
+FAO, Duke University and WorldFish (2023). *Illuminating Hidden Harvests.* <https://doi.org/10.4060/cc4576en>
+
+Gephart, J.A. and Pace, M.L. (2015). Structure and evolution of the global seafood trade network. *Environmental Research Letters* 10: 125014. <https://doi.org/10.1088/1748-9326/10/12/125014>
+
+Gephart, J.A. et al. (2024). Globalization of wild capture and farmed aquatic foods. *Nature Communications* 15: 8026. <https://doi.org/10.1038/s41467-024-51965-8>
+
+Golden, C.D. et al. (2017). Does aquaculture support the needs of nutritionally vulnerable nations? *Frontiers in Marine Science* 4: 159. <https://doi.org/10.3389/fmars.2017.00159>
+
+Melnychuk, M.C., Clavelle, T., Owashi, B. and Strauss, K. (2017). Reconstruction of global ex-vessel prices of fished species. *ICES Journal of Marine Science* 74: 121-133. <https://doi.org/10.1093/icesjms/fsw169>
+
+Scherrer, K.J.N., Rousseau, Y., Teh, L.C.L., Sumaila, U.R. and Galbraith, E.D. (2024). Diminishing returns on labour in the global marine food system. *Nature Sustainability* 7: 45-52. <https://doi.org/10.1038/s41893-023-01249-8>
+
+Watson, R.A., Green, B.S., Tracey, S.R., Farmery, A. and Pitcher, T.J. (2016). Provenance of global seafood. *Fish and Fisheries* 17: 585-595. <https://doi.org/10.1111/faf.12129>
+
+Zhao, K., Gaines, S.D., García Molinos, J., Zhang, M. and Xu, J. (2024). Effect of trade on global aquatic food consumption patterns. *Nature Communications* 15: 1412. <https://doi.org/10.1038/s41467-024-45556-w>
