@@ -8,7 +8,8 @@ cmsy_install_jags(
   version = "recommended",
   os = "auto",
   open = TRUE,
-  data_dir = fao_data_dir()
+  data_dir = fao_data_dir(),
+  silent = fao_setting("silent")
 )
 }
 \arguments{
@@ -20,6 +21,9 @@ cmsy_install_jags(
 \item{open}{A logical value. If TRUE (default), the installer is opened.}
 
 \item{data_dir}{The directory where downloads are kept. Default is `fao_data_dir()`.}
+
+\item{silent}{A logical value. If TRUE, no summary is printed. Default is FALSE, or the value
+set with `fao_settings(silent = )`.}
 }
 \value{
 Invisibly, the path of the downloaded installer.

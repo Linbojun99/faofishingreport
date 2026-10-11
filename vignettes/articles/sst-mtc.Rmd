@@ -1,0 +1,185 @@
+---
+title: "🌡️ Sea temperature and catch temperature"
+description: >
+  fao_area_sst(), download_sst_data() and mean_temperature_catch(): the sea surface temperature
+  of the FAO fishing areas, how to use your own SST files, and what you must check before using
+  the mean temperature of the catch.
+---
+
+```{r setup, include = FALSE}
+source("_setup.R")
+```
+
+The FAO catch statistics give one value per year for each fishing area, without any detail
+within the area. The package therefore gives the sea surface temperature (SST) in the same form:
+one row per FAO major marine fishing area and year. It uses it to compare the catch with the
+temperature of the sea, through the **mean temperature of the catch** (MTC).
+
+## 🌡️ Sea surface temperature of the FAO areas
+
+`fao_area_sst()` returns the yearly SST of the 19 FAO major marine fishing areas. Every call
+says which SST data it uses:
+
+```{r, message = TRUE}
+sst34 <- fao_area_sst("34")
+head(sst34[, c("area_en", "year", "sst_mean", "sst_p10", "sst_p90", "sst_min_month", "sst_max_month")])
+```
+
+| Column | Meaning |
+|---|---|
+| `sst_mean` | Mean SST of the area: the mean of the 12 monthly area means (°C) |
+| `sst_p10`, `sst_p90` | Range within the area: 10th and 90th percentiles of the yearly SST of its grid cells |
+| `sst_min_month`, `sst_max_month` | Seasonal range: the coldest and warmest monthly area means. In areas on both sides of the equator the seasons of the two hemispheres partly cancel, so this range is narrow there |
+| `n_cells` | Number of grid cells in the area |
+| `source` | The SST data used |
+
+### The built-in SST: NOAA ERSST v5
+
+The package comes with one SST product, to keep it small:
+
+| | NOAA ERSST v5 |
+|---|---|
+| Provider | NOAA National Centers for Environmental Information |
+| Grid | 2° x 2° (about 220 km), monthly |
+| Years in the package | 1950-2025 |
+| Observations | In situ only: ships and buoys (ICOADS), Argo floats from 1999 |
+| Sea ice | About -1.8 °C under ice |
+| Licence | NOAA data: may be used and redistributed for free |
+| Cite | Huang et al. (2017) *Journal of Climate* 30: 8179-8205, [doi:10.1175/JCLI-D-16-0836.1](https://doi.org/10.1175/JCLI-D-16-0836.1) |
+
+ERSST v5 is the smallest of the common SST products and is consistent over the whole period, since
+it uses no satellite data. Its 2° grid is coarse for small areas: the Mediterranean and Black Sea
+(area 37) has only `r suppressMessages(fao_area_sst("37"))$n_cells[1]` cells.
+
+### Using your own SST data
+
+Any other gridded SST can be used by giving the **path of its NetCDF file, or of a folder of
+NetCDF files**, either for one call or once for the session:
+
+```{r, eval = FALSE}
+fao_area_sst("34", sst = "D:/data/HadISST_sst.nc")       # one call
+fao_settings(sst = "D:/data/HadISST_sst.nc")             # all functions, for the session
+mean_temperature_catch(FAO34$area_data)                  # now uses this file
+fao_settings(sst = "ersst5")                             # back to the built-in SST
+```
+
+The files are read as follows:
+
+- They must hold an SST variable with **longitude, latitude and time**, monthly or daily
+  (e.g. HadISST, COBE-SST2, OISST, ERSST, or a climate model output). The variable is found by
+  its name (`sst`, `analysed_sst`, `tos`, ...); give it as `variable = "..."` if not.
+- Longitudes may run from -180 to 180 or from 0 to 360. Values in kelvin are converted to °C.
+  If there are several depths, the first (the surface) is used. Values below -5 °C, which some
+  products use to mark sea ice (-1000 in HadISST1), are set to -1.8 °C.
+- Daily values are averaged by month, and only years with all 12 months are kept. Grids finer
+  than 1° are first averaged to about 1°.
+- The yearly area means are computed the first time, which can take a few minutes, and saved in
+  the `sst` folder of `fao_data_dir()`. Later calls with the same files read the saved table;
+  if the files change, the table is computed again.
+- Reading NetCDF files needs the ncdf4 package: `install.packages("ncdf4")`.
+
+### Downloading common SST products
+
+`download_sst_data()` downloads one of these products and computes its table. It is then used by
+its name, e.g. `sst = "hadisst1"`:
+
+```{r}
+knitr::kable(fao_sst_products()[, c("product", "name", "grid", "first_year", "data_sources", "mb_per_year")])
+```
+
+```{r, eval = FALSE}
+download_sst_data("hadisst1")                 # about 240 MB; run again to resume
+fao_area_sst("34", sst = "hadisst1")
+```
+
+`fao_sst_products()` also gives the treatment of sea ice, the licence and the reference to cite
+for each product. SST products use different observations and methods, so their values and
+trends differ somewhat. Repeating an analysis with a second product shows how much a result
+depends on the product.
+
+### How the area means are computed
+
+Each grid cell counts for each FAO major area it overlaps, weighted by the area of the overlap
+computed on the sphere. Cells on a boundary between two areas are shared, and coastal cells
+count for their sea part only. The areas are those of the FAO map in the package (the 19 marine
+areas). Values over the Arctic Sea and the Antarctic areas partly reflect sea ice rather than
+measured water temperature.
+
+## 🐟 Mean temperature of the catch
+
+The mean temperature of the catch (MTC; Cheung et al. 2013) is the average preferred temperature
+of the species caught, weighted by their catch:
+
+$$MTC_t = \frac{\sum_i T_i C_{i,t}}{\sum_i C_{i,t}}$$
+
+where $T_i$ is the preferred temperature of species $i$ and $C_{i,t}$ its catch in year $t$. A
+rising MTC means that species of warmer waters make up a larger part of the catch.
+
+```{r, eval = FALSE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
+mtc <- mean_temperature_catch(FAO34$area_data)
+mtc$trend      # slopes (°C per decade), Mann-Kendall test, correlation with SST
+```
+
+The first run downloads the FishBase and SeaLifeBase tables it needs (about 23 MB). The chart
+shows the MTC with the SST of the area (and its range within the area) and, below, the share of
+the catch that has a preferred temperature. Years in which this share is below `min_coverage`
+(50% by default) are faded and left out of the trends.
+
+### ⚠️ What the package does, and what you must check
+
+The package computes the MTC, its trends and its comparison with SST. The preferred temperature
+of each species is **not** checked by the package. It is a first, automatic match of the FAO
+scientific name to FishBase or SeaLifeBase (`TempPrefMean`), given with the links needed to
+check it. Whether each match and its temperature are right must be judged by you, from these
+pages and the literature, before the results are used:
+
+1. Open the species table, `tables/<area>_mtc_species.csv`. Items are sorted by catch, so the
+   first rows matter most.
+2. For each item used (`used` is TRUE), open `url` (the FishBase or SeaLifeBase page of the
+   matched species), `search_url` and `worms_url` (the World Register of Marine Species). Check
+   that the matched species is the FAO item, and that its preferred temperature is plausible
+   for the stock in the area.
+3. Write who checked it, or the date, in the column `checked`. Correct a wrong value in
+   `temp_pref_mean` and give its source in `note`.
+4. Run the function again with the checked table:
+
+```{r, eval = FALSE}
+mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern_Central_mtc_species.csv")
+```
+
+Until every item used has been checked, the function says how much of the catch has been checked,
+and the chart caption says that the preferred temperatures have not all been checked.
+
+### Limitations
+
+- **Preferred temperatures.** FishBase gives `TempPrefMean` as an estimate from AquaMaps maps,
+  computed with an unpublished script, and does not document which map cells and which
+  temperature (surface or bottom) it uses. For some species it is far below the temperature of
+  the area where most of their catch is taken: it is 10.3 °C for European pilchard, 83% of
+  whose catch (2015-2024) is taken in area 34. Cheung et al. (2013) used the median of a
+  temperature profile computed from modelled distributions instead, so MTC values of the
+  package are not directly comparable with published ones.
+- **Coverage.** Items above species level (e.g. "Marine fishes nei") are left out, as in the
+  published studies. No published study sets a minimum coverage; `min_coverage = 50` is a
+  convention of the package. More catch is reported by species over time, and catches move
+  between areas, which changes the MTC without any change in temperature.
+- **Causes.** The MTC also changes with the species fished, fishing grounds, gear, markets,
+  management and reporting, not only with temperature. Check which items drive a change
+  (`weight_pct`, `contribution_c` in the species table) before attributing it to warming.
+- **Statistics.** Trends are linear slopes and Mann-Kendall tests; the comparison with SST uses
+  correlations of the series and of their year-to-year differences. Both series are
+  autocorrelated, so the p-values are too small, and the correlation of differences can miss a
+  relation that acts only over decades.
+
+The help page `?mean_temperature_catch` gives the references for each of these points.
+
+### Files
+
+| File | Content |
+|---|---|
+| `figures/png/summary/<label>_mtc.png` | MTC and SST (with its range in the area); for one area, the coverage below |
+| `figures/png/summary/<label>_mtc_coverage.png` | Coverage of each area (several areas only) |
+| `tables/<label>_mtc.csv` | Yearly MTC, coverage, SST and the SST data used |
+| `tables/<label>_mtc_trend.csv` | Slopes, Mann-Kendall tests and correlations with SST |
+| `tables/<label>_mtc_species.csv` | Each species item: preferred temperature, catch, weight, contribution, match, links, `checked` and `note` |

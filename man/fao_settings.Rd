@@ -43,6 +43,13 @@ fao_settings(..., reset = FALSE)
   \item{online}{Whether functions may connect to the internet to look for the newest FishBase
     release (see `fishbase_table()`). Default is TRUE; use FALSE to work offline with the
     downloaded copy, e.g. on a slow connection.}
+  \item{sst}{The sea surface temperature (SST) data used by `fao_area_sst()` and
+    `mean_temperature_catch()`: "ersst5" (default, NOAA ERSST v5, built into the package), a
+    product downloaded with `download_sst_data()` (e.g. "hadisst1"), or the path of your own
+    NetCDF file, or of a folder of NetCDF files (see `fao_area_sst()`).}
+  \item{silent}{Whether the CMSY++ functions (`cmsy_run()`, `cmsy_plot()`, ...) work
+    silently, without progress bars and messages. Default is FALSE. Their `silent` argument
+    still takes precedence.}
 }}
 
 \item{reset}{A logical value. If TRUE, all settings go back to their defaults first.}

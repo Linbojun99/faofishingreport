@@ -115,12 +115,16 @@ test_that("cmsy_input() makes catch-only CMSY++ input files with prior sources",
 
   by_country <- cmsy_input(data, by = "country", table = FALSE, lang = "en")
   expect_setequal(by_country$id$Stock, c("PIL_34_MAR", "PIL_34_SEN"))
+  expect_equal(cmsy_input(data, species = "Sardina pilchardus", table = FALSE)$id$Stock, "PIL_34")
+  expect_error(cmsy_input(data, species = "Gadus morhua", table = FALSE), "No species")
+  named <- cmsy_input(data, table = FALSE, priors = data.frame(species = "Sardina pilchardus", endb.low = 0.3, endb.hi = 0.7))
+  expect_equal(named$id$endb.low, 0.3)
 })
 
 test_that("cmsy_run() runs the bundled CMSY++ code", {
   skip_on_cran()
   skip_on_ci()
-  sys <- cmsy_system(quiet = TRUE)
+  sys <- cmsy_system(silent = TRUE)
   skip_if(is.na(sys$jags) || !all(sys$packages$ok), "JAGS or CMSY++ packages not installed")
   dir <- withr::local_tempdir()
   withr::local_dir(dir)
@@ -131,11 +135,91 @@ test_that("cmsy_run() runs the bundled CMSY++ code", {
     Production.Type = "actual", stringsAsFactors = FALSE
   )
   input <- cmsy_input(data, table = FALSE)
-  result <- cmsy_run(input, seed = 1, parallel = 1, table = FALSE, plots = "analysis")
+  result <- cmsy_run(input, seed = 1, parallel = 1, table = FALSE, plots = "analysis", silent = TRUE)
   expect_equal(result$summary$run_status, "ok")
   expect_true(result$summary$status %in% c("maximally sustainably fished", "overfished"))
   expect_true(file.exists(file.path(result$summary$folder, "PIL_34_AN.jpg")))
   expect_equal(nrow(result$series), 40)
   expect_true(all(c("CMSY++ code", "JAGS", "FishBase") %in% result$sources$component))
   expect_true(file.exists(file.path(result$run_dir, "code_changes.csv")))
+  expect_true(all(c("Biomass", "B_k", "Catch_pred", "F") %in% names(result$series)))
+  expect_length(result$details$PIL_34$r, length(result$details$PIL_34$k))
+  expect_true(all(c("start_bk_prior_low", "end_bk_prior_source", "url", "fao_data_url") %in% names(result$summary)))
+
+  plain <- cmsy_plot(result, charts = c("kobe", "prior_posterior", "management"), lang = "en", silent = TRUE)
+  expect_null(plain$PIL_34_kobe$labels$title)
+  expect_equal(plain$PIL_34_kobe$theme$legend.position, "none")
+  annotated <- cmsy_plot(result, stocks = "Sardina pilchardus", charts = "kobe", annotations = TRUE, lang = "both",
+                         silent = TRUE)
+  expect_match(annotated$PIL_34_kobe$labels$title, "Kobe")
+  projection <- cmsy_forecast(result, years = 3, seed = 1, plot = FALSE, table = FALSE, silent = TRUE)
+  expect_setequal(unique(projection$projection$scenario), c("0.5 Fmsy", "0.6 Fmsy", "0.8 Fmsy", "0.95 Fmsy", "status_quo"))
+  tables <- cmsy_tables(result, table = FALSE, lang = "en")
+  expect_equal(nrow(tables$results), 1)
+  expect_true("Last-year B/Bmsy (95% CI)" %in% names(tables$results))
+  comparison <- cmsy_compare(a = result, b = result, silent = TRUE)
+  expect_equal(nrow(comparison$last_year), 2)
+  expect_true(file.exists(file.path("figures", "png", "cmsy", "PIL_34", "prior_posterior.png")))
+})
+
+test_that("species are found by English, Chinese or scientific name, code, or both names", {
+  zh <- cmsy_species_lookup()$species_zh[cmsy_species_lookup()$alpha3 == "PIL"]
+  expect_equal(cmsy_match_species("PIL"), "PIL")
+  expect_equal(cmsy_match_species("european pilchard(=sardine)"), "PIL")
+  expect_equal(cmsy_match_species("Sardina pilchardus"), "PIL")
+  expect_equal(cmsy_match_species(zh), "PIL")
+  expect_equal(cmsy_match_species(paste(zh, "European pilchard(=Sardine)")), "PIL")
+  expect_equal(cmsy_match_species(paste0(zh, " (European pilchard(=Sardine))")), "PIL")
+  expect_equal(cmsy_match_species(c("Gadus morhua", "YFT")), c("COD", "YFT"))
+  expect_error(cmsy_match_species("sardine"), "matches")
+  expect_error(cmsy_match_species("no such fish"), "No species")
+  stocks <- data.frame(Stock = c("PIL_34", "PIL_27", "SAA_34"), alpha3 = c("PIL", "PIL", "SAA"))
+  expect_setequal(cmsy_match_stocks(c("Sardina pilchardus", "SAA_34"), stocks), c("PIL_34", "PIL_27", "SAA_34"))
+  cod <- cmsy_priors("COD", lang = "both")
+  expect_match(cod$data_url, "fb/v26.06/parquet/estimate.parquet$")
+  expect_match(cod$rule_url, "oceanrep")
+  expect_true(all(c("species_en", "species_zh") %in% names(cod)))
+})
+
+test_that("chart annotations, equilibrium curve and Mohn's rho", {
+  expect_equal(cmsy_annotations(FALSE), character(0))
+  expect_equal(cmsy_annotations(TRUE), cmsy_annotation_types)
+  expect_equal(cmsy_annotations(c("title", "legend")), c("title", "legend"))
+  expect_error(cmsy_annotations("colours"))
+  expect_equal(cmsy_equilibrium_curve(c(0, 0.5, 1)), c(0, 1, 0))
+  expect_equal(cmsy_equilibrium_curve(0.25), 0.75)
+  peels <- data.frame(peel = factor(rep(c("All", "2019", "2018"), c(3, 2, 1)), levels = c("All", "2019", "2018")),
+                      Year = c(2018, 2019, 2020, 2018, 2019, 2018), value = c(1, 1, 1, 1.2, 1.1, 0.9))
+  expect_equal(cmsy_mohns_rho(peels), mean(c(0.1, -0.1)))
+})
+
+test_that("projections follow the CMSY++ model, status classes and tables", {
+  # At B = Bmsy (B/k = 0.5) and F = Fmsy, the stock stays at Bmsy without process error
+  out <- cmsy_project_stock(r = rep(0.4, 5), k = rep(1000, 5), bk = rep(0.5, 5), catch_last = 100, last_year = 2020,
+                            years = 5, f = 1, status_quo = FALSE, catch = NULL, sigma = 0)
+  s <- out$summary
+  expect_equal(s$B_Bmsy, rep(1, 6), tolerance = 1e-8)
+  expect_equal(s$Catch[-1], rep(100, 5), tolerance = 1e-8)
+  expect_equal(s$Year, 2020:2025)
+  # Below B/k = 0.25 productivity is reduced, as in CMSY++
+  low <- cmsy_project_stock(r = 0.4, k = 1000, bk = 0.2, catch_last = 0, last_year = 2020, years = 1, f = 0,
+                            status_quo = FALSE, catch = NULL, sigma = 0)$summary
+  expect_equal(low$B_Bmsy[2] / 2, 0.2 + 4 * 0.2 * 0.4 * 0.2 * 0.8)
+  expect_equal(as.character(cmsy_status_class(c(1.1, 0.9, 0.6, 0.3, 0.1), "palomares", "en")),
+               c("Healthy", "Slightly overfished", "Overfished", "Grossly overfished", "Collapsed"))
+  expect_equal(as.character(cmsy_status_class(c(0.79, 0.8), "fao", "en")),
+               c("Overfished", "Maximally sustainably fished"))
+  expect_equal(cmsy_scenario_label(c("0.8 Fmsy", "status_quo", "catch_100000"), 2024, "en"),
+               c("0.8 Fmsy", "Status quo F (2024)", "Constant catch 100,000 t"))
+})
+
+test_that("progress bars print only when not silent, and auto start keeps ten years", {
+  expect_silent(cmsy_progress(3, "Test", silent = TRUE)$update(1))
+  expect_output({b <- cmsy_progress(2, "Test", silent = FALSE); b$update(2, "x"); b$close()}, "2/2")
+  catch <- data.frame(yr = 2000:2015, ct = c(rep(10, 13), 1000, 1000, 1000))
+  id <- data.frame(StartYear = 2000, EndYear = 2015, stb.low = NA)
+  expect_equal(cmsy_auto_start(catch, id), 2000)
+  catch$ct <- c(rep(10, 3), rep(1000, 13))
+  expect_equal(cmsy_auto_start(catch, id), cmsy_auto_start(catch, id))
+  expect_true(cmsy_auto_start(catch, id) <= 2006)
 })

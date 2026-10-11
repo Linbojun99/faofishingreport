@@ -12,7 +12,7 @@ mean_temperature_catch(
   use_match = c("exact", "synonym", "WoRMS valid name (exact)",
     "WoRMS valid name (synonym)", "manual"),
   match = NULL,
-  sst = "ersst5",
+  sst = fao_setting("sst"),
   plot = TRUE,
   table = TRUE,
   lang = NULL,
@@ -45,10 +45,13 @@ the path of a CSV file such as the species table of a previous run after checkin
 (see What the user must check). It needs the columns `species_en`, `match_type` and
 `temp_pref_mean`, and may have `status`, `checked` and `note`. Default is NULL.}
 
-\item{sst}{The SST to compare with: the name of a product (default "ersst5", NOAA ERSST v5;
-others with `fao_sst_products()`, after `download_sst_data()`), FALSE for none, or a
-data frame with the columns `area_code` (or `area_en`), `year` and `sst_mean`, and
-optionally `sst_p10` and `sst_p90`.}
+\item{sst}{The SST to compare with (see `fao_area_sst()`): "ersst5" (NOAA ERSST v5, built
+into the package), the name of a product downloaded with `download_sst_data()`, the path
+of your own NetCDF file or folder of NetCDF files, FALSE for none, or a data frame with
+the columns `area_code` (or `area_en`), `year` and `sst_mean` (and optionally `sst_p10`
+and `sst_p90`). Default is the `sst` setting of `fao_settings()`, "ersst5" unless
+changed. The SST data used is printed, shown in the chart legend and given in the
+column `sst_source` of the yearly table.}
 
 \item{plot}{A logical value. If TRUE (default), charts are saved in `figures/png/summary/`.}
 
@@ -207,9 +210,10 @@ head(mtc$species[, c("species_name", "match_type", "temp_pref_mean", "catch_pct"
 # corrected values with their source in `note`), run again with the checked table
 mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern_Central_mtc_species.csv")
 
-# Another SST product (downloaded once with download_sst_data())
-download_sst_data("hadisst1")
-mean_temperature_catch(FAO34$area_data, sst = "hadisst1", label = "FAO34_hadisst")
+# Other SST data: your own NetCDF file (or folder), or a product downloaded once
+mean_temperature_catch(FAO34$area_data, sst = "D:/data/HadISST_sst.nc", label = "FAO34_hadisst")
+download_sst_data("cobe2")
+mean_temperature_catch(FAO34$area_data, sst = "cobe2", label = "FAO34_cobe2")
 
 # The period studied by Cheung et al. (2013)
 mean_temperature_catch(subset(FAO34$area_data, Year >= 1970 & Year <= 2006),

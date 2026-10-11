@@ -8,7 +8,7 @@ cmsy_system(
   os = "auto",
   device = c("file", "screen"),
   jags = "recommended",
-  quiet = FALSE
+  silent = fao_setting("silent")
 )
 }
 \arguments{
@@ -23,7 +23,8 @@ cmsy_system(
 built for this R version, which works with rjags from CRAN), "latest" (JAGS 5.0.0, which
 needs rjags 5-x from SourceForge) or a version number such as "4.3.2".}
 
-\item{quiet}{A logical value. If TRUE, no summary is printed. Default is FALSE.}
+\item{silent}{A logical value. If TRUE, no summary is printed. Default is FALSE, or the value
+set with `fao_settings(silent = )`.}
 }
 \value{
 Invisibly, a list with the system (`os`, `os_detected`, `arch`, `r_version`), the

@@ -8,7 +8,8 @@ cmsy_setup(
   jags = "recommended",
   os = "auto",
   ask = TRUE,
-  data_dir = fao_data_dir()
+  data_dir = fao_data_dir(),
+  silent = fao_setting("silent")
 )
 }
 \arguments{
@@ -23,9 +24,14 @@ needs rjags 5-x from SourceForge) or a version number such as "4.3.2".}
 non-interactive session nothing is installed when `ask` is TRUE.}
 
 \item{data_dir}{The directory where downloads are kept. Default is `fao_data_dir()`.}
+
+\item{silent}{A logical value. If TRUE, no summary is printed. Default is FALSE, or the value
+set with `fao_settings(silent = )`.}
 }
 \value{
-Invisibly, the result of [cmsy_system()] after the installation.
+Invisibly, the result of [cmsy_system()] after the installation. With `silent = TRUE`
+        no summary or download messages are printed (questions are still asked when `ask`
+        is TRUE).
 }
 \description{
 This function prepares the computer for [cmsy_run()]: it installs the missing R packages from

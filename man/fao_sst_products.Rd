@@ -7,22 +7,23 @@
 fao_sst_products()
 }
 \value{
-A data frame with one row per product: `product` (the name used in the functions),
-  `name`, `provider`, `grid`, `first_year` (first complete year), `data_sources`, `sea_ice`,
-  `licence`, `citation`, `doi`, `download` (server and dataset), `mb_per_year` (approximate
-  download size) and `bundled` (whether the area table comes with the package).
+A data frame with one row per product: `product` (the name used as `sst`), `name`,
+  `provider`, `grid`, `first_year` (first complete year), `data_sources`, `sea_ice`, `licence`,
+  `citation`, `doi`, `download` (server and dataset), `mb_per_year` (approximate download size)
+  and `built_in`.
 }
 \description{
-This function lists the sea surface temperature (SST) products that `fao_area_sst()`,
-`download_sst_data()` and `mean_temperature_catch()` can use: their provider, grid, years,
-data sources, treatment of sea ice, licence and the reference to cite.
+This function lists the sea surface temperature (SST) products that the package knows: the
+built-in NOAA ERSST v5, and the products that `download_sst_data()` can download. For each it
+gives the provider, grid, first year, data sources, treatment of sea ice, licence, the
+reference to cite and the approximate download size. Any other gridded SST in NetCDF files can
+also be used by giving its path (see `fao_area_sst()`).
 }
 \details{
 \describe{
-  \item{ersst5 (default)}{NOAA Extended Reconstructed SST version 5 (Huang et al. 2017): 2° x
-    2°, monthly, from 1854. In situ observations only (ships and buoys of ICOADS, Argo floats
-    from 1999), so the record is consistent over the whole period. Coarse for small areas such
-    as the Mediterranean and Black Sea. Its table is bundled with the package.}
+  \item{ersst5 (built in, default)}{NOAA Extended Reconstructed SST version 5 (Huang et al.
+    2017): 2° x 2°, monthly, from 1854. In situ observations only (ships and buoys of ICOADS,
+    Argo floats from 1999).}
   \item{hadisst1}{Met Office Hadley Centre HadISST1 (Rayner et al. 2003): 1° x 1°, monthly,
     from 1870. In situ observations (Met Office Marine Data Bank, with GTS reports from 1982;
     ICOADS monthly medians for 1871-1995), reconstructed by reduced-space optimal
@@ -32,21 +33,14 @@ data sources, treatment of sea ice, licence and the reference to cite.
     from 1850. In situ SST and sea-ice observations; satellite observations are used to
     reconstruct variability in regions with few observations.}
   \item{oisst21}{NOAA Optimum Interpolation SST version 2.1 (Huang et al. 2021): daily 0.25° x
-    0.25° analysis from September 1981 (monthly means from NOAA PSL; averaged to 1° by this
-    package). Satellite (AVHRR), ship, buoy and Argo observations. The best resolution, but
-    only from 1982, so it cannot show earlier changes.}
+    0.25° analysis from September 1981 (monthly means from NOAA PSL; averaged to 1° by the
+    package). Satellite (AVHRR), ship, buoy and Argo observations. Only from 1982.}
 }
-
-All products are spatially complete reconstructions (interpolated where there are no
-observations), and all estimate SST under or near sea ice from sea-ice data: ERSST v5,
-COBE-SST2 and OISST v2.1 give values near -1.8 °C under ice; HadISST1 marks ice-covered cells
-with -1000, which this package sets to -1.8 °C. Values over the Arctic Sea and the Antarctic
-areas therefore partly reflect sea ice rather than measured water temperature. The products use
-different observations and methods, so their values and trends differ somewhat; repeating an
-analysis with a second product shows how much a result depends on the product.
+Only the table of ERSST v5 comes with the package, to keep it small; its data are also the
+smallest to download (about 0.8 MB per year, against 3 to 11 MB for the others).
 }
 \examples{
-fao_sst_products()[, c("product", "name", "grid", "first_year", "bundled")]
+fao_sst_products()[, c("product", "name", "grid", "first_year", "built_in")]
 }
 \references{
 Hirahara, S., Ishii, M. and Fukuda, Y. (2014). Centennial-scale sea surface temperature

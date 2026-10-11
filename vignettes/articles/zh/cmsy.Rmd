@@ -71,6 +71,15 @@ show_table(cod[, c("species_name", "scientific_name", "SpecCode", "resilience", 
 
 `open = TRUE` 会在浏览器中打开对应的 FishBase 页面，方便核对数值：`cmsy_priors("沙丁鱼", open = TRUE)`。
 
+物种可以用英文名、中文名、中英文名（即 `lang = "both"` 时图中显示的形式）、学名或 FAO 三字母代码给出。`cmsy_priors()`、`cmsy_input(species = )`、`cmsy_run(stocks = )` 和 `cmsy_plot(stocks = )` 都使用同一套规则：先按完整名称匹配（不区分大小写），没有完全匹配时再按名称的一部分匹配；如果匹配到多个物种，会列出候选项，请从中选择更具体的名称或代码。结果用哪种语言显示由 `lang` 决定（`"en"`、`"zh"` 或 `"both"`），`species_en` 和 `species_zh` 两列则始终同时给出英文名和中文名。
+
+```{r}
+p <- cmsy_priors(c("COD", "Sardina pilchardus", "沙丁鱼"), lang = "both")
+show_table(p[, c("species_name", "scientific_name", "alpha3", "r_low", "r_high", "url", "data_url", "rule_url")])
+```
+
+每一行都附有三个来源链接：`url` 是 FishBase 或 SeaLifeBase 的物种页面，可以在页面上核对恢复力和先验 r；`data_url` 是读取这个数值所用的 FishBase 或 SeaLifeBase 数据表（先验 r 来自 `estimate` 表，恢复力来自 `stocks` 表）；`rule_url` 是 CMSY++ 用户手册，根据手册表 1、表 2 把这些数值换算成 r 的范围。`cmsy_input()` 和 `cmsy_run()` 的结果还多一列 `fao_data_url`，即所用 FAO 数据版本的下载链接。
+
 r 的先验范围按照 CMSY++ 用户手册确定：
 
 | 情况 | r 范围 | 依据 |

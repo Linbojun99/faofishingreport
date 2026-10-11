@@ -33,6 +33,12 @@
 #' @param plots The CMSY++ charts to save as JPEG files: any of "analysis", "management", "kobe",
 #'        "prior_posterior" and "retrospective". Default is the first three.
 #' @param seed Optional random seed, so runs can be repeated with the same results.
+#' @param silent A logical value. If FALSE (default), a progress bar shows how many stocks have
+#'        finished, with the elapsed and the estimated remaining time, and messages report the
+#'        run. If TRUE, nothing is printed. The default can be changed for the session with
+#'        `fao_settings(silent = TRUE)`.
+#' @param timeout Maximum time for one stock, in seconds; a stock still running after it is
+#'        reported as failed. Default is 3600.
 #' @param auto_start A logical value. When the mean (smoothed) catch of the first three years is
 #'        below a third of the maximum, the start year is before 2000 and no start B/k prior is
 #'        given, CMSY++ warns that the start biomass is ambiguous (depleted or unexploited) and
@@ -68,20 +74,21 @@
 #' }
 cmsy_run <- function(input, stocks = NULL, out_dir = "cmsy", parallel = NULL,
                      plots = c("analysis", "management", "kobe"), os = "auto", device = c("file", "screen"),
-                     seed = NULL, auto_start = FALSE, table = TRUE, lang = NULL) {
+                     seed = NULL, auto_start = FALSE, table = TRUE, lang = NULL,
+                     silent = fao_setting("silent"), timeout = 3600) {
   if (!inherits(input, "cmsy_input")) stop("`input` must be the result of cmsy_input().", call. = FALSE)
   device <- match.arg(device)
   plots <- match.arg(plots, c("analysis", "management", "kobe", "prior_posterior", "retrospective"), several.ok = TRUE)
   lang <- fao_lang(lang)
-  sys <- cmsy_system(os = os, device = device, quiet = TRUE)
+  sys <- cmsy_system(os = os, device = device, silent = TRUE)
   missing <- sys$packages$package[!sys$packages$ok]
   if (length(missing) > 0 || is.na(sys$jags)) {
-    cmsy_print_system(sys)
+    if (!silent) cmsy_print_system(sys)
     stop("CMSY++ needs JAGS and the R packages ", paste(sys$packages$package, collapse = ", "),
          ". Run cmsy_setup() first.", call. = FALSE)
   }
 
-  stocks <- if (is.null(stocks)) input$id$Stock else cmsy_match_stocks(stocks, input$stocks)
+  stocks <- if (is.null(stocks)) input$id$Stock else cmsy_quietly(cmsy_match_stocks(stocks, input$stocks), silent)
   if (length(stocks) == 0) stop("No stocks to run.", call. = FALSE)
 
   run_dir <- file.path(out_dir, input$name)
@@ -102,36 +109,28 @@ cmsy_run <- function(input, stocks = NULL, out_dir = "cmsy", parallel = NULL,
     if (auto_start) id$StartYear <- cmsy_auto_start(input$catch[input$catch$Stock == stock, ], id)
     utils::write.csv(id, file.path(dir, "id.csv"), row.names = FALSE, na = "NA")
     writeLines(cmsy_settings_code(stock, sys, plots, seed), file.path(dir, "cmsy_settings.R"))
+    # done.txt tells cmsy_run() that the stock has finished, and how
     writeLines(c(paste0("setwd(", deparse(dir), ")"),
-                 paste0("source(", deparse(code_file), ", echo = FALSE)")), file.path(dir, "run.R"))
+                 "local({",
+                 "  status <- \"ok\"",
+                 paste0("  tryCatch(source(", deparse(code_file), ", echo = FALSE),"),
+                 "           error = function(e) {status <<- paste(\"error:\", conditionMessage(e)); message(\"Error: \", conditionMessage(e))},",
+                 "           finally = writeLines(status, \"done.txt\"))",
+                 "})"), file.path(dir, "run.R"))
     list(stock = stock, dir = dir)
   })
 
   if (is.null(parallel)) parallel <- max(1L, floor(parallel::detectCores(logical = FALSE) / 2), na.rm = TRUE)
   parallel <- max(1L, min(as.integer(parallel), length(jobs)))
-  rscript <- sys$rscript
   # Child R processes (and the JAGS chains they start) use the same package libraries
   old_libs <- Sys.getenv("R_LIBS", unset = NA)
   Sys.setenv(R_LIBS = cmsy_lib_paths())
   on.exit(if (is.na(old_libs)) Sys.unsetenv("R_LIBS") else Sys.setenv(R_LIBS = old_libs), add = TRUE)
-  run_one <- function(job) {
-    start <- Sys.time()
-    status <- suppressWarnings(system2(rscript, shQuote(file.path(job$dir, "run.R")),
-                                       stdout = file.path(job$dir, "log.txt"), stderr = file.path(job$dir, "log.txt")))
-    list(stock = job$stock, exit = status, seconds = as.numeric(difftime(Sys.time(), start, units = "secs")))
+  if (!silent) {
+    message("Running CMSY++ on ", length(jobs), " stock", if (length(jobs) > 1) "s", " (", parallel,
+            " at a time) in ", run_dir)
   }
-  message("Running CMSY++ on ", length(jobs), " stock", if (length(jobs) > 1) "s", " (", parallel,
-          " at a time) in ", run_dir)
-  runs <- if (parallel > 1) {
-    cl <- parallel::makePSOCKcluster(parallel)
-    on.exit(parallel::stopCluster(cl), add = TRUE)
-    parallel::parLapplyLB(cl, jobs, run_one)
-  } else {
-    lapply(seq_along(jobs), function(i) {
-      message("  [", i, "/", length(jobs), "] ", jobs[[i]]$stock)
-      run_one(jobs[[i]])
-    })
-  }
+  runs <- cmsy_run_jobs(jobs, sys$rscript, parallel, timeout, silent)
 
   result <- cmsy_collect(jobs, runs, input, lang)
   result$sources <- cmsy_run_sources(sys, input, seed)
@@ -145,9 +144,81 @@ cmsy_run <- function(input, stocks = NULL, out_dir = "cmsy", parallel = NULL,
     fao_write_csv(result$sources, file.path("tables", "cmsy", paste0(input$name, "_sources.csv")))
   }
   ok <- sum(result$summary$run_status == "ok")
-  message("CMSY++ finished: ", ok, " of ", nrow(result$summary), " stocks", if (ok < nrow(result$summary))
-    " (see $summary$run_status and the log.txt file of each stock)", ".")
+  if (!silent) {
+    message("CMSY++ finished: ", ok, " of ", nrow(result$summary), " stocks", if (ok < nrow(result$summary))
+      " (see $summary$run_status and the log.txt file of each stock)", ".")
+  }
   invisible(result)
+}
+
+# Runs the stocks as separate R processes, `parallel` at a time, and follows them with a progress
+# bar; a stock has finished when its done.txt file appears (see run.R)
+cmsy_run_jobs <- function(jobs, rscript, parallel, timeout, silent) {
+  n <- length(jobs)
+  results <- vector("list", n)
+  running <- list()
+  next_job <- 1
+  finished <- 0
+  bar <- cmsy_progress(n, "CMSY++", silent)
+  on.exit(bar$close(), add = TRUE)
+  while (finished < n) {
+    while (length(running) < parallel && next_job <= n) {
+      dir <- jobs[[next_job]]$dir
+      unlink(file.path(dir, "done.txt"))
+      log <- file.path(dir, "log.txt")
+      system2(rscript, shQuote(file.path(dir, "run.R")), stdout = log, stderr = log, wait = FALSE)
+      running[[length(running) + 1]] <- list(i = next_job, start = Sys.time())
+      next_job <- next_job + 1
+    }
+    Sys.sleep(0.5)
+    done <- vapply(running, function(r) {
+      file.exists(file.path(jobs[[r$i]]$dir, "done.txt")) ||
+        as.numeric(difftime(Sys.time(), r$start, units = "secs")) > timeout
+    }, logical(1))
+    for (r in running[done]) {
+      done_file <- file.path(jobs[[r$i]]$dir, "done.txt")
+      exit <- if (file.exists(done_file)) readLines(done_file, warn = FALSE)[1] else paste("timeout after", timeout, "s")
+      results[[r$i]] <- list(stock = jobs[[r$i]]$stock, exit = exit,
+                             seconds = as.numeric(difftime(Sys.time(), r$start, units = "secs")))
+      finished <- finished + 1
+      bar$update(finished, jobs[[r$i]]$stock)
+    }
+    running <- running[!done]
+  }
+  results
+}
+
+# Text progress bar with the elapsed and estimated remaining time; does nothing when silent
+cmsy_progress <- function(n, label, silent) {
+  if (silent || n == 0) return(list(update = function(...) invisible(NULL), close = function() invisible(NULL)))
+  start <- Sys.time()
+  width <- 30
+  closed <- FALSE
+  clock <- function(seconds) {
+    if (!is.finite(seconds)) return("--:--")
+    seconds <- round(seconds)
+    sprintf("%02d:%02d", seconds %/% 60, seconds %% 60)
+  }
+  draw <- function(i, note = "") {
+    elapsed <- as.numeric(difftime(Sys.time(), start, units = "secs"))
+    left <- if (i > 0) elapsed / i * (n - i) else NA
+    filled <- round(width * i / n)
+    line <- sprintf("%s [%s%s] %d/%d (%3.0f%%) %s elapsed, %s left %s", label, strrep("=", filled),
+                    strrep(" ", width - filled), i, n, 100 * i / n, clock(elapsed), clock(left), note)
+    cat("\r", formatC(line, width = -getOption("width", 80) + 1), sep = "")
+    utils::flush.console()
+  }
+  draw(0)
+  list(update = draw, close = function() {
+    if (!closed) cat("\n")
+    closed <<- TRUE
+    invisible(NULL)
+  })
+}
+
+# Evaluates `expr` without its messages when silent
+cmsy_quietly <- function(expr, silent) {
+  if (silent) suppressMessages(expr) else expr
 }
 
 #' @export
@@ -302,11 +373,12 @@ cmsy_auto_start <- function(catch, id) {
   catch <- catch[catch$yr >= id$StartYear & catch$yr <= id$EndYear, ]
   smooth <- stats::ksmooth(x = catch$yr, y = catch$ct / 1000, kernel = "normal",
                            n.points = nrow(catch), bandwidth = 3)$y
+  start <- id$StartYear
   if (is.na(id$stb.low) && mean(smooth[1:3]) < 0.33 * max(smooth) && id$StartYear < 2000) {
-    catch$yr[which(smooth >= 0.4 * max(smooth))][1]
-  } else {
-    id$StartYear
+    start <- catch$yr[which(smooth >= 0.4 * max(smooth))][1]
   }
+  # CMSY++ needs at least ten years; a later start that leaves fewer is not used
+  if (id$EndYear - start + 1 < 10) id$StartYear else start
 }
 
 # rbind of data frames with different columns (failed stocks have only a few)
@@ -393,6 +465,7 @@ cmsy_read_stock <- function(dir, stock, run) {
     p_green = p(b >= 1 & f <= 1), p_orange = p(b >= 1 & f > 1), p_yellow = p(b < 1 & f <= 1), p_red = p(b < 1 & f > 1),
     p_overfished = p(b < 0.8),
     status = ifelse(is.na(last_b), NA_character_, ifelse(last_b >= 0.8, "maximally sustainably fished", "overfished")),
+    status_palomares = as.character(cmsy_status_class(last_b, "palomares", "en")),
     folder = dir, stringsAsFactors = FALSE
   )
   series <- data.frame(
@@ -419,12 +492,12 @@ cmsy_read_stock <- function(dir, stock, run) {
 }
 
 # CMSY++'s own notes on the run (e.g. "Attention: Low catch in 1950 may indicate ...")
+# (only the main analysis; retrospective runs repeat the notes for shorter series)
 cmsy_log_notes <- function(log) {
-  start <- grep("Attention:", log)
-  if (length(start) == 0) return("")
-  lines <- unlist(lapply(start, function(i) log[i:min(length(log), i + 2)]))
-  lines <- trimws(lines[!grepl("^\\s*\\*+\\s*$", lines)])
-  paste(lines, collapse = " ")
+  start <- grep("Attention:", log)[1]
+  if (is.na(start)) return("")
+  lines <- log[start:min(length(log), start + 2)]
+  paste(trimws(lines[!grepl("^\\s*\\*+\\s*$", lines)]), collapse = " ")
 }
 
 cmsy_log_error <- function(log) {

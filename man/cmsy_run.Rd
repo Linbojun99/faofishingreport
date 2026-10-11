@@ -15,7 +15,9 @@ cmsy_run(
   seed = NULL,
   auto_start = FALSE,
   table = TRUE,
-  lang = NULL
+  lang = NULL,
+  silent = fao_setting("silent"),
+  timeout = 3600
 )
 }
 \arguments{
@@ -57,6 +59,14 @@ before the run. Default is FALSE, as in CMSY++; the user guide prefers setting
 \item{lang}{The language of the chart text and names: "en" (English), "zh" (Chinese) or
 "both" (Chinese and English). Default is NULL, which uses the language set with
 `fao_settings()` ("en" unless changed).}
+
+\item{silent}{A logical value. If FALSE (default), a progress bar shows how many stocks have
+finished, with the elapsed and the estimated remaining time, and messages report the
+run. If TRUE, nothing is printed. The default can be changed for the session with
+`fao_settings(silent = TRUE)`.}
+
+\item{timeout}{Maximum time for one stock, in seconds; a stock still running after it is
+reported as failed. Default is 3600.}
 }
 \value{
 Invisibly, a list of class `cmsy_result` with `summary` (one row per stock: reference

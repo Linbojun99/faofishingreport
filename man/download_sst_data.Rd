@@ -2,7 +2,7 @@
 % Please edit documentation in R/sst_data.R
 \name{download_sst_data}
 \alias{download_sst_data}
-\title{Download a Sea Surface Temperature Product and Compute the Area Means}
+\title{Download a Sea Surface Temperature Product}
 \usage{
 download_sst_data(
   product = "ersst5",
@@ -13,11 +13,11 @@ download_sst_data(
 )
 }
 \arguments{
-\item{product}{The SST product: "ersst5" (default), "hadisst1", "cobe2" or "oisst21"; see
+\item{product}{The product: "ersst5", "hadisst1", "cobe2" or "oisst21"; see
 `fao_sst_products()`.}
 
 \item{years}{The years to download. Default is NULL: from 1950 (1982 for OISST v2.1) to the
-last complete year available.}
+last complete year.}
 
 \item{data_dir}{The directory where downloaded data is stored. Default is `fao_data_dir()`.}
 
@@ -30,34 +30,24 @@ Default is FALSE.}
 Invisibly, the area table (as returned by `fao_area_sst()`).
 }
 \description{
-This function downloads a sea surface temperature (SST) product (see `fao_sst_products()`)
-one year at a time, and computes the yearly SST of each FAO major marine fishing area, which
-`fao_area_sst()` and `mean_temperature_catch()` then read. Files are kept in the `sst` folder
-of `data_dir`, with `files.csv` recording where and when each was downloaded; years already
-downloaded are skipped, so an interrupted download can be resumed by running the function
-again. The table of the default product, ERSST v5, is bundled with the package; running the
-function for it adds years published since.
+This function downloads one of the sea surface temperature (SST) products listed by
+`fao_sst_products()`, one year at a time, and computes the yearly SST of each FAO major marine
+fishing area (see `fao_area_sst()` for the method). The product can then be used by its name,
+e.g. `fao_area_sst(sst = "hadisst1")`, `mean_temperature_catch(..., sst = "hadisst1")` or
+`fao_settings(sst = "hadisst1")`. Files are kept in the `sst` folder of `data_dir`, with
+`files.csv` recording where and when each was downloaded; years already downloaded are skipped,
+so an interrupted download can be resumed by running the function again. For ERSST v5, whose
+table is built into the package, the function adds the years published since.
 }
 \details{
-The area means are computed as follows. Each grid cell counts for each FAO major area it
-overlaps (`inst/extdata/FAO_AREAS_CWP.shp`, the 19 marine areas), weighted by the area of the
-overlap (computed on the sphere), so cells on a boundary are shared and coastal cells count for
-their sea part only (OISST v2.1 is first averaged to 1°). For each year:
-\itemize{
-  \item `sst_mean`: the mean of the 12 monthly area means;
-  \item `sst_p10`, `sst_p90`: the weighted 10th and 90th percentiles of the yearly mean SST of
-    the cells of the area, i.e. the range of temperature within the area;
-  \item `sst_min_month`, `sst_max_month`: the coldest and warmest monthly area means, i.e. the
-    seasonal range. In areas on both sides of the equator the seasons of the two hemispheres
-    partly cancel, so this range is narrow there.
-}
-Only complete years (12 months) are kept. Reading the files needs the ncdf4 package.
+SST data from other sources can be used without this function, by giving the path of the
+NetCDF files (see `fao_area_sst()`). Reading the files needs the ncdf4 package.
 }
 \examples{
 \dontrun{
 fao_sst_products()
 download_sst_data("hadisst1")          # about 240 MB
-fao_area_sst("34", product = "hadisst1")
+fao_area_sst("34", sst = "hadisst1")
 }
 }
 \references{

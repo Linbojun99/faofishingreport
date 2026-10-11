@@ -15,7 +15,8 @@ cmsy_input(
   max_filled = 0.2,
   table = TRUE,
   lang = NULL,
-  label = NULL
+  label = NULL,
+  silent = fao_setting("silent")
 )
 }
 \arguments{
@@ -55,6 +56,9 @@ Default is 0.2.}
 
 \item{label}{The name used in the output file names. Default is the fishing area (or the
 country) of the data.}
+
+\item{silent}{A logical value. If TRUE, no messages are printed. Default is FALSE, or the value
+set with `fao_settings(silent = )`.}
 }
 \value{
 Invisibly, a list of class `cmsy_input` with `catch` and `id` (the two CMSY++ input

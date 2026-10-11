@@ -4,40 +4,97 @@
 \alias{fao_area_sst}
 \title{Sea Surface Temperature of the FAO Major Fishing Areas}
 \usage{
-fao_area_sst(area = NULL, product = "ersst5", data_dir = fao_data_dir())
+fao_area_sst(
+  area = NULL,
+  sst = fao_setting("sst"),
+  variable = NULL,
+  data_dir = fao_data_dir()
+)
 }
 \arguments{
 \item{area}{FAO area codes (e.g. "34") or names as in the FAO data (e.g. "Atlantic, Eastern
 Central"). Default is NULL, all areas.}
 
-\item{product}{The SST product: "ersst5" (default), "hadisst1", "cobe2" or "oisst21".}
+\item{sst}{The SST data: "ersst5" (built in), the name of a product downloaded with
+`download_sst_data()`, or the path of a NetCDF file or of a folder of NetCDF files.
+Default is the `sst` setting of `fao_settings()`, "ersst5" unless changed.}
 
-\item{data_dir}{The directory where downloaded data is stored. Default is `fao_data_dir()`.}
+\item{variable}{The name of the SST variable in your NetCDF files. Default is NULL, found from
+its name.}
+
+\item{data_dir}{The directory where downloaded data and computed tables are stored. Default is
+`fao_data_dir()`.}
 }
 \value{
 A data frame with one row per area and year: `product`, `area_code`, `area_en`,
   `year`, `sst_mean`, `sst_p10`, `sst_p90`, `sst_min_month`, `sst_max_month` (all in °C),
-  `n_cells` (grid cells in the area), `source` (product name) and `downloaded` (date of the
-  last download).
+  `n_cells` (grid cells in the area), `source` (the SST data used) and `downloaded` (date the
+  data were downloaded or computed).
 }
 \description{
 This function returns the yearly sea surface temperature (SST) of the 19 FAO major marine
-fishing areas from a gridded SST product (see `fao_sst_products()`): the mean, the range
-within the area (10th to 90th percentile of the cells) and the seasonal range (coldest and
-warmest month). It is used by `mean_temperature_catch()`; `download_sst_data()` describes how
-the values are computed.
+fishing areas: the area mean, the range within the area and the seasonal range, one row per
+area and year, like the FAO catch statistics. It is used by `mean_temperature_catch()`. It
+always says which SST data it uses.
 }
-\details{
-The default product, NOAA ERSST v5, is bundled with the package (from 1950 to the year before
-the package was built); if it has been updated with `download_sst_data()`, the newer table is
-used. The other products must first be downloaded with `download_sst_data()`.
+\section{Which SST data}{
+
+\describe{
+  \item{Built in (default): NOAA ERSST v5}{The package comes with the yearly SST of the 19
+    areas from 1950, computed from NOAA Extended Reconstructed SST version 5 (Huang et al.
+    2017): a monthly reconstruction on a 2° x 2° grid (about 220 km) from in situ observations
+    only (ships and buoys of ICOADS, Argo floats from 1999). It is the smallest of the common
+    SST products, needs no download, and is consistent over the whole period; its grid is
+    coarse for small areas such as the Mediterranean and Black Sea (`n_cells` gives the number
+    of grid cells of each area).}
+  \item{Your own NetCDF files}{Give the path of a NetCDF file, or of a folder of NetCDF files,
+    as `sst`, or once for the session with `fao_settings(sst = "path")`. The files must hold a
+    gridded SST with longitude, latitude and time, monthly or daily (e.g. HadISST, COBE-SST2,
+    OISST, ERSST, or a model output). The yearly area means are computed the first time, which
+    can take a few minutes, and saved in the `sst` folder of `data_dir`; later calls with the
+    same files read the saved table. Reading NetCDF files needs the ncdf4 package.}
+  \item{Downloaded with download_sst_data()}{`download_sst_data()` downloads one of the products
+    listed by `fao_sst_products()` (HadISST1, COBE-SST2, OISST v2.1, or the newest years of
+    ERSST v5) and computes its table; it is then used by its name, e.g. `sst = "hadisst1"`.}
 }
+}
+
+\section{How the area means are computed}{
+
+\itemize{
+  \item Files: the SST variable is found by its name ("sst", "analysed_sst", "tos", ...)
+    unless given as `variable`; longitudes may run from -180 to 180 or from 0 to 360; values in
+    kelvin are converted to °C; if there are several depths, the first (the surface) is used.
+    Values below -5 °C, which some products use to mark sea ice (-1000 in HadISST1), are set to
+    -1.8 °C, the value other products give under sea ice. Daily values are averaged by month.
+  \item Grids finer than 1° are first averaged to about 1° (mean of the cells with a value).
+  \item Each grid cell counts for each FAO major area it overlaps (`inst/extdata/FAO_AREAS_CWP.shp`,
+    the 19 marine areas), weighted by the area of the overlap computed on the sphere, so cells
+    on a boundary are shared and coastal cells count for their sea part only.
+  \item `sst_mean` is the mean of the 12 monthly area means; `sst_p10` and `sst_p90` are the
+    weighted 10th and 90th percentiles of the yearly mean SST of the cells (the range within the
+    area); `sst_min_month` and `sst_max_month` are the coldest and warmest monthly area means
+    (the seasonal range; in areas on both sides of the equator the seasons of the two
+    hemispheres partly cancel, so this range is narrow there). Only years with all 12 months
+    are kept.
+}
+Values over the Arctic Sea and the Antarctic areas partly reflect sea ice rather than measured
+water temperature. SST products use different observations and methods, so their values and
+trends differ somewhat; repeating an analysis with a second product shows how much a result
+depends on the product.
+}
+
 \examples{
 \dontrun{
-sst34 <- fao_area_sst("34")
+sst34 <- fao_area_sst("34")                          # built in: NOAA ERSST v5
 plot(sst_mean ~ year, data = sst34, type = "l", ylim = range(sst34$sst_p10, sst34$sst_p90))
 lines(sst_p10 ~ year, data = sst34, lty = 2)
 lines(sst_p90 ~ year, data = sst34, lty = 2)
+
+# Your own NetCDF file (e.g. HadISST_sst.nc downloaded from the Met Office), for one call ...
+fao_area_sst("34", sst = "D:/data/HadISST_sst.nc")
+# ... or for the whole session, including mean_temperature_catch()
+fao_settings(sst = "D:/data/HadISST_sst.nc")
 }
 }
 \references{

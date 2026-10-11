@@ -146,4 +146,5 @@ status <- stock_status(FAO34$area_data)
 - [🐟 物种与国家分析](species-countries.html)：`species_country()`、`country_species()`、`country_analysis()`
 - [📈 类群结构、资源状态与趋势](status-trends.html)和
   [🔍 数据质量、多样性与船队](quality-diversity-fleets.html)：九项汇总分析
+- [🌡️ 海表温度与渔获平均温度](sst-mtc.html)：渔区海表温度（内置或读取自己的 NetCDF 文件）与渔获平均温度
 - [🎨 自定义图表与地图](customise.html)：主题、色板、地图投影、字体和输出设置

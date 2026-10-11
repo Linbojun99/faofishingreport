@@ -63,6 +63,15 @@ priors <- cmsy_priors()
 table(priors$match_type)
 ```
 
+Species can be named by English or Chinese FAO name, both together (as shown with `lang = "both"`), scientific name or FAO 3-alpha code, in `cmsy_priors()`, `cmsy_input(species = )`, `cmsy_run(stocks = )` and `cmsy_plot(stocks = )`: full names are matched first (ignoring case), then parts of names; if several species match, they are listed so a more precise name or code can be given. `lang` sets the language of the results; `species_en` and `species_zh` always give both names.
+
+```{r}
+p <- cmsy_priors(c("COD", "Sardina pilchardus", "European pilchard"), lang = "both")
+show_table(p[, c("species_name", "scientific_name", "alpha3", "r_low", "r_high", "url", "data_url", "rule_url")])
+```
+
+Every row links to its sources: `url`, the FishBase or SeaLifeBase page of the species (where resilience and prior r can be checked); `data_url`, the FishBase or SeaLifeBase table the value was read from (`estimate` for prior r, `stocks` for resilience); and `rule_url`, the CMSY++ user guide, whose Tables 1 and 2 turn the values into the r range. The results of `cmsy_input()` and `cmsy_run()` add `fao_data_url`, the FAO data release used.
+
 ## 🧾 Step 4: FAO data to CMSY++ input files
 
 ```{r}

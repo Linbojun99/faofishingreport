@@ -40,6 +40,8 @@ navbar:
         href: articles/status-trends.html
       - text: "📉 CMSY++ stock assessment"
         href: articles/cmsy.html
+      - text: "🌡️ Sea temperature and catch temperature"
+        href: articles/sst-mtc.html
       - text: "🔍 Data quality, diversity and fleets"
         href: articles/quality-diversity-fleets.html
       - text: "🎨 Customise charts and maps"
@@ -125,6 +127,7 @@ articles:
   - articles/species-countries
   - articles/status-trends
   - articles/cmsy
+  - articles/sst-mtc
   - articles/quality-diversity-fleets
   - articles/customise
 - title: "中文文档"
@@ -136,6 +139,7 @@ articles:
   - articles/zh/species-countries
   - articles/zh/status-trends
   - articles/zh/cmsy
+  - articles/zh/sst-mtc
   - articles/zh/quality-diversity-fleets
   - articles/zh/customise
 

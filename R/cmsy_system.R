@@ -27,7 +27,8 @@
 #' @param jags The JAGS version to recommend: "recommended" (default; the newest JAGS 4 release
 #'        built for this R version, which works with rjags from CRAN), "latest" (JAGS 5.0.0, which
 #'        needs rjags 5-x from SourceForge) or a version number such as "4.3.2".
-#' @param quiet A logical value. If TRUE, no summary is printed. Default is FALSE.
+#' @param silent A logical value. If TRUE, no summary is printed. Default is FALSE, or the value
+#'        set with `fao_settings(silent = )`.
 #' @return Invisibly, a list with the system (`os`, `os_detected`, `arch`, `r_version`), the
 #'         installed `jags` and `rjags` versions, the `packages` table, the recommended `jags_installer`
 #'         and `rjags_source`, the chart `device` and `antialias` settings, and the `changes`
@@ -40,7 +41,7 @@
 #' cmsy_system(os = "windows")   # settings that would be used on Windows
 #' }
 cmsy_system <- function(os = "auto", device = c("file", "screen"), jags = "recommended",
-                        quiet = FALSE) {
+                        silent = fao_setting("silent")) {
   device <- match.arg(device)
   detected <- cmsy_detect_os()
   os <- cmsy_os(os)
@@ -61,7 +62,7 @@ cmsy_system <- function(os = "auto", device = c("file", "screen"), jags = "recom
     antialias = if (os == "windows") "cleartype" else "default",
     changes = cmsy_changes(os, device)
   )
-  if (!quiet) cmsy_print_system(result)
+  if (!silent) cmsy_print_system(result)
   invisible(result)
 }
 
@@ -83,15 +84,18 @@ cmsy_system <- function(os = "auto", device = c("file", "screen"), jags = "recom
 #' @param ask A logical value. If TRUE (default), ask before installing anything. In a
 #'        non-interactive session nothing is installed when `ask` is TRUE.
 #' @param data_dir The directory where downloads are kept. Default is `fao_data_dir()`.
-#' @return Invisibly, the result of [cmsy_system()] after the installation.
+#' @return Invisibly, the result of [cmsy_system()] after the installation. With `silent = TRUE`
+#'         no summary or download messages are printed (questions are still asked when `ask`
+#'         is TRUE).
 #' @export
 #' @examples
 #' \dontrun{
 #' cmsy_setup()
 #' cmsy_setup(jags = "latest")   # JAGS 5.0.0 with rjags 5-3
 #' }
-cmsy_setup <- function(jags = "recommended", os = "auto", ask = TRUE, data_dir = fao_data_dir()) {
-  sys <- cmsy_system(os = os, jags = jags, quiet = TRUE)
+cmsy_setup <- function(jags = "recommended", os = "auto", ask = TRUE, data_dir = fao_data_dir(),
+                       silent = fao_setting("silent")) {
+  sys <- cmsy_system(os = os, jags = jags, silent = TRUE)
   can_ask <- interactive()
   agree <- function(question) {
     if (!isTRUE(ask)) return(TRUE)
@@ -119,7 +123,7 @@ cmsy_setup <- function(jags = "recommended", os = "auto", ask = TRUE, data_dir =
   if (need_jags) {
     if (agree(paste0("JAGS ", target$version, " is needed. Download ", target$file, " (",
                      round(target$size / 1e6, 1), " MB) and open the installer?"))) {
-      cmsy_install_jags(target$version, os = sys$os, data_dir = data_dir)
+      cmsy_install_jags(target$version, os = sys$os, data_dir = data_dir, silent = silent)
       message("After JAGS is installed, restart R and run cmsy_setup() again to check.")
     }
   }
@@ -129,7 +133,7 @@ cmsy_setup <- function(jags = "recommended", os = "auto", ask = TRUE, data_dir =
       (is.na(sys$rjags) || cmsy_major(sys$rjags) < 5)) {
     entry <- sys$rjags_source
     if (agree(paste0("JAGS 5 needs rjags ", entry$version, ". Install it from ", entry$url, "?"))) {
-      path <- cmsy_fetch(entry, data_dir)
+      path <- cmsy_fetch(entry, data_dir, quiet = silent)
       type <- if (entry$platform == "source") "source" else "binary"
       utils::install.packages(path, repos = NULL, type = type)
     }
@@ -146,7 +150,7 @@ cmsy_setup <- function(jags = "recommended", os = "auto", ask = TRUE, data_dir =
     }
   }
 
-  cmsy_system(os = os, jags = jags)
+  cmsy_system(os = os, jags = jags, silent = silent)
 }
 
 #' Download and Open the JAGS Installer
@@ -167,12 +171,14 @@ cmsy_setup <- function(jags = "recommended", os = "auto", ask = TRUE, data_dir =
 #' cmsy_install_jags()
 #' }
 cmsy_install_jags <- function(version = "recommended", os = "auto", open = TRUE,
-                              data_dir = fao_data_dir()) {
+                              data_dir = fao_data_dir(), silent = fao_setting("silent")) {
   os <- cmsy_os(os)
   entry <- cmsy_jags_choice(version, os, getRversion())
-  path <- cmsy_fetch(entry, data_dir)
-  message("JAGS ", entry$version, " (", entry$file, ", ", entry$license, "): ", path,
-          "\nSource: ", entry$page, "\nRequires: ", entry$requires)
+  path <- cmsy_fetch(entry, data_dir, quiet = silent)
+  if (!silent) {
+    message("JAGS ", entry$version, " (", entry$file, ", ", entry$license, "): ", path,
+            "\nSource: ", entry$page, "\nRequires: ", entry$requires)
+  }
   if (!open) return(invisible(path))
   if (os == "windows") {
     get("shell.exec", envir = baseenv())(path)

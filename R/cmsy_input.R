@@ -47,6 +47,8 @@
 #' @param min_catch Minimum total catch of a stock, in tonnes. Default is 1000.
 #' @param max_filled Maximum share of the years of a stock that may be filled by interpolation.
 #'        Default is 0.2.
+#' @param silent A logical value. If TRUE, no messages are printed. Default is FALSE, or the value
+#'        set with `fao_settings(silent = )`.
 #' @return Invisibly, a list of class `cmsy_input` with `catch` and `id` (the two CMSY++ input
 #'         tables), `stocks` (one row per stock with its species, area, years, filled years, catch
 #'         and the source of its r prior) and `excluded` (stocks left out, with the reason).
@@ -74,7 +76,7 @@
 #' }
 cmsy_input <- function(area_data, species = NULL, by = c("area", "country"), priors = NULL, default_resilience = NULL,
                        min_years = 10, min_catch = 1000, max_filled = 0.2, table = TRUE,
-                       lang = NULL, label = NULL) {
+                       lang = NULL, label = NULL, silent = fao_setting("silent")) {
   by <- match.arg(by)
   lang <- fao_lang(lang)
   if (!is.null(default_resilience) && !default_resilience %in% cmsy_resilience_r$resilience) {
@@ -90,7 +92,7 @@ cmsy_input <- function(area_data, species = NULL, by = c("area", "country"), pri
                  grepl("^Tonnes", data$Unit..Name.), ]
   if (nrow(data) == 0) stop("The data have no catch in tonnes of items identified to species.", call. = FALSE)
   if (!is.null(species)) {
-    data <- data[data$alpha3 %in% cmsy_match_species(species, among = unique(data$alpha3)), ]
+    data <- data[data$alpha3 %in% cmsy_quietly(cmsy_match_species(species, among = unique(data$alpha3)), silent), ]
   }
   keys <- c("ASFIS.species..Name.", "FAO.major.fishing.area..Name.", if (by == "country") "Country..Name.")
   series <- stats::aggregate(list(Tonnes = data$Production), by = data[c(keys, "Year")], FUN = sum)
@@ -132,7 +134,7 @@ cmsy_input <- function(area_data, species = NULL, by = c("area", "country"), pri
   meta$Comment <- paste0("FAO catch only, ", ifelse(by == "country", "one country", "all countries"), ", ",
                          meta$filled_years, " years interpolated")
   meta$prior_source <- "FishBase/SeaLifeBase; B/k priors from the CMSY++ neural network"
-  if (!is.null(priors)) meta <- cmsy_apply_priors(meta, priors)
+  if (!is.null(priors)) meta <- cmsy_quietly(cmsy_apply_priors(meta, priors), silent)
   if (!is.null(default_resilience)) {
     use <- is.na(meta$Resilience) & is.na(meta$r.low)
     meta$Resilience[use] <- default_resilience
@@ -207,8 +209,10 @@ cmsy_input <- function(area_data, species = NULL, by = c("area", "country"), pri
     fao_write_csv(result$stocks, file.path("tables", "cmsy", paste0(name, "_stocks.csv")))
     fao_write_csv(result$excluded, file.path("tables", "cmsy", paste0(name, "_excluded.csv")))
   }
-  message(nrow(result$stocks), " stocks ready for CMSY++ (catch only, no abundance data); ",
-          nrow(result$excluded), " left out (see $excluded).")
+  if (!silent) {
+    message(nrow(result$stocks), " stocks ready for CMSY++ (catch only, no abundance data); ",
+            nrow(result$excluded), " left out (see $excluded).")
+  }
   invisible(result)
 }
 
