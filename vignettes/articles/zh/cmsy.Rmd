@@ -93,7 +93,7 @@ JAGS 是独立的程序，rjags 包通过它运行 MCMC。Windows 和 macOS 上�
 | Windows | 4.5、4.6 | `JAGS-4.3.2.exe` | 4-17（CRAN） |
 | Windows | 4.2–4.4 | `JAGS-4.3.1.exe` | 4-17（CRAN） |
 | macOS | 4.3 及以后 | `JAGS-4.3.2.pkg` | 4-17（CRAN） |
-| macOS | 4.2 | `JAGS-4.3.1.pkg` | 4-17（CRAN） |
+| macOS | 4.2 | `JAGS-4.3.1.pkg` | 4-15 或以后（CRAN 上 R 4.2 的二进制包停在 4-15） |
 | Linux | 任意 | 系统软件包（如 `sudo apt-get install jags`）或 `JAGS-4.3.2.tar.gz` 源码 | 4-17（CRAN，从源码编译） |
 | Windows | 4.5、4.6 | `JAGS-5.0.0.exe`（可选，最新版） | 5-3（SourceForge，尚未上 CRAN） |
 | macOS | 4.3 及以后 | `JAGS-5.0.0-universal.pkg`（可选） | 5-3（SourceForge：R 4.6 有二进制包，其他版本需从源码编译） |
@@ -332,7 +332,23 @@ result$settings[result$settings$changed, ]          # 改动的设置
 
 ## 🖥️ Windows、macOS 和 Linux
 
-同一段代码在三个系统上都能直接运行。`cmsy_system()` 自动识别系统，并做相应修改，例如 macOS 上不调用 `windows()`、不使用 `antialias = "cleartype"`，修改清单见第一步。JAGS 安装程序会按系统和 R 版本自动选择。每次修改 CMSY 代码，GitHub Actions 上的 "CMSY-cross-platform" 检验都会在三个系统上分别用 `cmsy_install_jags()` 下载并安装 JAGS、真实运行 CMSY++、运行全部 CMSY 测试，并保存各系统的输出，方便核对。
+同一段代码在三个系统上都能直接运行。`cmsy_system()` 自动识别系统，并做相应修改，例如 macOS 上不调用 `windows()`、不使用 `antialias = "cleartype"`，修改清单见第一步。JAGS 安装程序会按系统和 R 版本自动选择。每次修改 CMSY 代码，GitHub Actions 上的 "CMSY-cross-platform" 检验都会在三个系统上用 `cmsy_download_jags()` 下载并安装匹配的 JAGS、真实运行 CMSY++、运行全部 CMSY 测试，并保存各系统的输出，方便核对。
+
+2026 年 10 月的检验结果（每种组合 170 项测试全部通过；种子相同，`cmsy_area()` 运行 34 区的大眼石鲈 GRB_34 和沙丁鱼 PIL_34）：
+
+| 系统 | R | JAGS | rjags | GRB_34 B/Bmsy | GRB_34 F/Fmsy | PIL_34 B/Bmsy | PIL_34 F/Fmsy |
+|---|---|---|---|---|---|---|---|
+| Windows | 4.6.1 | 4.3.2 | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
+| Windows | 4.4.3 | 4.3.1 | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
+| Windows | 4.3.3 | 4.3.1 | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
+| Windows | 4.2.3 | 4.3.1 | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
+| macOS（Apple 芯片） | 4.6.1 | 4.3.2 | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
+| Ubuntu | 4.6.1 | 4.3.2（apt） | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
+| macOS（Apple 芯片） | 4.2.3 | 4.3.1 | 4-15 | 1.366 | 0.663 | 0.745 | 1.306 |
+| Windows | 4.6.1 | 5.0.0 | 5-3 | 1.392 | 0.672 | 0.740 | 1.317 |
+| macOS（Apple 芯片） | 4.6.1 | 5.0.0 | 5-3 | 1.392 | 0.672 | 0.740 | 1.317 |
+
+JAGS 4.3.x 和 rjags 4-17 相同时，三个系统的结果逐位相同。换成 JAGS 5 或较旧的 rjags 后，MCMC 抽样不同，数值略有差别（GRB_34 的 B/Bmsy 在 1.37–1.42 之间，都在 95% 置信区间 1.08–1.65 内），但两个种群的状态判定都不变：GRB_34 为最大可持续捕捞，PIL_34 为过度捕捞。要完全重现某次结果，需要使用相同版本的 JAGS 和 rjags；所用版本记录在 `result$sources` 和 `tables/sources.csv` 中。
 
 ## ⏱️ 进度条与 silent
 
