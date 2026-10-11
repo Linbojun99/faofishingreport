@@ -30,3 +30,21 @@ test_that("report text templates exist in both languages", {
   expect_false(any(is.na(texts$zh) | texts$zh == ""))
   expect_match(fao_report_text("report_no", "en", list(no = 2)), "Report 2")
 })
+
+test_that("proceedings and databases with editors are formatted", {
+  jags <- list(type = "C", author = "Plummer, M.", year = "2003", title = "JAGS",
+               container = "Proceedings of DSC 2003", place = "Vienna", pages = "1-10")
+  expect_identical(fao_ref_entry(jags, "numeric"), "Plummer M. JAGS: Proceedings of DSC 2003[C]. Vienna, 2003, 1-10.")
+  expect_match(fao_ref_entry(jags, "apa"), "In \\*Proceedings of DSC 2003\\* \\(pp. 1–10\\)")
+  fishbase <- list(type = "DB", author = "Froese, R.; Pauly, D.", editors = TRUE, year = "2026",
+                   title = "FishBase", version = "version 06/2026", accessed = "2026-10-10",
+                   url = "https://www.fishbase.se")
+  expect_match(fao_ref_entry(fishbase, "apa"), "^Froese, R., & Pauly, D. \\(Eds.\\). \\(2026\\). \\*FishBase\\* \\(Version 06/2026\\)")
+  expect_match(fao_ref_entry(fishbase, "fao"), "^Froese, R. & Pauly, D., eds. 2026. FishBase.")
+})
+
+test_that("catch ranges are written in one unit", {
+  expect_identical(fao_report_catch_range(775500, 1076000, "en"), "0.78–1.08 million t")
+  expect_identical(fao_report_catch_range(48200, 82400, "en"), "48.2–82.4 thousand t")
+  expect_identical(fao_report_catch_range(5618000, 9915000, "zh"), "561.8–991.5 万 t")
+})

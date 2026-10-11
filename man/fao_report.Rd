@@ -18,7 +18,9 @@ fao_report(
   font_zh = "FangSong",
   citation = c("apa", "fao"),
   top_n = 10,
-  data_version = "latest"
+  data_version = "latest",
+  cmsy = FALSE,
+  cmsy_top = top_n
 )
 }
 \arguments{
@@ -54,9 +56,21 @@ of FAO publications). Chinese reports use numbered citations (GB/T 7714).}
 \item{top_n}{The number of main species and countries in the charts and tables. Default is 10.}
 
 \item{data_version}{The FAO release to use, as in \code{load_fao_data()}. Default is "latest".}
+
+\item{cmsy}{A logical value. If TRUE, the main species are also assessed with CMSY++
+(\code{\link[=cmsy_area]{cmsy_area()}}), and the report ends with a section on the assessment, with the results
+of every species. Default is FALSE. The result of an earlier \code{\link[=cmsy_area]{cmsy_area()}} run can also
+be given, to write the report without running CMSY++ again. CMSY++ needs JAGS: see
+\code{\link[=cmsy_setup]{cmsy_setup()}}.}
+
+\item{cmsy_top}{The number of species with the largest catch of the last ten years assessed
+with CMSY++. Default is \code{top_n}, the number of main species of the report.}
 }
 \value{
-Invisibly, the path of the Word file.
+Invisibly, the path of the Word file. With \code{cmsy = TRUE}, all CMSY++ results (runs,
+charts and tables) are kept in the folder \verb{cmsy/} next to the report, with
+\code{cmsy_result.rds} to write the report again without running CMSY++
+(\code{cmsy = readRDS("cmsy/<area>/cmsy_result.rds")}).
 }
 \description{
 This function runs the analyses of the package for one FAO major fishing area and writes a
@@ -83,6 +97,14 @@ The text templates are in \code{inst/extdata/report_text.csv} and the references
 fao_report(34)                                  # Chinese or English, from fao_settings()
 fao_report("Atlantic, Eastern Central", lang = "zh", author = "Hongyu Lin")
 fao_report(34, lang = "en", font = "Times New Roman", citation = "fao")
+
+# With a CMSY++ assessment of the 10 main species (a few minutes)
+fao_report(34, lang = "zh", cmsy = TRUE)
+fao_report(34, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5)
+
+# Reuse CMSY++ results to rewrite the report
+area34 <- cmsy_area("Atlantic, Eastern Central", top = 10, lang = "zh")
+fao_report(34, lang = "zh", cmsy = area34)
 }
 }
 \concept{report}

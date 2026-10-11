@@ -38,7 +38,17 @@
 #'        of FAO publications). Chinese reports use numbered citations (GB/T 7714).
 #' @param top_n The number of main species and countries in the charts and tables. Default is 10.
 #' @param data_version The FAO release to use, as in `load_fao_data()`. Default is "latest".
-#' @return Invisibly, the path of the Word file.
+#' @param cmsy A logical value. If TRUE, the main species are also assessed with CMSY++
+#'        ([cmsy_area()]), and the report ends with a section on the assessment, with the results
+#'        of every species. Default is FALSE. The result of an earlier [cmsy_area()] run can also
+#'        be given, to write the report without running CMSY++ again. CMSY++ needs JAGS: see
+#'        [cmsy_setup()].
+#' @param cmsy_top The number of species with the largest catch of the last ten years assessed
+#'        with CMSY++. Default is `top_n`, the number of main species of the report.
+#' @return Invisibly, the path of the Word file. With `cmsy = TRUE`, all CMSY++ results (runs,
+#'         charts and tables) are kept in the folder `cmsy/` next to the report, with
+#'         `cmsy_result.rds` to write the report again without running CMSY++
+#'         (`cmsy = readRDS("cmsy/<area>/cmsy_result.rds")`).
 #' @family report
 #' @export
 #' @examples
@@ -46,11 +56,19 @@
 #' fao_report(34)                                  # Chinese or English, from fao_settings()
 #' fao_report("Atlantic, Eastern Central", lang = "zh", author = "Hongyu Lin")
 #' fao_report(34, lang = "en", font = "Times New Roman", citation = "fao")
+#'
+#' # With a CMSY++ assessment of the 10 main species (a few minutes)
+#' fao_report(34, lang = "zh", cmsy = TRUE)
+#' fao_report(34, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5)
+#'
+#' # Reuse CMSY++ results to rewrite the report
+#' area34 <- cmsy_area("Atlantic, Eastern Central", top = 10, lang = "zh")
+#' fao_report(34, lang = "zh", cmsy = area34)
 #' }
 fao_report <- function(area, file = NULL, lang = NULL, title = NULL, report_no = 1,
                        author = NULL, affiliation = NULL, project = NULL, date = Sys.Date(),
                        font = NULL, font_zh = "FangSong", citation = c("apa", "fao"),
-                       top_n = 10, data_version = "latest") {
+                       top_n = 10, data_version = "latest", cmsy = FALSE, cmsy_top = top_n) {
   fao_check_report_packages()
   lang <- fao_lang(lang)
   if (lang == "both") lang <- "zh"
@@ -69,7 +87,13 @@ fao_report <- function(area, file = NULL, lang = NULL, title = NULL, report_no =
   values$release_date <- fao_report_date(info$release_date, lang)
   values$download_date <- fao_report_date(info$download_date, lang)
   values$url <- info$url
-  text <- function(key, ...) fao_report_text(key, lang, c(values, list(...)))
+
+  cmsy_result <- if (inherits(cmsy, "cmsy_result")) cmsy else if (isTRUE(cmsy)) {
+    fao_report_cmsy_run(results$area_data, cmsy_top, lang, file.path(dirname(file), "cmsy"))
+  }
+  values <- c(values, fao_report_cmsy_values(cmsy_result, lang, values))
+  # values given in the call (e.g. the years of one stock) come before the report values
+  text <- function(.key, ...) fao_report_text(.key, lang, c(list(...), values))
 
   meta <- list(
     title = if (is.null(title)) text("title") else title,
@@ -80,11 +104,90 @@ fao_report <- function(area, file = NULL, lang = NULL, title = NULL, report_no =
     date = format(as.Date(date), "%Y-%m-%d")
   )
   message("Writing ", file, " ...")
-  doc <- fao_report_new(lang, font, font_zh, citation, report_no, fao_report_references(info, date))
-  doc <- fao_report_body(doc, meta, results, values, text)
+  doc <- fao_report_new(lang, font, font_zh, citation, report_no, fao_report_references(info, date, cmsy_result))
+  doc <- fao_report_body(doc, meta, results, values, text, cmsy_result)
   fao_report_save(doc, file, meta)
   message("Report saved: ", file)
   invisible(file)
+}
+
+# Runs CMSY++ on the main species of the area, keeping its results in `out_dir`
+fao_report_cmsy_run <- function(area_data, top, lang, out_dir) {
+  system <- cmsy_system(silent = TRUE)
+  if (is.na(system$jags) || !all(system$packages$ok)) {
+    stop("CMSY++ needs JAGS and the R packages ", paste(system$packages$package[!system$packages$ok], collapse = ", "),
+         ": run cmsy_setup() once, or use cmsy = FALSE.", call. = FALSE)
+  }
+  message("  CMSY++ for the ", top, " main species (a few minutes)")
+  old_options <- options(faofishingreport.dpi = 300, faofishingreport.pptx = FALSE)
+  on.exit(options(old_options), add = TRUE)
+  result <- suppressWarnings(suppressMessages(cmsy_area(
+    area_data, top = top, lang = lang, out_dir = out_dir, forecast = FALSE,
+    charts = c("management", "kobe_all", "b_bmsy_all"), silent = TRUE)))
+  # Saved to write the report again without running CMSY++: cmsy = readRDS(<file>)
+  saved <- file.path(result$dir, "cmsy_result.rds")
+  saveRDS(result, saved)
+  message("  CMSY++ results: ", result$dir, " (reuse them with cmsy = readRDS(\"", saved, "\"))")
+  result
+}
+
+# Values of the CMSY++ text: counts of the stocks, and the text of every species
+fao_report_cmsy_values <- function(result, lang, values) {
+  if (is.null(result)) return(list(abstract_cmsy = "", has_cmsy = FALSE))
+  text <- function(.key, ...) fao_report_text(.key, lang, list(...))
+  list_text <- function(x) fao_report_list(x, lang)
+  s <- result$summary
+  ok <- s$run_status %in% "ok"
+  names <- fao_report_species_names(s$species_en, lang, fao_group_table()$species)
+  b <- s$B_Bmsy
+  f <- s$F_Fmsy
+  overfished <- ok & b < 0.8
+  missing <- c(as.character(result$input$excluded$species_name), names$plain[!ok])
+  counts <- list(n_ok = sum(ok), n_overfished = sum(overfished), n_msf = sum(ok & b >= 0.8),
+                 n_green = sum(ok & b >= 1 & f <= 1, na.rm = TRUE), n_red = sum(ok & b < 1 & f > 1, na.rm = TRUE))
+  number <- function(x) sprintf("%.2f", x)
+  catch <- function(x) fao_report_catch(x, lang)
+  status <- function(i) {
+    label <- cmsy_label(if (b[i] >= 0.8) "status_msf" else "status_overfished", lang)
+    if (lang == "zh") label else tolower(label)
+  }
+  species <- lapply(seq_len(nrow(s)), function(i) {
+    if (!ok[i]) return(list(ok = FALSE, values = list(species = names$full[i], message = s$message[i])))
+    list(ok = TRUE, values = list(
+      species = names$full[i], first_year = s$first_year[i], last_year = s$last_year[i],
+      r = number(s$r[i]), r_lcl = number(s$r_lcl[i]), r_ucl = number(s$r_ucl[i]),
+      k = catch(s$k[i]), k_range = fao_report_catch_range(s$k_lcl[i], s$k_ucl[i], lang),
+      msy = catch(s$MSY[i]), msy_range = fao_report_catch_range(s$MSY_lcl[i], s$MSY_ucl[i], lang),
+      bbmsy = number(b[i]), bbmsy_lcl = number(s$B_Bmsy_lcl[i]), bbmsy_ucl = number(s$B_Bmsy_ucl[i]),
+      ffmsy = number(f[i]), ffmsy_lcl = number(s$F_Fmsy_lcl[i]), ffmsy_ucl = number(s$F_Fmsy_ucl[i]),
+      catch_last = catch(s$catch_last[i]), catch_msy = fao_report_pct(100 * s$catch_last[i] / s$MSY[i]),
+      status = status(i), p_green = fao_report_pct(100 * s$p_green[i]), p_orange = fao_report_pct(100 * s$p_orange[i]),
+      p_yellow = fao_report_pct(100 * s$p_yellow[i]), p_red = fao_report_pct(100 * s$p_red[i])
+    ))
+  })
+  table <- data.frame(
+    species = names$plain, scientific = names$marked, years = paste0(s$first_year, "\u2013", s$last_year),
+    r = ifelse(ok, number(s$r), "-"),
+    k = ifelse(ok, sprintf("%.1f", s$k / if (lang == "zh") 1e4 else 1e3), "-"),
+    msy = ifelse(ok, sprintf("%.1f", s$MSY / if (lang == "zh") 1e4 else 1e3), "-"),
+    bbmsy = ifelse(ok, number(b), "-"), ffmsy = ifelse(ok, number(f), "-"),
+    status = ifelse(ok, vapply(seq_len(nrow(s)), function(i) if (ok[i]) cmsy_label(if (b[i] >= 0.8) "status_msf" else "status_overfished", lang) else "-", character(1)), "-"),
+    stringsAsFactors = FALSE
+  )
+  word <- function(key) fao_report_text(key, lang)
+  names(table) <- c(word("col_species"), word("col_scientific"), word("col_years"), word("col_r"), word("col_k"),
+                    word("col_msy"), word("col_bbmsy"), word("col_ffmsy"), word("col_status"))
+  c(counts, list(
+    has_cmsy = TRUE, cmsy_top = nrow(s) + nrow(result$input$excluded),
+    not_assessed = if (length(missing) > 0) text("cmsy_not_assessed", list = list_text(missing)) else "",
+    overfished_list = if (any(overfished)) text("cmsy_overfished_list", list = list_text(names$plain[overfished])) else "",
+    abstract_cmsy = do.call(text, c(list("abstract_cmsy"), counts)),
+    cmsy_species = species, cmsy_table = table,
+    cmsy_charts = list(
+      kobe = file.path(result$dir, "figures", "summary", "kobe_all.png"),
+      bbmsy = file.path(result$dir, "figures", "summary", "b_bmsy_all.png"),
+      species = file.path(result$dir, "figures", cmsy_safe_name(s$Stock), "management.png"))
+  ))
 }
 
 # officer writes the Word file and xml2 edits it; both are suggested packages
@@ -157,6 +260,15 @@ fao_report_catch <- function(x, lang) {
   } else {
     paste0(round(x), " t")
   }
+}
+
+# A range of catches in one unit, chosen from the upper limit: "561.8-991.5 wan t"
+fao_report_catch_range <- function(low, high, lang) {
+  unit <- fao_report_catch(high, lang)
+  value <- sub("^([0-9.]+).*$", "\\1", unit)
+  scale <- high / as.numeric(value)
+  digits <- nchar(sub("^[0-9]*[.]?", "", value))
+  paste0(formatC(low / scale, format = "f", digits = digits), "\u2013", unit)
 }
 
 fao_report_list <- function(x, lang) {
@@ -256,7 +368,7 @@ fao_report_values <- function(results, area, lang, top_n) {
   y5 <- last_year - 4
   catch_text <- function(x) fao_report_catch(x, lang)
   list_text <- function(x) fao_report_list(x, lang)
-  text <- function(key, ...) fao_report_text(key, lang, list(...))
+  text <- function(.key, ...) fao_report_text(.key, lang, list(...))
   word <- function(key) fao_report_text(key, lang)
 
   # Total catch, peak, trend and stages
@@ -421,19 +533,20 @@ fao_report_species_names <- function(en, lang, species_groups) {
   plain <- if (lang == "zh") fao_translate(en, "species", "zh") else en
   full <- ifelse(is.na(marked), plain,
                  if (lang == "zh") paste0(plain, "\uff08", marked, "\uff09") else paste0(plain, " (", marked, ")"))
-  list(plain = plain, full = full, scientific = ifelse(is.na(plain_scientific), "", plain_scientific))
+  list(plain = plain, full = full, scientific = ifelse(is.na(plain_scientific), "", plain_scientific),
+       marked = ifelse(is.na(marked), "", marked))
 }
 
 # References of the report: the FAO data used, R and the package (made from the data and the
 # session), and the references in inst/extdata/report_references.csv
-fao_report_references <- function(info, date) {
+fao_report_references <- function(info, date, cmsy_result = NULL) {
   accessed <- format(as.Date(info$download_date), "%Y-%m-%d")
   today <- format(as.Date(date), "%Y-%m-%d")
   release_year <- substr(info$release_date, 1, 4)
   refs <- list(
     fao_capture = list(type = "DB", author = "FAO", year = release_year,
                        title = paste0("FishStat: Global capture production ", info$years[1], "\u2013", info$years[2]),
-                       release = info$release, place = "Rome", publisher = "FAO", accessed = accessed,
+                       version = paste("release", info$release), place = "Rome", publisher = "FAO", accessed = accessed,
                        url = info$url, fao_url = "https://www.fao.org/fishery/statistics/software/fishstatj/en"),
     r_core = list(type = "CP", author = "R Core Team", year = R.version$year,
                   title = "R: A language and environment for statistical computing",
@@ -444,6 +557,19 @@ fao_report_references <- function(info, date) {
                                            utils::packageVersion("faofishingreport")),
                             accessed = today, url = "https://linbojun99.github.io/faofishingreport/")
   )
+  if (!is.null(cmsy_result)) {
+    sources <- cmsy_result$sources
+    fishbase <- sources$version[sources$component == "FishBase"]
+    version <- if (length(fishbase) == 1 && grepl("^[0-9]{2}[.][0-9]{2}$", fishbase)) {
+      paste0(substr(fishbase, 4, 5), "/20", substr(fishbase, 1, 2))
+    } else {
+      fishbase[1]
+    }
+    refs$fishbase <- list(type = "DB", author = "Froese, R.; Pauly, D.", editors = TRUE,
+                          year = if (grepl("/", version)) sub(".*/", "", version) else substr(today, 1, 4),
+                          title = "FishBase", version = paste("version", version), accessed = today,
+                          url = "https://www.fishbase.se")
+  }
   table <- fao_extdata_csv("report_references.csv")
   for (i in seq_len(nrow(table))) {
     ref <- as.list(table[i, setdiff(names(table), "key")])
@@ -502,6 +628,7 @@ fao_ref_entry <- function(ref, style, suffix = "") {
   year <- paste0(ref$year, suffix)
   if (style == "numeric") {
     authors <- fao_ref_authors(ref$author, style)
+    if (isTRUE(ref$editors)) authors <- paste0(authors, ", ed")
     switch(ref$type,
       J = paste0(authors, ". ", ref$title, "[J]. ", ref$container, ", ", ref$year, ", ", ref$volume,
                  if (!is.null(ref$issue)) paste0("(", ref$issue, ")"), ": ", ref$pages, ".",
@@ -509,14 +636,19 @@ fao_ref_entry <- function(ref, style, suffix = "") {
       M = paste0(authors, ". ", ref$title, "[M]. ", if (!is.null(edition)) paste0(edition, " ed. "),
                  ref$place, ": ", ref$publisher, ", ", ref$year, ".",
                  if (!is.null(ref$doi)) paste0(" DOI: ", ref$doi, ".")),
-      DB = paste0(authors, ". ", ref$title, " (release ", ref$release, ")[DB/OL]. ", ref$place, ": ",
-                  ref$publisher, ", ", ref$year, "[", ref$accessed, "]. ", ref$url, "."),
+      C = paste0(authors, ". ", ref$title, ": ", ref$container, "[C]. ", ref$place, ", ", ref$year,
+                 if (!is.null(ref$pages)) paste0(", ", ref$pages), "."),
+      DB = paste0(authors, ". ", ref$title, if (!is.null(ref$version)) paste0(" (", ref$version, ")"), "[DB/OL]. ",
+                  if (!is.null(ref$place)) paste0(ref$place, ": ", ref$publisher, ", "), ref$year,
+                  "[", ref$accessed, "]. ", ref$url, "."),
       CP = paste0(authors, ". ", ref$title, "[CP/OL]. ",
                   if (!is.null(ref$place)) paste0(ref$place, ": ", ref$publisher, ", "), ref$year,
                   "[", ref$accessed, "]. ", ref$url, ".")
     )
   } else if (style == "apa") {
     authors <- dot(fao_ref_authors(ref$author, style))
+    if (isTRUE(ref$editors)) authors <- paste0(authors, " (Eds.).")
+    version <- if (!is.null(ref$version)) paste0(" (", toupper(substr(ref$version, 1, 1)), substring(ref$version, 2), ")") else ""
     switch(ref$type,
       J = paste0(authors, " (", year, "). ", ref$title, ". *", ref$container, "*, *", ref$volume, "*",
                  if (!is.null(ref$issue)) paste0("(", ref$issue, ")"), ", ", pages, ".",
@@ -524,7 +656,9 @@ fao_ref_entry <- function(ref, style, suffix = "") {
       M = paste0(authors, " (", year, "). *", ref$title, "*", if (!is.null(edition)) paste0(" (", edition, " ed.)"), ".",
                  if (!identical(ref$publisher, ref$author)) paste0(" ", ref$publisher, "."),
                  if (!is.null(doi)) paste0(" ", doi)),
-      DB = paste0(authors, " (", year, "). *", ref$title, "* (Release ", ref$release, ") [Data set]. ", ref$url),
+      C = paste0(authors, " (", year, "). ", ref$title, ". In *", ref$container, "*",
+                 if (!is.null(pages)) paste0(" (pp. ", pages, ")"), ".", if (!is.null(ref$url)) paste0(" ", ref$url)),
+      DB = paste0(authors, " (", year, "). *", ref$title, "*", version, " [Data set]. ", ref$url),
       CP = paste0(authors, " (", year, "). *", ref$title, "* [Computer software].",
                   if (!is.null(ref$publisher)) paste0(" ", ref$publisher, "."), " ", ref$url)
     )
@@ -539,9 +673,17 @@ fao_ref_entry <- function(ref, style, suffix = "") {
                  if (!is.null(ref$series)) paste0(ref$series, ". "), ref$place,
                  if (!identical(ref$publisher, ref$author)) paste0(", ", ref$publisher), ".",
                  if (!is.null(doi)) paste0(" ", doi)),
-      DB = paste0(authors, " ", year, ". ", ref$title, " (release ", ref$release, "). [Accessed on ",
-                  fao_ref_date(ref$accessed), "]. In: FishStatJ. Available at: ", ref$fao_url,
-                  ". Licence: CC-BY-4.0."),
+      C = paste0(authors, " ", year, ". ", ref$title, ". In: *", ref$container, "*",
+                 if (!is.null(pages)) paste0(", pp. ", pages), ". ", ref$place, ".",
+                 if (!is.null(ref$url)) paste0(" ", ref$url)),
+      DB = if (!is.null(ref$fao_url)) {
+        paste0(authors, " ", year, ". ", ref$title, " (", ref$version, "). [Accessed on ",
+               fao_ref_date(ref$accessed), "]. In: FishStatJ. Available at: ", ref$fao_url,
+               ". Licence: CC-BY-4.0.")
+      } else {
+        paste0(authors, if (isTRUE(ref$editors)) ", eds.", " ", year, ". ", ref$title,
+               ". World Wide Web electronic publication, ", ref$version, ". ", ref$url)
+      },
       CP = paste0(authors, " ", year, ". *", ref$title, "*. ",
                   if (!is.null(ref$place)) paste0(ref$place, ", ", ref$publisher, ". "), ref$url)
     )
@@ -654,10 +796,10 @@ fao_report_cite <- function(x, keys) {
 }
 
 # Splits marked text into runs: citations, *italics*, ^superscripts^ and ~subscripts~
-fao_report_runs <- function(x, text, numbered = FALSE) {
+fao_report_runs <- function(x, text, numbered = FALSE, spacing = TRUE) {
   state <- attr(x, "fao_report")
   if (state$citation == "numeric") text <- gsub("\\s+\\{cite:", "{cite:", text)
-  if (state$lang == "zh") text <- fao_report_zh_spacing(text, numbered)
+  if (state$lang == "zh" && spacing) text <- fao_report_zh_spacing(text, numbered)
   pattern <- "\\{cite:[^}]+\\}|\\*[^*]+\\*|\\^[^^]+\\^|~[^~]+~"
   marks <- gregexpr(pattern, text)[[1]]
   runs <- list()
@@ -696,7 +838,8 @@ fao_report_zh_spacing <- function(text, numbered = FALSE) {
 # Adds a paragraph of marked text
 fao_report_par <- function(x, text, style = "FAOBody", bold_prefix = NULL) {
   numbered <- style %in% c("FAOHeading1", "FAOHeading2", "FAOCaption", "FAOTableCaption")
-  runs <- fao_report_runs(x, text, numbered)
+  # notes and references are written as they are
+  runs <- fao_report_runs(x, text, numbered, spacing = !style %in% c("FAONote", "FAOReference"))
   pieces <- lapply(runs, function(run) {
     if (isTRUE(run$italic) || isTRUE(run$sup) || isTRUE(run$sub)) {
       officer::ftext(run$text, officer::fp_text_lite(
@@ -760,11 +903,35 @@ fao_report_table <- function(x, id, table, caption, appendix = FALSE) {
   names(styles) <- fao_report_style_name("FAOTableText")
   x <- officer::body_add_table(x, table, style = "Normal Table", header = TRUE,
                                stylenames = officer::table_stylenames(styles), align_table = "center")
+  fao_report_table_italics(x)
   officer::body_add_par(x, "", style = fao_report_style_name("FAOTableText"))
 }
 
+# Text between * marks in the cells of the last table becomes italic (scientific names)
+fao_report_table_italics <- function(x) {
+  w <- "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+  ns <- c(w = w)
+  body <- officer::docx_body_xml(x)
+  tables <- xml2::xml_find_all(body, ".//w:tbl", ns)
+  if (length(tables) == 0) return(invisible(x))
+  escape <- function(s) gsub(">", "&gt;", gsub("<", "&lt;", gsub("&", "&amp;", s, fixed = TRUE), fixed = TRUE), fixed = TRUE)
+  for (run in xml2::xml_find_all(tables[[length(tables)]], ".//w:r[w:t[contains(., '*')]]", ns)) {
+    text <- xml2::xml_text(xml2::xml_find_first(run, "w:t", ns))
+    parts <- strsplit(text, "*", fixed = TRUE)[[1]]
+    italic <- seq_along(parts) %% 2 == 0
+    for (i in seq_along(parts)) {
+      if (parts[i] == "") next
+      new <- xml2::read_xml(sprintf('<w:r xmlns:w="%s">%s<w:t xml:space="preserve">%s</w:t></w:r>', w,
+                                    if (italic[i]) "<w:rPr><w:i/></w:rPr>" else "", escape(parts[i])))
+      xml2::xml_add_sibling(run, new, .where = "before")
+    }
+    xml2::xml_remove(run)
+  }
+  invisible(x)
+}
+
 # The sections of the report
-fao_report_body <- function(x, meta, results, values, text) {
+fao_report_body <- function(x, meta, results, values, text, cmsy_result = NULL) {
   state <- attr(x, "fao_report")
   lang <- state$lang
   par <- function(x, key, style = "FAOBody") fao_report_par(x, text(key), style)
@@ -805,9 +972,9 @@ fao_report_body <- function(x, meta, results, values, text) {
   x <- par(x, "data_p2")
   x <- par(x, "data_note", "FAONote")
   x <- heading(x, "h_methods", 2)
-  for (key in c("methods_bp", "methods_status", "methods_trend", "methods_diversity", "methods_software")) {
-    x <- par(x, key)
-  }
+  methods <- c("methods_bp", "methods_status", "methods_trend", "methods_diversity",
+               if (isTRUE(values$has_cmsy)) "methods_cmsy", "methods_software")
+  for (key in methods) x <- par(x, key)
 
   # 2 Results and conclusions
   x <- heading(x, "h_results")
@@ -862,6 +1029,9 @@ fao_report_body <- function(x, meta, results, values, text) {
   for (key in c("concl_1", "concl_2", "concl_3", "concl_4")) x <- par(x, key)
   x <- par(x, "concl_note", "FAONote")
 
+  # 3 CMSY++ assessment of the main species, one subsection per species
+  if (isTRUE(values$has_cmsy)) x <- fao_report_cmsy_section(x, values, text)
+
   # References, in the order of citation or alphabetical
   x <- heading(x, "h_references")
   cited <- state$cited
@@ -881,6 +1051,34 @@ fao_report_body <- function(x, meta, results, values, text) {
   x <- fao_report_table(x, "app_countries", fao_report_decade_table(results$area_data, values, "countries", lang),
                         text("app_countries"), appendix = TRUE)
   officer::body_set_default_section(x, fao_report_section(state, footer = TRUE))
+}
+
+# The CMSY++ section: overview with the results table and the charts of all stocks, then one
+# subsection per species and a summary
+fao_report_cmsy_section <- function(x, values, text) {
+  charts <- values$cmsy_charts
+  fig <- function(...) fao_report_ref(x, "figures", c(...))
+  x <- fao_report_par(x, text("h_cmsy"), "FAOHeading1")
+  x <- fao_report_par(x, text("h_cmsy_overview"), "FAOHeading2")
+  x <- fao_report_par(x, text("cmsy_p1", tab_cmsy = fao_report_ref(x, "tables", "cmsy"),
+                              fig_cmsy = fig("cmsy_kobe", "cmsy_bbmsy")))
+  x <- fao_report_table(x, "cmsy", values$cmsy_table, text("tab_cmsy"))
+  x <- fao_report_figure(x, "cmsy_kobe", charts$kobe, text("fig_cmsy_kobe"))
+  x <- fao_report_figure(x, "cmsy_bbmsy", charts$bbmsy, text("fig_cmsy_bbmsy"))
+  for (i in seq_along(values$cmsy_species)) {
+    stock <- values$cmsy_species[[i]]
+    x <- fao_report_par(x, text("h_cmsy_species", no = i + 1, species = stock$values$species), "FAOHeading2")
+    if (!stock$ok) {
+      x <- fao_report_par(x, do.call(text, c(list("cmsy_species_failed"), stock$values)))
+      next
+    }
+    id <- paste0("cmsy_", i)
+    x <- fao_report_par(x, do.call(text, c(list("cmsy_species_p1", fig = fig(id)), stock$values)))
+    x <- fao_report_figure(x, id, charts$species[i], text("fig_cmsy_species", species = stock$values$species))
+    x <- fao_report_par(x, text("cmsy_species_note"), "FAONote")
+  }
+  x <- fao_report_par(x, text("h_cmsy_summary", no = length(values$cmsy_species) + 2), "FAOHeading2")
+  fao_report_par(x, text("cmsy_summary"))
 }
 
 # Page size, margins and page numbers of the report sections
@@ -906,7 +1104,7 @@ fao_report_top_table <- function(values, kind, lang) {
   table <- data.frame(rank = seq_len(nrow(top)), stringsAsFactors = FALSE)
   if (kind == "species") {
     table$name <- values$species_names$plain
-    table$scientific <- values$species_names$scientific
+    table$scientific <- values$species_names$marked
   } else {
     table$name <- values$country_names
   }
