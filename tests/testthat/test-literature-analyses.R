@@ -30,6 +30,45 @@ test_that("releases are compared record by record", {
   expect_equal(out$by_year$n_reclassified[out$by_year$Year == 2000], 2L)
 })
 
+test_that("a sudden fall in catch is found as a shock by both published methods", {
+  years <- 1961:2013
+  set.seed(1)
+  smooth <- 1000 + 10 * (years - 1961) + stats::rnorm(length(years), 0, 5)
+  drop <- smooth
+  drop[years == 1990] <- drop[years == 1990] * 0.4
+  for (method in c("cottrell2019", "gephart2017")) {
+    shocks <- fao_find_shocks(years, drop, fao_shock_settings(method))
+    expect_true(1990 %in% shocks$Year, info = method)
+    s <- shocks[shocks$Year == 1990, ]
+    expect_true(s$loss_pct > 50 && s$loss_pct < 70, info = method)
+    expect_equal(s$recovery_years, 1L, info = method)
+    expect_false(1990 %in% fao_find_shocks(years, smooth, fao_shock_settings(method))$Year, info = method)
+  }
+  # The first years cannot be shocks: there is no baseline for them
+  early <- smooth
+  early[3] <- early[3] * 0.3
+  expect_false(years[3] %in% fao_find_shocks(years, early, fao_shock_settings("cottrell2019"))$Year)
+})
+
+test_that("shock frequencies are shocks per series with catch", {
+  withr::local_dir(withr::local_tempdir())
+  years <- 1961:2013
+  set.seed(2)
+  base <- function() 1000 + 10 * (years - 1961) + stats::rnorm(length(years), 0, 5)
+  a <- base(); a[years == 1990] <- a[years == 1990] * 0.4
+  data <- rbind(fake_catch("Chile", "Anchoveta", "Pacific, Southeast", years, a),
+                fake_catch("Peru", "Anchoveta", "Pacific, Southeast", years, base()),
+                fake_catch("Un. Sov. Soc. Rep.", "Anchoveta", "Pacific, Southeast", 1961:1991,
+                           base()[1:31]))
+  out <- suppressMessages(catch_shocks(data, by = "country", plot = FALSE, table = FALSE))
+  expect_equal(out$shocks$Year, 1990L)
+  expect_equal(out$by_year$shock_frequency_pct[out$by_year$Year == 1990], 100 / 3)
+  expect_equal(out$series$last_year[out$series$Country..Name. == "Un. Sov. Soc. Rep."], 1991L)
+  rate <- out$by_group[out$by_group$grouping == "country" & out$by_group$group == "Chile", "shocks_per_series"]
+  expect_equal(rate, 1)
+  expect_length(list.files(), 0)
+})
+
 test_that("the distant-water profile splits a country's catch by adjacent and distant areas", {
   withr::local_dir(withr::local_tempdir())
   dw <- suppressMessages(distant_water_profile("Spain", plot = FALSE, table = FALSE, data_version = "bundled"))

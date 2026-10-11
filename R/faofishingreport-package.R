@@ -27,5 +27,8 @@ utils::globalVariables(c(
   "yearly_production",
   # cmsy_chart_forecast(), cmsy_chart_kobe_all(), compare_releases(), distant_water_profile()
   "area", "change_tonnes", "country", "direction", "first_year", "net_change_tonnes", "release",
-  "scenario", "Stock", "tonnes"
+  "scenario", "Stock", "tonnes",
+  # catch_shocks()
+  "group_name", "last_year", "loss_pct", "n_series", "n_shocks", "series_name", "shock_frequency_pct",
+  "shocks_per_series"
 ))

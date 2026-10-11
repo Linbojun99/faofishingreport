@@ -69,3 +69,7 @@ area_years_note,Lines: from the first to the last year with catch above {n} tonn
 release,Release {n},{n}版
 revision_kt,Revision (thousand tonnes),修订量（千吨）
 revision_note,Revision = {n},修订量 = {n}
+shock_frequency,Series with a shock (%),出现骤变的序列占比 (%)
+shocks_per_series,Shocks per series,每条序列的骤变次数
+shock_loss,Loss (% of baseline),损失（占基线的%）
+shock_method_note,Shocks: {n},骤变判定：{n}

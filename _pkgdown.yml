@@ -87,6 +87,12 @@ reference:
   - country_group_summary
   - regime_shift
   - coastal_distant
+- title: "🔬 Literature-based analyses"
+  desc: Analyses that follow published methods, each citing its sources.
+  contents:
+  - catch_shocks
+  - distant_water_profile
+  - compare_releases
 - title: "🌡️ FishBase and temperature"
   desc: Species traits from FishBase and SeaLifeBase, sea surface temperature, and the mean temperature of the catch.
   contents:
