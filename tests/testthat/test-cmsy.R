@@ -139,7 +139,9 @@ test_that("cmsy_input() makes catch-only CMSY++ input files with prior sources",
   user <- cmsy_input(data, table = FALSE, lang = "en",
                      priors = data.frame(alpha3 = "PIL", endb.low = 0.2, endb.hi = 0.5, Resilience = "High"))
   expect_equal(c(user$id$endb.low, user$id$endb.hi), c(0.2, 0.5))
-  expect_equal(user$stocks$r_source, "user (priors)")
+  # a resilience without r.low and r.hi replaces the FishBase r range by the range of that resilience
+  expect_match(user$stocks$r_source, "^user \\(priors\\): resilience \"High\"")
+  expect_true(is.na(user$id$r.low) && is.na(user$id$r.hi))
   expect_error(cmsy_input(data, table = FALSE, priors = data.frame(alpha3 = "PIL", Resilience = "Very Low")),
                "Very low")
 
@@ -308,4 +310,93 @@ test_that("CMSY++ settings keep their defaults unless changed, and are checked",
   code <- cmsy_patch_code(original, "windows", cmsy_check_settings(list(n.iter = 100000, n.burnin = 50000, n.thin = 20)))
   expect_true(any(grepl("n.iter = 100000)", code, fixed = TRUE)))
   expect_true(any(grepl("n.burnin = 50000, n.thin = 20,", code, fixed = TRUE)))
+})
+
+
+test_that("projections follow the CMSY++ timing, and F/Fmsy is the scenario value", {
+  # r = 0.4, k = 1000, B/k = 0.5, no process error: Fmsy = 0.2, the last year keeps its catch (100)
+  z <- cmsy_project_stock(rep(0.4, 10), rep(1000, 10), rep(0.5, 10), 100, 2024, 2, 0.5, FALSE, NULL, 0)$summary
+  expect_equal(z$Year, 2024:2026)
+  expect_equal(z$B_Bmsy, c(1, 1, 1.1))       # 2025: 500 + 100 - 100; 2026: 500 + 100 - 50
+  expect_equal(z$Catch, c(100, 50, 55))      # 0.5 Fmsy = 0.1 times the biomass of the same year
+  expect_equal(z$F_Fmsy, c(1, 0.5, 0.5))
+  # below half of Bmsy, Fmsy is reduced linearly as in CMSY++16.R, and F/Fmsy stays the scenario
+  low <- cmsy_project_stock(rep(0.4, 10), rep(1000, 10), rep(0.2, 10), 50, 2024, 2, 0.5, FALSE, NULL, 0)$summary
+  expect_equal(low$F_Fmsy, c((50 / 200) / (0.2 * 0.8), 0.5, 0.5))
+  sq <- cmsy_project_stock(rep(0.4, 10), rep(1000, 10), rep(0.5, 10), 100, 2024, 2, NULL, TRUE, 300, 0)$summary
+  expect_equal(sq$Catch[sq$scenario == "status_quo"], c(100, 100, 100))
+  expect_equal(sq$Catch[sq$scenario == "catch_300"][2], 300)
+})
+
+test_that("stocks whose data end in different years are projected to the same year", {
+  stock <- list(r = rep(0.4, 10), k = rep(1000, 10), bk_last = rep(0.5, 10))
+  result <- structure(list(summary = data.frame(Stock = c("A", "B"), species_en = "Atlantic cod", run_status = "ok",
+                                                catch_last = 100, last_year = c(2024, 2023)),
+                           details = list(A = stock, B = stock)), class = "cmsy_result")
+  expect_message(out <- cmsy_forecast(result, years = 2, f = 0.5, sigma = 0, plot = FALSE, table = FALSE, lang = "en",
+                                      silent = FALSE), "end in different years")
+  expect_equal(vapply(split(out$projection$Year, out$projection$Stock), max, numeric(1)), c(A = 2026, B = 2026))
+  expect_equal(unique(out$share$Year), 2024:2026)
+  expect_true(all(out$share$n_stocks == 2))
+  expect_match(out$projection$scenario_label[out$projection$Stock == "B" & out$projection$scenario == "status_quo"][1], "2023")
+  expect_match(out$share$scenario_label[out$share$scenario == "status_quo"][1], "each stock")
+})
+
+test_that("a prior row applies to the stocks of its most specific identifier", {
+  meta <- data.frame(Stock = c("PIL_34", "PIL_27"), alpha3 = "PIL", ASFIS.species..Name. = "European pilchard(=Sardine)",
+                     endb.low = NA_real_, Resilience = "Medium", r.low = 0.4, r.hi = 0.9, r_source = "FishBase",
+                     resilience_source = "FishBase", prior_source = "default", stringsAsFactors = FALSE)
+  out <- cmsy_apply_priors(meta, data.frame(Stock = "PIL_34", alpha3 = "PIL", endb.low = 0.2))
+  expect_equal(out$endb.low, c(0.2, NA))
+  # rows for the species first, then rows for one stock, whatever their order
+  out <- cmsy_apply_priors(meta, data.frame(Stock = c("PIL_27", NA), alpha3 = c(NA, "PIL"), endb.low = c(0.3, 0.1)))
+  expect_equal(out$endb.low, c(0.1, 0.3))
+  expect_warning(cmsy_apply_priors(meta, data.frame(Stock = "PIL_34", alpha3 = "ANE", endb.low = 0.2)), "does not match")
+  # a resilience alone replaces the r range; with r.low and r.hi, those are used
+  out <- cmsy_apply_priors(meta, data.frame(alpha3 = "PIL", Resilience = "Very low"))
+  expect_true(all(is.na(out$r.low) & is.na(out$r.hi)))
+  expect_equal(out$Resilience, c("Very low", "Very low"))
+  out <- cmsy_apply_priors(meta, data.frame(alpha3 = "PIL", Resilience = "Low", r.low = 0.1, r.hi = 0.3))
+  expect_equal(c(out$r.low, out$r.hi), c(0.1, 0.1, 0.3, 0.3))
+  expect_equal(out$r_source, c("user (priors)", "user (priors)"))
+})
+
+test_that("cmsy_input() returns the excluded stocks when no stock is ready", {
+  data <- data.frame(Country..Name. = "Morocco", ASFIS.species..Name. = "European pilchard(=Sardine)",
+                     FAO.major.fishing.area..Name. = "Atlantic, Eastern Central", Unit..Name. = "Tonnes - live weight",
+                     Unit = "TLW", Year = 1990:2019, Production = 1000, Production.Type = "actual", stringsAsFactors = FALSE)
+  expect_warning(input <- cmsy_input(data, table = FALSE, min_catch = 1e9, silent = TRUE), "No stock is ready")
+  expect_equal(nrow(input$id), 0)
+  expect_equal(nrow(input$catch), 0)
+  expect_true("Resilience" %in% names(input$id))
+  expect_equal(nrow(input$excluded), 1)
+  expect_match(input$excluded$reason, "total catch below")
+  # the FAO release recorded with the data is the one used
+  attr(data, "fao_version") <- "2000.1.0"
+  expect_equal(cmsy_input(data, table = FALSE, silent = TRUE)$fao_version, "2000.1.0")
+})
+
+test_that("cmsy_area() keeps the results of an earlier run when the input is wrong", {
+  dir <- withr::local_tempdir()
+  withr::local_dir(dir)
+  data <- data.frame(Country..Name. = "Morocco", ASFIS.species..Name. = "European pilchard(=Sardine)",
+                     FAO.major.fishing.area..Name. = "Atlantic, Eastern Central", Unit..Name. = "Tonnes - live weight",
+                     Unit = "TLW", Year = 1990:2019, Production = 1000, Production.Type = "actual", stringsAsFactors = FALSE)
+  earlier <- file.path("areas", fao_file_name(fao_summary_label(data, NULL)), "tables")
+  dir.create(earlier, recursive = TRUE)
+  writeLines("earlier", file.path(earlier, "results.csv"))
+  expect_error(cmsy_area(data, species = "Gadus morhua", out_dir = "areas", silent = TRUE), "No species")
+  expect_error(suppressWarnings(cmsy_area(data, out_dir = "areas", silent = TRUE, min_catch = 1e9)), "No stock")
+  expect_equal(readLines(file.path(earlier, "results.csv")), "earlier")
+})
+
+test_that("the report only reuses CMSY++ results of its area and FAO release", {
+  result <- structure(list(summary = data.frame(Stock = "PIL_34", area = "Atlantic, Eastern Central",
+                                                fao_data_url = "https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip"),
+                           input = list(fao_version = "2026.1.0")), class = "cmsy_result")
+  expect_true(fao_report_check_cmsy(result, "Atlantic, Eastern Central", "2026.1.0"))
+  expect_error(fao_report_check_cmsy(result, "Pacific, Northeast", "2026.1.0"), "not of Pacific, Northeast")
+  expect_error(fao_report_check_cmsy(result, "Atlantic, Eastern Central", "2027.1.0"), "release 2026.1.0")
+  result$input <- NULL                          # results of cmsy_run(): the release is in the links
+  expect_error(fao_report_check_cmsy(result, "Atlantic, Eastern Central", "2027.1.0"), "release 2026.1.0")
 })

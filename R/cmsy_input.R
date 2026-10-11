@@ -39,7 +39,14 @@
 #'        per stock or species. It identifies the rows by a `Stock`, `alpha3`, `species_en` or
 #'        `species` column (`species`: any name, as in the `species` argument) and can have any of the ID file columns `Resilience`, `r.low`, `r.hi`,
 #'        `stb.low`, `stb.hi`, `int.yr`, `intb.low`, `intb.hi`, `endb.low`, `endb.hi`,
-#'        `StartYear`, `EndYear` and `Comment`. Values given here are recorded as "user".
+#'        `StartYear`, `EndYear` and `Comment`. Values given here are recorded as "user". A
+#'        `Resilience` given without `r.low` and `r.hi` replaces the r range from FishBase or
+#'        SeaLifeBase with the range of that resilience (CMSY++ uses `r.low` and `r.hi` whenever
+#'        both are given). A row
+#'        applies to the stocks of its most specific identifier: only its stock when it has a
+#'        `Stock`, even if it also names the species; else all stocks of its species. Rows for a
+#'        species are applied before rows for one stock, so the values given for a stock take
+#'        precedence.
 #' @param default_resilience Resilience ("High", "Medium", "Low" or "Very low") for stocks
 #'        whose species has no resilience or prior r in FishBase or SeaLifeBase. Default is NULL:
 #'        such stocks are left out, since the user guide gives no default.
@@ -99,7 +106,10 @@ cmsy_input <- function(area_data, species = NULL, by = c("area", "country"), pri
   }
   name <- fao_summary_name(fao_summary_label(area_data, label), "cmsy")
   fao_version <- attr(area_data, "fao_version")
-  if (is.null(fao_version)) fao_version <- cmsy_fao_version()
+  if (is.null(fao_version)) {
+    fao_version <- cmsy_fao_version()
+    if (!silent) cmsy_assumed_release(fao_version)
+  }
 
   data <- fao_add_groups(area_data)
   data <- data[!is.na(data$Production) & data$taxon_level %in% "species" &
@@ -170,12 +180,14 @@ cmsy_input <- function(area_data, species = NULL, by = c("area", "country"), pri
   catch <- do.call(rbind, lapply(stocks, function(s) s$catch))
   catch <- merge(catch, meta[c(keys, "Stock")], by = keys)
   catch <- catch[catch$Stock %in% ready$Stock, ]
-  catch <- data.frame(Stock = catch$Stock, yr = catch$Year, ct = round(catch$Tonnes, 3), bt = NA_real_,
+  catch <- data.frame(Stock = catch$Stock, yr = catch$Year, ct = round(catch$Tonnes, 3), bt = rep(NA_real_, nrow(catch)),
                       stringsAsFactors = FALSE)
   catch <- catch[order(catch$Stock, catch$yr), ]
 
   source_text <- paste0("FAO Global Capture Production ", fao_version)
-  id <- data.frame(
+  # the ID table of CMSY++; with no stock ready, an empty table with the same columns (built from a
+  # row of NA), so that the excluded stocks and their reasons are still returned
+  make_id <- function(ready) data.frame(
     Continent = cmsy_ascii(ifelse(is.na(ready$ocean_en), "", ready$ocean_en)),
     Region = cmsy_ascii(ready$FAO.major.fishing.area..Name.),
     Subregion = cmsy_ascii(if (by == "country") ready$Country..Name. else "All countries"),
@@ -190,6 +202,7 @@ cmsy_input <- function(area_data, species = NULL, by = c("area", "country"), pri
     btype = "None", e.creep = NA, force.cmsy = FALSE, Comment = cmsy_ascii(ready$Comment),
     stringsAsFactors = FALSE
   )
+  id <- if (nrow(ready) > 0) make_id(ready) else make_id(meta[NA_integer_, ])[0, ]
   if (nrow(ready) == 0) warning("No stock is ready for CMSY++; see `excluded`.", call. = FALSE)
 
   stock_table <- data.frame(
@@ -283,7 +296,8 @@ cmsy_category_of_r <- function(r) {
   }, character(1))
 }
 
-# User priors replace the defaults, matched by Stock, then alpha3, then species_en
+# User priors replace the defaults. Each row applies to the stocks of its most specific identifier
+# (Stock, else alpha3, else species_en); rows for a species are applied before rows for one stock
 cmsy_apply_priors <- function(meta, priors) {
   priors <- as.data.frame(priors, stringsAsFactors = FALSE)
   if ("species" %in% names(priors)) {
@@ -304,14 +318,23 @@ cmsy_apply_priors <- function(meta, priors) {
                        " (CMSY++ only accepts \"Very low\" with a small l).", call. = FALSE)
   }
   meta_key <- c(Stock = "Stock", alpha3 = "alpha3", species_en = "ASFIS.species..Name.")
-  for (i in seq_len(nrow(priors))) {
-    rows <- rep(FALSE, nrow(meta))
-    for (col in id_cols) {
-      if (!is.na(priors[[col]][i])) rows <- rows | meta[[meta_key[[col]]]] == priors[[col]][i]
+  given <- function(i) id_cols[vapply(id_cols, function(col) !is.na(priors[[col]][i]) && nzchar(priors[[col]][i]), logical(1))]
+  key <- vapply(seq_len(nrow(priors)), function(i) c(names(meta_key)[names(meta_key) %in% given(i)], NA)[1], character(1))
+  for (i in order(match(key, rev(names(meta_key))))) {
+    if (is.na(key[i])) {
+      warning("Row ", i, " of `priors` has no Stock, alpha3, species_en or species and is ignored.", call. = FALSE)
+      next
     }
+    rows <- !is.na(meta[[meta_key[[key[i]]]]]) & meta[[meta_key[[key[i]]]]] == priors[[key[i]]][i]
     if (!any(rows)) {
       warning("No stock matches row ", i, " of `priors`.", call. = FALSE)
       next
+    }
+    for (col in setdiff(given(i), key[i])) {
+      if (any(meta[[meta_key[[col]]]][rows] != priors[[col]][i], na.rm = TRUE)) {
+        warning("Row ", i, " of `priors`: ", col, " \"", priors[[col]][i], "\" does not match ", key[i], " \"",
+                priors[[key[i]]][i], "\"; the row is applied by its ", key[i], " only.", call. = FALSE)
+      }
     }
     set <- character(0)
     for (col in value_cols) {
@@ -320,16 +343,30 @@ cmsy_apply_priors <- function(meta, priors) {
       meta[[col]][rows] <- value
       set <- c(set, col)
     }
-    if (any(c("Resilience", "r.low", "r.hi") %in% set)) {
+    if (any(c("r.low", "r.hi") %in% set)) {
       meta$r_source[rows] <- "user (priors)"
-      if ("Resilience" %in% set) meta$resilience_source[rows] <- "user (priors)"
+    } else if ("Resilience" %in% set) {
+      # CMSY++ uses r.low and r.hi whenever both are given, so the FishBase/SeaLifeBase range is
+      # dropped and CMSY++ takes the r range of the resilience set by the user
+      meta$r.low[rows] <- NA_real_
+      meta$r.hi[rows] <- NA_real_
+      meta$r_source[rows] <- paste0("user (priors): resilience \"", priors$Resilience[i],
+                                    "\", r range of the CMSY++ user guide (Table 2)")
     }
+    if ("Resilience" %in% set) meta$resilience_source[rows] <- "user (priors)"
     if (any(grepl("^(stb|int|endb)", set))) {
       meta$prior_source[rows] <- paste0("user B/k priors (", paste(grep("^(stb|int|endb)", set, value = TRUE), collapse = ", "),
                                         "); others from FishBase/SeaLifeBase and the CMSY++ neural network")
     }
   }
   meta
+}
+
+# The message when the data do not record their FAO release
+cmsy_assumed_release <- function(version) {
+  message("The FAO release of the data is not recorded with them (load_fao_data() and fishing_area_data() ",
+          "record it; subsetting the data drops it): release ", version, ", the one load_fao_data() uses by ",
+          "default, is assumed.")
 }
 
 # FAO release that load_fao_data() uses by default, without loading it

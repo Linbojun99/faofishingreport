@@ -11,8 +11,16 @@
 #' surplus-production model in which productivity declines linearly below B/k = 0.25 (CMSY++16.R
 #' and Froese et al. 2023), started from the posterior draws of r, k and last-year B/k of the
 #' run (which come from the same MCMC iterations), with lognormal process error (`sigma`, 0.1 by
-#' default as `sigmaR` in CMSY++). In the F scenarios Fmsy is reduced linearly below half of Bmsy,
-#' as in the management results of CMSY++. Catch is F times biomass, as CMSY++ defines F.
+#' default as `sigmaR` in CMSY++). As in CMSY++, the biomass of a year is the biomass before the
+#' catch of that year, F is the catch divided by that biomass, and F/Fmsy uses an Fmsy reduced
+#' linearly below half of Bmsy (CMSY++16.R). The catch of the last year of the data is kept, so
+#' the biomass of the next year is that of the CMSY++ model; the scenarios set the catch from the
+#' first projected year on. In the F scenarios the catch is the scenario F times the biomass of
+#' the same year, so F/Fmsy is the scenario value.
+#'
+#' Stocks whose data end in different years are each projected from their own last year to the
+#' same final year (the latest last year plus `years`); the share of stocks at or above Bmsy is
+#' given from the latest last year on, when every stock has a value.
 #'
 #' @inheritParams cmsy_plot
 #' @param stocks Optional stocks to project: `Stock` identifiers or species, by English or Chinese
@@ -20,7 +28,7 @@
 #' @param silent A logical value. If FALSE (default), a progress bar shows how many stocks have
 #'        been projected. If TRUE, nothing is printed. The default can be changed for the session
 #'        with `fao_settings(silent = TRUE)`.
-#' @param years Number of years to project. Default is 10.
+#' @param years Number of years to project after the latest last year of the stocks. Default is 10.
 #' @param f Fishing mortality scenarios as multiples of Fmsy. Default is `c(0.5, 0.6, 0.8, 0.95)`.
 #' @param status_quo A logical value. If TRUE (default), the last-year fishing mortality is also
 #'        projected.
@@ -33,7 +41,8 @@
 #'        Default is TRUE.
 #' @return Invisibly, a list with `projection` (by stock, scenario and year: median B/Bmsy,
 #'         F/Fmsy and catch with 95% limits, and the probability that B is at least Bmsy) and
-#'         `share` (by scenario and year: share of stocks at or above Bmsy, with 95% limits).
+#'         `share` (by scenario and year: share of stocks at or above Bmsy, with 95% limits, and
+#'         the number of stocks).
 #' @references
 #' Froese, R., Winker, H., Coro, G., Demirel, N., Tsikliras, A.C., Dimarchopoulou, D., Scarcella,
 #' G., Quaas, M. and Matz-Lueck, N. (2018). Status and rebuilding of European fisheries. Marine
@@ -71,34 +80,49 @@ cmsy_forecast <- function(result, stocks = NULL, years = 10, f = c(0.5, 0.6, 0.8
   if (!is.null(stocks)) ok <- ok[ok$Stock %in% cmsy_quietly(cmsy_match_stocks(stocks, ok), silent), ]
   if (nrow(ok) == 0) stop("No stock has CMSY++ results.", call. = FALSE)
   if (!is.null(seed)) set.seed(seed)
-  scenarios <- c(paste0(f, " Fmsy"), if (status_quo) "status_quo", if (!is.null(catch)) paste0("catch_", cmsy_number(catch)))
+  scenarios <- c(if (length(f) > 0) paste0(f, " Fmsy"), if (status_quo) "status_quo", if (!is.null(catch)) paste0("catch_", cmsy_number(catch)))
   bar <- cmsy_progress(nrow(ok), "Forecast", silent)
   on.exit(bar$close(), add = TRUE)
 
+  # Every stock is projected to the same final year, from its own last year
+  first_year <- max(ok$last_year)
+  end_year <- first_year + years
+  if (length(unique(ok$last_year)) > 1 && !silent) {
+    message("The data of the stocks end in different years (", paste(range(ok$last_year), collapse = "-"),
+            "): each stock is projected from its own last year to ", end_year,
+            ", and the share of stocks at or above Bmsy is given from ", first_year, ".")
+  }
   draws_all <- list()
   projection <- do.call(rbind, lapply(seq_len(nrow(ok)), function(i) {
     s <- ok[i, ]
     d <- result$details[[s$Stock]]
-    out <- cmsy_project_stock(d$r, d$k, d$bk_last, s$catch_last, s$last_year, years, f, status_quo, catch, sigma)
+    out <- cmsy_project_stock(d$r, d$k, d$bk_last, s$catch_last, s$last_year, end_year - s$last_year, f,
+                              status_quo, catch, sigma)
     draws_all[[s$Stock]] <<- out$above
     bar$update(i, s$Stock)
-    cbind(Stock = s$Stock, out$summary, stringsAsFactors = FALSE)
+    out <- cbind(Stock = s$Stock, out$summary, stringsAsFactors = FALSE)
+    out$scenario_label <- cmsy_scenario_label(out$scenario, s$last_year, lang)
+    out
   }))
-  projection$scenario_label <- cmsy_scenario_label(projection$scenario, ok$last_year[1], lang)
 
-  # Share of stocks at or above Bmsy in each draw, then its median and 95% limits
+  # Share of stocks at or above Bmsy in each draw, then its median and 95% limits, in the years
+  # in which every stock has a value
   share <- do.call(rbind, lapply(scenarios, function(sc) {
-    yrs <- sort(unique(projection$Year))
+    yrs <- first_year:end_year
     do.call(rbind, lapply(yrs, function(y) {
       m <- do.call(cbind, lapply(draws_all, function(a) a[[sc]][, as.character(y)]))
       n <- min(vapply(draws_all, function(a) nrow(a[[sc]]), numeric(1)))
       share <- 100 * rowMeans(m[seq_len(n), , drop = FALSE])
       data.frame(scenario = sc, Year = y, share = stats::median(share),
                  share_lcl = stats::quantile(share, 0.025, names = FALSE),
-                 share_ucl = stats::quantile(share, 0.975, names = FALSE))
+                 share_ucl = stats::quantile(share, 0.975, names = FALSE), n_stocks = ncol(m))
     }))
   }))
-  share$scenario_label <- cmsy_scenario_label(share$scenario, ok$last_year[1], lang)
+  share$scenario_label <- if (length(unique(ok$last_year)) == 1) {
+    cmsy_scenario_label(share$scenario, first_year, lang)
+  } else {
+    cmsy_scenario_label(share$scenario, NA, lang)
+  }
 
   if (table) {
     fao_ensure_dirs(file.path("tables", "cmsy"))
@@ -133,33 +157,35 @@ cmsy_forecast <- function(result, stocks = NULL, years = 10, f = c(0.5, 0.6, 0.8
   invisible(list(projection = projection, share = share, plots = plots))
 }
 
-# Projection of one stock from aligned posterior draws (CMSY++ process equation)
+# Projection of one stock from aligned posterior draws (CMSY++ process equation). As in CMSY++,
+# B_t is the biomass of year t before its catch C_t, B_t+1 = B_t + growth(B_t) - C_t, F_t = C_t / B_t
+# and F/Fmsy uses Fmsy = r/2 reduced linearly below half of Bmsy (CMSY++16.R). The last year keeps
+# its catch; the scenarios set the catch from the first projected year on.
 cmsy_project_stock <- function(r, k, bk, catch_last, last_year, years, f, status_quo, catch, sigma) {
   n <- min(length(r), length(k), length(bk))
   r <- r[seq_len(n)]
   k <- k[seq_len(n)]
   p0 <- bk[seq_len(n)]
-  fmsy <- r / 2
+  fmsy <- function(p) r / 2 * pmin(1, 4 * p)                    # Fmsy reduced below half of Bmsy
   f_last <- pmin(catch_last / (p0 * k), 5)
   run <- function(f_mult = NA, f_fixed = NULL, c_fixed = NA) {
     p <- p0
+    ct <- rep(catch_last, n)
     out_b <- out_c <- out_f <- matrix(NA_real_, n, years + 1)
-    out_b[, 1] <- 2 * p0
-    out_c[, 1] <- catch_last
-    out_f[, 1] <- f_last / fmsy
-    for (t in seq_len(years)) {
-      adj <- ifelse(p < 0.25, 4 * p, 1)                       # Fmsy reduced below half of Bmsy
-      fish <- if (!is.null(f_fixed)) f_fixed else if (!is.na(f_mult)) f_mult * fmsy * adj else NA
-      ct <- if (!is.na(c_fixed)) pmin(c_fixed, 0.99 * p * k) else fish * p * k
-      growth <- ifelse(p > 0.25, r * p * (1 - p), 4 * p * r * p * (1 - p))
-      p <- pmax(p + growth - ct / k, 0.01) * exp(stats::rnorm(n, 0, sigma))
+    for (t in 0:years) {
+      if (t > 0) {
+        growth <- ifelse(p > 0.25, r * p * (1 - p), 4 * p * r * p * (1 - p))
+        p <- pmax(p + growth - ct / k, 0.01) * exp(stats::rnorm(n, 0, sigma))
+        ct <- if (!is.na(c_fixed)) pmin(c_fixed, 0.99 * p * k) else
+          (if (!is.null(f_fixed)) f_fixed else f_mult * fmsy(p)) * p * k
+      }
       out_b[, t + 1] <- 2 * p
       out_c[, t + 1] <- ct
-      out_f[, t + 1] <- (ct / (pmax(p, 0.01) * k)) / fmsy
+      out_f[, t + 1] <- ct / (p * k) / fmsy(p)
     }
     list(b = out_b, c = out_c, f = out_f)
   }
-  scenario_runs <- c(stats::setNames(lapply(f, function(x) run(f_mult = x)), paste0(f, " Fmsy")),
+  scenario_runs <- c(if (length(f) > 0) stats::setNames(lapply(f, function(x) run(f_mult = x)), paste0(f, " Fmsy")),
                      if (status_quo) list(status_quo = run(f_fixed = f_last)),
                      if (!is.null(catch)) stats::setNames(lapply(catch, function(x) run(c_fixed = x)), paste0("catch_", cmsy_number(catch))))
   yrs <- last_year + 0:years
@@ -180,7 +206,8 @@ cmsy_project_stock <- function(r, k, bk, catch_last, last_year, years, f, status
 
 cmsy_scenario_label <- function(scenario, last_year, lang) {
   out <- scenario
-  out[scenario == "status_quo"] <- cmsy_label("status_quo", lang, year = last_year)
+  out[scenario == "status_quo"] <- if (is.na(last_year)) cmsy_label("status_quo_each", lang) else
+    cmsy_label("status_quo", lang, year = last_year)
   is_catch <- startsWith(scenario, "catch_")
   for (i in which(is_catch)) {
     out[i] <- cmsy_label("constant_catch", lang,

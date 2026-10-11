@@ -107,13 +107,8 @@ cmsy_area <- function(area, top = 10, species = NULL, recent_years = 10, out_dir
     cmsy_quietly(fishing_area_data(area, plot = FALSE, timeseries_analysis = FALSE)$area_data, TRUE)
   }
   label <- fao_summary_label(area_data, NULL)
-  dir <- file.path(out_dir, fao_file_name(label))
-  dir.create(dir, recursive = TRUE, showWarnings = FALSE)
-  dir <- normalizePath(dir)
-  old_wd <- setwd(dir)
-  on.exit(setwd(old_wd), add = TRUE)
-  unlink(c("input", "runs", "figures", "figures_pptx", "tables"), recursive = TRUE)
-
+  if (is.null(attr(area_data, "fao_version")) && !silent) cmsy_assumed_release(cmsy_fao_version())
+  # The input and the stocks are checked before the results of an earlier run are touched
   input <- cmsy_input(area_data, species = species, table = FALSE, lang = lang, silent = TRUE, ...)
   if (is.null(species)) {
     # The species with the largest recent catch, whether or not CMSY++ can assess them
@@ -128,6 +123,40 @@ cmsy_area <- function(area, top = 10, species = NULL, recent_years = 10, out_dir
     chosen <- input$stocks$Stock
     skipped <- input$excluded
   }
+  if (length(chosen) == 0) {
+    if (nrow(skipped) > 0) {
+      message("Left out: ", paste0(skipped$species_name, " (", skipped$reason, ")", collapse = "; "))
+    }
+    stop("No stock of ", label, " is ready for CMSY++.", call. = FALSE)
+  }
+
+  # The results of an earlier run in the same folder are moved aside, and put back if this run
+  # fails; they are deleted only when this run has finished
+  dir <- file.path(out_dir, fao_file_name(label))
+  dir.create(dir, recursive = TRUE, showWarnings = FALSE)
+  dir <- normalizePath(dir)
+  old_wd <- setwd(dir)
+  on.exit(setwd(old_wd), add = TRUE)
+  outputs <- c("input", "runs", "figures", "figures_pptx", "tables")
+  previous <- outputs[file.exists(outputs)]
+  backup <- ".previous_run"
+  unlink(backup, recursive = TRUE)
+  if (length(previous) > 0) {
+    dir.create(backup)
+    file.rename(previous, file.path(backup, previous))
+  }
+  finished <- FALSE
+  on.exit({
+    if (!finished) {
+      unlink(outputs, recursive = TRUE)
+      if (length(previous) > 0) {
+        file.rename(file.path(backup, previous), previous)
+        message("CMSY++ did not finish; the results of the earlier run in ", dir, " were kept.")
+      }
+    }
+    unlink(backup, recursive = TRUE)
+  }, add = TRUE, after = FALSE)
+
   input$catch <- input$catch[input$catch$Stock %in% chosen, ]
   input$id <- input$id[input$id$Stock %in% chosen, ]
   input$stocks <- input$stocks[input$stocks$Stock %in% chosen, ]
@@ -143,7 +172,6 @@ cmsy_area <- function(area, top = 10, species = NULL, recent_years = 10, out_dir
                                                                  collapse = "; ")))
   }
   input$excluded <- skipped
-  if (nrow(input$stocks) == 0) stop("No stock of ", label, " is ready for CMSY++.", call. = FALSE)
 
   step(2, "Running CMSY++")
   result <- cmsy_run(input, out_dir = "runs", parallel = parallel, plots = "analysis", seed = seed,
@@ -182,6 +210,7 @@ cmsy_area <- function(area, top = 10, species = NULL, recent_years = 10, out_dir
   result$forecast <- projection
   result$tables <- tables
   result$dir <- dir
+  finished <- TRUE
   if (!silent) {
     ok <- result$summary$run_status == "ok"
     message("Done: ", sum(ok), " of ", nrow(result$summary), " stocks; ",

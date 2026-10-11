@@ -843,6 +843,8 @@ cmsy_label <- function(key, lang, ...) {
                       "\u9884\u6d4b\u4ee5 CMSY++ \u6a21\u578b\u548c r\u3001k\u3001\u672b\u5e74 B/k \u7684\u540e\u9a8c\u62bd\u6837\u4e3a\u8d77\u70b9\uff1b\u9634\u5f71\u4e3a 95% \u533a\u95f4\u3002"),
     pct_above_bmsy = c("Stocks at or above Bmsy (%)", "\u8fbe\u5230 Bmsy \u7684\u79cd\u7fa4\uff08%\uff09"),
     status_quo = c("Status quo F ({year})", "\u7ef4\u6301\u73b0\u72b6 F\uff08{year} \u5e74\uff09"),
+    status_quo_each = c("Status quo F (last year of each stock)",
+                        "\u7ef4\u6301\u73b0\u72b6 F\uff08\u5404\u79cd\u7fa4\u6700\u540e\u4e00\u5e74\uff09"),
     constant_catch = c("Constant catch {catch} t", "\u56fa\u5b9a\u6e14\u83b7\u91cf {catch} \u5428"),
     chart_compare = c("Comparison of estimates", "\u4f30\u8ba1\u7ed3\u679c\u6bd4\u8f83"),
     source_user = c("user", "\u7528\u6237\u8bbe\u5b9a"),

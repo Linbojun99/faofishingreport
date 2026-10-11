@@ -74,6 +74,8 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
   data <- load_fao_data(data_version)
   area_data <- subset(data, data$FAO.major.fishing.area..Name. == area_name)
   area_data <- na.omit(area_data)
+  # the FAO release goes with the data of the area (e.g. to cmsy_input()); subsetting drops it
+  attr(area_data, "fao_version") <- attr(data, "fao_version")
 
   area_production <- dplyr::group_by(area_data, Year) %>%
     dplyr::summarise(Tonnes = sum(Production, na.rm = TRUE))

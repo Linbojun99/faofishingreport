@@ -25,6 +25,32 @@ fao_report_cmsy_run <- function(area_data, args, lang, out_dir) {
   result
 }
 
+# A CMSY++ result given to fao_report(): its stocks must be of the area of the report, and its
+# input of the same FAO release (cmsy_area() keeps the input; results of cmsy_run() have the
+# release in the links of the stocks)
+fao_report_check_cmsy <- function(result, area_name, release) {
+  areas <- unique(stats::na.omit(result$summary$area))
+  if (length(areas) == 0) {
+    stop("`cmsy` does not say which FAO area its stocks are in; give the result of cmsy_area(), or use cmsy = TRUE.",
+         call. = FALSE)
+  }
+  if (!all(areas %in% area_name)) {
+    stop("`cmsy` holds CMSY++ results of ", paste(areas, collapse = ", "), ", not of ", area_name,
+         ". Give the result of cmsy_area() for ", area_name, ", or use cmsy = TRUE.", call. = FALSE)
+  }
+  version <- result$input$fao_version
+  if (is.null(version)) {
+    urls <- unique(stats::na.omit(result$summary$fao_data_url))
+    version <- unique(sub("^.*Capture_(.*)[.]zip$", "\\1", urls))
+  }
+  if (length(version) > 0 && !is.na(release) && !all(version == release)) {
+    stop("`cmsy` was run on the FAO release ", paste(version, collapse = ", "), ", but the report uses release ",
+         release, ". Use cmsy = TRUE to run CMSY++ on the data of the report, or data_version = \"", version[1],
+         "\" if that release is on this computer.", call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
 # Values of the CMSY++ text: counts of the stocks, and the text of every species
 fao_report_cmsy_values <- function(result, lang) {
   text <- function(.key, ...) fao_report_text(.key, lang, list(...))

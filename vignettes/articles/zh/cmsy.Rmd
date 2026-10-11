@@ -406,13 +406,13 @@ show_png("area34_map.png")
 projection <- cmsy_forecast(result, catch = 100000)
 ```
 
-`CMSY++16.R`本身没有预测功能。`cmsy_forecast()`用CMSY++自身的模型做预测：Schaefer剩余产量模型，生物量低于0.25 k时生产力线性下降。预测从同一组MCMC迭代的r、k和末年B/k后验抽样出发，加入对数正态过程误差（`sigma`，默认0.1，与CMSY++的`sigmaR`相同）。在F情景下，生物量低于Bmsy的一半时Fmsy线性降低，与CMSY++的管理结果一致。默认情景是0.5、0.6、0.8、0.95倍Fmsy（与Froese et al. 2018相同），以及维持末年捕捞死亡率；也可以设定固定渔获量（`catch`）。
+`CMSY++16.R`本身没有预测功能。`cmsy_forecast()`用CMSY++自身的模型做预测：Schaefer剩余产量模型，生物量低于0.25 k时生产力线性下降。预测从同一组MCMC迭代的r、k和末年B/k后验抽样出发，加入对数正态过程误差（`sigma`，默认0.1，与CMSY++的`sigmaR`相同）。与CMSY++相同，某一年的生物量是该年渔获之前的生物量，F是渔获量除以该生物量，F/Fmsy中的Fmsy在生物量低于Bmsy的一半时线性降低。数据最后一年保留其实际渔获量；从第一个预测年起，F情景的渔获量等于情景F乘以同一年的生物量，因此F/Fmsy就是情景值。默认情景是0.5、0.6、0.8、0.95倍Fmsy（与Froese et al. 2018相同），以及维持末年捕捞死亡率；也可以设定固定渔获量（`catch`）。数据结束年份不同的种群，各自从自己的最后一年预测到同一个结束年份。
 
 | 参数 | 含义 | 默认值 |
 |---|---|---|
 | `result` | `cmsy_run()`的结果 | 必填 |
 | `stocks` | 要预测的种群（见[通用参数](#common-arguments)） | `NULL`：已运行的全部种群 |
-| `years` | 预测年数 | `10` |
+| `years` | 在各种群最晚的最后一年之后预测的年数 | `10` |
 | `f` | 捕捞死亡率情景，Fmsy的倍数 | `c(0.5, 0.6, 0.8, 0.95)` |
 | `status_quo` | 是否同时预测维持末年捕捞死亡率的情景 | `TRUE` |
 | `catch` | 固定渔获量情景（吨/年） | `NULL` |
@@ -422,7 +422,7 @@ projection <- cmsy_forecast(result, catch = 100000)
 | `table` | 是否保存`tables/cmsy/forecast.csv`和`forecast_share.csv` | `TRUE` |
 | `lang`、`annotations`、`pptx`、`silent` | 见[通用参数](#common-arguments) | |
 
-函数返回`projection`（各种群、情景和年份的B/Bmsy、F/Fmsy和渔获量中位数及95%区间，以及B ≥ Bmsy的概率）和`share`（各情景逐年达到或高于Bmsy的种群比例及95%区间）。
+函数返回`projection`（各种群、情景和年份的B/Bmsy、F/Fmsy和渔获量中位数及95%区间，以及B ≥ Bmsy的概率）和`share`（各情景逐年达到或高于Bmsy的种群比例及95%区间，以及种群数`n_stocks`；从各种群最晚的最后一年开始）。
 
 ```{r, echo = FALSE}
 show_png("grunt_forecast.png")

@@ -35,7 +35,14 @@ countries; or "country": one stock per species item, fishing area and country.}
 per stock or species. It identifies the rows by a \code{Stock}, \code{alpha3}, \code{species_en} or
 \code{species} column (\code{species}: any name, as in the \code{species} argument) and can have any of the ID file columns \code{Resilience}, \code{r.low}, \code{r.hi},
 \code{stb.low}, \code{stb.hi}, \code{int.yr}, \code{intb.low}, \code{intb.hi}, \code{endb.low}, \code{endb.hi},
-\code{StartYear}, \code{EndYear} and \code{Comment}. Values given here are recorded as "user".}
+\code{StartYear}, \code{EndYear} and \code{Comment}. Values given here are recorded as "user". A
+\code{Resilience} given without \code{r.low} and \code{r.hi} replaces the r range from FishBase or
+SeaLifeBase with the range of that resilience (CMSY++ uses \code{r.low} and \code{r.hi} whenever
+both are given). A row
+applies to the stocks of its most specific identifier: only its stock when it has a
+\code{Stock}, even if it also names the species; else all stocks of its species. Rows for a
+species are applied before rows for one stock, so the values given for a stock take
+precedence.}
 
 \item{default_resilience}{Resilience ("High", "Medium", "Low" or "Very low") for stocks
 whose species has no resilience or prior r in FishBase or SeaLifeBase. Default is NULL:
