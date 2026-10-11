@@ -1,0 +1,141 @@
+---
+title: "🌊 渔区分析"
+description: >
+  fishing_area_data()、fishing_area_species() 和 fishing_area_country()：某个 FAO 渔区的总产量、主要物种和主要捕捞国家，以及全部选项。
+---
+
+```{r setup, include = FALSE}
+source("../_setup.R")
+```
+
+```{r}
+fao_settings(lang = "zh")   # 本文所有图表使用中文
+```
+
+三个渔区函数用于描述单个 FAO 主要渔区。示例使用**中东大西洋（34 区）**，最后一节将同样的分析应用于**西北太平洋（61 区）**。
+
+## 🗺️ FAO 主要渔区
+
+```{r}
+data <- load_fao_data()
+areas <- aggregate(Production ~ FAO.major.fishing.area..Name., data = subset(data, Year == max(Year)), FUN = sum)
+names(areas) <- c("Fishing area", "Catch in the last year (t)")
+show_table(areas[order(-areas[[2]]), ], n = 30, digits = 0)
+```
+
+在 `fishing_area_data()` 中使用表中的名称（如 `"Pacific, Northwest"`）。
+
+## 1️⃣ `fishing_area_data()`：渔区产量
+
+```{r, figures = TRUE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+```
+
+该函数保存三张图：
+
+| 文件 | 图表 |
+|---|---|
+| `fishing_trend.png` | 渔区总产量。设置 `timeseries_analysis = TRUE` 时，灰色柱表示相邻**突变点**（虚线）之间各时段的平均产量，突变点由 `strucchange::breakpoints()` 识别 |
+| `fishing_percentage.png` | 该渔区每年产量占全球产量的比例及其平均值（红线） |
+| `area_country_map.png` | 各国历年在该渔区的累计总产量，绘制在世界地图上 |
+
+并返回一个列表：
+
+| 元素 | 内容 |
+|---|---|
+| `area_data` | 该渔区的产量记录，作为其他函数的输入 |
+| `coefs_data` | 相邻突变点之间各时段的起点、终点和平均产量 |
+| `act_world_map` | 地图数据（sf 对象） |
+
+```{r}
+FAO34$coefs_data
+```
+
+### 选项
+
+```{r, figures = TRUE}
+fishing_area_data(
+  "Atlantic, Eastern Central",
+  timeseries_analysis = FALSE,          # 不做突变点分析
+  area_color1 = "#9ecae1",              # 产量面积图的填充色
+  area_color2 = "#08519c",              # 面积图的轮廓线颜色
+  hline_color = "#e6550d",              # 比例图中平均线的颜色
+  fill_scale = "blue",                  # 地图色板
+  lang = "zh"                           # 图表文字使用中文
+)
+```
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `area_name` | FAO 主要渔区 | |
+| `plot` | 是否保存图表 | `TRUE` |
+| `timeseries_analysis` | 在产量图中添加突变点 | `TRUE` |
+| `area_color1`, `area_color2`, `area_alpha` | 产量面积图的填充色、轮廓线颜色和透明度 | `"grey80"`, `"black"`, `0.7` |
+| `line_color`, `line_alpha`, `line_linewidth`, `point_size` | 比例图的折线和点 | `"black"`, `0.8`, `1.5`, `2` |
+| `hline_color`, `hline_alpha`, `hline_linewidth` | 比例图的平均线 | `"red"`, `0.7`, `1.5` |
+| `axis_text_size`, `axis_title_size`, `axis_text_face`, `axis_title_face` | 坐标轴文字 | `10`, `12`, `"plain"`, `"bold"` |
+| `polygon_color`, `fill_scale` | 地图的国界颜色和色板 | `"grey90"`，`fao_settings()` 中的地图色板 |
+| `axis_title_size_map`, `axis_text_size_map`, `legend_text_size_map` | 地图的文字大小 | `14`, `12`, `12` |
+| `lang` | `"en"`、`"zh"` 或 `"both"` | `fao_settings()` 中的语言 |
+| `data_version` | FAO 数据版本：`"latest"`、`"bundled"` 或具体版本号（如 `"2023.1.1"`） | `"latest"` |
+| `pptx` | 同时保存可编辑的 PowerPoint 文件 | `FALSE` |
+
+## 2️⃣ `fishing_area_species()`：主要物种
+
+```{r, figures = TRUE}
+species <- fishing_area_species(FAO34$area_data, rank_range = c(1, 10))
+```
+
+| 文件 | 图表 |
+|---|---|
+| `area/area_species.png` | 前十个主要物种的产量随时间的变化 |
+| `area/area_species_wrap.png` | 每个物种一个分面，显示该物种占渔区产量的比例、线性趋势（虚线）以及其平均产量的突变点 |
+
+函数返回按物种和年份汇总的产量、物种排名以及突变点：
+
+```{r}
+show_table(species$area_species_ranked_total)
+```
+
+同时在 `tables/` 中保存两张表：`species_ranked_table.csv`（每十年的平均产量、最近五年的产量、最近一年所占比例）和 `species_coefs_data.csv`（突变点）。
+
+```{r}
+show_table(read.csv("tables/species_ranked_table.csv", fileEncoding = "UTF-8-BOM", check.names = FALSE), n = 5, digits = 0)
+```
+
+### 选项
+
+- **`rank_range`** 指定排名范围：`c(11, 20)` 显示排在其后的十个物种。
+- **`timeseries_analysis = FALSE`** 用平滑曲线代替突变点（平滑方法由 `smooth_method` 指定，默认为 `"loess"`）。
+- **`h_value`** 是相邻突变点之间时段的最短长度，可以是占整个序列的比例（默认 `0.15`），也可以是年数（如 `5`）。取值越大，突变点越少；序列过短的物种会被跳过，并给出提示信息。
+
+```{r, figures = TRUE}
+fishing_area_species(FAO34$area_data, rank_range = c(11, 20), h_value = 5, lang = "both")
+```
+
+样式参数：`line_width`、`point_size`、`point_alpha`、`point_shape`、`line_alpha`、`axis_text_size`、`axis_title_size`、`strip_text_size`、`axis_text_face`、`axis_title_face`、`strip_text_face`、`smooth_method`、`smooth_linetype`、`line_linewidth`、`text_hjust`、`text_vjust`、`text_size`、`text_color` 和 `facet_ncol`。
+
+## 3️⃣ `fishing_area_country()`：主要国家
+
+```{r, figures = TRUE}
+countries <- fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
+```
+
+它的参数和输出与 `fishing_area_species()` 相同，只是按国家统计（`area/area_country.png`、`area/area_country_wrap.png`、`tables/country_ranked_table.csv`、`tables/country_coefs_data.csv`）。
+
+```{r}
+show_table(countries$area_country_ranked_total)
+```
+
+## 🌏 另一个渔区：西北太平洋
+
+任何 FAO 渔区的用法都一样。西北太平洋（61 区）是产量最大的渔区：
+
+```{r, figures = TRUE}
+FAO61 <- fishing_area_data("Pacific, Northwest")
+fishing_area_country(FAO61$area_data, rank_range = c(1, 8))
+```
+
+::: callout-tip
+不同渔区的图表以相同的文件名保存（如 `fishing_trend.png`），因此建议每个渔区使用单独的工作目录，例如 `setwd("reports/FAO61")`。
+:::

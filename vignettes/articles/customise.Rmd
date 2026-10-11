@@ -1,0 +1,221 @@
+---
+title: "🎨 Customise charts and maps"
+description: >
+  fao_settings(): language, theme, colour palettes, map projection and centre, fonts, grid
+  lines, resolution and PowerPoint output.
+---
+
+```{r setup, include = FALSE}
+source("_setup.R")
+FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+```
+
+All charts and maps follow a few settings, set once per R session with `fao_settings()`. Run it
+without arguments to see the current settings:
+
+```{r, eval = FALSE}
+fao_settings()
+#>   lang            en
+#>   theme           bw
+#>   base_size       12
+#>   palette         npg
+#>   map_palette     deep-orange
+#>   map_center      0
+#>   map_projection  longlat
+#>   map_land        grey90
+#>   map_ocean       NA
+#>   grid            FALSE
+#>   dpi             600
+#>   pptx            FALSE
+#>   data_dir        C:/Users/<you>/AppData/Local/R/data/R/faofishingreport
+#>   font            SimSun
+```
+
+| Setting | Choices | Default |
+|---|---|---|
+| `lang` | `"en"`, `"zh"`, `"both"` | `"en"` |
+| `theme` | `"bw"`, `"classic"`, `"minimal"`, `"light"`, `"linedraw"`, `"gray"`, `"dark"`, or a ggplot2 theme | `"bw"` |
+| `base_size` | Base font size | `12` |
+| `font` | Font family of chart text | chosen for the system |
+| `palette` | Category colours: ggsci, RColorBrewer, `"Okabe-Ito"`, `"viridis"`, ... or colours | `"npg"` |
+| `map_palette` | Map colours: Material (`"deep-orange"`, ...), RColorBrewer (`"YlOrRd"`, ...), viridis, or colours | `"deep-orange"` |
+| `map_center` | `0` (longitudes -180 to 180) or `180` (0 to 360) | `0` |
+| `map_projection` | `"longlat"`, `"robinson"`, `"mollweide"`, `"equal_earth"`, `"winkel_tripel"`, `"mercator"`, a PROJ string or EPSG code | `"longlat"` |
+| `map_land`, `map_ocean` | Colour of countries without data, of the ocean | `"grey90"`, none |
+| `grid` | Background grid lines (graticules on maps) | `FALSE` |
+| `dpi` | Resolution of the PNG files | `600` |
+| `pptx` | Also save editable PowerPoint files | `FALSE` |
+| `data_dir` | Folder of downloaded FAO data | R user data folder |
+
+`fao_settings(reset = TRUE)` restores the defaults. A wrong name or value gives an error at once,
+with the choices available.
+
+## 🌐 Language
+
+Every analysis has a `lang` argument; `fao_settings(lang = ...)` changes the default for all of them.
+`"both"` writes Chinese and English together, e.g. "百万吨 (Million Tonnes)" and "摩洛哥 Morocco".
+
+```{r, figures = "area_country.png"}
+fao_settings(lang = "zh")
+fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+```
+
+```{r, figures = "area_country.png"}
+fao_settings(lang = "both")
+fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fao_settings(lang = "en")
+```
+
+The older argument `ZH = TRUE` still works and means `lang = "zh"`.
+
+## 🖼️ Themes
+
+```{r, figures = "area_country.png"}
+fao_settings(theme = "classic")
+fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+```
+
+```{r, figures = "area_country.png"}
+fao_settings(theme = "minimal", base_size = 14)
+fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+```
+
+Any ggplot2 theme can be used, e.g. `fao_settings(theme = ggplot2::theme_light(base_size = 13))`.
+
+## 🎨 Colour palettes
+
+`palette` colours countries, species and groups:
+
+```{r, figures = "area_country.png"}
+fao_settings(theme = "bw", base_size = 12, palette = "lancet")
+fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+```
+
+```{r, figures = "area_country.png"}
+fao_settings(palette = "Okabe-Ito")        # suitable for colour-blind readers
+fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+```
+
+```{r, figures = "area_country.png"}
+fao_settings(palette = c("#0B2E5B", "#16A6B6", "#F28E2B", "#E15759", "#59A14F", "#B07AA1"))
+fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fao_settings(palette = "npg")
+```
+
+Palettes of the ggsci package include `"npg"`, `"aaas"`, `"nejm"`, `"lancet"`, `"jama"`, `"jco"`,
+`"d3"`; of RColorBrewer `"Set1"`, `"Set2"`, `"Dark2"`, `"Paired"`; of base R
+`grDevices::palette.pals()` and `grDevices::hcl.pals()`. More categories than a palette has are
+interpolated.
+
+## 🗺️ Map projections
+
+The same map, the catch of each country in area 34, in each projection:
+
+```{r, figures = "area_country_map"}
+fao_settings(map_projection = "longlat")      # plain longitude-latitude (default)
+fishing_area_data("Atlantic, Eastern Central")
+```
+
+```{r, figures = "area_country_map"}
+fao_settings(map_projection = "robinson")
+fishing_area_data("Atlantic, Eastern Central")
+```
+
+```{r, figures = "area_country_map"}
+fao_settings(map_projection = "equal_earth")
+fishing_area_data("Atlantic, Eastern Central")
+```
+
+```{r, figures = "area_country_map"}
+fao_settings(map_projection = "mollweide")
+fishing_area_data("Atlantic, Eastern Central")
+```
+
+```{r, figures = "area_country_map"}
+fao_settings(map_projection = "winkel_tripel")
+fishing_area_data("Atlantic, Eastern Central")
+```
+
+```{r, figures = "area_country_map"}
+fao_settings(map_projection = "mercator")
+fishing_area_data("Atlantic, Eastern Central")
+```
+
+Any other projection can be given as a PROJ string or EPSG code, e.g.
+`fao_settings(map_projection = "+proj=natearth")` or `"EPSG:3857"`.
+
+## 🌏 Pacific-centred maps
+
+`map_center = 180` shows longitudes 0 to 360, with the Pacific in the centre. Areas and countries
+that the data split at the dateline (e.g. the Pacific areas, Russia) are joined again:
+
+```{r, figures = "area_country_map"}
+fao_settings(map_projection = "robinson", map_center = 180)
+fishing_area_data("Pacific, Northwest")
+```
+
+Fishing area maps show the land without country borders, and the analysed country in red:
+
+```{r, figures = "fishing_area_map"}
+country_analysis("Morocco")
+```
+
+## 🖌️ Map colours
+
+```{r, figures = "area_country_map"}
+fao_settings(map_projection = "robinson", map_center = 0, map_palette = "viridis")
+fishing_area_data("Atlantic, Eastern Central")
+```
+
+```{r, figures = "area_country_map"}
+fao_settings(map_palette = "YlOrRd", map_land = "grey85", map_ocean = "#EAF4FB")
+fishing_area_data("Atlantic, Eastern Central")
+```
+
+The `fill_scale` argument of `fishing_area_data()`, `species_country()` and
+`country_analysis()` overrides `map_palette` for one call.
+
+```{r, include = FALSE}
+fao_settings(reset = TRUE)
+fao_settings(dpi = 100)
+```
+
+## 🔤 Fonts
+
+The font is chosen for the operating system so that Chinese text displays: SimSun on Windows,
+Songti SC on macOS, Noto Serif CJK SC on Linux, or the next installed Chinese font. Change it with:
+
+```{r, eval = FALSE}
+fao_font()                            # the current font
+fao_settings(font = "Microsoft YaHei")
+```
+
+PNG files are drawn with the ragg package, which finds any installed font by name; PowerPoint files
+use the same font name.
+
+## 📐 Grid lines, resolution and PowerPoint
+
+```{r, figures = "area_country.png"}
+fao_settings(grid = TRUE)
+fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fao_settings(grid = FALSE)
+```
+
+```{r, eval = FALSE}
+fao_settings(dpi = 300)      # smaller PNG files
+fao_settings(pptx = TRUE)    # also editable PowerPoint in figures/pptx/
+fishing_area_species(FAO34$area_data, pptx = TRUE)   # or for one call only
+```
+
+## ⚙️ Arguments of each function
+
+Besides the settings, the older analysis functions have their own style arguments (line widths,
+point sizes, text sizes and colours); see their help pages, e.g. `?fishing_area_data`, and
+[🌊 Fishing area analysis](fishing-areas.html).
+
+## 📝 Translations
+
+Chinese names of countries, species and areas come from FAO. The Chinese names of ISSCAAP groups,
+major groups and income groups (`inst/extdata/group_names_zh.csv`) and all chart labels
+(`inst/extdata/chart_labels.csv`) are plain CSV files: edit them in the package source and
+reinstall the package to change the wording.

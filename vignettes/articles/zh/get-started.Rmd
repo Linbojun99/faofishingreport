@@ -1,0 +1,149 @@
+---
+title: "🚀 快速入门"
+description: >
+  安装 faofishingreport，更新 FAO 数据，并为中东大西洋（FAO 34 渔区）绘制第一批图表。
+---
+
+```{r setup, include = FALSE}
+source("../_setup.R")
+```
+
+```{r}
+fao_settings(lang = "zh")   # 本文所有图表使用中文
+```
+
+**faofishingreport** 把 FAO 全球捕捞产量统计（Global Capture Production）整理成报告用的图表、地图和表格。
+本文以**中东大西洋（FAO 主要渔区 34）**为例，完整演示第一次分析的全过程；下面每张图都由其上方的代码生成。
+
+典型的工作流程：
+
+| 步骤 | 做什么 | 函数 |
+|---|---|---|
+| 1. 数据 | 检查并下载 FAO 最新版本 | `check_fao_update()`, `download_fao_data()` |
+| 2. 渔区 | 某个渔区的总产量、主要物种和主要捕捞国家 | `fishing_area_data()`, `fishing_area_species()`, `fishing_area_country()` |
+| 3. 物种与国家 | 某个物种由哪些国家捕捞，某个国家捕什么 | `species_country()`, `country_species()`, `country_analysis()` |
+| 4. 汇总分析 | 类群结构、资源开发状态、趋势、数据质量、船队 | `stock_status()`, `peak_trend()`, `coastal_distant()`, ... |
+| 5. 风格 | 语言、主题、颜色、地图投影 | `fao_settings()` |
+
+## 📦 安装
+
+faofishingreport 需要 **R 4.2 或以上版本**，从 GitHub 安装：
+
+```{r, eval = FALSE}
+install.packages("remotes")
+remotes::install_github("Linbojun99/faofishingreport")
+```
+
+所需的依赖包（dplyr、ggplot2、sf、rnaturalearth 等）都会自动安装。
+
+::: callout-note
+**Windows 和 macOS** 安装的是二进制包，不需要编译器（Rtools）。
+**Linux** 需要先安装 sf 包依赖的系统库；如果要绘制中文图表，还需要安装中文字体：
+
+```bash
+sudo apt-get install libgdal-dev libgeos-dev libproj-dev libudunits2-dev fonts-noto-cjk
+```
+:::
+
+加载本包。启动信息会显示当前操作系统和图表所用的字体（Windows 上为 SimSun，macOS 上为 Songti SC，Linux 上为 Noto Serif CJK SC）：
+
+```{r, eval = FALSE}
+library(faofishingreport)
+#> faofishingreport: Windows, chart font "SimSun" (change it with fao_font())
+```
+
+## 💾 获取 FAO 最新数据
+
+本包自带 FAO `r readLines(system.file("extdata", "bundled_release.txt", package = "faofishingreport"))` 版本的数据。FAO 大约每年发布一次新版本。可以先检查是否有更新的版本，再下载（约 5 MB，几秒钟即可完成）：
+
+```{r, eval = FALSE}
+check_fao_update()
+#> FAO Global Capture Production
+#>   Latest online release: 2026.1.0 (published 2026-03-30)
+#>   Bundled with package:  2026.1.0
+#>   Downloaded locally:    none
+#>   Your data is up to date.
+
+download_fao_data()   # 只有在有更新版本时才需要运行
+```
+
+所有函数都会自动使用可用的最新数据。如何选择版本、数据格式以及如何分析自己的数据子集，见[💾 FAO 数据](data.html)。
+
+## 📁 结果保存在哪里
+
+每项分析都会把图表和表格保存在**当前工作目录**中：
+
+| 文件夹 | 内容 |
+|---|---|
+| `figures/png/` | PNG 格式的图表（始终输出） |
+| `figures/pptx/` | 可编辑的 PowerPoint 图表（设置 `pptx = TRUE` 时输出） |
+| `tables/` | CSV 格式的表格，用 Excel 打开时中文名称也能正常显示 |
+
+所以先为报告选定一个文件夹：
+
+```{r, eval = FALSE}
+setwd("D:/reports/FAO34")   # 任意文件夹均可
+```
+
+## 🌊 第一次分析：FAO 34 渔区
+
+`fishing_area_data()` 提取某个 FAO 主要渔区的产量数据，绘制该渔区的总产量并标出平均产量的突变点，
+计算其占全球产量的比例，并绘制在该渔区捕捞的国家的世界地图。
+
+```{r, figures = TRUE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+```
+
+返回结果是一个列表；其中 `FAO34$area_data` 是该渔区的产量记录，也是其他大多数函数的输入数据：
+
+```{r}
+show_table(FAO34$area_data, n = 5)
+```
+
+其他渔区的用法完全相同。全部 FAO 主要渔区的名称如下：
+
+```{r}
+data <- load_fao_data()
+sort(unique(data$FAO.major.fishing.area..Name.))
+```
+
+## 🐟 主要物种和国家
+
+34 渔区产量最高的十个物种、它们的产量变化以及平均产量的突变点：
+
+```{r, figures = TRUE}
+species <- fishing_area_species(FAO34$area_data, rank_range = c(1, 10))
+```
+
+主要捕捞国家的分析方法相同：
+
+```{r, figures = TRUE}
+countries <- fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
+```
+
+## 🌐 中文与中英双语图表
+
+每项分析都有一个 `lang` 参数，取值为 `"en"`（英文）、`"zh"`（中文）或 `"both"`（中英双语）。国家、物种和渔区名称使用 FAO 官方中文名。
+
+```{r, figures = "country_ranked_wrap"}
+species_country(FAO34$area_data, species_name = "European pilchard(=Sardine)", lang = "both")
+```
+
+如果希望所有图表都使用中文，只需用 `fao_settings(lang = "zh")` 设置一次即可。本文开头就是这样设置的，所以本文其余的图表都是中文。
+
+## 📊 第一项汇总分析：资源开发状态
+
+`stock_status()` 根据每个物种的产量相对于其历史峰值产量的比例，判断其资源开发状态：
+
+```{r, figures = TRUE}
+status <- stock_status(FAO34$area_data)
+```
+
+## 🧭 下一步
+
+- [💾 FAO 数据：下载与自定义](data.html)：版本、数据格式、数据子集、中文名称
+- [🌊 渔区分析](fishing-areas.html)：渔区分析函数的全部选项
+- [🐟 物种与国家分析](species-countries.html)：`species_country()`、`country_species()`、`country_analysis()`
+- [📈 类群结构、资源状态与趋势](status-trends.html)和
+  [🔍 数据质量、多样性与船队](quality-diversity-fleets.html)：九项汇总分析
+- [🎨 自定义图表与地图](customise.html)：主题、色板、地图投影、字体和输出设置

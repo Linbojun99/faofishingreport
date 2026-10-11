@@ -1,0 +1,56 @@
+key,en,zh
+million_tonnes,Million Tonnes,百万吨
+year,Year,年
+country,Country,国家
+species,Species,物种
+fishing_area,Fishing Area,渔区
+share,Percentage of Total Production,捕捞产量占比
+other_country,Other,其余国家
+other_species,Other,其余物种
+share_pct,Share of catch (%),产量占比 (%)
+species_group,Species group (ISSCAAP),物种类群 (ISSCAAP)
+major_group,Major group,大类
+other_group,Other groups,其余类群
+stocks_pct,Share of stocks (%),种群数占比 (%)
+stock_status,Status,开发状态
+status_developing,Developing,开发中
+status_exploited,Exploited,充分开发
+status_overexploited,Over-exploited,过度开发
+status_collapsed,Collapsed,崩溃
+status_rebuilding,Rebuilding,恢复中
+data_status,Data status,数据来源
+data_actual,Official data,官方数据
+data_estimate,Estimated,估算值
+data_negligible,Negligible (<0.5 t),可忽略 (<0.5吨)
+data_other,Other,其他
+taxon_level,Identified to,鉴定级别
+level_species,Species,种
+level_genus,Genus,属
+level_family,Family,科
+level_higher,Order or higher,目及以上
+indicator,Indicator,指标
+n_species,Number of species reported,上报物种数
+n_countries,Number of countries,捕捞国家数
+shannon,Shannon diversity of species,物种香农多样性指数
+hhi_country,HHI of countries,国家集中度 HHI
+hhi_species,HHI of species,物种集中度 HHI
+top_share_country,Top {n} countries share (%),前{n}名国家占比 (%)
+top_share_species,Top {n} species share (%),前{n}名物种占比 (%)
+income_group,Income group,收入分组
+continent,Continent,大洲
+region,Region,地区
+fleet,Fleet,船队类型
+coastal,Coastal countries,沿岸国
+distant,Distant-water countries,远洋捕捞国
+unknown,Unknown,未知
+n_breakpoints,Number of species with a breakpoint,发生突变的物种数
+peak_share,Last year as % of peak,最后一年占峰值的百分比 (%)
+trend,Trend (last {n} years),近{n}年趋势
+trend_up,Increasing,上升
+trend_down,Decreasing,下降
+trend_none,No significant trend,无显著趋势
+total,Total,合计
+other_country_group,Other groups,其余分组
+other_distant,Other distant-water countries,其余远洋捕捞国
+peak_year_note,Peak year in brackets,括号内为峰值年份
+n_stocks_note,{n} stocks,共{n}个种群
