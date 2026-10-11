@@ -64,6 +64,7 @@ reference:
   - load_fao_data
   - fao_data_dir
   - load_fao_divisions
+  - load_fao_trade
 - title: "🌊 Fishing areas"
   desc: Total catch, main species and main countries of an FAO fishing area.
   contents:
@@ -98,6 +99,8 @@ reference:
   - compare_releases
   - pelagic_demersal
   - fao_pd_groups
+  - catch_trade
+  - fao_capture_groups
 - title: "🌡️ FishBase and temperature"
   desc: Species traits from FishBase and SeaLifeBase, sea surface temperature, and the mean temperature of the catch.
   contents:

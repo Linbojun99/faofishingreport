@@ -1,0 +1,51 @@
+"isscaap_code","isscaap_en","aquatic_animal"
+11,"Carps, barbels and other cyprinids",TRUE
+12,"Tilapias and other cichlids",TRUE
+13,"Miscellaneous freshwater fishes",TRUE
+21,"Sturgeons, paddlefishes",TRUE
+22,"River eels",TRUE
+23,"Salmons, trouts, smelts",TRUE
+24,"Shads",TRUE
+25,"Miscellaneous diadromous fishes",TRUE
+31,"Flounders, halibuts, soles",TRUE
+32,"Cods, hakes, haddocks",TRUE
+33,"Miscellaneous coastal fishes",TRUE
+34,"Miscellaneous demersal fishes",TRUE
+35,"Herrings, sardines, anchovies",TRUE
+36,"Tunas, bonitos, billfishes",TRUE
+37,"Miscellaneous pelagic fishes",TRUE
+38,"Sharks, rays, chimaeras",TRUE
+39,"Marine fishes not identified",TRUE
+41,"Freshwater crustaceans",TRUE
+42,"Crabs, sea-spiders",TRUE
+43,"Lobsters, spiny-rock lobsters",TRUE
+44,"King crabs, squat-lobsters",TRUE
+45,"Shrimps, prawns",TRUE
+46,"Krill, planktonic crustaceans",TRUE
+47,"Miscellaneous marine crustaceans",TRUE
+51,"Freshwater molluscs",TRUE
+52,"Abalones, winkles, conchs",TRUE
+53,"Oysters",TRUE
+54,"Mussels",TRUE
+55,"Scallops, pectens",TRUE
+56,"Clams, cockles, arkshells",TRUE
+57,"Squids, cuttlefishes, octopuses",TRUE
+58,"Miscellaneous marine molluscs",TRUE
+61,"Blue-whales, fin-whales",FALSE
+62,"Sperm-whales, pilot-whales",FALSE
+63,"Eared seals, hair seals, walruses",FALSE
+64,"Miscellaneous aquatic mammals",FALSE
+71,"Frogs and other amphibians",TRUE
+72,"Turtles",TRUE
+73,"Crocodiles and alligators",FALSE
+74,"Sea-squirts and other tunicates",TRUE
+75,"Horseshoe crabs and other arachnoids",TRUE
+76,"Sea-urchins and other echinoderms",TRUE
+77,"Miscellaneous aquatic invertebrates",TRUE
+81,"Pearls, mother-of-pearl, shells",FALSE
+82,"Corals",FALSE
+83,"Sponges",FALSE
+91,"Brown seaweeds",FALSE
+92,"Red seaweeds",FALSE
+93,"Green seaweeds",FALSE
+94,"Miscellaneous aquatic plants",FALSE
