@@ -1,4 +1,4 @@
-# Fishing Area country Analysis
+# Fishing Area Country Analysis
 
 This function analyzes the fishing area data and generates plots for
 specified country based on their ranking in terms of total tonnes.
@@ -124,12 +124,12 @@ fishing_area_country(
 - text_hjust:
 
   A numeric value specifying the horizontal justification of the text
-  geom. Default is 0.8.
+  geom. Default is 0.9.
 
 - text_vjust:
 
   A numeric value specifying the vertical justification of the text
-  geom. Default is -8.
+  geom. Default is -4.
 
 - text_size:
 
@@ -147,14 +147,14 @@ fishing_area_country(
 
 - h_value:
 
-  The minimum segment size, which must be greater than the number of
-  regressors. For the model `ts_data ~ 1`, this means `h_value` should
-  be greater than 1. The default value is 0.15.
+  The minimum segment size passed to
+  [`strucchange::breakpoints()`](https://rdrr.io/pkg/strucchange/man/breakpoints.html):
+  a fraction of the series length (default 0.15) or a number of years.
 
 - ZH:
 
-  A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the
-  same as `lang = "zh"`.
+  A logical value. If TRUE, chart text and names are in Chinese. Default
+  is FALSE. `ZH = TRUE` is the same as `lang = "zh"`.
 
 - lang:
 
@@ -173,8 +173,12 @@ fishing_area_country(
 
 ## Value
 
-NULL. The function saves the generated plots to the specified directory
-if plot = TRUE.
+A list with `area_country` (yearly catch of every country in the area),
+`area_country_ranked` (yearly catch of the ranked countries, with the
+others grouped), `area_country_ranked_total` (total catch and rank of
+the selected countries) and `coefs_data` (start year, end year and mean
+catch of each period between breakpoints). Charts and tables are saved
+if `plot` and `table` are TRUE.
 
 ## See also
 

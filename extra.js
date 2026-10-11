@@ -1,8 +1,10 @@
 // Language switch of the website.
 // English pages live at <site>/..., their Chinese versions at <site>/articles/zh/...
+// The function reference pages <site>/reference/<topic>.html have Chinese versions at
+// <site>/articles/zh/reference/<topic>.html.
 // The "中文 / English" button in the navbar opens the other version of the page. The choice is
-// remembered, so the navbar links lead to pages in the chosen language. Function reference
-// and news pages exist in English only; in Chinese mode their navbar is shown in Chinese.
+// remembered, so the navbar links and the links to functions lead to pages in the chosen
+// language. The news page exists in English only; in Chinese mode its navbar is shown in Chinese.
 (function () {
   var STORAGE_KEY = "faofishingreport-lang";
 
@@ -18,6 +20,11 @@
     "🐟 Species and countries": "🐟 物种与国家分析",
     "📈 Composition, stock status and trends": "📈 类群结构、资源状态与趋势",
     "🔍 Data quality, diversity and fleets": "🔍 数据质量、多样性与船队",
+    "🌡️ Sea temperature and catch temperature": "🌡️ 海表温度与渔获平均温度",
+    "🔬 Shocks, collapses, synchrony and fleets": "🔬 渔获骤变、渔业崩溃、同步性与远洋捕捞",
+    "🐠 FishBase and SeaLifeBase traits": "🐠 FishBase 与 SeaLifeBase 物种特征",
+    "📉 CMSY++ stock assessment": "📉 CMSY++ 资源评估",
+    "📝 Assessment report in Word": "📝 一键生成 Word 评估报告",
     "🎨 Customise charts and maps": "🎨 自定义图表与地图",
     "On this page": "本页目录",
     "Developed by": "开发者",
@@ -49,9 +56,14 @@
     if (rel === null) return null;
     if (toZh) {
       if (rel === "" || rel === "index.html" || rel === "articles/index.html") return "articles/zh/index.html";
+      if (rel === "reference/") return "articles/zh/reference/index.html";
+      var ref = rel.match(/^reference\/([^\/]+\.html)$/);
+      if (ref) return "articles/zh/reference/" + ref[1];
       var en = rel.match(/^articles\/([^\/]+\.html)$/);
       return en ? "articles/zh/" + en[1] : null;
     }
+    var zhRef = rel.match(/^articles\/zh\/reference\/([^\/]+\.html)$/);
+    if (zhRef) return "reference/" + zhRef[1];
     var zh = rel.match(/^articles\/zh\/([^\/]+\.html)$/);
     if (!zh) return null;
     return zh[1] === "index.html" ? "index.html" : "articles/" + zh[1];
@@ -80,15 +92,41 @@
     if (search) search.setAttribute("placeholder", "搜索");
   }
 
-  // In Chinese mode, navbar links to English articles point to their Chinese versions
+  // In Chinese mode, navbar links to English articles point to their Chinese versions, and
+  // links to functions (navbar and page text) to their Chinese reference pages
   function rewriteLinks(root) {
-    document.querySelectorAll(".navbar a.nav-link, .navbar a.dropdown-item, .navbar a.navbar-brand").forEach(function (link) {
+    var links = ".navbar a.nav-link, .navbar a.dropdown-item, .navbar a.navbar-brand, main a[href]";
+    document.querySelectorAll(links).forEach(function (link) {
       var href = link.getAttribute("href");
-      if (link.classList.contains("fao-lang-button")) return;
-      if (!href || href.charAt(0) === "#" || /^https?:/.test(href)) return;
-      var target = counterpart(relative(new URL(href, window.location.href).href, root), true);
-      if (target) link.setAttribute("href", root + target);
+      if (link.classList.contains("fao-lang-button") || link.closest(".fao-ref-source")) return;
+      if (!href || href.charAt(0) === "#" || /^(https?|mailto):/.test(href)) return;
+      var url = new URL(href, window.location.href);
+      var rel = relative(url.href, root);
+      if (link.closest("main") && !(rel && /^reference\//.test(rel))) return;
+      var target = counterpart(rel, true);
+      if (target) link.setAttribute("href", root + target + url.hash);
     });
+  }
+
+  // Chinese reference pages: the link to the English page keeps English as the chosen language,
+  // and a button opens or closes all English originals
+  function zhReferencePage() {
+    var source = document.querySelector(".fao-ref-source");
+    if (!source) return;
+    source.querySelectorAll("a").forEach(function (link) {
+      link.addEventListener("click", function () { store("en"); });
+    });
+    var originals = document.querySelectorAll("details.fao-en");
+    if (originals.length === 0) return;
+    var button = element("button", "fao-en-toggle", "展开全部英文原文");
+    button.type = "button";
+    button.addEventListener("click", function () {
+      var open = button.getAttribute("data-open") !== "true";
+      originals.forEach(function (d) { d.open = open; });
+      button.setAttribute("data-open", open ? "true" : "false");
+      button.textContent = open ? "收起全部英文原文" : "展开全部英文原文";
+    });
+    source.appendChild(button);
   }
 
   function englishOnlyNote() {
@@ -96,7 +134,7 @@
     if (!main || document.querySelector(".fao-lang-note")) return;
     var note = document.createElement("div");
     note.className = "fao-lang-note";
-    note.textContent = "本页（函数说明或更新日志）只有英文版。各函数的中文用法与示例请见“文章”菜单中的中文文档。";
+    note.textContent = "本页（更新日志）只有英文版。";
     main.insertBefore(note, main.firstChild);
   }
 
@@ -110,10 +148,14 @@
           group: "同组函数", of: " / " }
   };
   var GROUPS_ZH = {
-    "💾 FAO data": "💾 FAO 数据",
+    "💾 FAO data": "💾 FAO数据",
     "🌊 Fishing areas": "🌊 渔区分析",
     "🐟 Species and countries": "🐟 物种与国家",
     "📊 Summary analyses": "📊 汇总分析",
+    "📝 Reports": "📝 报告",
+    "🔬 Literature-based analyses": "🔬 文献方法分析",
+    "🌡️ FishBase and temperature": "🌡️ FishBase与温度",
+    "📉 CMSY++ stock assessment": "📉 CMSY++资源评估",
     "🎨 Settings and language": "🎨 设置与语言"
   };
 
@@ -124,9 +166,11 @@
     return node;
   }
 
+  // On English reference pages and their Chinese versions (articles/zh/reference/), which have
+  // the same file names, so the relative links of the reference index work in both
   function referenceNav(root, lang) {
     var rel = relative(window.location.href, root);
-    var match = rel && rel.match(/^reference\/([^\/]+\.html)$/);
+    var match = rel && rel.match(/^(?:articles\/zh\/)?reference\/([^\/]+\.html)$/);
     if (!match || match[1] === "index.html" || !window.fetch || !window.DOMParser) return;
     var current = match[1];
     var text = REF_TEXT[lang] || REF_TEXT.en;
@@ -238,6 +282,7 @@
       translateText(root);
       rewriteLinks(root);
       if (!onZhPage) englishOnlyNote();
+      zhReferencePage();
     }
 
     referenceNav(root, lang);

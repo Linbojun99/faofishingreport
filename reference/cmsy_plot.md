@@ -1,0 +1,254 @@
+# Charts of CMSY++ Results
+
+This function draws the results of
+[`cmsy_run()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_run.md).
+For each stock it draws the charts of the CMSY++ user guide (Froese et
+al. 2021), from the results saved by the run:
+
+- analysis:
+
+  the six panels A-F of the CMSY++ analysis chart in one figure: catch,
+  the explored and the viable r-k pairs, B/k, F/Fmsy and the equilibrium
+  curve (user guide Figure 1; needs the patchwork package);
+
+- catch:
+
+  catch with the MSY estimate and its 95% confidence band (user guide
+  Figure 1A, 2 upper left);
+
+- rk:
+
+  the posterior r-k pairs (log scales), the prior ranges of r and k
+  (dotted box) and the most likely pair with its 95% limits (Figure 1B,
+  C);
+
+- biomass:
+
+  relative biomass B/k with its 95% band, the B/k prior ranges of the
+  first, intermediate and last years (dashed if from the neural network,
+  solid if given by the user), Bmsy (B/k = 0.5) and half of Bmsy (B/k =
+  0.25, reduced recruitment) (Figure 1D);
+
+- b_bmsy:
+
+  relative stock size B/Bmsy with its 95% band and lines at Bmsy, 0.8
+  Bmsy (FAO limit of overfished) and 0.5 Bmsy (Figure 2 upper right);
+
+- exploitation:
+
+  F/Fmsy with its 95% band and Fmsy (Figure 1E, 2 lower left);
+
+- equilibrium:
+
+  the Schaefer equilibrium curve of catch/MSY against B/k, indented
+  below B/k = 0.25, with the predicted path from the first (square) to
+  the last year (triangle) (Figure 1F);
+
+- management:
+
+  the four management panels in one figure: catch with MSY, B/Bmsy,
+  F/Fmsy and the Kobe plot (Figure 2; without the patchwork package, the
+  first three panels);
+
+- kobe:
+
+  Kobe plot: the path of B/Bmsy and F/Fmsy from the first (square)
+  through the intermediate (circle) to the last year (triangle), the
+  last-year posterior draws with the 50, 80 and 95% probability regions,
+  and the probability of each quadrant (Figure 3);
+
+- prior_posterior:
+
+  prior and posterior densities of r, k, MSY and B/k in the first,
+  intermediate and last years, with the prior-posterior variance ratio
+  PPVR (Figure 4);
+
+- retrospective:
+
+  B/Bmsy and F/Fmsy when the last one, two or three years are left out,
+  with Mohn's rho (Figure 5; needs `cmsy_run(plots = "retrospective")`).
+
+For several stocks together:
+
+- overview:
+
+  last-year B/Bmsy of each stock with its 95% limits, coloured by
+  status;
+
+- kobe_all:
+
+  last-year B/Bmsy and F/Fmsy of all stocks in a Kobe plot, sized by
+  catch;
+
+- status:
+
+  share of stocks and of last-year catch in each status class;
+
+- status_time:
+
+  the same shares in every year, by number of stocks and weighted by
+  catch;
+
+- histogram:
+
+  distribution of the last-year B/Bmsy, with the class limits;
+
+- b_bmsy_all:
+
+  B/Bmsy of every stock over time (small multiples);
+
+- trend:
+
+  median B/Bmsy of the stocks by year (with the interquartile range) and
+  the share of stocks below 0.8 Bmsy;
+
+- aggregate:
+
+  total catch relative to total MSY, and total biomass relative to total
+  Bmsy, of the stocks with results in each year;
+
+- map:
+
+  median last-year B/Bmsy of the stocks of each FAO fishing area on a
+  map.
+
+Status classes (`classes`) follow FAO (2026) for catch-only (Tier 3)
+results by default: maximally sustainably fished (B/Bmsy at least 0.8)
+or overfished. `classes = "palomares"` uses the five classes of
+Palomares et al. (2018), used by many CMSY studies: healthy (at least
+1), slightly overfished (0.8-1), overfished (0.5-0.8), grossly
+overfished (0.2-0.5) and collapsed (below 0.2).
+
+## Usage
+
+``` r
+cmsy_plot(
+  result,
+  stocks = NULL,
+  charts = c(cmsy_stock_charts, cmsy_summary_charts),
+  classes = c("fao", "palomares"),
+  annotations = getOption("faofishingreport.cmsy_annotations", FALSE),
+  lang = NULL,
+  pptx = getOption("faofishingreport.pptx", FALSE),
+  silent = fao_setting("silent")
+)
+```
+
+## Arguments
+
+- result:
+
+  The result of
+  [`cmsy_run()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_run.md).
+
+- stocks:
+
+  Optional stocks to draw: `Stock` identifiers or species, by English or
+  Chinese FAO name, scientific name or FAO 3-alpha code. Default is
+  NULL, all stocks that ran.
+
+- charts:
+
+  The charts to draw (listed in the description above). Default is all
+  of them.
+
+- classes:
+
+  The status classes: "fao" (default, two classes) or "palomares" (five
+  classes).
+
+- annotations:
+
+  The text added to the axis titles and labels: FALSE (default) none,
+  TRUE all, or any of "title", "subtitle", "caption", "legend" and
+  "labels" (text inside the chart). The default can be changed for the
+  session with `options(faofishingreport.cmsy_annotations = TRUE)`.
+
+- lang:
+
+  The language of the chart text and names: "en" (English), "zh"
+  (Chinese) or "both" (Chinese and English). Default is NULL, which uses
+  the language set with
+  [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+  ("en" unless changed).
+
+- pptx:
+
+  A logical value. If TRUE, the charts are also saved as editable
+  PowerPoint files in figures/pptx/cmsy/\<stock\>/ and
+  figures/pptx/cmsy/summary/. Default is FALSE, which can be changed for
+  all functions with `fao_settings(pptx = TRUE)`.
+
+- silent:
+
+  A logical value. If FALSE (default), a progress bar shows how many
+  stocks have been drawn. If TRUE, nothing is printed. The default can
+  be changed for the session with `fao_settings(silent = TRUE)`.
+
+## Value
+
+Invisibly, a named list of the ggplot objects.
+
+## Details
+
+By default the charts show only the axis titles and axis labels, so they
+can be used directly in reports with captions of their own. Titles,
+subtitles, captions (method, data and prior sources), legends and text
+inside the charts (probabilities, PPVR, Mohn's rho) are added with
+`annotations`.
+
+Charts are saved in `figures/png/cmsy/<stock>/` and
+`figures/png/cmsy/summary/` (and as PowerPoint when `pptx` is TRUE).
+CMSY++'s own JPEG charts are in the folder of each stock (see
+`result$summary$folder`).
+
+## References
+
+Froese, R., Demirel, N., Coro, G. and Winker, H. (2021). User Guide for
+CMSY++. GEOMAR, Germany, 17 pp.
+<https://oceanrep.geomar.de/id/eprint/52147/>
+
+Palomares, M.L.D., Froese, R., Derrick, B., Noel, S.-L., Tsui, G.,
+Woroniak, J. and Pauly, D. (2018). A preliminary global assessment of
+the status of exploited marine fish and invertebrate populations. A
+report prepared by the Sea Around Us for OCEANA. University of British
+Columbia and GEOMAR.
+<https://www.fishbase.de/rfroese/OceanaFinalReport_V7a.pdf>
+
+FAO (2026). The State of World Fisheries and Aquaculture 2026. Rome,
+FAO. Section "The status of fishery resources", Box 1.3 (assessment
+tiers and status classes).
+<https://openknowledge.fao.org/server/api/core/bitstreams/09d03e2f-7097-4d59-bf94-db65e95f44fd/content/sofia-2026/the-status-fishery-resources.html>
+
+Mohn, R. (1999). The retrospective problem in sequential population
+analysis: an investigation using cod fishery and simulated data. ICES
+Journal of Marine Science 56: 473-488.
+[doi:10.1006/jmsc.1999.0481](https://doi.org/10.1006/jmsc.1999.0481)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+# result <- cmsy_run(...), see cmsy_run()
+
+# All charts in Chinese, with axis text only (the default)
+cmsy_plot(result, lang = "zh")
+
+# Kobe plot and prior-posterior densities of one species, with all annotations
+cmsy_plot(result, stocks = "Brachydeuterus auritus", charts = c("kobe", "prior_posterior"),
+          annotations = TRUE, lang = "both")
+
+# Only titles and legends
+cmsy_plot(result, annotations = c("title", "legend"))
+
+# Status of all stocks in the five classes of Palomares et al. (2018), with legends
+cmsy_plot(result, charts = c("status", "status_time", "histogram", "map"), classes = "palomares",
+          annotations = "legend")
+
+# The management chart also as editable PowerPoint
+cmsy_plot(result, charts = "management", pptx = TRUE)
+
+# Annotations for the rest of the session
+options(faofishingreport.cmsy_annotations = TRUE)
+} # }
+```

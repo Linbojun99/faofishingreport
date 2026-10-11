@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,6 +48,11 @@
     <li><a class="dropdown-item" href="../../articles/species-countries.html">🐟 Species and countries</a></li>
     <li><a class="dropdown-item" href="../../articles/status-trends.html">📈 Composition, stock status and trends</a></li>
     <li><a class="dropdown-item" href="../../articles/quality-diversity-fleets.html">🔍 Data quality, diversity and fleets</a></li>
+    <li><a class="dropdown-item" href="../../articles/literature-analyses.html">🔬 Shocks, collapses, synchrony and fleets</a></li>
+    <li><a class="dropdown-item" href="../../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
+    <li><a class="dropdown-item" href="../../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
+    <li><a class="dropdown-item" href="../../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
+    <li><a class="dropdown-item" href="../../articles/report.html">📝 Assessment report in Word</a></li>
     <li><a class="dropdown-item" href="../../articles/customise.html">🎨 Customise charts and maps</a></li>
   </ul>
 </li>
@@ -89,13 +94,28 @@ Production）按渔区、国家和物种整理成报告用的图表、地图和�
 </h2>
 <ul>
 <li>💾 <strong>随时用上最新数据</strong>：一行命令检查并下载 FAO
-发布的新版本数据。</li>
+发布的新版本数据，并可比较两个版本之间的修订。</li>
 <li>🌊
-<strong>渔区报告</strong>：总产量与突变点、主要物种、主要捕捞国家、世界地图。</li>
+<strong>渔区分析</strong>：总产量与突变点、占全球海洋捕捞产量的比例、主要物种、主要捕捞国家、世界地图。</li>
 <li>🐟
-<strong>物种与国家</strong>：某个物种由哪些国家捕捞，某个国家主要捕什么、在哪里捕。</li>
-<li>📊 <strong>9
-项汇总分析</strong>：物种类群结构、资源开发状态（资源状态图）、峰值与趋势、数据质量、集中度与多样性、按国家分组、突变点同步性、沿岸国与远洋捕捞国，以及全部海洋渔区对比。</li>
+<strong>物种与国家</strong>：某个物种由哪些国家捕捞，某个国家捕什么、在哪里捕，以及其远洋船队的作业范围。</li>
+<li>📊
+<strong>汇总分析</strong>：物种类群结构、资源开发状态图、峰值与趋势、数据质量、多样性与集中度、按国家分组、突变点同步性、沿岸国与远洋捕捞、中上层与底层渔获比，以及全部海洋渔区对比。</li>
+<li>🔬 <strong>文献方法分析</strong>：渔获骤变（Cottrell 等
+2019；Gephart 等 2017）、渔业崩溃（Mullon 等 2005；Worm 等
+2006，附随机序列对照）、渔获同步性与组合效应（Loreau 和 de Mazancourt
+2008）。</li>
+<li>🌡️ <strong>FishBase 与海温</strong>：FAO 物种与
+FishBase、SeaLifeBase 物种特征的匹配（数据来自 <a href="https://github.com/ropensci/rfishbase" class="external-link">rfishbase</a>
+项目发布的数据表副本），FAO 渔区的海表温度，以及渔获平均温度（Cheung 等
+2013）。</li>
+<li>📉 <strong>CMSY++
+资源评估</strong>：对主要物种进行仅基于渔获量的资源评估（Froese 等
+2023；采用其作者发布的代码 <a href="https://github.com/SISTA16/cmsyPlusPlus" class="external-link uri">https://github.com/SISTA16/cmsyPlusPlus</a>，原样内置），自动为本机配置
+JAGS，输出图表、预测以及生物学参考点和先验参数表。</li>
+<li>📝 <strong>一键生成 Word
+评估报告</strong>：<code><a href="../../reference/fao_report.html">fao_report()</a></code>
+生成中文或英文报告（封面、摘要、数据来源与分析方法、结果、结论、参考文献和附件），每项分析都可以单独开关，各函数的设置用前缀传入。</li>
 <li>🌐 <strong>中文、英文或中英双语</strong>图表，国家、物种、渔区名使用
 FAO 官方中文名。</li>
 <li>🎨
@@ -113,9 +133,11 @@ Earth 等）和太平洋居中地图，用 <code><a href="../../reference/fao_se
 <p>需要 R 4.2 或以上版本，从 GitHub 安装：</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"Linbojun99/faofishingreport"</span><span class="op">)</span></span></code></pre></div>
-<p>如需输出可编辑的 PowerPoint 图表，再安装
-eoffice：<code>install.packages("eoffice")</code>（macOS 上还需要安装 <a href="https://www.xquartz.org" class="external-link">XQuartz</a>）。</p>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"Linbojun99/faofishingreport"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>用到的所有 R 包（Word 报告、PowerPoint、FishBase、海表温度、CMSY++
+等）都会随本包一起安装。CMSY++ 还需要 JAGS 程序：运行一次
+<code><a href="../../reference/cmsy_setup.html">cmsy_setup()</a></code> 即可。在 macOS 上输出可编辑的 PowerPoint
+图表还需要安装 <a href="https://www.xquartz.org" class="external-link">XQuartz</a>。</p>
 </div>
 <div class="section level2">
 <h2 id="快速上手">🚀 快速上手<a class="anchor" aria-label="anchor" href="#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B"></a>
@@ -137,9 +159,16 @@ eoffice：<code>install.packages("eoffice")</code>（macOS 上还需要安装 <a
 <span><span class="fu"><a href="../../reference/species_country.html">species_country</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, <span class="st">"European pilchard(=Sardine)"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../../reference/country_species.html">country_species</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, <span class="st">"Morocco"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 汇总分析</span></span>
+<span><span class="co"># 汇总分析与文献方法分析</span></span>
 <span><span class="fu"><a href="../../reference/stock_status.html">stock_status</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../../reference/coastal_distant.html">coastal_distant</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../../reference/catch_shocks.html">catch_shocks</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, version <span class="op">=</span> <span class="st">"builtin"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 前 10 个主要物种的 CMSY++ 评估（先运行一次 cmsy_setup()）</span></span>
+<span><span class="fu"><a href="../../reference/cmsy_area.html">cmsy_area</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, top <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 一键生成中文 Word 评估报告，包含 CMSY++ 和渔获骤变</span></span>
+<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span>, shocks <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>图表保存在工作目录的
 <code>figures/png/</code>（需要时也可以同时输出可编辑的 PowerPoint 到
 <code>figures/pptx/</code>），表格保存在 <code>tables/</code>。</p>
@@ -168,6 +197,14 @@ eoffice：<code>install.packages("eoffice")</code>（macOS 上还需要安装 <a
 <tr class="odd">
 <td><img src="../../reference/figures/readme-bilingual.png" alt="中英双语图表"></td>
 <td><img src="../../reference/figures/readme-area-map.png" alt="Robinson 投影、太平洋居中的渔区地图"></td>
+</tr>
+<tr class="even">
+<td><strong>前 10 个主要物种的 CMSY++ Kobe 图</strong></td>
+<td><strong>渔获平均温度与海表温度</strong></td>
+</tr>
+<tr class="odd">
+<td><img src="../../reference/figures/readme-cmsy-kobe.png" alt="FAO 34 渔区主要物种的 CMSY++ Kobe 图"></td>
+<td><img src="../../reference/figures/readme-mtc.png" alt="FAO 34 渔区渔获平均温度"></td>
 </tr>
 </tbody>
 </table>
@@ -217,7 +254,8 @@ eoffice：<code>install.packages("eoffice")</code>（macOS 上还需要安装 <a
 <tbody>
 <tr class="odd">
 <td><code><a href="../../reference/fishing_area_data.html">fishing_area_data()</a></code></td>
-<td>某个 FAO 渔区的产量：趋势、突变点、占全球比例、地图</td>
+<td>某个 FAO
+渔区的产量：趋势、突变点、占全球海洋捕捞产量的比例、地图</td>
 </tr>
 <tr class="even">
 <td><code><a href="../../reference/fishing_area_species.html">fishing_area_species()</a></code></td>
@@ -303,6 +341,182 @@ eoffice：<code>install.packages("eoffice")</code>（macOS 上还需要安装 <a
 </tr>
 </tbody>
 </table>
+<p><strong>🔬 文献方法分析</strong></p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>函数</th>
+<th>用途</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code><a href="../../reference/catch_shocks.html">catch_shocks()</a></code></td>
+<td>渔获骤变（Cottrell 等 2019 或 Gephart 等
+2017），按年份和类别统计</td>
+</tr>
+<tr class="even">
+<td><code><a href="../../reference/collapse_analysis.html">collapse_analysis()</a></code></td>
+<td>渔业崩溃（Mullon 等 2005 或 Worm 等 2006），与随机序列对照</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../../reference/catch_synchrony.html">catch_synchrony()</a></code></td>
+<td>物种或国家渔获量的同步性与组合效应</td>
+</tr>
+<tr class="even">
+<td><code><a href="../../reference/distant_water_profile.html">distant_water_profile()</a></code></td>
+<td>某个国家在邻近渔区和远洋渔区的渔获量变化</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../../reference/compare_releases.html">compare_releases()</a></code></td>
+<td>两个 FAO 数据版本之间修订、新增和删除的记录</td>
+</tr>
+<tr class="even">
+<td><code><a href="../../reference/pelagic_demersal.html">pelagic_demersal()</a></code></td>
+<td>中上层与底层渔获比（Caddy 1993；de Leiva Moreno 等 2000）</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../../reference/fao_pd_groups.html">fao_pd_groups()</a></code></td>
+<td>计为中上层或底层的 ISSCAAP 类群</td>
+</tr>
+</tbody>
+</table>
+<p><strong>🌡️ FishBase 与温度</strong></p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>函数</th>
+<th>用途</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code><a href="../../reference/check_fishbase_update.html">check_fishbase_update()</a></code></td>
+<td>FishBase 和 SeaLifeBase 的最新版本及本机已下载的版本</td>
+</tr>
+<tr class="even">
+<td><code><a href="../../reference/download_fishbase_data.html">download_fishbase_data()</a></code></td>
+<td>下载 FishBase 和 SeaLifeBase 数据表</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../../reference/fishbase_table.html">fishbase_table()</a></code></td>
+<td>读取 FishBase 或 SeaLifeBase 数据表</td>
+</tr>
+<tr class="even">
+<td><code><a href="../../reference/fishbase_match.html">fishbase_match()</a></code></td>
+<td>将 FAO 物种条目与 FishBase、SeaLifeBase 匹配，并给出物种特征</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../../reference/fishbase_sources.html">fishbase_sources()</a></code></td>
+<td>物种特征的来源、许可证和匹配规则</td>
+</tr>
+<tr class="even">
+<td><code><a href="../../reference/fao_sst_products.html">fao_sst_products()</a></code></td>
+<td>海表温度数据产品及其参考文献</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../../reference/download_sst_data.html">download_sst_data()</a></code></td>
+<td>下载海表温度数据</td>
+</tr>
+<tr class="even">
+<td><code><a href="../../reference/fao_area_sst.html">fao_area_sst()</a></code></td>
+<td>各 FAO 渔区的逐年海表温度</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../../reference/mean_temperature_catch.html">mean_temperature_catch()</a></code></td>
+<td>渔获平均温度及其趋势，并与海表温度比较</td>
+</tr>
+</tbody>
+</table>
+<p><strong>📉 CMSY++ 资源评估</strong></p>
+<table class="table">
+<thead><tr class="header">
+<th>函数</th>
+<th>用途</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><code><a href="../../reference/cmsy_area.html">cmsy_area()</a></code></td>
+<td>一次完成某个渔区主要物种的 CMSY++ 评估</td>
+</tr>
+<tr class="even">
+<td><code><a href="../../reference/cmsy_system.html">cmsy_system()</a></code></td>
+<td>检查本机的 R、JAGS 和 CMSY++ 所需的包</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../../reference/cmsy_setup.html">cmsy_setup()</a></code></td>
+<td>安装 JAGS 和 CMSY++ 所需的 R 包</td>
+</tr>
+<tr class="even">
+<td><code><a href="../../reference/cmsy_jags_versions.html">cmsy_jags_versions()</a></code></td>
+<td>各 R 版本对应的 JAGS 和 rjags 版本</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../../reference/cmsy_download_jags.html">cmsy_download_jags()</a></code></td>
+<td>下载适合本机的 JAGS 安装程序</td>
+</tr>
+<tr class="even">
+<td><code><a href="../../reference/cmsy_install_jags.html">cmsy_install_jags()</a></code></td>
+<td>安装 JAGS</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../../reference/cmsy_sources.html">cmsy_sources()</a></code></td>
+<td>CMSY++ 所用各部分的版本、链接和引用格式</td>
+</tr>
+<tr class="even">
+<td><code><a href="../../reference/cmsy_priors.html">cmsy_priors()</a></code></td>
+<td>来自 FishBase 和 SeaLifeBase 的 r 先验</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../../reference/cmsy_input.html">cmsy_input()</a></code></td>
+<td>将 FAO 渔获数据转换为 CMSY++ 输入文件</td>
+</tr>
+<tr class="even">
+<td><code><a href="../../reference/cmsy_defaults.html">cmsy_defaults()</a></code></td>
+<td>CMSY++ 设置及其默认值</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../../reference/cmsy_run.html">cmsy_run()</a></code></td>
+<td>运行 CMSY++</td>
+</tr>
+<tr class="even">
+<td><code><a href="../../reference/cmsy_plot.html">cmsy_plot()</a></code></td>
+<td>CMSY++ 结果图表</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../../reference/cmsy_forecast.html">cmsy_forecast()</a></code></td>
+<td>不同捕捞情景下的预测</td>
+</tr>
+<tr class="even">
+<td><code><a href="../../reference/cmsy_compare.html">cmsy_compare()</a></code></td>
+<td>比较多次 CMSY++ 运行结果</td>
+</tr>
+<tr class="odd">
+<td><code><a href="../../reference/cmsy_tables.html">cmsy_tables()</a></code></td>
+<td>报告用的先验参数表和结果表</td>
+</tr>
+</tbody>
+</table>
+<p><strong>📝 报告</strong></p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>函数</th>
+<th>用途</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td><code><a href="../../reference/fao_report.html">fao_report()</a></code></td>
+<td>一键生成某个渔区的中文或英文 Word
+评估报告，每项分析都可以单独开关</td>
+</tr></tbody>
+</table>
 <p><strong>🎨 设置与语言</strong></p>
 <table class="table">
 <colgroup>
@@ -340,9 +554,16 @@ eoffice：<code>install.packages("eoffice")</code>（macOS 上还需要安装 <a
 <li><a href="status-trends.html">📈 类群结构、资源状态与趋势</a></li>
 <li><a href="quality-diversity-fleets.html">🔍
 数据质量、多样性与船队</a></li>
+<li><a href="literature-analyses.html">🔬
+渔获骤变、渔业崩溃、同步性与远洋捕捞</a></li>
+<li><a href="sst-mtc.html">🌡️ 海表温度与渔获平均温度</a></li>
+<li><a href="fishbase.html">🐠 FishBase 与 SeaLifeBase 物种特征</a></li>
+<li><a href="cmsy.html">📉 CMSY++ 资源评估</a></li>
+<li><a href="report.html">📝 一键生成 Word 评估报告</a></li>
 <li><a href="customise.html">🎨 自定义图表与地图</a></li>
 </ul>
-<p>每个函数的参数说明见<a href="../../reference/index.html">函数参考</a>（英文）。</p>
+<p>每篇文档最后都列出了所用方法和数据的参考文献及其 DOI
+或网址。每个函数的参数说明见<a href="../../reference/index.html">函数参考</a>（英文）。</p>
 </div>
 <div class="section level2">
 <h2 id="数据来源">📊 数据来源<a class="anchor" aria-label="anchor" href="#%E6%95%B0%E6%8D%AE%E6%9D%A5%E6%BA%90"></a>

@@ -1,0 +1,201 @@
+# Match FAO Species Items to FishBase and SeaLifeBase
+
+This function goes through the FAO species items of the data one by one,
+looks each up in FishBase (fishes) or SeaLifeBase (other aquatic animals
+and plants) by the scientific name in the FAO species list, and returns
+the matched record with its trophic level, temperature preference,
+habitat, maximum length and vulnerability to fishing. Only matches that
+follow a published rule are made; every row gives the rule and its
+source, and links to the FishBase, SeaLifeBase or WoRMS pages, so each
+match can be checked and, if wrong, corrected (see Corrections). Items
+that cannot be matched by these rules are not filled in: they are marked
+as failed, with links for searching the name online.
+
+## Usage
+
+``` r
+fishbase_match(
+  area_data = NULL,
+  version = "latest",
+  corrections = NULL,
+  table = TRUE,
+  lang = NULL,
+  label = NULL,
+  data_dir = fao_data_dir()
+)
+```
+
+## Arguments
+
+- area_data:
+
+  FAO catch data: `fishing_area_data()$area_data`, or any subset of
+  [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md).
+  Default is NULL, all species in
+  [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md).
+
+- version:
+
+  The FishBase and SeaLifeBase release, e.g. "26.06". Default is
+  "latest": the newest online release when online (its tables are
+  downloaded as needed), else the newest downloaded release, else the
+  table built into the package. "builtin" always uses the built-in
+  table, made with the same rules (see
+  [`fishbase_sources()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_sources.md)
+  for its release).
+
+- corrections:
+
+  Path of the corrections file (see Corrections), or FALSE for none.
+
+- table:
+
+  A logical value. If TRUE (default), tables are saved in `tables/`.
+
+- lang:
+
+  The language of the chart text and names: "en" (English), "zh"
+  (Chinese) or "both" (Chinese and English). Default is NULL, which uses
+  the language set with
+  [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+  ("en" unless changed).
+
+- label:
+
+  The name used in the output file names. Default is the fishing area
+  (or the country) of the data.
+
+- data_dir:
+
+  The directory where downloaded data is stored. Default is
+  [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md).
+
+## Value
+
+Invisibly, a data frame with one row per FAO species item.
+
+## Matching rules
+
+Fishes (FAO major group PISCES) are looked up in FishBase first and all
+other items in SeaLifeBase first, following Branch et al. (2010,
+Supplementary Information p. 1).
+
+1.  **exact**: the FAO scientific name is a valid species name in the
+    database.
+
+2.  **synonym**: the FAO name is listed as a synonym (status "synonym")
+    of one valid species in the database's synonym table. Misapplied
+    names are never used, since they are misidentifications and not
+    aliases (Froese and Pauly 2000, "The SYNONYMS table"); names that
+    the table marks as ambiguous, or that point to several species, are
+    not matched.
+
+3.  **WoRMS valid name**: a name not found by rules 1-2 is looked up
+    online in the World Register of Marine Species (WoRMS), which the
+    FAO ASFIS list follows for most groups (FAO 2026, pp. 1-3). Only an
+    exact WoRMS record with status "accepted" or with a single valid
+    name is used; the valid name is then matched by rules 1-2 or 4.
+    Results are saved in `worms_lookup.csv` in the `fishbase` folder of
+    `data_dir` and reused when the computer is offline.
+
+4.  **genus, family, order, class, phylum**: an FAO item above species
+    level (e.g. "Sardinella spp" or "Sparidae") takes the unweighted
+    mean trophic level of the species of that taxon in the database
+    (Branch et al. 2010, Supplementary Information p. 1; Liang and Pauly
+    2017). Temperature preference, habitat, length and vulnerability are
+    left empty for these items, since studies of the mean temperature of
+    the catch exclude items above species level (Tsikliras and Stergiou
+    2014; Liang et al. 2018).
+
+5.  **plant (TL 1)**: aquatic plants (FAO major group PLANTAE AQUATICAE)
+    have a trophic level of 1 (Pauly et al. 1998).
+
+Items that name several taxa (e.g. "Sepiidae, Sepiolidae") are not
+matched, since there is no published rule for them. Species not found by
+these rules are not given the values of their genus. The `status` column
+is "matched", "failed" or "pending online check" (offline and not looked
+up in WoRMS before).
+
+The trophic levels are the FishBase and SeaLifeBase estimates (table
+"estimate", column Troph), which come from diet studies or, when these
+are missing, from related species and body size (Froese and Pauly 2000,
+"The FOOD ITEMS table", boxes 25-26). Temperature preferences (column
+TempPrefMean) are means of the AquaMaps distribution of the species
+(FishBase reference 123201); note that Cheung et al. (2013) used
+medians.
+
+Rows are sorted by catch, with the share and cumulative share of the
+catch, so checking the first rows covers most of the catch. The table is
+saved in `tables/`, with empty `checked` and `note` columns for
+recording the checks.
+
+## Corrections
+
+Wrong or missing matches can be corrected in a CSV file (by default
+`corrections.csv` in the `fishbase` folder of `data_dir`; a template is
+created there the first time). Each row has the `alpha3` code of the FAO
+item and either a `database` ("FishBase" or "SeaLifeBase") and
+`SpecCode` of the record to use, or values to use directly
+(`trophic_level`, `temp_pref_mean`, `habitat`, `max_length_cm`,
+`vulnerability`), or both; `note` should give the source (e.g. "TL 3.5
+for Marine fishes nei, Pauly et al. 1998"). Corrections are applied
+every time the function runs, so a team sharing `data_dir` shares them.
+
+## References
+
+Branch, T.A., Watson, R., Fulton, E.A. et al. (2010). The trophic
+fingerprint of marine fisheries. Nature 468: 431-435.
+[doi:10.1038/nature09528](https://doi.org/10.1038/nature09528)
+
+Cheung, W.W.L., Watson, R. and Pauly, D. (2013). Signature of ocean
+warming in global fisheries catch. Nature 497: 365-368.
+[doi:10.1038/nature12156](https://doi.org/10.1038/nature12156)
+
+Liang, C. and Pauly, D. (2017). Fisheries impacts on China's coastal
+ecosystems: unmasking a pervasive 'fishing down' effect. PLoS ONE 12:
+e0173296.
+[doi:10.1371/journal.pone.0173296](https://doi.org/10.1371/journal.pone.0173296)
+
+Liang, C., Xian, W. and Pauly, D. (2018). Impacts of ocean warming on
+China's fisheries catches: an application of "mean temperature of the
+catch" concept. Frontiers in Marine Science 5: 26.
+[doi:10.3389/fmars.2018.00026](https://doi.org/10.3389/fmars.2018.00026)
+
+Pauly, D., Christensen, V., Dalsgaard, J., Froese, R. and Torres, F.
+(1998). Fishing down marine food webs. Science 279: 860-863.
+[doi:10.1126/science.279.5352.860](https://doi.org/10.1126/science.279.5352.860)
+
+Tsikliras, A.C. and Stergiou, K.I. (2014). Mean temperature of the catch
+increases quickly in the Mediterranean Sea. Marine Ecology Progress
+Series 515: 281-284.
+[doi:10.3354/meps11005](https://doi.org/10.3354/meps11005)
+
+FAO (2026). Nomenclature, revision, and references of the ASFIS list
+(version 2026). Rome, FAO.
+<https://www.fao.org/fishery/static/ASFIS/ASFIS_References_2026_EN.pdf>
+
+Froese, R. and Pauly, D. (Eds.) (2000). FishBase 2000: concepts, design
+and data sources. ICLARM, Los Baños, Philippines. Chapters "The SYNONYMS
+table" (<https://www.fishbase.se/manual/fishbasethe_synonyms_table.htm>)
+and "The FOOD ITEMS table", boxes 25 and 26 on trophic levels
+(<https://www.fishbase.se/manual/fishbasethe_food_items_table.htm>).
+
+Froese, R. and Pauly, D. (Eds.) FishBase. World Wide Web electronic
+publication. <https://www.fishbase.se>
+
+Palomares, M.L.D. and Pauly, D. (Eds.) SeaLifeBase. World Wide Web
+electronic publication. <https://www.sealifebase.se>
+
+WoRMS Editorial Board. World Register of Marine Species. Flanders Marine
+Institute (VLIZ). <https://www.marinespecies.org>,
+[doi:10.14284/170](https://doi.org/10.14284/170)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
+match <- fishbase_match(FAO34$area_data, lang = "zh")
+head(match[, c("species_name", "status", "match_type", "trophic_level", "url")])
+} # }
+```

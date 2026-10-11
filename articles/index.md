@@ -5,8 +5,9 @@
 - [🚀 Get
   started](https://linbojun99.github.io/faofishingreport/articles/get-started.md):
 
-  Install faofishingreport, update the FAO data and produce the first
-  charts for the Eastern Central Atlantic (FAO area 34).
+  Install faofishingreport, update the FAO data, produce the first
+  charts for the Eastern Central Atlantic (FAO area 34) and write a Word
+  report in one call.
 
 - [💾 FAO data: download and
   customise](https://linbojun99.github.io/faofishingreport/articles/data.md):
@@ -32,8 +33,9 @@
   trends](https://linbojun99.github.io/faofishingreport/articles/status-trends.md):
 
   species_group_composition(), stock_status(), peak_trend(),
-  area_overview() and regime_shift(): what is caught, how the stocks
-  have developed, and when things changed.
+  area_overview(), regime_shift(), pelagic_demersal() and
+  fao_pd_groups(): what is caught, how the stocks have developed, and
+  when things changed.
 
 - [🔍 Data quality, diversity and
   fleets](https://linbojun99.github.io/faofishingreport/articles/quality-diversity-fleets.md):
@@ -42,11 +44,55 @@
   coastal_distant(): how reliable the data are, how diverse and
   concentrated the catch is, and who is fishing.
 
+- [🔬 Shocks, collapses, synchrony and
+  fleets](https://linbojun99.github.io/faofishingreport/articles/literature-analyses.md):
+
+  catch_shocks(), collapse_analysis(), catch_synchrony(),
+  distant_water_profile() and compare_releases(): abrupt falls and
+  collapses of the catch, how synchronously catches fluctuate, where a
+  country’s fleets fish, and what FAO revised between two data releases,
+  each following published methods.
+
+- [🌡️ Sea temperature and catch
+  temperature](https://linbojun99.github.io/faofishingreport/articles/sst-mtc.md):
+
+  fao_sst_products(), fao_area_sst(), download_sst_data() and
+  mean_temperature_catch(): the sea surface temperature of the FAO
+  fishing areas, how to use your own SST files, and what you must check
+  before using the mean temperature of the catch.
+
+- [🐠 FishBase and SeaLifeBase
+  traits](https://linbojun99.github.io/faofishingreport/articles/fishbase.md):
+
+  check_fishbase_update(), download_fishbase_data(), fishbase_table(),
+  fishbase_match() and fishbase_sources(): species traits from FishBase
+  and SeaLifeBase, how they are matched to the FAO species items, and
+  how the mean temperature of the catch and the CMSY++ priors use them.
+
+- [📉 CMSY++ catch-only stock
+  assessment](https://linbojun99.github.io/faofishingreport/articles/cmsy.md):
+
+  cmsy_area(), cmsy_system(), cmsy_setup(), cmsy_install_jags(),
+  cmsy_download_jags(), cmsy_jags_versions(), cmsy_sources(),
+  cmsy_priors(), cmsy_input(), cmsy_defaults(), cmsy_run(), cmsy_plot(),
+  cmsy_forecast(), cmsy_compare() and cmsy_tables(): catch-only
+  assessments of FAO catch series with the bundled CMSY++ code, FishBase
+  priors and JAGS.
+
+- [📝 Assessment report in
+  Word](https://linbojun99.github.io/faofishingreport/articles/report.md):
+
+  fao_report(): a Word assessment report of an FAO fishing area in
+  Chinese or English in one call. Its contents, arguments, sections and
+  their settings, format, citation styles, the CMSY++ part, the tables
+  it returns and the templates of its text.
+
 - [🎨 Customise charts and
   maps](https://linbojun99.github.io/faofishingreport/articles/customise.md):
 
   fao_settings(): language, theme, colour palettes, map projection and
-  centre, fonts, grid lines, resolution and PowerPoint output.
+  centre, fonts, grid lines, resolution, PowerPoint output and data
+  folders.
 
 ### 中文文档
 
@@ -59,43 +105,70 @@
 - [🚀
   快速入门](https://linbojun99.github.io/faofishingreport/articles/zh/get-started.md):
 
-  安装 faofishingreport，更新 FAO 数据，并为中东大西洋（FAO 34
-  渔区）绘制第一批图表。
+  安装faofishingreport，更新FAO数据，为中东大西洋（FAO
+  34渔区）绘制第一批图表，并一键生成Word报告。
 
-- [💾 FAO
-  数据：下载与自定义](https://linbojun99.github.io/faofishingreport/articles/zh/data.md):
+- [💾
+  FAO数据：下载与自定义](https://linbojun99.github.io/faofishingreport/articles/zh/data.md):
 
-  数据从哪里来，如何检查和下载 FAO 的新版本，数据格式是什么样的，
+  数据从哪里来，如何检查和下载FAO的新版本，数据格式是什么样的，
   以及如何分析自己的数据子集。
 
 - [🌊
   渔区分析](https://linbojun99.github.io/faofishingreport/articles/zh/fishing-areas.md):
 
-  fishing_area_data()、fishing_area_species() 和
-  fishing_area_country()：某个 FAO
-  渔区的总产量、主要物种和主要捕捞国家，以及全部选项。
+  fishing_area_data()、fishing_area_species()和fishing_area_country()：某个FAO渔区的总产量、主要物种和主要捕捞国家，以及全部选项。
 
 - [🐟
   物种与国家分析](https://linbojun99.github.io/faofishingreport/articles/zh/species-countries.md):
 
-  species_country()、country_species() 和
-  country_analysis()：某个物种由哪些国家捕捞，某个国家在一个渔区捕什么，以及某个国家在全部
-  FAO 渔区的产量。
+  species_country()、country_species()和country_analysis()：某个物种由哪些国家捕捞，某个国家在一个渔区捕什么，以及某个国家在全部FAO渔区的产量。
 
 - [📈
   类群结构、资源状态与趋势](https://linbojun99.github.io/faofishingreport/articles/zh/status-trends.md):
 
-  species_group_composition()、stock_status()、peak_trend()、area_overview()
-  和 regime_shift()：捕捞了什么，各种群如何发展，以及何时发生了变化。
+  species_group_composition()、stock_status()、peak_trend()、area_overview()、regime_shift()、pelagic_demersal()和fao_pd_groups()：捕捞了什么，各种群如何发展，以及何时发生了变化。
 
 - [🔍
   数据质量、多样性与船队](https://linbojun99.github.io/faofishingreport/articles/zh/quality-diversity-fleets.md):
 
-  data_quality()、diversity_concentration()、country_group_summary() 和
-  coastal_distant()：数据有多可靠，产量的多样性和集中程度如何，以及是谁在捕捞。
+  data_quality()、diversity_concentration()、country_group_summary()和coastal_distant()：数据有多可靠，产量的多样性和集中程度如何，以及是谁在捕捞。
+
+- [🔬
+  渔获骤变、渔业崩溃、同步性与远洋捕捞](https://linbojun99.github.io/faofishingreport/articles/zh/literature-analyses.md):
+
+  catch_shocks()、collapse_analysis()、catch_synchrony()、distant_water_profile()和compare_releases()：按已发表的方法识别渔获量的骤降和崩溃，衡量各渔获序列波动的同步程度，追踪一个国家的船队在哪些渔区作业，并查看FAO在两个数据版本之间修订了什么。
+
+- [🌡️
+  海表温度与渔获平均温度](https://linbojun99.github.io/faofishingreport/articles/zh/sst-mtc.md):
+
+  fao_sst_products()、fao_area_sst()、download_sst_data()和mean_temperature_catch()：FAO渔区的海表温度，如何使用自己的SST文件，以及使用渔获平均温度之前必须核对的内容。
+
+- [🐠 FishBase 与 SeaLifeBase
+  物种特征](https://linbojun99.github.io/faofishingreport/articles/zh/fishbase.md):
+
+  check_fishbase_update()、download_fishbase_data()、fishbase_table()、fishbase_match()和fishbase_sources()：FishBase与SeaLifeBase的物种特征，它们如何与FAO物种条目匹配，以及渔获平均温度和CMSY++先验如何使用这些特征。
+
+- [📉
+  CMSY++仅渔获量资源评估](https://linbojun99.github.io/faofishingreport/articles/zh/cmsy.md):
+
+  cmsy_area()、cmsy_system()、cmsy_setup()、cmsy_install_jags()、cmsy_download_jags()、cmsy_jags_versions()、cmsy_sources()、cmsy_priors()、cmsy_input()、cmsy_defaults()、cmsy_run()、cmsy_plot()、cmsy_forecast()、cmsy_compare()和cmsy_tables()：用包内置的CMSY++代码、FishBase先验和JAGS，对FAO渔获序列做仅渔获量评估。
+
+- [📝 一键生成 Word
+  评估报告](https://linbojun99.github.io/faofishingreport/articles/zh/report.md):
+
+  fao_report()：一次调用即可生成某个FAO渔区的中文或英文Word评估报告。本文介绍报告的内容、参数、各分析章节及其设置、格式、引文格式、CMSY++部分、返回的表格以及报告文字的模板。
 
 - [🎨
   自定义图表与地图](https://linbojun99.github.io/faofishingreport/articles/zh/customise.md):
 
-  fao_settings()：语言、主题、色板、地图投影与中心、字体、网格线、分辨率和
-  PowerPoint 输出。
+  fao_settings()：语言、主题、色板、地图投影与中心、字体、网格线、分辨率、PowerPoint输出和数据文件夹。
+
+### 中文函数参考
+
+全部函数的中文说明，附英文原文对照（由 data-raw/make_zh_reference.R
+生成）。
+
+- [函数参考](https://linbojun99.github.io/faofishingreport/articles/zh/reference/index.md):
+
+  faofishingreport全部函数的中文说明

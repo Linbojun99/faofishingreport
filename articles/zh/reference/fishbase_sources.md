@@ -1,0 +1,102 @@
+# fishbase_sources(): FishBase数据的来源、许可协议和匹配规则
+
+英文原页：[`fishbase_sources()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_sources.md)
+
+## 说明
+
+本函数列出本包使用的FishBase、SeaLifeBase和WoRMS数据的来源、适用的许可协议、引用方式、下载哪些数据表及其内容，以及[`fishbase_match()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_match.md)把FAO物种条目与这些数据匹配时所依据的规则（及其已发表的出处）。[`download_fishbase_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fishbase_data.md)会输出同样信息的摘要。
+
+English
+
+This function lists where the FishBase, SeaLifeBase and WoRMS data used
+by the package come from, under which licence, how to cite them, which
+tables are downloaded and what they hold, and the rules (with their
+published sources) by which
+[`fishbase_match()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_match.md)
+matches FAO species items to them.
+[`download_fishbase_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fishbase_data.md)
+prints a summary of the same information.
+
+## 用法
+
+``` r
+
+fishbase_sources(print = TRUE)
+```
+
+## 参数
+
+- `print`:
+
+  逻辑值。为TRUE（默认）时输出该列表。
+
+  English
+
+  A logical value. If TRUE (default), the list is printed.
+
+## 返回值
+
+以不可见方式返回一个数据框，每个数据来源、数据表或规则一行：`type`、`item`、`description`、`source`（引用或许可协议）和`link`。
+
+English
+
+Invisibly, a data frame with one row per data source, table or rule:
+`type`, `item`, `description`, `source` (citation or licence) and
+`link`.
+
+## 参考文献
+
+Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase:
+exploring, manipulating and visualizing FishBase data from R. Journal of
+Fish Biology 81(6): 2030-2039.
+[doi:10.1111/j.1095-8649.2012.03464.x](https://doi.org/10.1111/j.1095-8649.2012.03464.x).
+Source code: <https://github.com/ropensci/rfishbase>
+
+Branch, T.A., Watson, R., Fulton, E.A. et al. (2010). The trophic
+fingerprint of marine fisheries. Nature 468: 431-435.
+[doi:10.1038/nature09528](https://doi.org/10.1038/nature09528)
+
+FAO (2026). Nomenclature, revision, and references of the ASFIS list
+(version 2026). Rome, FAO.
+<https://www.fao.org/fishery/static/ASFIS/ASFIS_References_2026_EN.pdf>
+
+Froese, R. and Pauly, D. (Eds.) (2000). FishBase 2000: concepts, design
+and data sources. ICLARM, Los Baños, Philippines.
+<https://www.fishbase.se/manual/fishbasethe_food_items_table.htm>,
+<https://www.fishbase.se/manual/fishbasethe_synonyms_table.htm>
+
+Froese, R. and Pauly, D. (Eds.) FishBase. World Wide Web electronic
+publication. <https://www.fishbase.se>
+
+Liang, C. and Pauly, D. (2017). Fisheries impacts on China’s coastal
+ecosystems: unmasking a pervasive ‘fishing down’ effect. PLoS ONE 12:
+e0173296.
+[doi:10.1371/journal.pone.0173296](https://doi.org/10.1371/journal.pone.0173296)
+
+Liang, C., Xian, W. and Pauly, D. (2018). Impacts of ocean warming on
+China’s fisheries catches: an application of “mean temperature of the
+catch” concept. Frontiers in Marine Science 5: 26.
+[doi:10.3389/fmars.2018.00026](https://doi.org/10.3389/fmars.2018.00026)
+
+Palomares, M.L.D. and Pauly, D. (Eds.) SeaLifeBase. World Wide Web
+electronic publication. <https://www.sealifebase.se>
+
+Pauly, D., Christensen, V., Dalsgaard, J., Froese, R. and Torres, F.
+(1998). Fishing down marine food webs. Science 279: 860-863.
+[doi:10.1126/science.279.5352.860](https://doi.org/10.1126/science.279.5352.860)
+
+Tsikliras, A.C. and Stergiou, K.I. (2014). Mean temperature of the catch
+increases quickly in the Mediterranean Sea. Marine Ecology Progress
+Series 515: 281-284.
+[doi:10.3354/meps11005](https://doi.org/10.3354/meps11005)
+
+WoRMS Editorial Board. World Register of Marine Species. Flanders Marine
+Institute (VLIZ). <https://www.marinespecies.org>,
+[doi:10.14284/170](https://doi.org/10.14284/170)
+
+## 示例
+
+``` r
+
+fishbase_sources()
+```

@@ -14,21 +14,34 @@ Capture Production）**2026.1.0** 版（FAO 于 2026-03-30 发布，1950–2024
 [`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
 查看你使用的版本和引用格式。
 
+与[📈
+类群结构、资源状态与趋势](https://linbojun99.github.io/faofishingreport/articles/zh/status-trends.md)中的分析一样，这些函数适用于任何产量数据：可以是[`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md)得到的某个渔区，也可以是[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)的任意子集。图表保存在`figures/png/summary/`，表格保存在`tables/`，文件名以渔区名称（或`label`的值）开头；函数以不可见的方式返回结果。
+
 ``` r
 
 FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 ```
 
+## ⚙️ 通用参数
+
+四个函数都有下面这些参数，后面各函数的参数表只列出它们自己的参数。
+
+| 参数 | 含义 | 默认值 |
+|----|----|----|
+| `area_data` | FAO产量数据：`fishing_area_data()$area_data`，或[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)的任意子集（如一个国家或几个渔区） | 必填 |
+| `plot` | 是否把图保存到`figures/png/summary/` | `TRUE` |
+| `table` | 是否把表格保存到`tables/` | `TRUE` |
+| `lang` | 图中文字和名称的语言：`"en"`、`"zh"`或`"both"` | `NULL`：使用[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)设定的语言（未修改时为`"en"`） |
+| `pptx` | 是否同时把图保存为可编辑的PowerPoint文件，存放在`figures/pptx/summary/` | `FALSE`；`fao_settings(pptx = TRUE)`可对所有函数生效 |
+| `label` | 输出文件名开头的名称 | `NULL`：数据所属的渔区（或国家；含多个渔区和国家时为`"selected_data"`） |
+
 ## 🧪 数据质量
 
-[`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md)
-展示统计数据在两个方面随时间的变化：
+[`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md)展示统计数据在两个方面随时间的变化：
 
-- 根据 FAO
-  的状态标记，**官方上报**的产量占比，以及**估算**（由国家估算或由 FAO
-  插补）的产量占比；
-- 根据 FAO 的分类编码，**鉴定到种**、属、科，或只归到 “Marine fishes
-  nei” 等更高级类群的产量占比。
+- **官方上报**的产量占比（FAO状态标记A）、由国家**估算**或由FAO插补的产量占比（标记E和I），以及带其他标记（如临时数据或可忽略的数值）的产量占比；
+- 根据FAO的分类编码，**鉴定到种**、属、科，或只归到目及以上类群（如”Marine
+  fishes nei”）的产量占比。
 
 ``` r
 
@@ -43,8 +56,8 @@ quality <- data_quality(FAO34$area_data)
 
 `figures/png/summary/Atlantic__Eastern_Central_data_quality_taxon_share.png`
 
-最近几年估算占比偏高，通常是因为 FAO
-还没有收到各国的上报数据；这些数值往往会在下一版数据中修订。国家表针对最近五年产量最大的几个国家，列出其产量中有多少是估算的、有多少鉴定到种：
+最近几年估算占比偏高，通常是因为FAO还没有收到各国的上报数据；这些数值往往会在下一版数据中修订（Garibaldi
+2012）。国家表针对最近五年产量最大的几个国家，列出这几年其产量中有多少是估算的、有多少鉴定到种：
 
 ``` r
 
@@ -64,22 +77,28 @@ show_table(quality$countries, digits = 1)
 | 伯利兹     | Belize       | 954073.3           |          82.4 |              46.7 |
 | 格鲁吉亚   | Georgia      | 635110.0           |         100.0 |              37.5 |
 
-| 参数    | 含义             | 默认值 |
-|---------|------------------|--------|
-| `top_n` | 国家表中的国家数 | `10`   |
+| 参数 | 含义 | 默认值 |
+|----|----|----|
+| `top_n` | 国家表中的国家数 | `10` |
+| `area_data`、`plot`、`table`、`lang`、`pptx`、`label` | 见[通用参数](#common-arguments) |  |
+
+输出：图`<label>_data_quality_status_share.png`和`<label>_data_quality_taxon_share.png`，表格`<label>_data_quality_status.csv`、`..._taxon.csv`和`..._countries.csv`；函数返回`data_status`、`taxon_level`（各类别的逐年产量）和`countries`。
+
+FAO统计的是各国上报的产量（没有上报时由FAO估算）。产量重建研究加上了未报告产量和丢弃量的估计，发现全球海洋渔获量高于报告值，而且自峰值以来下降得更快（Pauly
+and Zeller
+2016）。数据质量图反映的是统计数据是怎么得来的，而不是数据有多完整。
 
 ## 🌈 多样性与集中度
 
-[`diversity_concentration()`](https://linbojun99.github.io/faofishingreport/reference/diversity_concentration.md)
-逐年计算以下指标：
+[`diversity_concentration()`](https://linbojun99.github.io/faofishingreport/reference/diversity_concentration.md)逐年计算以下指标：
 
-| 指标 | 计算方法 |
-|----|----|
-| 上报的物种数 | 有产量且鉴定到种的条目数 |
-| 国家数 | 有产量的国家数 |
-| 香农多样性指数 | $`H = -\sum_i p_i \ln p_i`$，其中 $`p_i`$ 为物种条目 $`i`$ 在当年产量中的占比 |
-| 物种 / 国家的 HHI 集中度 | $`\text{HHI} = \sum_i (100\,p_i)^2`$，取值 0 至 10 000 |
-| 前 N 名占比 | 产量最大的 `top_n` 个物种条目或国家所占的比例 |
+| 指标 | 列名 | 计算方法 |
+|----|----|----|
+| 上报的物种数 | `n_species` | 有产量且鉴定到种的条目数 |
+| 国家数 | `n_countries` | 有产量的国家数 |
+| 香农多样性指数（Shannon 1948） | `shannon_species` | $`H = -\sum_i p_i \ln p_i`$，其中$`p_i`$为物种条目$`i`$（所有条目，包括nei类群）在当年产量中的占比 |
+| 物种/国家的HHI集中度（Rhoades 1993） | `hhi_species`、`hhi_countries` | $`\text{HHI} = \sum_i (100\,p_i)^2`$，取值0至10000 |
+| 前N名占比 | `top5_species_pct`、`top5_countries_pct` | 产量最大的`top_n`个物种条目或国家所占的比例（%；列名随`top_n`变化） |
 
 ``` r
 
@@ -102,21 +121,22 @@ show_table(subset(diversity, Year %in% c(1970, 1990, 2010, max(Year))), digits =
 | 2010 | 2010 | 151 | 49 | 3.17 | 869.69 | 948.69 | 55.39 | 54.35 |
 | 2024 | 2024 | 358 | 40 | 3.74 | 495.43 | 1,238.71 | 41.71 | 66.04 |
 
-**指标解读**：香农多样性指数越高，说明物种条目越多、各条目的产量越均匀；有
-$`S`$ 个条目时，其最大值为 $`\ln S`$。HHI 低于 1 500 通常视为不集中，1
-500 至 2 500 为中度集中，高于 2 500
-为高度集中。例如，三个物种的占比分别为 50%、30% 和 20%，则
-$`H = 1.03`$，$`\text{HHI} = 50^2 + 30^2 + 20^2 = 3\,800`$。
+| 参数 | 含义 | 默认值 |
+|----|----|----|
+| `top_n` | 计算前N名占比时取的物种条目数和国家数 | `5` |
+| `area_data`、`plot`、`table`、`lang`、`pptx`、`label` | 见[通用参数](#common-arguments) |  |
 
-这些指标基于 FAO 的物种条目，其中包括未分类（nei）类群。当 FAO
-把某个未分类（nei）类群拆分为具体物种时，即使海里什么都没有改变，香农多样性指数也会上升，HHI
-集中度也会下降。国家拆分时国家指标同样会变化，例如 1991 年的苏联。
+输出：图`<label>_diversity.png`（全部指标）和表格`<label>_diversity.csv`；函数返回一个数据框，每年一行。
+
+**指标解读**：香农多样性指数越高，说明物种条目越多、各条目的产量越均匀；有$`S`$个条目时，其最大值为$`\ln S`$。按照美国的企业并购指南（U.S.
+Department of Justice and Federal Trade Commission
+2010），HHI低于1500为不集中，1500至2500为中度集中，高于2500为高度集中。例如，三个物种的占比分别为50%、30%和20%，则$`H = 1.03`$，$`\text{HHI} = 50^2 + 30^2 + 20^2 = 3800`$。
+
+这些指标基于FAO的物种条目，其中包括未分类（nei）类群。当FAO把某个未分类（nei）类群拆分为具体物种时，即使海里什么都没有改变，香农多样性指数也会上升，HHI集中度也会下降。国家拆分时国家指标同样会变化，例如1991年的苏联。
 
 ## 🏳️ 国家分组
 
-[`country_group_summary()`](https://linbojun99.github.io/faofishingreport/reference/country_group_summary.md)
-依据 FAO
-国家列表，按国家分组汇总产量：**世界银行收入分组**、**大洲**或**地区**。
+[`country_group_summary()`](https://linbojun99.github.io/faofishingreport/reference/country_group_summary.md)依据FAO国家列表，按国家分组汇总产量：**世界银行收入分组**、**大洲**或**地区**。它保存各分组产量图和占比图，以及与[`species_group_composition()`](https://linbojun99.github.io/faofishingreport/reference/species_group_composition.md)相同格式的按年代汇总表。
 
 ``` r
 
@@ -144,19 +164,22 @@ country_group_summary(FAO34$area_data, group = "region", top_n = 6, lang = "zh")
 
 `figures/png/summary/Atlantic__Eastern_Central_country_region_share.png`
 
-| 参数    | 含义                                    | 默认值     |
-|---------|-----------------------------------------|------------|
-| `group` | `"income"`、`"continent"` 或 `"region"` | `"income"` |
-| `top_n` | 单独显示的分组数                        | `8`        |
+| 参数 | 含义 | 默认值 |
+|----|----|----|
+| `group` | `"income"`（世界银行收入分组）、`"continent"`（大洲）或`"region"`（地区） | `"income"` |
+| `top_n` | 单独显示的分组数，其余合并 | `8` |
+| `area_data`、`plot`、`table`、`lang`、`pptx`、`label` | 见[通用参数](#common-arguments) |  |
+
+输出：图`<label>_country_income.png`（或`_continent`、`_region`）和`..._share.png`，表格`<label>_country_income.csv`；函数返回`yearly`和`table`。
 
 ## 🚢 沿岸国与远洋捕捞国
 
-[`coastal_distant()`](https://linbojun99.github.io/faofishingreport/reference/coastal_distant.md)
-把产量分为与该渔区**接壤**的沿岸国和来自其他地区的**远洋**捕捞船队两部分，并列出主要的远洋捕捞国。
+[`coastal_distant()`](https://linbojun99.github.io/faofishingreport/reference/coastal_distant.md)把产量分为与该渔区**接壤**的沿岸国和来自其他地区的**远洋**捕捞船队两部分，并列出主要的远洋捕捞国。
 
-若一个国家的陆地（包括海外领土）位于 FAO 渔区边界 20 km
-以内，即视为该渔区的沿岸国。苏联等已不存在的国家采用其继承国的海岸线。例如在
-34 渔区，西班牙和葡萄牙分别因加那利群岛和马德拉群岛而被算作沿岸国。
+若一个国家的陆地（包括海外领土，取自Natural
+Earth的地图单元）位于FAO渔区边界（CWP手册中的FAO主要渔区）20
+km以内，即视为该渔区的沿岸国。苏联等已不存在的国家采用其继承国的海岸线。例如在34区，西班牙和葡萄牙分别因加那利群岛和马德拉群岛而被算作沿岸国。以”Other
+nei”上报的产量显示为“未知”。
 
 ``` r
 
@@ -186,8 +209,59 @@ show_table(fleets$table, digits = 0)
 | 远洋捕捞国 | 44,466 | 445,371 | 1,504,436 | 1,350,301 | 1,139,483 | 1,001,035 | 870,407 | 592,420 | 602,407 | 600,205 | 626,229 | 551,550 | 581,712 | 11 |
 | 未知 | 0 | 24 | 155,388 | 46,784 | 74,349 | 26,772 | 25,077 | 40,994 | 44,367 | 36,529 | 38,078 | 38,138 | 47,857 | 1 |
 
-| 参数    | 含义                     | 默认值 |
-|---------|--------------------------|--------|
-| `top_n` | 单独显示的远洋捕捞国数量 | `8`    |
+| 参数 | 含义 | 默认值 |
+|----|----|----|
+| `top_n` | 单独显示的远洋捕捞国数量 | `8` |
+| `area_data`、`plot`、`table`、`lang`、`pptx`、`label` | 见[通用参数](#common-arguments) |  |
 
-该分析只适用于海洋渔区；数据中的内陆渔区会被剔除，并给出提示信息。
+该分析只适用于海洋渔区；数据中的内陆渔区会被剔除，并给出提示信息。输出：图`<label>_coastal_distant.png`和`..._share.png`（沿岸国、远洋捕捞国和未知部分的产量）、`<label>_coastal_distant_countries.png`（主要远洋捕捞国），表格`<label>_coastal_distant.csv`和`..._countries.csv`；函数返回`yearly`、`distant`和`table`。主要远洋捕捞国的概况见[🔬
+渔获骤变、渔业崩溃、同步性与远洋捕捞](https://linbojun99.github.io/faofishingreport/articles/zh/literature-analyses.md)。
+
+## 📝 写入Word报告
+
+[`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)会把数据质量、多样性与集中度、沿岸国与远洋捕捞国写进某个渔区的Word报告（见[📝
+一键生成Word评估报告](https://linbojun99.github.io/faofishingreport/articles/zh/report.md)）：它们是报告的`quality`、`diversity`和`fleets`三个章节，默认都会写入。各函数的设置以章节名为前缀传入（[`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md)用`quality_`，[`diversity_concentration()`](https://linbojun99.github.io/faofishingreport/reference/diversity_concentration.md)用`diversity_`，[`coastal_distant()`](https://linbojun99.github.io/faofishingreport/reference/coastal_distant.md)用`fleets_`），设为`FALSE`即可去掉某个章节：
+
+``` r
+
+fao_report(34, diversity_top_n = 3, fleets = FALSE)
+```
+
+[`country_group_summary()`](https://linbojun99.github.io/faofishingreport/reference/country_group_summary.md)不在报告中。
+
+## 📖 参考文献
+
+CWP (Coordinating Working Party on Fishery Statistics). *CWP Handbook of
+Fishery Statistics*: Main water areas (FAO major fishing areas). Rome:
+FAO.
+<https://www.fao.org/cwp-on-fishery-statistics/handbook/general-concepts/main-water-areas/en/>
+
+FAO (2026). *Global Capture Production 1950–2024*, release 2026.1.0. In:
+Fisheries and Aquaculture. Rome: FAO.
+<https://www.fao.org/fishery/collection/capture/en>. Licence: CC BY 4.0.
+Release file:
+<https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip>
+
+Garibaldi, L. (2012). The FAO global capture production database: a
+six-decade effort to catch the trend. *Marine Policy* 36: 760–768.
+[doi:10.1016/j.marpol.2011.10.024](https://doi.org/10.1016/j.marpol.2011.10.024)
+
+Natural Earth. Free vector and raster map data at 1:10m, 1:50m and
+1:110m scales. <https://www.naturalearthdata.com/>
+
+Pauly, D. and Zeller, D. (2016). Catch reconstructions reveal that
+global marine fisheries catches are higher than reported and declining.
+*Nature Communications* 7: 10244.
+[doi:10.1038/ncomms10244](https://doi.org/10.1038/ncomms10244)
+
+Rhoades, S.A. (1993). The Herfindahl-Hirschman index. *Federal Reserve
+Bulletin* 79(3): 188–189.
+
+Shannon, C.E. (1948). A mathematical theory of communication. *Bell
+System Technical Journal* 27: 379–423.
+[doi:10.1002/j.1538-7305.1948.tb01338.x](https://doi.org/10.1002/j.1538-7305.1948.tb01338.x)
+
+U.S. Department of Justice and Federal Trade Commission (2010).
+*Horizontal Merger Guidelines*, section 5.3 (market concentration).
+Washington, DC.
+<https://www.justice.gov/atr/horizontal-merger-guidelines-08192010>

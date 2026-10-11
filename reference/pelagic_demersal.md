@@ -1,0 +1,232 @@
+# Pelagic/Demersal Catch Ratio
+
+This function calculates the ratio of pelagic to demersal catch (P/D) of
+each FAO marine fishing area in the data, by year and by decade. Caddy
+(1993) proposed that nutrient enrichment of a sea favours short-lived
+plankton-feeding pelagic fishes over demersal fishes, and de Leiva
+Moreno et al. (2000) used the ratio of pelagic to demersal landings as a
+proxy for the nutrient level of the semi-enclosed seas around Europe.
+
+## Usage
+
+``` r
+pelagic_demersal(
+  area_data,
+  definition = c("de_leiva_moreno", "grainger_garcia"),
+  pelagic = NULL,
+  demersal = NULL,
+  plot = TRUE,
+  table = TRUE,
+  lang = NULL,
+  pptx = getOption("faofishingreport.pptx", FALSE),
+  label = NULL
+)
+```
+
+## Arguments
+
+- area_data:
+
+  FAO catch data: `fishing_area_data()$area_data`, or any subset of
+  [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)
+  (e.g. one country, or several fishing areas).
+
+- definition:
+
+  The groups counted as pelagic and demersal: "de_leiva_moreno"
+  (default) or "grainger_garcia" (see above and
+  [`fao_pd_groups()`](https://linbojun99.github.io/faofishingreport/reference/fao_pd_groups.md)).
+
+- pelagic, demersal:
+
+  ISSCAAP groups (English names as in the FAO data, e.g. "Herrings,
+  sardines, anchovies") counted as pelagic and demersal instead of those
+  of `definition`. Default is NULL.
+
+- plot:
+
+  A logical value. If TRUE (default), charts are saved in
+  `figures/png/summary/`.
+
+- table:
+
+  A logical value. If TRUE (default), tables are saved in `tables/`.
+
+- lang:
+
+  The language of the chart text and names: "en" (English), "zh"
+  (Chinese) or "both" (Chinese and English). Default is NULL, which uses
+  the language set with
+  [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+  ("en" unless changed).
+
+- pptx:
+
+  A logical value. If TRUE, charts are also saved as editable PowerPoint
+  files in `figures/pptx/summary/`. Default is FALSE, which can be
+  changed for all functions with `fao_settings(pptx = TRUE)`.
+
+- label:
+
+  The name used in the output file names. Default is the fishing area
+  (or the country) of the data.
+
+## Value
+
+Invisibly, a list of three data frames:
+
+- yearly:
+
+  one row per area and year: pelagic, demersal, other and total catch
+  (tonnes), P/D, the pelagic share of the pelagic and demersal catch,
+  the share of the catch counted as pelagic or demersal, and the share
+  of unidentified marine fishes;
+
+- decades:
+
+  one row per area and decade: mean, lowest and highest yearly P/D, and
+  the catch of the decade;
+
+- groups:
+
+  the ISSCAAP groups of the data, how each is counted and its catch.
+
+Charts are saved in `figures/png/summary/`:
+`<label>_pelagic_demersal_ratio.png` (P/D by year, one panel per area),
+and `<label>_pelagic_demersal.png` and `..._share.png` (pelagic,
+demersal and other catch). Tables are saved in `tables/`:
+`<label>_pelagic_demersal.csv`, `..._decades.csv` and `..._groups.csv`.
+
+## Details
+
+For each area and year, \\P/D = \sum P / \sum D\\, the catch (tonnes) of
+the groups counted as pelagic divided by the catch of the groups counted
+as demersal. The ratio of a decade is the mean of its yearly ratios (as
+Hondorp et al. 2010), with the lowest and highest yearly ratio, as de
+Leiva Moreno et al. (2000) reported mean values and ranges.
+
+## Which species are pelagic and which demersal
+
+The FAO data give each species item an ISSCAAP species group, so the
+function counts groups (see
+[`fao_pd_groups()`](https://linbojun99.github.io/faofishingreport/reference/fao_pd_groups.md)).
+Two published definitions are available:
+
+- "de_leiva_moreno" (default):
+
+  Small pelagic fishes against demersal fishes and crustaceans, as de
+  Leiva Moreno et al. (2000): pelagic = herrings, sardines, anchovies;
+  demersal = flounders, cods and hakes, miscellaneous coastal and
+  demersal fishes, and the marine crustacean groups (crabs, lobsters,
+  king crabs, shrimps, miscellaneous marine crustaceans). As in that
+  study, tunas and other large pelagics, the miscellaneous pelagic
+  fishes (mainly medium pelagics such as horse mackerels and mackerels),
+  unidentified fishes, cephalopods and other molluscs, and diadromous
+  fishes are left out; sharks and rays (about which the study says
+  nothing) and krill are left out too.
+
+- "grainger_garcia":
+
+  All pelagic against all demersal fishes, as Grainger and Garcia (1996)
+  for the oceans: pelagic = herrings, sardines, anchovies, tunas and
+  billfishes, and miscellaneous pelagic fishes; demersal = flounders,
+  cods and hakes, miscellaneous coastal and demersal fishes, sharks and
+  rays, and unidentified marine fishes. Invertebrates are left out.
+
+Other groups can be given as `pelagic` and `demersal`.
+
+The published studies classed each species (by habitat or diet), not
+ISSCAAP groups, and FAO revised the ISSCAAP fish groups 33, 34 and 37 in
+2001, so their values are only roughly comparable with those of this
+function. Some groups mix pelagic and demersal species: for example, the
+miscellaneous coastal fishes (group 33) include sandeels and mullets,
+which some studies count as pelagic.
+
+## Interpretation
+
+de Leiva Moreno et al. (2000) found P/D below 1 in oligotrophic seas
+(e.g. Levantine and Ionian seas), around 1 to 3.5 in mesotrophic seas
+(e.g. North Sea, Adriatic) and around 6 to 20 or more in eutrophic seas
+(e.g. Black Sea, Sea of Azov, Baltic), and a positive relation between
+ln(P/D) and chlorophyll; they described these classes as subjective and
+overlapping. The ratio also changes for reasons other than nutrients:
+
+- Fishing and markets: demersal fishes are usually in higher demand, so
+  their overfishing alone raises P/D (de Leiva Moreno et al. 2000; Caddy
+  et al. 1998); rules on gears such as purse seines change it too
+  (Hondorp et al. 2010).
+
+- Oxygen: under hypoxia demersal and benthic stocks decline while
+  pelagic fishes are less affected, so P/D can rise with hypoxia rather
+  than with nutrients alone (de Leiva Moreno et al. 2000; Hondorp et al.
+  2010).
+
+- Natural variability: small pelagic stocks fluctuate strongly with
+  climate, and a few species can drive the ratio (Grainger and Garcia
+  1996; Hondorp et al. 2010).
+
+- Reporting: catch not identified to species ("Marine fishes not
+  identified", shown as `unidentified_pct`) is probably mostly demersal
+  (Grainger and Garcia 1996), and its share changes over time. The FAO
+  capture data contain neither aquaculture nor discards.
+
+Read the ratio together with the catch of each group (the group table
+and the composition chart) before attributing a change to nutrients.
+Where no pelagic group is caught (e.g. the Antarctic areas, where krill
+is not counted), P/D is 0; the chart, on a log scale, leaves such years
+out.
+
+## References
+
+Caddy, J.F. (1993). Toward a comparative evaluation of human impacts on
+fishery ecosystems of enclosed and semi-enclosed seas. Reviews in
+Fisheries Science 1: 57-95.
+[doi:10.1080/10641269309388535](https://doi.org/10.1080/10641269309388535)
+
+Caddy, J.F., Carocci, F. and Coppola, S. (1998). Have peak fishery
+production levels been passed in continental shelf area? Some
+perspectives arising from historical trends in production per shelf
+area. Journal of Northwest Atlantic Fishery Science 23: 191-219.
+[doi:10.2960/J.v23.a13](https://doi.org/10.2960/J.v23.a13)
+
+de Leiva Moreno, J.I., Agostini, V.N., Caddy, J.F. and Carocci, F.
+(2000). Is the pelagic-demersal ratio from fishery landings a useful
+proxy for nutrient availability? A preliminary data exploration for the
+semi-enclosed seas around Europe. ICES Journal of Marine Science 57:
+1091-1102.
+[doi:10.1006/jmsc.2000.0705](https://doi.org/10.1006/jmsc.2000.0705)
+
+Grainger, R.J.R. and Garcia, S.M. (1996). Chronicles of marine fishery
+landings (1950-1994): trend analysis and fisheries potential. FAO
+Fisheries Technical Paper 359. Rome: FAO.
+<https://www.fao.org/4/w3244e/w3244e00.htm>
+
+Hondorp, D.W., Breitburg, D.L. and Davias, L.A. (2010). Eutrophication
+and fisheries: separating the effects of nitrogen loads and hypoxia on
+the pelagic-to-demersal ratio and other measures of landings
+composition. Marine and Coastal Fisheries 2: 339-361.
+[doi:10.1577/C09-020.1](https://doi.org/10.1577/C09-020.1)
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+FAO37 <- fishing_area_data("Mediterranean and Black Sea", plot = FALSE)
+pd <- pelagic_demersal(FAO37$area_data, lang = "zh")
+pd$decades
+pd$groups                                   # how each ISSCAAP group is counted
+
+# All pelagic and demersal fishes (Grainger and Garcia 1996)
+pelagic_demersal(FAO37$area_data, definition = "grainger_garcia", label = "FAO37_all_fishes")
+
+# Your own groups, e.g. small and medium pelagics
+pelagic_demersal(FAO37$area_data,
+                 pelagic = c("Herrings, sardines, anchovies", "Miscellaneous pelagic fishes"),
+                 demersal = fao_pd_groups()$isscaap_en[fao_pd_groups()$de_leiva_moreno == "demersal"],
+                 label = "FAO37_small_medium_pelagic")
+
+# All FAO major marine fishing areas, one panel per area
+marine <- subset(load_fao_data(), FAO.major.fishing.area..Name. %in% fao_area_sst()$area_en)
+pelagic_demersal(marine, label = "marine_areas")
+} # }
+```

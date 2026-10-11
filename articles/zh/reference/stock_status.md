@@ -1,0 +1,214 @@
+# stock_status(): 资源状态图
+
+英文原页：[`stock_status()`](https://linbojun99.github.io/faofishingreport/reference/stock_status.md)
+
+## 说明
+
+该函数根据每个物种渔获量序列中每年的渔获量相对于该序列峰值渔获量的比例，逐年判定其状态（资源状态图），并保存处于各状态的种群数占比和渔获量占比随时间的变化。
+
+English
+
+This function classifies the catch series of each species, every year,
+by its catch relative to the peak catch of the series (stock status
+plots), and saves the share of stocks and the share of catch in each
+status over time.
+
+## 用法
+
+``` r
+
+stock_status(
+  area_data,
+  taxon_levels = c("species", "genus", "family"),
+  min_years = 10,
+  min_consecutive = 5,
+  min_catch = 1000,
+  smooth = FALSE,
+  plot = TRUE,
+  table = TRUE,
+  lang = NULL,
+  pptx = getOption("faofishingreport.pptx", FALSE),
+  label = NULL
+)
+```
+
+## 参数
+
+- `area_data`:
+
+  FAO渔获数据：`fishing_area_data()$area_data`，或[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)的任意子集（例如一个国家，或几个渔区）。
+
+  English
+
+  FAO catch data: `fishing_area_data()$area_data`, or any subset of
+  [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)
+  (e.g. one country, or several fishing areas).
+
+- `taxon_levels`:
+
+  纳入条目的分类阶元：“species”（种）、“genus”（属）、“family”（科）和”higher”（更高阶元）中的任意几个。默认为种、属和科。
+
+  English
+
+  Taxonomic levels of the items to include: any of “species”, “genus”,
+  “family” and “higher”. Default is species, genus and family.
+
+- `min_years`:
+
+  从第一个到最后一个有渔获量的年份之间的最少年数（首尾两年都计入）。默认为10。
+
+  English
+
+  Minimum number of years from the first to the last year with catch.
+  Default is 10.
+
+- `min_consecutive`:
+
+  连续有渔获量的最少年数。默认为5。
+
+  English
+
+  Minimum number of consecutive years with catch. Default is 5.
+
+- `min_catch`:
+
+  序列的最低总渔获量（吨）。默认为1000。
+
+  English
+
+  Minimum total catch of a series, in tonnes. Default is 1000.
+
+- `smooth`:
+
+  逻辑值。为TRUE时，先对渔获量做3年居中滑动平均（首年和末年保留原值），再判定状态。默认为FALSE。
+
+  English
+
+  A logical value. If TRUE, catches are smoothed with a 3-year running
+  mean before they are classified. Default is FALSE.
+
+- `plot`:
+
+  逻辑值。为TRUE（默认）时，图表保存在figures/png/summary/。
+
+  English
+
+  A logical value. If TRUE (default), charts are saved in
+  `figures/png/summary/`.
+
+- `table`:
+
+  逻辑值。为TRUE（默认）时，表格保存在tables/。
+
+  English
+
+  A logical value. If TRUE (default), tables are saved in `tables/`.
+
+- `lang`:
+
+  图表文字和名称的语言：“en”（英文）、“zh”（中文）或”both”（中英双语）。默认为NULL，即使用[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)设置的语言（未更改时为”en”）。
+
+  English
+
+  The language of the chart text and names: “en” (English), “zh”
+  (Chinese) or “both” (Chinese and English). Default is NULL, which uses
+  the language set with
+  [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+  (“en” unless changed).
+
+- `pptx`:
+
+  逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在figures/pptx/summary/。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。
+
+  English
+
+  A logical value. If TRUE, charts are also saved as editable PowerPoint
+  files in `figures/pptx/summary/`. Default is FALSE, which can be
+  changed for all functions with `fao_settings(pptx = TRUE)`.
+
+- `label`:
+
+  输出文件名中使用的名称。默认为数据所属的渔区（或国家）。
+
+  English
+
+  The name used in the output file names. Default is the fishing area
+  (or the country) of the data.
+
+## 返回值
+
+以不可见方式返回一个列表，包含`yearly`（各状态逐年的种群数和渔获量）、`stocks`（每个种群一行）和`status`（每个种群每年的状态）。
+
+English
+
+Invisibly, a list with `yearly` (number of stocks and catch by status
+and year), `stocks` (one row per stock) and `status` (the status of each
+stock in each year).
+
+## 详细说明
+
+“种群”指一个FAO物种条目的逐年渔获量，即数据（通常为一个渔区）中所有国家的合计。种群的每一年被划分为：
+
+- 开发中（Developing）：在峰值渔获量年份之前，渔获量不超过峰值的50%；
+- 充分开发（Exploited）：渔获量高于峰值的50%；
+- 过度开发（Over-exploited）：在峰值之后，渔获量为峰值的10%至50%；
+- 崩溃（Collapsed）：在峰值之后，渔获量低于峰值的10%；
+- 恢复中（Rebuilding）：在峰值之后且发生崩溃之后，渔获量回升到峰值的10%至50%。
+
+只有符合纳入标准的序列才参与划分：鉴定到种、属或科的条目（排除”Marine
+fishes
+nei”等合并类群），从第一个到最后一个有渔获量的年份至少`min_years`年，至少连续`min_consecutive`年有渔获量，并且总渔获量至少`min_catch`吨。最后一次报告渔获量之后的年份按零渔获量计。
+
+该方法只使用渔获量数据。渔获量下降也可能源于管理、市场或数据上报的变化，因此结果仅供参考，不能替代资源评估。
+
+English
+
+A “stock” is the yearly catch of one FAO species item, summed over all
+countries in the data (usually one fishing area). Each year of a stock
+is classified as:
+
+- Developing: before the year of peak catch, with catch at most 50% of
+  the peak;
+- Exploited: catch above 50% of the peak;
+- Over-exploited: after the peak, catch between 10% and 50% of the peak;
+- Collapsed: after the peak, catch below 10% of the peak;
+- Rebuilding: after the peak and after a collapse, catch back between
+  10% and 50% of the peak.
+
+Only series that meet the inclusion criteria are classified: items
+identified to species, genus or family (pooled groups such as “Marine
+fishes nei” are excluded), at least `min_years` years from the first to
+the last year with catch, at least `min_consecutive` consecutive years
+with catch, and a total catch of at least `min_catch` tonnes. Years
+after the last reported catch count as zero catch.
+
+The method uses catch data only. A falling catch can also come from
+changes in management, markets or reporting, so the results are
+indicative and do not replace stock assessments.
+
+## 参考文献
+
+Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global
+catch data for inferences on the world’s marine fisheries. Fish and
+Fisheries 14: 293-311.
+[doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
+
+## 另请参阅
+
+Other summary analyses:
+[`area_overview()`](https://linbojun99.github.io/faofishingreport/reference/area_overview.md),
+[`coastal_distant()`](https://linbojun99.github.io/faofishingreport/reference/coastal_distant.md),
+[`country_group_summary()`](https://linbojun99.github.io/faofishingreport/reference/country_group_summary.md),
+[`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md),
+[`diversity_concentration()`](https://linbojun99.github.io/faofishingreport/reference/diversity_concentration.md),
+[`peak_trend()`](https://linbojun99.github.io/faofishingreport/reference/peak_trend.md),
+[`regime_shift()`](https://linbojun99.github.io/faofishingreport/reference/regime_shift.md),
+[`species_group_composition()`](https://linbojun99.github.io/faofishingreport/reference/species_group_composition.md)
+
+## 示例
+
+``` r
+
+FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
+stock_status(FAO34$area_data, lang = "zh")
+```

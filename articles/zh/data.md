@@ -1,4 +1,4 @@
-# 💾 FAO 数据：下载与自定义
+# 💾 FAO数据：下载与自定义
 
 ``` r
 
@@ -16,9 +16,9 @@ Capture Production）**2026.1.0** 版（FAO 于 2026-03-30 发布，1950–2024
 
 ## 📚 数据简介
 
-faofishingreport 使用的是 **FAO 全球捕捞产量**（Global Capture
-Production）统计：1950 年以来每个国家按物种条目和 FAO
-主要渔区统计的年产量。数据只包括捕捞渔业（不含水产养殖），单位为活重吨。
+faofishingreport使用的是**FAO全球捕捞产量**（Global Capture
+Production）统计：1950年以来每个国家按物种条目和FAO主要渔区统计的年产量。数据只包括捕捞渔业（不含水产养殖），单位为活重吨。这些数据由FAO根据各国统计机构的报告汇编，对未上报的国家则由FAO估算（FAO
+2026；Garibaldi 2012）。
 
 ``` r
 
@@ -31,16 +31,22 @@ c(rows = nrow(data), first_year = min(data$Year), last_year = max(data$Year),
 #>    1024698       1950       2024        248       3797         26
 ```
 
-FAO 大约每年发布一次新版本（通常在 3
-月），每次增加一年的数据，并修订往年的数据。本包自带一个较新的版本，也可以直接从
-[FAO
-统计服务器](https://www.fao.org/fishery/static/Data/)下载更新的版本。
+FAO大约每年发布一次新版本，每次增加一年的数据，并修订往年的数据。本包自带一个较新的版本，也可以直接从[FAO统计服务器](https://www.fao.org/fishery/static/Data/)下载更新的版本，每个版本是一个`Capture_<version>.zip`文件。
+
+本文介绍的函数：
+
+| 函数 | 用途 |
+|----|----|
+| [`check_fao_update()`](https://linbojun99.github.io/faofishingreport/reference/check_fao_update.md) | 列出FAO服务器上的所有版本，并把最新版本与本机数据比较 |
+| [`download_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fao_data.md) | 下载某个版本并转换成本包的数据格式 |
+| [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md) | 读取已下载的版本或包自带数据 |
+| [`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md) | 所用的版本、下载链接、许可证和引用格式 |
+| [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) | 下载数据的保存目录 |
+| [`fao_translate()`](https://linbojun99.github.io/faofishingreport/reference/fao_translate.md) | 国家、物种和渔区的中文名或中英双语名 |
 
 ## 🔎 检查是否有新版本
 
-[`check_fao_update()`](https://linbojun99.github.io/faofishingreport/reference/check_fao_update.md)
-列出 FAO
-服务器上的所有版本，并把其中最新的版本与包自带数据以及你已下载的数据进行比较：
+[`check_fao_update()`](https://linbojun99.github.io/faofishingreport/reference/check_fao_update.md)列出FAO服务器上的所有版本，并把其中最新的版本与包自带数据以及你已下载的数据进行比较：
 
 ``` r
 
@@ -52,7 +58,20 @@ check_fao_update()
 #>   Your data is up to date.
 ```
 
-它还会以不可见（invisible）的方式返回一个列表，其中包括各数据的版本号和所有版本的一览表：
+| 参数 | 含义 | 默认值 |
+|----|----|----|
+| `data_dir` | 已下载版本所在的文件夹 | [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) |
+| `quiet` | 设为`TRUE`时不显示任何信息，例如在脚本中使用 | `FALSE` |
+
+它还会以不可见（invisible）的方式返回一个列表：
+
+| 元素 | 内容 |
+|----|----|
+| `latest` | FAO线上的最新版本 |
+| `bundled` | 包自带数据的版本 |
+| `local` | 已下载的最新版本（没有则为`NA`） |
+| `update_available` | 线上最新版本比包自带数据和已下载数据都新时为`TRUE` |
+| `releases` | 线上所有版本：版本号`version`、发布日期`date`、文件大小`size`和下载地址`url` |
 
 ``` r
 
@@ -60,18 +79,16 @@ releases <- check_fao_update(quiet = TRUE)
 releases$update_available
 #> [1] FALSE
 tail(releases$releases, 3)
-#>    version       date size                                                          url
-#> 9 2024.1.0 2024-04-04 4.5M https://www.fao.org/fishery/static/Data/Capture_2024.1.0.zip
+#>     version       date size                                                          url
+#> 9  2024.1.0 2024-04-04 4.5M https://www.fao.org/fishery/static/Data/Capture_2024.1.0.zip
 #> 10 2025.1.0 2025-09-04 5.0M https://www.fao.org/fishery/static/Data/Capture_2025.1.0.zip
 #> 11 2026.1.0 2026-03-30 5.5M https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip
 ```
 
 ## ⬇️ 下载某个版本
 
-[`download_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fao_data.md)
-下载一个版本（约 5
-MB），转换成本包的数据格式并保存到你的电脑上。之后无需重复下载：
-再次调用时会直接读取已保存的文件。
+[`download_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fao_data.md)下载一个版本（约5
+MB），转换成本包的数据格式并保存到你的电脑上。之后无需重复下载：再次调用时会直接读取已保存的文件。
 
 ``` r
 
@@ -82,12 +99,12 @@ download_fao_data(overwrite = TRUE)       # 重新下载
 
 | 参数 | 含义 | 默认值 |
 |----|----|----|
-| `version` | 要下载的版本，如 `"2026.1.0"`，或 `"latest"` | `"latest"` |
+| `version` | 要下载的版本，如`"2026.1.0"`；`"latest"`为线上最新版本。FAO服务器上没有的版本会报错，并列出可用的版本 | `"latest"` |
 | `data_dir` | 保存该版本数据的文件夹 | [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) |
-| `overwrite` | 即使该版本已经保存过，也重新下载 | `FALSE` |
+| `overwrite` | `FALSE`时直接读取已下载过的版本；`TRUE`时重新下载 | `FALSE` |
 | `quiet` | 不显示进度信息 | `FALSE` |
 
-每个版本保存为三个文件：
+函数以不可见的方式返回数据。转换时只保留以活重吨计的产量，通过FAO代码把国家和物种匹配到本包使用的名称，并记录版本号、发布日期、下载地址和下载日期（`attr(data, "fao_version")`、`attr(data, "release_date")`、`attr(data, "source_url")`、`attr(data, "download_date")`）。每个版本保存为三个文件：
 
 | 文件 | 内容 |
 |----|----|
@@ -97,17 +114,23 @@ download_fao_data(overwrite = TRUE)       # 重新下载
 
 ### 📂 选择数据文件夹
 
-默认情况下，这些文件保存在 R 的用户数据文件夹中：
+[`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md)没有参数，它返回[`download_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fao_data.md)（以及[`download_fishbase_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fishbase_data.md)）保存数据、所有函数读取数据的文件夹，按以下顺序确定：
+
+| 顺序 | 来源 | 设置方法 |
+|----|----|----|
+| 1 | `data_dir`设置 | `fao_settings(data_dir = "D:/shared/fao_data")`（本次R会话有效） |
+| 2 | 环境变量`FAOFISHINGREPORT_DATA_DIR` | 在用户主目录的`.Renviron`文件中加一行`FAOFISHINGREPORT_DATA_DIR=<文件夹>`（每次R会话都有效） |
+| 3 | R的用户数据文件夹`tools::R_user_dir("faofishingreport", "data")` | 默认 |
 
 ``` r
 
 fao_data_dir()
-#> [1] "C:/Users/<you>/AppData/Local/R/data/R/faofishingreport"            # Windows
+#> [1] "C:/Users/<you>/AppData/Roaming/R/data/R/faofishingreport"          # Windows
 #> [1] "~/Library/Application Support/org.R-project.R/R/faofishingreport"  # macOS
+#> [1] "~/.local/share/R/faofishingreport"                                 # Linux
 ```
 
-如果想把数据放在别处，例如团队共享的文件夹，只需设置一次
-`data_dir`。此后下载的数据都会保存到那里，所有函数也都从那里读取数据：
+如果想把数据放在别处，例如团队共享的文件夹，只需设置一次`data_dir`。此后下载的数据都会保存到那里，所有函数也都从那里读取数据：
 
 ``` r
 
@@ -117,11 +140,7 @@ download_fao_data()
 
 ## 🧭 使用哪个版本
 
-所有函数都使用可用的**最新**数据：即已下载的最新版本；如果包自带数据更新，则使用包自带数据。
-[`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md)
-和
-[`country_analysis()`](https://linbojun99.github.io/faofishingreport/reference/country_analysis.md)
-可以用 `data_version` 指定使用哪个版本：
+所有函数都使用可用的**最新**数据：即已下载的最新版本；如果包自带数据更新，则使用包自带数据。[`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md)、[`country_analysis()`](https://linbojun99.github.io/faofishingreport/reference/country_analysis.md)和[`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)可以用`data_version`指定使用哪个版本：
 
 ``` r
 
@@ -130,8 +149,7 @@ FAO34 <- fishing_area_data("Atlantic, Eastern Central", data_version = "bundled"
 FAO34 <- fishing_area_data("Atlantic, Eastern Central", data_version = "2023.1.1") # 已下载的某个版本
 ```
 
-[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)
-返回完整的数据集，`version` 的取值方式相同：
+[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)返回完整的数据集，取值方式相同：
 
 ``` r
 
@@ -139,14 +157,16 @@ data <- load_fao_data()                  # 最新数据
 data <- load_fao_data("2023.1.1")        # 已下载的某个版本
 ```
 
+| 参数 | 含义 | 默认值 |
+|----|----|----|
+| `version` | `"latest"`：已下载版本和包自带数据中最新的一个；`"bundled"`：包自带数据；或已下载的版本、包自带数据的版本号，如`"2025.1.0"`（其他版本会报错，并列出已下载的版本） | `"latest"` |
+| `data_dir` | 已下载版本所在的文件夹 | [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) |
+
+它返回包含[下文](#data-format)所述八列的数据框，并显示读取的是哪个版本。
+
 ### 📝 版本信息与引用
 
-[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
-显示分析使用的是哪个版本、FAO
-的发布日期、包含的年份、下载的文件、许可证，以及写报告用的引用格式。它的
-`version` 参数和
-[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)
-相同：
+[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)显示分析使用的是哪个版本、FAO的发布日期、包含的年份、下载的文件、许可证，以及写报告用的引用格式。它的参数与[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)相同（`version`，默认`"latest"`；`data_dir`，默认[`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md)）：
 
 ``` r
 
@@ -165,6 +185,19 @@ fao_data_info()
 fao_data_info()$citation           # 只看引用格式
 fao_data_info("2025.1.0")          # 某个已下载的版本
 ```
+
+它返回一个列表：
+
+| 元素               | 内容                                            |
+|--------------------|-------------------------------------------------|
+| `release`          | 版本号，如`"2026.1.0"`                          |
+| `release_date`     | 在FAO服务器上的发布日期                         |
+| `years`            | 数据的起止年份                                  |
+| `source`           | `"bundled"`（包自带）或`"downloaded"`（已下载） |
+| `url`              | FAO服务器上的版本文件                           |
+| `download_date`    | 从FAO下载数据的日期                             |
+| `licence`、`terms` | `"CC BY 4.0"`和FAO统计数据库使用条款            |
+| `citation`         | 写报告用的引用格式                              |
 
 ## 📋 数据格式
 
@@ -186,19 +219,17 @@ show_table(data, n = 6)
 
 | 列 | 内容 |
 |----|----|
-| `Country..Name.` | 国家（FAO 简称，如 “Korea, Republic of”） |
-| `ASFIS.species..Name.` | 物种条目（ASFIS 英文名；未鉴定到种的条目以 “nei” 结尾） |
-| `FAO.major.fishing.area..Name.` | FAO 主要渔区 |
-| `Unit..Name.`, `Unit` | 均为活重吨 |
+| `Country..Name.` | 国家（FAO简称，如”Korea, Republic of”） |
+| `ASFIS.species..Name.` | 物种条目（ASFIS英文名；未鉴定到种的条目以”nei”结尾） |
+| `FAO.major.fishing.area..Name.` | FAO主要渔区 |
+| `Unit..Name.`、`Unit` | 均为活重吨 |
 | `Year` | 年份 |
 | `Production` | 产量（吨） |
-| `Production.Type` | `actual`（官方数据）、`estimate`（由该国或 FAO 估算）、`neligible`（低于 0.5 吨）等 |
+| `Production.Type` | 数值的状态，来自FAO的状态标记：`actual`（官方数据）、`estimate`（由该国或FAO估算）、`neligible`（低于0.5吨）、`provisional`（临时数据）、`suppressed`、`international organization` |
 
 ## ✂️ 分析自己的数据子集
 
-各分析函数的输入都是包含上述各列的数据框，因此任何数据子集都可以拿来分析。
-[`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md)
-是提取单个渔区最简便的方法，但你也可以自己构建子集：
+各分析函数的输入都是包含上述各列的数据框，因此任何数据子集都可以拿来分析。[`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md)是提取单个渔区最简便的方法，但你也可以自己构建子集：
 
 ``` r
 
@@ -213,7 +244,7 @@ unique(atlantic$FAO.major.fishing.area..Name.)
 
 ``` r
 
-# 2000 年以来整个大西洋的物种类群结构
+# 2000年以来整个大西洋的物种类群结构
 species_group_composition(subset(atlantic, Year >= 2000), label = "Atlantic since 2000")
 ```
 
@@ -225,7 +256,19 @@ species_group_composition(subset(atlantic, Year >= 2000), label = "Atlantic sinc
 
 `figures/png/summary/Atlantic_since_2000_group_isscaap_share.png`
 
-`label` 参数用于命名输出文件；默认使用渔区名称。更多示例：
+[`species_group_composition()`](https://linbojun99.github.io/faofishingreport/reference/species_group_composition.md)、[`peak_trend()`](https://linbojun99.github.io/faofishingreport/reference/peak_trend.md)等汇总分析共有以下参数（各自特有的参数见[📈
+类群结构、资源状态与趋势](https://linbojun99.github.io/faofishingreport/articles/zh/status-trends.md)）：
+
+| 参数 | 含义 | 默认值 |
+|----|----|----|
+| `area_data` | 产量数据：`fishing_area_data()$area_data`或[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)的任意子集 |  |
+| `plot` | 在`figures/png/summary/`中保存图表 | `TRUE` |
+| `table` | 在`tables/`中保存表格 | `TRUE` |
+| `lang` | `"en"`、`"zh"`或`"both"` | `NULL`：使用[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)中的语言 |
+| `pptx` | 同时在`figures/pptx/summary/`中保存可编辑的PowerPoint文件 | `FALSE`，或[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)中的`pptx` |
+| `label` | 输出文件名中使用的名称 | `NULL`：数据所属的渔区（或国家） |
+
+更多示例：
 
 ``` r
 
@@ -237,7 +280,7 @@ peak_trend(china, by = "area", label = "China")
 skipjack <- subset(data, ASFIS.species..Name. == "Skipjack tuna")
 peak_trend(skipjack, by = "area", label = "Skipjack tuna")
 
-# 只取 34 渔区最近 30 年的数据
+# 只取34渔区最近30年的数据
 FAO34_recent <- subset(FAO34$area_data, Year >= 1995)
 fishing_area_species(FAO34_recent)
 ```
@@ -263,10 +306,8 @@ grep("tuna", unique(data$ASFIS.species..Name.), value = TRUE)
 
 ## 🌐 中文名称
 
-中文名称来自 FAO 随每个版本发布的代码表和 FAO ASFIS
-物种名录；没有官方中文名的条目由本包自带的对照表补充，仍然没有的则保留英文。用
-[`fao_translate()`](https://linbojun99.github.io/faofishingreport/reference/fao_translate.md)
-可以查看这些名称：
+中文名称来自FAO随每个版本发布的代码表和FAO
+ASFIS物种名录；没有官方中文名的条目由本包自带的对照表补充，仍然没有的则保留英文。用[`fao_translate()`](https://linbojun99.github.io/faofishingreport/reference/fao_translate.md)可以查看这些名称：
 
 ``` r
 
@@ -278,30 +319,69 @@ fao_translate("Atlantic, Eastern Central", "area", "zh")
 #> [1] "中东大西洋"
 ```
 
-FAO 没有为 ISSCAAP
-物种类群、大类和收入分组提供中文名称；本包的译名保存在
-`inst/extdata/group_names_zh.csv`，所有图表标签保存在
-`inst/extdata/chart_labels.csv`。
-如需修改措辞，可在包的源代码中编辑这些文件，然后重新安装。
+| 参数   | 含义                                                 | 默认值      |
+|--------|------------------------------------------------------|-------------|
+| `x`    | FAO数据中的英文名称                                  |             |
+| `type` | 名称类型：`"country"`、`"species"`或`"area"`         | `"country"` |
+| `lang` | `"zh"`（中文）、`"both"`（中英双语）或`"en"`（不变） | `"zh"`      |
+
+函数按原顺序返回名称。几个英文名对应同一个中文名时（例如两个物种条目的中文名相同），会同时保留英文名，以便在图表和表格中区分。
+
+FAO没有为ISSCAAP物种类群、大类和收入分组提供中文名称；本包的译名保存在`inst/extdata/group_names_zh.csv`，所有图表标签保存在`inst/extdata/chart_labels.csv`。如需修改措辞，可在包的源代码中编辑这些文件，然后重新安装。
 
 ## ⚠️ 数据注意事项
 
-- **近几年的数据常为估算值。** 某个国家尚未上报时，FAO 会估算其产量。在
-  34 渔区，2024 年约三分之一的产量
-  是估算值；这些数值通常会在下一个版本中修订。[`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md)
-  可以显示任一渔区的这一情况。
+- **近几年的数据常为估算值。**某个国家尚未上报时，FAO会估算其产量。在34渔区，2024年约三分之一的产量是估算值；这些数值通常会在下一个版本中修订。[`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md)可以显示任一渔区的这一情况。
 - **未分类（nei）类别**（“not elsewhere
-  included”，即”未另列明”）是未鉴定到种的产量，例如 “Marine fishes
+  included”，即”未另列明”）是未鉴定到种的产量，例如”Marine fishes
   nei”。在某些渔区，这部分产量占比很大。
-- **已不存在的国家**，如苏联（数据截至 1991 年），作为单独的国家列出。
-- **不同版本之间存在差异**：FAO
-  会修订往年数据，因此用不同版本得到的结果可能略有不同。请在报告中注明所用的版本
-  （下载数据的版本可以用 `attr(data, "fao_version")` 查看）。
+- **已不存在的国家**，如苏联（数据截至1991年），作为单独的国家列出。
+- **不同版本之间存在差异**：各国提交更正或更完整的数据后，FAO会修订往年数据（Garibaldi
+  2012；Zeller和Pauly
+  2018），因此用不同版本得到的结果可能不同。请在报告中注明所用的版本（[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)）。[`compare_releases()`](https://linbojun99.github.io/faofishingreport/reference/compare_releases.md)可以列出两个版本之间修订过的记录（见[🔬
+  渔获骤变、渔业崩溃、同步性与远洋捕捞](https://linbojun99.github.io/faofishingreport/articles/zh/literature-analyses.md)）。
+- **数据的使用**：FAO统计数据以CC BY
+  4.0许可证和FAO统计数据库使用条款发布；请引用所用的版本。
 
 ## 🔄 维护者须知：更新包自带数据
 
-包自带数据、中文名称和分组可以用以下命令根据 FAO 最新版本重新生成：
+包自带数据、中文名称和分组可以用以下命令根据FAO最新版本重新生成：
 
 ``` bash
 Rscript data-raw/update_bundled_data.R
 ```
+
+## 📖 参考文献
+
+CWP (Coordinating Working Party on Fishery Statistics). *CWP Handbook of
+Fishery Statistics*. Rome: FAO.
+<https://www.fao.org/cwp-on-fishery-statistics/handbook/en/>
+
+FAO (2026). FishStat: Global capture production 1950–2024 (release
+2026.1.0). In: FishStatJ.
+<https://www.fao.org/fishery/statistics/software/fishstatj/en>. Licence:
+CC-BY-4.0. Release file:
+<https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip>; all
+releases: <https://www.fao.org/fishery/static/Data/>
+
+FAO (2026). *Fishery and Aquaculture Statistics – Yearbook 2024*. FAO
+Yearbook of Fishery and Aquaculture Statistics. Rome: FAO.
+[doi:10.4060/ce1217en](https://doi.org/10.4060/ce1217en)
+
+FAO. *ASFIS List of Species for Fishery Statistics Purposes*. Rome: FAO.
+<https://www.fao.org/fishery/collection/asfis/en>
+
+FAO. *Global Capture Production*. Fisheries and Aquaculture Division,
+Rome. <https://www.fao.org/fishery/collection/capture/en>
+
+FAO. *Terms of use of FAO statistical databases*.
+<https://www.fao.org/contact-us/terms/db-terms-of-use/en>
+
+Garibaldi, L. (2012). The FAO global capture production database: a
+six-decade effort to catch the trend. *Marine Policy* 36(3): 760–768.
+[doi:10.1016/j.marpol.2011.10.024](https://doi.org/10.1016/j.marpol.2011.10.024)
+
+Zeller, D. and Pauly, D. (2018). The ‘presentist bias’ in time-series
+data: implications for fisheries science and policy. *Marine Policy* 90:
+14–19.
+[doi:10.1016/j.marpol.2018.01.015](https://doi.org/10.1016/j.marpol.2018.01.015)

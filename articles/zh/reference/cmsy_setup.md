@@ -1,0 +1,143 @@
+# cmsy_setup(): 安装JAGS和CMSY++所需的R包
+
+英文原页：[`cmsy_setup()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_setup.md)
+
+## 说明
+
+本函数为[`cmsy_run()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_run.md)做好准备：从CRAN安装缺少的R包，下载与本系统和R版本匹配的JAGS安装程序（见[`cmsy_jags_versions()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_jags_versions.md)；通过[`cmsy_download_jags()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_download_jags.md)下载，并核对文件大小和校验值）并打开它，同时检查包内置的CMSY++文件。以交互方式使用R时，安装任何内容之前都会先询问。
+
+English
+
+This function prepares the computer for
+[`cmsy_run()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_run.md):
+it installs the missing R packages from CRAN, downloads the JAGS
+installer that matches this system and R version (see
+[`cmsy_jags_versions()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_jags_versions.md);
+with
+[`cmsy_download_jags()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_download_jags.md),
+which checks its size and checksums) and opens it, and checks the
+bundled CMSY++ files. It asks before installing anything when R is used
+interactively.
+
+## 用法
+
+``` r
+
+cmsy_setup(
+  jags = "recommended",
+  os = "auto",
+  ask = TRUE,
+  data_dir = fao_data_dir(),
+  silent = fao_setting("silent")
+)
+```
+
+## 参数
+
+- `jags`:
+
+  推荐的JAGS版本：“recommended”（默认；针对当前R版本编译的最新JAGS
+  4版本，可与CRAN上的rjags配合使用）、“latest”（JAGS
+  5.0.0，需要SourceForge上的rjags 5-x）或版本号，例如”4.3.2”。
+
+  English
+
+  The JAGS version to recommend: “recommended” (default; the newest JAGS
+  4 release built for this R version, which works with rjags from CRAN),
+  “latest” (JAGS 5.0.0, which needs rjags 5-x from SourceForge) or a
+  version number such as “4.3.2”.
+
+- `os`:
+
+  采用哪个操作系统的设置：“auto”（默认，自动检测）、“windows”、“macos”或”linux”。
+
+  English
+
+  The operating system whose settings are used: “auto” (default, detect
+  it), “windows”, “macos” or “linux”.
+
+- `ask`:
+
+  逻辑值。为TRUE（默认）时，安装任何内容之前先询问。在非交互式会话中，`ask`为TRUE时不会安装任何内容。
+
+  English
+
+  A logical value. If TRUE (default), ask before installing anything. In
+  a non-interactive session nothing is installed when `ask` is TRUE.
+
+- `data_dir`:
+
+  下载文件的保存目录。默认为[`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md)。
+
+  English
+
+  The directory where downloads are kept. Default is
+  [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md).
+
+- `silent`:
+
+  逻辑值。为TRUE时不输出汇总信息。默认为FALSE，或`fao_settings(silent = )`设置的值。
+
+  English
+
+  A logical value. If TRUE, no summary is printed. Default is FALSE, or
+  the value set with `fao_settings(silent = )`.
+
+## 返回值
+
+以不可见方式返回安装后[`cmsy_system()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_system.md)的结果。`silent = TRUE`时不输出汇总信息和下载信息（`ask`为TRUE时仍会询问）。
+
+English
+
+Invisibly, the result of
+[`cmsy_system()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_system.md)
+after the installation. With `silent = TRUE` no summary or download
+messages are printed (questions are still asked when `ask` is TRUE).
+
+## 详细说明
+
+JAGS是一个独立的程序，无法在R中安装。在Windows和macOS上会打开安装程序，按其步骤点击完成安装即可；在Linux上则显示安装命令。安装JAGS后请重启R，并再次运行[`cmsy_setup()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_setup.md)进行检查。
+
+JAGS安装程序必须与R版本匹配（见[`cmsy_jags_versions()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_jags_versions.md)）：Windows上，R
+4.5和4.6用JAGS 4.3.2，R 4.2至4.4用JAGS 4.3.1；macOS上，R 4.3及以后用JAGS
+4.3.2，R 4.2用4.3.1；Linux上用包管理器提供的JAGS。默认使用JAGS
+4，因为CRAN上的rjags（4-17）需要JAGS 4。选择JAGS
+5.0.0（`jags = "latest"`）时，还会从SourceForge安装rjags 5-3。
+
+English
+
+JAGS is a separate program, so it cannot be installed from R. On Windows
+and macOS the installer is opened and you click through it; on Linux the
+commands to install it are shown. Restart R after installing JAGS and
+run
+[`cmsy_setup()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_setup.md)
+again to check.
+
+The JAGS installer must match the R version (see
+[`cmsy_jags_versions()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_jags_versions.md)):
+on Windows JAGS 4.3.2 for R 4.5 and 4.6 and JAGS 4.3.1 for R 4.2 to 4.4;
+on macOS JAGS 4.3.2 for R 4.3 and later and 4.3.1 for R 4.2; on Linux
+the JAGS of the package manager. JAGS 4 is used by default because rjags
+on CRAN (4-17) needs JAGS 4. JAGS 5.0.0 (`jags = "latest"`) also
+installs rjags 5-3 from SourceForge.
+
+## 参考文献
+
+Plummer, M. (2003). JAGS: A program for analysis of Bayesian graphical
+models using Gibbs sampling. Proceedings of the 3rd International
+Workshop on Distributed Statistical Computing (DSC 2003), Vienna.
+<https://mcmc-jags.sourceforge.io/>
+
+## 示例
+
+``` r
+
+# Check the computer and install what is missing (asks first)
+cmsy_setup()
+
+# Install without asking, e.g. on a server or in a script
+cmsy_setup(ask = FALSE)
+
+# JAGS 5.0.0 with rjags 5-3 (from SourceForge) instead of JAGS 4.3.2
+cmsy_setup(jags = "latest")
+```

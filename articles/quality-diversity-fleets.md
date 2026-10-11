@@ -9,22 +9,47 @@ Licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 [`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
 shows the release you use and how to cite it.
 
+Like the analyses of [📈 Composition, stock status and
+trends](https://linbojun99.github.io/faofishingreport/articles/status-trends.md),
+these functions take any catch data: a fishing area from
+[`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md),
+or any subset of
+[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md).
+Their charts are saved in `figures/png/summary/` and their tables in
+`tables/`, with the name of the area at the start of the file names (or
+`label`), and they return their results invisibly.
+
 ``` r
 
 FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 ```
+
+## ⚙️ Common arguments
+
+All four functions have these arguments; the tables of each function
+list only its own.
+
+| Argument | Meaning | Default |
+|----|----|----|
+| `area_data` | FAO catch data: `fishing_area_data()$area_data`, or any subset of [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md) (e.g. one country, or several fishing areas) | required |
+| `plot` | Save the charts in `figures/png/summary/` | `TRUE` |
+| `table` | Save the tables in `tables/` | `TRUE` |
+| `lang` | Language of the chart text and names: `"en"`, `"zh"` or `"both"` | `NULL`: the language of [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md) (`"en"` unless changed) |
+| `pptx` | Also save the charts as editable PowerPoint files in `figures/pptx/summary/` | `FALSE`; `fao_settings(pptx = TRUE)` changes it for all functions |
+| `label` | Name at the start of the output file names | `NULL`: the fishing area of the data (or its country; `"selected_data"` for several areas and countries) |
 
 ## 🧪 Data quality
 
 [`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md)
 shows two aspects of the statistics over time:
 
-- the share of the catch **reported officially**, and the share
-  **estimated** (by the country or imputed by FAO), from the FAO status
-  flags;
+- the share of the catch **reported officially** (FAO status flag A),
+  the share **estimated** by the country or imputed by FAO (flags E and
+  I), and the share with other flags (e.g. provisional or negligible
+  values);
 - the share of the catch **identified to species**, genus, family, or
-  only to a higher group such as “Marine fishes nei”, from the FAO
-  taxonomic codes.
+  only to an order or a higher group such as “Marine fishes nei”, from
+  the FAO taxonomic codes.
 
 ``` r
 
@@ -41,9 +66,10 @@ quality <- data_quality(FAO34$area_data)
 
 A large estimated share in the latest years usually means that FAO has
 not yet received the national reports; these values are often revised in
-the next release. The country table shows, for the countries with the
-largest catch in the last five years, how much was estimated and how
-much identified to species:
+the next release (Garibaldi 2012). The country table shows, for the
+countries with the largest catch in the last five years, how much of
+their catch in those years was estimated and how much identified to
+species:
 
 ``` r
 
@@ -63,22 +89,36 @@ show_table(quality$countries, digits = 1)
 | Belize       | Belize       | 954073.3           |          82.4 |              46.7 |
 | Georgia      | Georgia      | 635110.0           |         100.0 |              37.5 |
 
-| Argument | Meaning                                  | Default |
-|----------|------------------------------------------|---------|
-| `top_n`  | Number of countries in the country table | `10`    |
+| Argument | Meaning | Default |
+|----|----|----|
+| `top_n` | Number of countries in the country table | `10` |
+| `area_data`, `plot`, `table`, `lang`, `pptx`, `label` | See [Common arguments](#common-arguments) |  |
+
+Output: `<label>_data_quality_status_share.png` and
+`<label>_data_quality_taxon_share.png`, and the tables
+`<label>_data_quality_status.csv`, `..._taxon.csv` and
+`..._countries.csv`; the function returns `data_status`, `taxon_level`
+(yearly catch by category) and `countries`.
+
+The FAO statistics are the catches reported by countries (and estimated
+by FAO when no report arrives). Catch reconstructions that add estimates
+of unreported catches and discards found global marine catches higher
+than reported, and declining more strongly since their peak (Pauly and
+Zeller 2016). The data quality charts show how the reported statistics
+were made, not how complete they are.
 
 ## 🌈 Diversity and concentration
 
 [`diversity_concentration()`](https://linbojun99.github.io/faofishingreport/reference/diversity_concentration.md)
 computes, for each year:
 
-| Indicator | Calculation |
-|----|----|
-| Number of species reported | Items identified to species with catch |
-| Number of countries | Countries with catch |
-| Shannon diversity | $`H = -\sum_i p_i \ln p_i`$, with $`p_i`$ the share of species item $`i`$ in the year’s catch |
-| HHI of species / countries | $`\text{HHI} = \sum_i (100\,p_i)^2`$, from 0 to 10 000 |
-| Top-N share | Share of the `top_n` largest species items or countries |
+| Indicator | Column | Calculation |
+|----|----|----|
+| Number of species reported | `n_species` | Items identified to species with catch |
+| Number of countries | `n_countries` | Countries with catch |
+| Shannon diversity (Shannon 1948) | `shannon_species` | $`H = -\sum_i p_i \ln p_i`$, with $`p_i`$ the share of species item $`i`$ (all items, including “nei” groups) in the year’s catch |
+| HHI of species / countries (Rhoades 1993) | `hhi_species`, `hhi_countries` | $`\text{HHI} = \sum_i (100\,p_i)^2`$, from 0 to 10 000 |
+| Top-N share | `top5_species_pct`, `top5_countries_pct` | Share (%) of the `top_n` largest species items or countries (the column names follow `top_n`) |
 
 ``` r
 
@@ -101,10 +141,20 @@ show_table(subset(diversity, Year %in% c(1970, 1990, 2010, max(Year))), digits =
 | 2010 | 2010 | 151 | 49 | 3.17 | 869.69 | 948.69 | 55.39 | 54.35 |
 | 2024 | 2024 | 358 | 40 | 3.74 | 495.43 | 1,238.71 | 41.71 | 66.04 |
 
+| Argument | Meaning | Default |
+|----|----|----|
+| `top_n` | Number of largest species items and countries in the top share | `5` |
+| `area_data`, `plot`, `table`, `lang`, `pptx`, `label` | See [Common arguments](#common-arguments) |  |
+
+Output: `<label>_diversity.png` (all indicators) and the table
+`<label>_diversity.csv`; the function returns a data frame with one row
+per year.
+
 **Reading the indicators.** A higher Shannon index means more species
 items and a more even catch; its maximum is $`\ln S`$ for $`S`$ items.
-An HHI below 1 500 is usually read as unconcentrated, 1 500 to 2 500 as
-moderately and above 2 500 as highly concentrated. For example, three
+In the US merger guidelines (U.S. Department of Justice and Federal
+Trade Commission 2010), an HHI below 1 500 is unconcentrated, 1 500 to 2
+500 moderately and above 2 500 highly concentrated. For example, three
 species with shares of 50%, 30% and 20% give $`H = 1.03`$ and
 $`\text{HHI} = 50^2 + 30^2 + 20^2 = 3\,800`$.
 
@@ -117,7 +167,10 @@ split, e.g. the USSR in 1991.
 
 [`country_group_summary()`](https://linbojun99.github.io/faofishingreport/reference/country_group_summary.md)
 sums the catch by groups of countries from the FAO country list: **World
-Bank income group**, **continent** or **region**.
+Bank income group**, **continent** or **region**. It saves a chart of
+the catch of each group and one of its share, and a table by decade like
+that of
+[`species_group_composition()`](https://linbojun99.github.io/faofishingreport/reference/species_group_composition.md).
 
 ``` r
 
@@ -145,10 +198,15 @@ country_group_summary(FAO34$area_data, group = "region", top_n = 6, lang = "zh")
 
 `figures/png/summary/Atlantic__Eastern_Central_country_region_share.png`
 
-| Argument | Meaning                                 | Default    |
-|----------|-----------------------------------------|------------|
-| `group`  | `"income"`, `"continent"` or `"region"` | `"income"` |
-| `top_n`  | Number of groups shown separately       | `8`        |
+| Argument | Meaning | Default |
+|----|----|----|
+| `group` | `"income"` (World Bank income groups), `"continent"` or `"region"` | `"income"` |
+| `top_n` | Number of groups shown separately; the others are combined | `8` |
+| `area_data`, `plot`, `table`, `lang`, `pptx`, `label` | See [Common arguments](#common-arguments) |  |
+
+Output: `<label>_country_income.png` (or `_continent`, `_region`) and
+`..._share.png`, and the table `<label>_country_income.csv`; the
+function returns `yearly` and `table`.
 
 ## 🚢 Coastal countries and distant-water fleets
 
@@ -158,10 +216,12 @@ splits the catch between countries that **border** the fishing area and
 distant-water countries.
 
 A country is coastal to an area if its land (including overseas
-territories) lies within 20 km of the FAO area boundary. Former
-countries such as the USSR take the coastline of their successor states.
-In area 34, for example, Spain and Portugal count as coastal because of
-the Canary Islands and Madeira.
+territories, from the Natural Earth map units) lies within 20 km of the
+FAO area boundary (the FAO major fishing areas of the CWP handbook).
+Former countries such as the USSR take the coastline of their successor
+states. In area 34, for example, Spain and Portugal count as coastal
+because of the Canary Islands and Madeira. Catch reported as “Other nei”
+is shown as unknown.
 
 ``` r
 
@@ -191,9 +251,79 @@ show_table(fleets$table, digits = 0)
 | Distant-water countries | 44,466 | 445,371 | 1,504,436 | 1,350,301 | 1,139,483 | 1,001,035 | 870,407 | 592,420 | 602,407 | 600,205 | 626,229 | 551,550 | 581,712 | 11 |
 | Unknown | 0 | 24 | 155,388 | 46,784 | 74,349 | 26,772 | 25,077 | 40,994 | 44,367 | 36,529 | 38,078 | 38,138 | 47,857 | 1 |
 
-| Argument | Meaning                                            | Default |
-|----------|----------------------------------------------------|---------|
-| `top_n`  | Number of distant-water countries shown separately | `8`     |
+| Argument | Meaning | Default |
+|----|----|----|
+| `top_n` | Number of distant-water countries shown separately | `8` |
+| `area_data`, `plot`, `table`, `lang`, `pptx`, `label` | See [Common arguments](#common-arguments) |  |
 
 The analysis works for marine areas; inland areas in the data are left
-out with a message.
+out with a message. Output: `<label>_coastal_distant.png` and
+`..._share.png` (coastal, distant-water and unknown catch),
+`<label>_coastal_distant_countries.png` (main distant-water countries),
+and the tables `<label>_coastal_distant.csv` and `..._countries.csv`;
+the function returns `yearly`, `distant` and `table`. The profiles of
+the main distant-water countries are in [🔬 Shocks, collapses, synchrony
+and
+fleets](https://linbojun99.github.io/faofishingreport/articles/literature-analyses.md).
+
+## 📝 In the Word report
+
+[`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
+writes data quality, diversity and concentration, and coastal and
+distant-water fleets into the Word report of a fishing area (see [📝
+Assessment report in
+Word](https://linbojun99.github.io/faofishingreport/articles/report.md)):
+they are the sections `quality`, `diversity` and `fleets`, all on by
+default. Their settings are given with the section name as prefix
+(`quality_` for
+[`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md),
+`diversity_` for
+[`diversity_concentration()`](https://linbojun99.github.io/faofishingreport/reference/diversity_concentration.md),
+`fleets_` for
+[`coastal_distant()`](https://linbojun99.github.io/faofishingreport/reference/coastal_distant.md)),
+and a section is left out with `FALSE`:
+
+``` r
+
+fao_report(34, diversity_top_n = 3, fleets = FALSE)
+```
+
+[`country_group_summary()`](https://linbojun99.github.io/faofishingreport/reference/country_group_summary.md)
+is not part of the report.
+
+## 📖 References
+
+CWP (Coordinating Working Party on Fishery Statistics). *CWP Handbook of
+Fishery Statistics*: Main water areas (FAO major fishing areas). Rome:
+FAO.
+<https://www.fao.org/cwp-on-fishery-statistics/handbook/general-concepts/main-water-areas/en/>
+
+FAO (2026). *Global Capture Production 1950–2024*, release 2026.1.0. In:
+Fisheries and Aquaculture. Rome: FAO.
+<https://www.fao.org/fishery/collection/capture/en>. Licence: CC BY 4.0.
+Release file:
+<https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip>
+
+Garibaldi, L. (2012). The FAO global capture production database: a
+six-decade effort to catch the trend. *Marine Policy* 36: 760–768.
+[doi:10.1016/j.marpol.2011.10.024](https://doi.org/10.1016/j.marpol.2011.10.024)
+
+Natural Earth. Free vector and raster map data at 1:10m, 1:50m and
+1:110m scales. <https://www.naturalearthdata.com/>
+
+Pauly, D. and Zeller, D. (2016). Catch reconstructions reveal that
+global marine fisheries catches are higher than reported and declining.
+*Nature Communications* 7: 10244.
+[doi:10.1038/ncomms10244](https://doi.org/10.1038/ncomms10244)
+
+Rhoades, S.A. (1993). The Herfindahl-Hirschman index. *Federal Reserve
+Bulletin* 79(3): 188–189.
+
+Shannon, C.E. (1948). A mathematical theory of communication. *Bell
+System Technical Journal* 27: 379–423.
+[doi:10.1002/j.1538-7305.1948.tb01338.x](https://doi.org/10.1002/j.1538-7305.1948.tb01338.x)
+
+U.S. Department of Justice and Federal Trade Commission (2010).
+*Horizontal Merger Guidelines*, section 5.3 (market concentration).
+Washington, DC.
+<https://www.justice.gov/atr/horizontal-merger-guidelines-08192010>

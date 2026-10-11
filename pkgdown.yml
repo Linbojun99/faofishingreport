@@ -2,22 +2,88 @@ pandoc: 3.8.3
 pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
+  articles/zh/reference/area_overview: zh/reference/area_overview.html
+  articles/zh/reference/catch_shocks: zh/reference/catch_shocks.html
+  articles/zh/reference/catch_synchrony: zh/reference/catch_synchrony.html
+  articles/zh/reference/check_fao_update: zh/reference/check_fao_update.html
+  articles/zh/reference/check_fishbase_update: zh/reference/check_fishbase_update.html
+  articles/zh/reference/cmsy_area: zh/reference/cmsy_area.html
+  articles/zh/reference/cmsy_compare: zh/reference/cmsy_compare.html
+  articles/zh/reference/cmsy_defaults: zh/reference/cmsy_defaults.html
+  articles/zh/reference/cmsy_download_jags: zh/reference/cmsy_download_jags.html
+  articles/zh/reference/cmsy_forecast: zh/reference/cmsy_forecast.html
+  articles/zh/reference/cmsy_input: zh/reference/cmsy_input.html
+  articles/zh/reference/cmsy_install_jags: zh/reference/cmsy_install_jags.html
+  articles/zh/reference/cmsy_jags_versions: zh/reference/cmsy_jags_versions.html
+  articles/zh/reference/cmsy_plot: zh/reference/cmsy_plot.html
+  articles/zh/reference/cmsy_priors: zh/reference/cmsy_priors.html
+  articles/zh/reference/cmsy_run: zh/reference/cmsy_run.html
+  articles/zh/reference/cmsy_setup: zh/reference/cmsy_setup.html
+  articles/zh/reference/cmsy_sources: zh/reference/cmsy_sources.html
+  articles/zh/reference/cmsy_system: zh/reference/cmsy_system.html
+  articles/zh/reference/cmsy_tables: zh/reference/cmsy_tables.html
+  articles/cmsy: cmsy.html
+  articles/zh/cmsy: zh/cmsy.html
+  articles/zh/reference/coastal_distant: zh/reference/coastal_distant.html
+  articles/zh/reference/collapse_analysis: zh/reference/collapse_analysis.html
+  articles/zh/reference/compare_releases: zh/reference/compare_releases.html
+  articles/zh/reference/country_analysis: zh/reference/country_analysis.html
+  articles/zh/reference/country_group_summary: zh/reference/country_group_summary.html
+  articles/zh/reference/country_species: zh/reference/country_species.html
   articles/customise: customise.html
   articles/zh/customise: zh/customise.html
+  articles/zh/reference/data_quality: zh/reference/data_quality.html
   articles/data: data.html
   articles/zh/data: zh/data.html
+  articles/zh/reference/distant_water_profile: zh/reference/distant_water_profile.html
+  articles/zh/reference/diversity_concentration: zh/reference/diversity_concentration.html
+  articles/zh/reference/download_fao_data: zh/reference/download_fao_data.html
+  articles/zh/reference/download_fishbase_data: zh/reference/download_fishbase_data.html
+  articles/zh/reference/download_sst_data: zh/reference/download_sst_data.html
+  articles/zh/reference/fao_area_sst: zh/reference/fao_area_sst.html
+  articles/zh/reference/fao_data_dir: zh/reference/fao_data_dir.html
+  articles/zh/reference/fao_data_info: zh/reference/fao_data_info.html
+  articles/zh/reference/fao_font: zh/reference/fao_font.html
+  articles/zh/reference/fao_pd_groups: zh/reference/fao_pd_groups.html
+  articles/zh/reference/fao_report: zh/reference/fao_report.html
+  articles/zh/reference/fao_settings: zh/reference/fao_settings.html
+  articles/zh/reference/fao_sst_products: zh/reference/fao_sst_products.html
+  articles/zh/reference/fao_translate: zh/reference/fao_translate.html
+  articles/zh/reference/fishbase_match: zh/reference/fishbase_match.html
+  articles/zh/reference/fishbase_sources: zh/reference/fishbase_sources.html
+  articles/zh/reference/fishbase_table: zh/reference/fishbase_table.html
+  articles/fishbase: fishbase.html
+  articles/zh/fishbase: zh/fishbase.html
+  articles/zh/reference/fishing_area_country: zh/reference/fishing_area_country.html
+  articles/zh/reference/fishing_area_data: zh/reference/fishing_area_data.html
+  articles/zh/reference/fishing_area_species: zh/reference/fishing_area_species.html
   articles/fishing-areas: fishing-areas.html
   articles/zh/fishing-areas: zh/fishing-areas.html
   articles/get-started: get-started.html
   articles/zh/get-started: zh/get-started.html
   articles/zh/index: zh/index.html
+  articles/zh/reference/index: zh/reference/index.html
+  articles/literature-analyses: literature-analyses.html
+  articles/zh/literature-analyses: zh/literature-analyses.html
+  articles/zh/reference/load_fao_data: zh/reference/load_fao_data.html
+  articles/zh/reference/mean_temperature_catch: zh/reference/mean_temperature_catch.html
+  articles/zh/reference/peak_trend: zh/reference/peak_trend.html
+  articles/zh/reference/pelagic_demersal: zh/reference/pelagic_demersal.html
   articles/quality-diversity-fleets: quality-diversity-fleets.html
   articles/zh/quality-diversity-fleets: zh/quality-diversity-fleets.html
+  articles/zh/reference/regime_shift: zh/reference/regime_shift.html
+  articles/report: report.html
+  articles/zh/report: zh/report.html
+  articles/zh/reference/species_country: zh/reference/species_country.html
+  articles/zh/reference/species_group_composition: zh/reference/species_group_composition.html
   articles/species-countries: species-countries.html
   articles/zh/species-countries: zh/species-countries.html
+  articles/sst-mtc: sst-mtc.html
+  articles/zh/sst-mtc: zh/sst-mtc.html
   articles/status-trends: status-trends.html
   articles/zh/status-trends: zh/status-trends.html
-last_built: 2026-10-11T04:13Z
+  articles/zh/reference/stock_status: zh/reference/stock_status.html
+last_built: 2026-10-11T08:10Z
 urls:
   reference: https://linbojun99.github.io/faofishingreport/reference
   article: https://linbojun99.github.io/faofishingreport/articles

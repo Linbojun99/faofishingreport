@@ -1,0 +1,96 @@
+# cmsy_sources(): CMSY++及其所需软件的来源
+
+英文原页：[`cmsy_sources()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_sources.md)
+
+## 说明
+
+本函数列出本包CMSY++相关函数用到的每个组件，包括其版本、下载链接、文件大小、校验值（MD5和SHA-256）、许可证和应引用的文献：CMSY++代码、人工神经网络、用户手册和训练数据（随本包提供）、各操作系统的JAGS安装程序、rjags包、CMSY++用到的其他R包，以及内置先验表所依据的FishBase和SeaLifeBase版本（见[`cmsy_priors()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_priors.md)）。
+
+English
+
+This function lists every component used by the CMSY++ functions of the
+package, with its version, download link, file size, checksums (MD5 and
+SHA-256), licence and the reference to cite: the CMSY++ code, neural
+network, user guide and training data (bundled with the package), the
+JAGS installers for each operating system, the rjags package, the other
+R packages CMSY++ uses, and the FishBase and SeaLifeBase releases behind
+the built-in table of priors (see
+[`cmsy_priors()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_priors.md)).
+
+## 用法
+
+``` r
+
+cmsy_sources(component = NULL)
+```
+
+## 参数
+
+- `component`:
+
+  可选文本，只保留与之匹配的组件，例如”JAGS”或”CMSY”。
+
+  English
+
+  Optional text to keep only matching components, e.g. “JAGS” or “CMSY”.
+
+## 返回值
+
+一个数据框，每个文件或包一行。
+
+English
+
+A data frame with one row per file or package.
+
+## 详细说明
+
+随本包提供的CMSY++文件是GEOMAR的存储库OceanRep（记录52147）中未经修改的2021年3月版本，以CC
+BY
+4.0许可证发布；同样的代码也发布在GitHub：<https://github.com/SISTA16/cmsyPlusPlus>。[`cmsy_run()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_run.md)在运行前会对代码副本做少量有记录的修改（见[`cmsy_system()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_system.md)），不改变方法本身。本包与CMSY++的作者无关联，也未得到其认可。
+
+English
+
+The CMSY++ files bundled with the package are the unmodified March 2021
+release from GEOMAR’s repository OceanRep (record 52147), published
+under the CC BY 4.0 licence; the same code is on GitHub at
+<https://github.com/SISTA16/cmsyPlusPlus>.
+[`cmsy_run()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_run.md)
+applies a few documented changes to a copy of the code before running it
+(see
+[`cmsy_system()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_system.md));
+they do not change the method. faofishingreport is not affiliated with
+or endorsed by the authors of CMSY++.
+
+## 参考文献
+
+Froese, R., Winker, H., Coro, G., Palomares, M.L.D., Tsikliras, A.C.,
+Dimarchopoulou, D., Touloumis, K., Demirel, N., Vianna, G.M.S.,
+Scarcella, G., Schijns, R., Liang, C. and Pauly, D. (2023). New
+developments in the analysis of catch time series as the basis for fish
+stock assessments: the CMSY++ method. Acta Ichthyologica et Piscatoria
+53: 173-189.
+[doi:10.3897/aiep.53.105910](https://doi.org/10.3897/aiep.53.105910)
+
+Froese, R., Demirel, N., Coro, G. and Winker, H. (2021). User Guide for
+CMSY++. GEOMAR, Germany, 17
+pp. <https://oceanrep.geomar.de/id/eprint/52147/>
+
+Plummer, M. (2003). JAGS: A program for analysis of Bayesian graphical
+models using Gibbs sampling. Proceedings of the 3rd International
+Workshop on Distributed Statistical Computing (DSC 2003), Vienna.
+<https://mcmc-jags.sourceforge.io/>
+
+## 示例
+
+``` r
+
+# Every component, with version, file, licence and link
+src <- cmsy_sources()
+src[, c("component", "version", "platform", "file", "license")]
+
+# The JAGS installers for each system, with their checksums
+cmsy_sources("JAGS")[, c("component", "version", "platform", "url", "sha256")]
+
+# The references to cite
+unique(src$citation[nzchar(src$citation)])
+```

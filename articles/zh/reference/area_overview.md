@@ -1,0 +1,114 @@
+# area_overview(): 全部FAO海洋渔区概览
+
+英文原页：[`area_overview()`](https://linbojun99.github.io/faofishingreport/reference/area_overview.md)
+
+## 说明
+
+该函数对比各FAO主要海洋渔区：各渔区渔获量随时间的变化、峰值年份、最后一年渔获量占峰值的百分比，以及近期趋势（见[`peak_trend()`](https://linbojun99.github.io/faofishingreport/reference/peak_trend.md)）。
+
+English
+
+This function compares the FAO major marine fishing areas: their catch
+over time, peak year, catch in the last year as a percentage of the
+peak, and recent trend (see
+[`peak_trend()`](https://linbojun99.github.io/faofishingreport/reference/peak_trend.md)).
+
+## 用法
+
+``` r
+
+area_overview(
+  recent_years = 10,
+  plot = TRUE,
+  table = TRUE,
+  lang = NULL,
+  pptx = getOption("faofishingreport.pptx", FALSE),
+  data_version = "latest"
+)
+```
+
+## 参数
+
+- `recent_years`:
+
+  计算趋势所用的最近年数。默认为10。
+
+  English
+
+  The number of most recent years used for the trend. Default is 10.
+
+- `plot`:
+
+  逻辑值。为TRUE（默认）时，图表保存在figures/png/summary/。
+
+  English
+
+  A logical value. If TRUE (default), charts are saved in
+  `figures/png/summary/`.
+
+- `table`:
+
+  逻辑值。为TRUE（默认）时，表格保存在tables/。
+
+  English
+
+  A logical value. If TRUE (default), tables are saved in `tables/`.
+
+- `lang`:
+
+  图表文字和名称的语言：“en”（英文）、“zh”（中文）或”both”（中英双语）。默认为NULL，即使用[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)设置的语言（未更改时为”en”）。
+
+  English
+
+  The language of the chart text and names: “en” (English), “zh”
+  (Chinese) or “both” (Chinese and English). Default is NULL, which uses
+  the language set with
+  [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+  (“en” unless changed).
+
+- `pptx`:
+
+  逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在figures/pptx/summary/。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。
+
+  English
+
+  A logical value. If TRUE, charts are also saved as editable PowerPoint
+  files in `figures/pptx/summary/`. Default is FALSE, which can be
+  changed for all functions with `fao_settings(pptx = TRUE)`.
+
+- `data_version`:
+
+  使用的FAO数据版本；见[`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md)。默认为”latest”。
+
+  English
+
+  The FAO data release to use; see
+  [`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md).
+
+## 返回值
+
+以不可见方式返回一个数据框，每个渔区一行（第一行为总渔获量）。
+
+English
+
+Invisibly, a data frame with one row per area (the first row is the
+total).
+
+## 另请参阅
+
+Other summary analyses:
+[`coastal_distant()`](https://linbojun99.github.io/faofishingreport/reference/coastal_distant.md),
+[`country_group_summary()`](https://linbojun99.github.io/faofishingreport/reference/country_group_summary.md),
+[`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md),
+[`diversity_concentration()`](https://linbojun99.github.io/faofishingreport/reference/diversity_concentration.md),
+[`peak_trend()`](https://linbojun99.github.io/faofishingreport/reference/peak_trend.md),
+[`regime_shift()`](https://linbojun99.github.io/faofishingreport/reference/regime_shift.md),
+[`species_group_composition()`](https://linbojun99.github.io/faofishingreport/reference/species_group_composition.md),
+[`stock_status()`](https://linbojun99.github.io/faofishingreport/reference/stock_status.md)
+
+## 示例
+
+``` r
+
+area_overview(lang = "zh")
+```

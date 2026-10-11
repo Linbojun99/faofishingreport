@@ -19,12 +19,30 @@ Production）按渔区、国家和物种整理成报告用的图表、地图和�
 
 ## ✨ 主要功能
 
-- 💾 **随时用上最新数据**：一行命令检查并下载 FAO 发布的新版本数据。
-- 🌊 **渔区报告**：总产量与突变点、主要物种、主要捕捞国家、世界地图。
+- 💾 **随时用上最新数据**：一行命令检查并下载 FAO
+  发布的新版本数据，并可比较两个版本之间的修订。
+- 🌊
+  **渔区分析**：总产量与突变点、占全球海洋捕捞产量的比例、主要物种、主要捕捞国家、世界地图。
 - 🐟
-  **物种与国家**：某个物种由哪些国家捕捞，某个国家主要捕什么、在哪里捕。
-- 📊 **9
-  项汇总分析**：物种类群结构、资源开发状态（资源状态图）、峰值与趋势、数据质量、集中度与多样性、按国家分组、突变点同步性、沿岸国与远洋捕捞国，以及全部海洋渔区对比。
+  **物种与国家**：某个物种由哪些国家捕捞，某个国家捕什么、在哪里捕，以及其远洋船队的作业范围。
+- 📊
+  **汇总分析**：物种类群结构、资源开发状态图、峰值与趋势、数据质量、多样性与集中度、按国家分组、突变点同步性、沿岸国与远洋捕捞、中上层与底层渔获比，以及全部海洋渔区对比。
+- 🔬 **文献方法分析**：渔获骤变（Cottrell 等 2019；Gephart 等
+  2017）、渔业崩溃（Mullon 等 2005；Worm 等
+  2006，附随机序列对照）、渔获同步性与组合效应（Loreau 和 de Mazancourt
+  2008）。
+- 🌡️ **FishBase 与海温**：FAO 物种与 FishBase、SeaLifeBase
+  物种特征的匹配（数据来自
+  [rfishbase](https://github.com/ropensci/rfishbase)
+  项目发布的数据表副本），FAO 渔区的海表温度，以及渔获平均温度（Cheung
+  等 2013）。
+- 📉 **CMSY++ 资源评估**：对主要物种进行仅基于渔获量的资源评估（Froese
+  等 2023；采用其作者发布的代码
+  <https://github.com/SISTA16/cmsyPlusPlus>，原样内置），自动为本机配置
+  JAGS，输出图表、预测以及生物学参考点和先验参数表。
+- 📝 **一键生成 Word
+  评估报告**：[`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
+  生成中文或英文报告（封面、摘要、数据来源与分析方法、结果、结论、参考文献和附件），每项分析都可以单独开关，各函数的设置用前缀传入。
 - 🌐 **中文、英文或中英双语**图表，国家、物种、渔区名使用 FAO
   官方中文名。
 - 🎨 **自定义风格**：主题、色板、地图投影（Robinson、Mollweide、Equal
@@ -41,12 +59,14 @@ Production）按渔区、国家和物种整理成报告用的图表、地图和�
 ``` r
 
 install.packages("remotes")
-remotes::install_github("Linbojun99/faofishingreport")
+remotes::install_github("Linbojun99/faofishingreport", dependencies = TRUE)
 ```
 
-如需输出可编辑的 PowerPoint 图表，再安装
-eoffice：`install.packages("eoffice")`（macOS 上还需要安装
-[XQuartz](https://www.xquartz.org)）。
+用到的所有 R 包（Word 报告、PowerPoint、FishBase、海表温度、CMSY++
+等）都会随本包一起安装。CMSY++ 还需要 JAGS 程序：运行一次
+[`cmsy_setup()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_setup.md)
+即可。在 macOS 上输出可编辑的 PowerPoint 图表还需要安装
+[XQuartz](https://www.xquartz.org)。
 
 ## 🚀 快速上手
 
@@ -68,9 +88,16 @@ fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
 species_country(FAO34$area_data, "European pilchard(=Sardine)")
 country_species(FAO34$area_data, "Morocco")
 
-# 汇总分析
+# 汇总分析与文献方法分析
 stock_status(FAO34$area_data)
-coastal_distant(FAO34$area_data)
+catch_shocks(FAO34$area_data)
+mean_temperature_catch(FAO34$area_data, version = "builtin")
+
+# 前 10 个主要物种的 CMSY++ 评估（先运行一次 cmsy_setup()）
+cmsy_area("Atlantic, Eastern Central", top = 10)
+
+# 一键生成中文 Word 评估报告，包含 CMSY++ 和渔获骤变
+report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE)
 ```
 
 图表保存在工作目录的 `figures/png/`（需要时也可以同时输出可编辑的
@@ -83,6 +110,8 @@ PowerPoint 到 `figures/pptx/`），表格保存在 `tables/`。
 | ![FAO 34 渔区总产量与突变点](../../reference/figures/readme-area-trend.png) | ![FAO 34 渔区资源状态图](../../reference/figures/readme-stock-status.png) |
 | **中英双语图表** | **Robinson 投影、太平洋居中** |
 | ![中英双语图表](../../reference/figures/readme-bilingual.png) | ![Robinson 投影、太平洋居中的渔区地图](../../reference/figures/readme-area-map.png) |
+| **前 10 个主要物种的 CMSY++ Kobe 图** | **渔获平均温度与海表温度** |
+| ![FAO 34 渔区主要物种的 CMSY++ Kobe 图](../../reference/figures/readme-cmsy-kobe.png) | ![FAO 34 渔区渔获平均温度](../../reference/figures/readme-mtc.png) |
 
 ## 🔧 函数一览
 
@@ -100,7 +129,7 @@ PowerPoint 到 `figures/pptx/`），表格保存在 `tables/`。
 
 | 函数 | 用途 |
 |----|----|
-| [`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md) | 某个 FAO 渔区的产量：趋势、突变点、占全球比例、地图 |
+| [`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md) | 某个 FAO 渔区的产量：趋势、突变点、占全球海洋捕捞产量的比例、地图 |
 | [`fishing_area_species()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_species.md) | 渔区内的主要物种及其产量变化和突变点 |
 | [`fishing_area_country()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_country.md) | 渔区内的主要捕捞国家及其产量变化和突变点 |
 
@@ -126,6 +155,58 @@ PowerPoint 到 `figures/pptx/`），表格保存在 `tables/`。
 | [`regime_shift()`](https://linbojun99.github.io/faofishingreport/reference/regime_shift.md) | 主要物种的突变点，以及多个物种同时突变的年份 |
 | [`coastal_distant()`](https://linbojun99.github.io/faofishingreport/reference/coastal_distant.md) | 沿岸国与远洋捕捞国的产量 |
 
+**🔬 文献方法分析**
+
+| 函数 | 用途 |
+|----|----|
+| [`catch_shocks()`](https://linbojun99.github.io/faofishingreport/reference/catch_shocks.md) | 渔获骤变（Cottrell 等 2019 或 Gephart 等 2017），按年份和类别统计 |
+| [`collapse_analysis()`](https://linbojun99.github.io/faofishingreport/reference/collapse_analysis.md) | 渔业崩溃（Mullon 等 2005 或 Worm 等 2006），与随机序列对照 |
+| [`catch_synchrony()`](https://linbojun99.github.io/faofishingreport/reference/catch_synchrony.md) | 物种或国家渔获量的同步性与组合效应 |
+| [`distant_water_profile()`](https://linbojun99.github.io/faofishingreport/reference/distant_water_profile.md) | 某个国家在邻近渔区和远洋渔区的渔获量变化 |
+| [`compare_releases()`](https://linbojun99.github.io/faofishingreport/reference/compare_releases.md) | 两个 FAO 数据版本之间修订、新增和删除的记录 |
+| [`pelagic_demersal()`](https://linbojun99.github.io/faofishingreport/reference/pelagic_demersal.md) | 中上层与底层渔获比（Caddy 1993；de Leiva Moreno 等 2000） |
+| [`fao_pd_groups()`](https://linbojun99.github.io/faofishingreport/reference/fao_pd_groups.md) | 计为中上层或底层的 ISSCAAP 类群 |
+
+**🌡️ FishBase 与温度**
+
+| 函数 | 用途 |
+|----|----|
+| [`check_fishbase_update()`](https://linbojun99.github.io/faofishingreport/reference/check_fishbase_update.md) | FishBase 和 SeaLifeBase 的最新版本及本机已下载的版本 |
+| [`download_fishbase_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fishbase_data.md) | 下载 FishBase 和 SeaLifeBase 数据表 |
+| [`fishbase_table()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_table.md) | 读取 FishBase 或 SeaLifeBase 数据表 |
+| [`fishbase_match()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_match.md) | 将 FAO 物种条目与 FishBase、SeaLifeBase 匹配，并给出物种特征 |
+| [`fishbase_sources()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_sources.md) | 物种特征的来源、许可证和匹配规则 |
+| [`fao_sst_products()`](https://linbojun99.github.io/faofishingreport/reference/fao_sst_products.md) | 海表温度数据产品及其参考文献 |
+| [`download_sst_data()`](https://linbojun99.github.io/faofishingreport/reference/download_sst_data.md) | 下载海表温度数据 |
+| [`fao_area_sst()`](https://linbojun99.github.io/faofishingreport/reference/fao_area_sst.md) | 各 FAO 渔区的逐年海表温度 |
+| [`mean_temperature_catch()`](https://linbojun99.github.io/faofishingreport/reference/mean_temperature_catch.md) | 渔获平均温度及其趋势，并与海表温度比较 |
+
+**📉 CMSY++ 资源评估**
+
+| 函数 | 用途 |
+|----|----|
+| [`cmsy_area()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_area.md) | 一次完成某个渔区主要物种的 CMSY++ 评估 |
+| [`cmsy_system()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_system.md) | 检查本机的 R、JAGS 和 CMSY++ 所需的包 |
+| [`cmsy_setup()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_setup.md) | 安装 JAGS 和 CMSY++ 所需的 R 包 |
+| [`cmsy_jags_versions()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_jags_versions.md) | 各 R 版本对应的 JAGS 和 rjags 版本 |
+| [`cmsy_download_jags()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_download_jags.md) | 下载适合本机的 JAGS 安装程序 |
+| [`cmsy_install_jags()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_install_jags.md) | 安装 JAGS |
+| [`cmsy_sources()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_sources.md) | CMSY++ 所用各部分的版本、链接和引用格式 |
+| [`cmsy_priors()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_priors.md) | 来自 FishBase 和 SeaLifeBase 的 r 先验 |
+| [`cmsy_input()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_input.md) | 将 FAO 渔获数据转换为 CMSY++ 输入文件 |
+| [`cmsy_defaults()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_defaults.md) | CMSY++ 设置及其默认值 |
+| [`cmsy_run()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_run.md) | 运行 CMSY++ |
+| [`cmsy_plot()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_plot.md) | CMSY++ 结果图表 |
+| [`cmsy_forecast()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_forecast.md) | 不同捕捞情景下的预测 |
+| [`cmsy_compare()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_compare.md) | 比较多次 CMSY++ 运行结果 |
+| [`cmsy_tables()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_tables.md) | 报告用的先验参数表和结果表 |
+
+**📝 报告**
+
+| 函数 | 用途 |
+|----|----|
+| [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md) | 一键生成某个渔区的中文或英文 Word 评估报告，每项分析都可以单独开关 |
+
 **🎨 设置与语言**
 
 | 函数 | 用途 |
@@ -148,10 +229,21 @@ PowerPoint 到 `figures/pptx/`），表格保存在 `tables/`。
   类群结构、资源状态与趋势](https://linbojun99.github.io/faofishingreport/articles/zh/status-trends.md)
 - [🔍
   数据质量、多样性与船队](https://linbojun99.github.io/faofishingreport/articles/zh/quality-diversity-fleets.md)
+- [🔬
+  渔获骤变、渔业崩溃、同步性与远洋捕捞](https://linbojun99.github.io/faofishingreport/articles/zh/literature-analyses.md)
+- [🌡️
+  海表温度与渔获平均温度](https://linbojun99.github.io/faofishingreport/articles/zh/sst-mtc.md)
+- [🐠 FishBase 与 SeaLifeBase
+  物种特征](https://linbojun99.github.io/faofishingreport/articles/zh/fishbase.md)
+- [📉 CMSY++
+  资源评估](https://linbojun99.github.io/faofishingreport/articles/zh/cmsy.md)
+- [📝 一键生成 Word
+  评估报告](https://linbojun99.github.io/faofishingreport/articles/zh/report.md)
 - [🎨
   自定义图表与地图](https://linbojun99.github.io/faofishingreport/articles/zh/customise.md)
 
-每个函数的参数说明见[函数参考](https://linbojun99.github.io/faofishingreport/reference/index.md)（英文）。
+每篇文档最后都列出了所用方法和数据的参考文献及其 DOI
+或网址。每个函数的参数说明见[函数参考](https://linbojun99.github.io/faofishingreport/reference/index.md)（英文）。
 
 ## 📊 数据来源
 

@@ -11,15 +11,36 @@ country and species, in English, Chinese or both.
 ## ✨ Features
 
 - 💾 **Always the latest data**: check for and download new FAO releases
-  with one command.
-- 🌊 **Fishing area reports**: total catch with breakpoints, main
-  species, main countries, maps.
+  with one command, and compare releases to see what FAO revised.
+- 🌊 **Fishing area analyses**: total catch with breakpoints, share of
+  the world marine catch, main species, main countries, maps.
 - 🐟 **Species and country profiles**: who catches a species, what a
-  country catches, and where.
-- 📊 **Nine summary analyses**: species group composition, stock status
-  plots, peak and trend, data quality, diversity and concentration,
-  country groups, synchronous breakpoints, coastal versus distant-water
-  fleets, and an overview of all FAO marine areas.
+  country catches, where it fishes and how far its distant-water fleet
+  goes.
+- 📊 **Summary analyses**: species groups, stock status plots, peak and
+  trend, data quality, diversity and concentration, country groups,
+  synchronous breakpoints, coastal and distant-water fleets, pelagic to
+  demersal ratio, and all FAO marine areas compared.
+- 🔬 **Analyses from the literature**: catch shocks (Cottrell et
+  al. 2019; Gephart et al. 2017), fishery collapses (Mullon et al. 2005;
+  Worm et al. 2006) with a random null model, synchrony and portfolio
+  effect (Loreau & de Mazancourt 2008).
+- 🌡️ **FishBase and sea temperature**: FishBase and SeaLifeBase traits
+  matched to FAO species (data snapshots of the
+  [rfishbase](https://github.com/ropensci/rfishbase) project), sea
+  surface temperature of the FAO areas, and the mean temperature of the
+  catch (Cheung et al. 2013).
+- 📉 **CMSY++ stock assessment** of the main species (Froese et
+  al. 2023; code of its authors from
+  <https://github.com/SISTA16/cmsyPlusPlus>, bundled unchanged), with
+  JAGS set up for your computer, charts, projections and tables of
+  reference points and priors.
+- 📝 **Word assessment report in one call**:
+  [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
+  writes a report in Chinese or English (cover, abstract, data and
+  methods, results, conclusions, references, appendix), with every
+  analysis switched on or off and the settings of each function given
+  with a prefix.
 - 🌐 **English, Chinese or bilingual** charts with the official FAO
   Chinese names.
 - 🎨 **Your style**: themes, colour palettes, map projections (Robinson,
@@ -35,12 +56,15 @@ faofishingreport needs R 4.2 or later. Install it from GitHub:
 ``` r
 
 install.packages("remotes")
-remotes::install_github("Linbojun99/faofishingreport")
+remotes::install_github("Linbojun99/faofishingreport", dependencies = TRUE)
 ```
 
-For editable PowerPoint charts, also install eoffice:
-`install.packages("eoffice")` (on macOS it also needs
-[XQuartz](https://www.xquartz.org)).
+All the packages it uses are installed with it (Word reports,
+PowerPoint, FishBase, sea surface temperature, CMSY++). CMSY++ also
+needs the JAGS program: run
+[`cmsy_setup()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_setup.md)
+once. On macOS, editable PowerPoint charts need
+[XQuartz](https://www.xquartz.org).
 
 ## 🚀 Quick start
 
@@ -61,9 +85,16 @@ fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
 species_country(FAO34$area_data, "European pilchard(=Sardine)", lang = "both")
 country_species(FAO34$area_data, "Morocco")
 
-# Summary analyses
+# Summary analyses and analyses from the literature
 stock_status(FAO34$area_data)
-coastal_distant(FAO34$area_data)
+catch_shocks(FAO34$area_data)
+mean_temperature_catch(FAO34$area_data, version = "builtin")
+
+# CMSY++ for the ten main species (run cmsy_setup() once before)
+cmsy_area("Atlantic, Eastern Central", top = 10)
+
+# A Word assessment report of the area, in Chinese, with CMSY++ and catch shocks
+report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE)
 ```
 
 Charts are saved in `figures/png/` (and, if you want, editable
@@ -76,6 +107,8 @@ PowerPoint in `figures/pptx/`), tables in `tables/`.
 | ![Total catch of FAO area 34 with breakpoints](reference/figures/readme-area-trend.png) | ![Stock status plot of FAO area 34](reference/figures/readme-stock-status.png) |
 | **Bilingual charts** | **Robinson projection, Pacific-centred** |
 | ![Bilingual chart of the main countries](reference/figures/readme-bilingual.png) | ![Pacific-centred Robinson map of FAO areas](reference/figures/readme-area-map.png) |
+| **CMSY++ Kobe plot of the ten main species** | **Mean temperature of the catch and sea surface temperature** |
+| ![CMSY++ Kobe plot of the main species of FAO area 34](reference/figures/readme-cmsy-kobe.png) | ![Mean temperature of the catch of FAO area 34](reference/figures/readme-mtc.png) |
 
 ## 🔧 Function reference
 
@@ -93,7 +126,7 @@ PowerPoint in `figures/pptx/`), tables in `tables/`.
 
 | Function | Description |
 |----|----|
-| [`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md) | Catch of one FAO fishing area: trend, breakpoints, share of world catch, map |
+| [`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md) | Catch of one FAO fishing area: trend, breakpoints, share of the world marine catch, map |
 | [`fishing_area_species()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_species.md) | Main species of an area, their catch and breakpoints |
 | [`fishing_area_country()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_country.md) | Main countries of an area, their catch and breakpoints |
 
@@ -119,6 +152,58 @@ PowerPoint in `figures/pptx/`), tables in `tables/`.
 | [`regime_shift()`](https://linbojun99.github.io/faofishingreport/reference/regime_shift.md) | Breakpoints of the main species and years when many change together |
 | [`coastal_distant()`](https://linbojun99.github.io/faofishingreport/reference/coastal_distant.md) | Catch by coastal countries and distant-water fleets |
 
+**🔬 Analyses from the literature**
+
+| Function | Description |
+|----|----|
+| [`catch_shocks()`](https://linbojun99.github.io/faofishingreport/reference/catch_shocks.md) | Catch shocks (Cottrell et al. 2019 or Gephart et al. 2017), by year and group |
+| [`collapse_analysis()`](https://linbojun99.github.io/faofishingreport/reference/collapse_analysis.md) | Fishery collapses (Mullon et al. 2005 or Worm et al. 2006) against random series |
+| [`catch_synchrony()`](https://linbojun99.github.io/faofishingreport/reference/catch_synchrony.md) | Synchrony of species or country catches and the portfolio effect |
+| [`distant_water_profile()`](https://linbojun99.github.io/faofishingreport/reference/distant_water_profile.md) | A country’s catch in adjacent and distant-water FAO areas over time |
+| [`compare_releases()`](https://linbojun99.github.io/faofishingreport/reference/compare_releases.md) | Records revised, added or removed between two FAO releases |
+| [`pelagic_demersal()`](https://linbojun99.github.io/faofishingreport/reference/pelagic_demersal.md) | Pelagic to demersal catch ratio (Caddy 1993; de Leiva Moreno et al. 2000) |
+| [`fao_pd_groups()`](https://linbojun99.github.io/faofishingreport/reference/fao_pd_groups.md) | ISSCAAP groups counted as pelagic or demersal |
+
+**🌡️ FishBase and temperature**
+
+| Function | Description |
+|----|----|
+| [`check_fishbase_update()`](https://linbojun99.github.io/faofishingreport/reference/check_fishbase_update.md) | Latest FishBase and SeaLifeBase releases and the ones downloaded |
+| [`download_fishbase_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fishbase_data.md) | Download FishBase and SeaLifeBase tables |
+| [`fishbase_table()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_table.md) | Read a FishBase or SeaLifeBase table |
+| [`fishbase_match()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_match.md) | Match FAO species items to FishBase and SeaLifeBase, with their traits |
+| [`fishbase_sources()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_sources.md) | Sources, licences and matching rules of the traits |
+| [`fao_sst_products()`](https://linbojun99.github.io/faofishingreport/reference/fao_sst_products.md) | Sea surface temperature products and their references |
+| [`download_sst_data()`](https://linbojun99.github.io/faofishingreport/reference/download_sst_data.md) | Download a sea surface temperature product |
+| [`fao_area_sst()`](https://linbojun99.github.io/faofishingreport/reference/fao_area_sst.md) | Sea surface temperature of the FAO areas by year |
+| [`mean_temperature_catch()`](https://linbojun99.github.io/faofishingreport/reference/mean_temperature_catch.md) | Mean temperature of the catch and its trend, compared with SST |
+
+**📉 CMSY++ stock assessment**
+
+| Function | Description |
+|----|----|
+| [`cmsy_area()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_area.md) | CMSY++ for the main species of an area in one call |
+| [`cmsy_system()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_system.md) | Check the computer: R, JAGS and the packages CMSY++ needs |
+| [`cmsy_setup()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_setup.md) | Install JAGS and the R packages of CMSY++ |
+| [`cmsy_jags_versions()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_jags_versions.md) | JAGS and rjags versions that match each R version |
+| [`cmsy_download_jags()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_download_jags.md) | Download the JAGS installer for the computer |
+| [`cmsy_install_jags()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_install_jags.md) | Install JAGS |
+| [`cmsy_sources()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_sources.md) | Versions, links and citations of everything CMSY++ uses |
+| [`cmsy_priors()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_priors.md) | Priors of r from FishBase and SeaLifeBase |
+| [`cmsy_input()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_input.md) | FAO catch data to CMSY++ input files |
+| [`cmsy_defaults()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_defaults.md) | CMSY++ settings and their defaults |
+| [`cmsy_run()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_run.md) | Run CMSY++ |
+| [`cmsy_plot()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_plot.md) | Charts of the CMSY++ results |
+| [`cmsy_forecast()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_forecast.md) | Projections under fishing scenarios |
+| [`cmsy_compare()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_compare.md) | Compare CMSY++ runs |
+| [`cmsy_tables()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_tables.md) | Tables of priors and results for reports |
+
+**📝 Reports**
+
+| Function | Description |
+|----|----|
+| [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md) | Word assessment report of a fishing area, in Chinese or English, with every analysis switched on or off |
+
 **🎨 Settings and language**
 
 | Function | Description |
@@ -142,8 +227,21 @@ countries](https://linbojun99.github.io/faofishingreport/articles/species-countr
 trends](https://linbojun99.github.io/faofishingreport/articles/status-trends.html)
 · [🔍 Quality, diversity and
 fleets](https://linbojun99.github.io/faofishingreport/articles/quality-diversity-fleets.html)
+· [🔬 Shocks, collapses, synchrony and
+fleets](https://linbojun99.github.io/faofishingreport/articles/literature-analyses.html)
+· [🌡️ Sea temperature and catch
+temperature](https://linbojun99.github.io/faofishingreport/articles/sst-mtc.html)
+· [🐠 FishBase
+traits](https://linbojun99.github.io/faofishingreport/articles/fishbase.html)
+· [📉
+CMSY++](https://linbojun99.github.io/faofishingreport/articles/cmsy.html)
+· [📝 Word
+report](https://linbojun99.github.io/faofishingreport/articles/report.html)
 · [🎨
 Customise](https://linbojun99.github.io/faofishingreport/articles/customise.html)
+
+Every guide ends with the references of the methods and data it uses,
+with their DOI or link.
 
 ## 📊 Data source
 
@@ -214,7 +312,7 @@ Total catch, main species and main countries of an FAO fishing area.
 - [`fishing_area_species()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_species.md)
   : Fishing Area Species Analysis
 - [`fishing_area_country()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_country.md)
-  : Fishing Area country Analysis
+  : Fishing Area Country Analysis
 
 ## 🐟 Species and countries
 
@@ -252,6 +350,93 @@ Composition, stock status, trends, data quality, diversity and fleets.
 - [`coastal_distant()`](https://linbojun99.github.io/faofishingreport/reference/coastal_distant.md)
   : Catch by Coastal Countries and Distant-Water Fleets
 
+## 🔬 Literature-based analyses
+
+Analyses that follow published methods, each citing its sources.
+
+- [`catch_shocks()`](https://linbojun99.github.io/faofishingreport/reference/catch_shocks.md)
+  : Catch Shocks
+- [`collapse_analysis()`](https://linbojun99.github.io/faofishingreport/reference/collapse_analysis.md)
+  : Fishery Collapses
+- [`catch_synchrony()`](https://linbojun99.github.io/faofishingreport/reference/catch_synchrony.md)
+  : Synchrony and Stability of the Catch
+- [`distant_water_profile()`](https://linbojun99.github.io/faofishingreport/reference/distant_water_profile.md)
+  : Distant-Water Profile of a Country
+- [`compare_releases()`](https://linbojun99.github.io/faofishingreport/reference/compare_releases.md)
+  : Compare Two FAO Data Releases
+- [`pelagic_demersal()`](https://linbojun99.github.io/faofishingreport/reference/pelagic_demersal.md)
+  : Pelagic/Demersal Catch Ratio
+- [`fao_pd_groups()`](https://linbojun99.github.io/faofishingreport/reference/fao_pd_groups.md)
+  : Pelagic and Demersal Species Groups
+
+## 🌡️ FishBase and temperature
+
+Species traits from FishBase and SeaLifeBase, sea surface temperature,
+and the mean temperature of the catch.
+
+- [`check_fishbase_update()`](https://linbojun99.github.io/faofishingreport/reference/check_fishbase_update.md)
+  : Check for the Latest FishBase and SeaLifeBase Releases
+- [`download_fishbase_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fishbase_data.md)
+  : Download FishBase and SeaLifeBase Data
+- [`fishbase_table()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_table.md)
+  : Read a FishBase or SeaLifeBase Table
+- [`fishbase_match()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_match.md)
+  : Match FAO Species Items to FishBase and SeaLifeBase
+- [`fishbase_sources()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_sources.md)
+  : Sources, Licences and Matching Rules of the FishBase Data
+- [`fao_sst_products()`](https://linbojun99.github.io/faofishingreport/reference/fao_sst_products.md)
+  : Sea Surface Temperature Products
+- [`download_sst_data()`](https://linbojun99.github.io/faofishingreport/reference/download_sst_data.md)
+  : Download a Sea Surface Temperature Product
+- [`fao_area_sst()`](https://linbojun99.github.io/faofishingreport/reference/fao_area_sst.md)
+  : Sea Surface Temperature of the FAO Major Fishing Areas
+- [`mean_temperature_catch()`](https://linbojun99.github.io/faofishingreport/reference/mean_temperature_catch.md)
+  : Mean Temperature of the Catch
+
+## 📉 CMSY++ stock assessment
+
+Catch-only stock assessment with the bundled CMSY++ code, FishBase
+priors and JAGS set up for the operating system.
+
+- [`cmsy_area()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_area.md)
+  : Run CMSY++ for the Main Species of a Fishing Area
+- [`cmsy_system()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_system.md)
+  : Check the Computer for CMSY++ and Choose the Settings for It
+- [`cmsy_setup()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_setup.md)
+  : Install JAGS and the R Packages Needed by CMSY++
+- [`cmsy_jags_versions()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_jags_versions.md)
+  : Which JAGS Version Goes with Which R Version
+- [`cmsy_download_jags()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_download_jags.md)
+  : Download the JAGS Installer that Matches This Computer
+- [`cmsy_install_jags()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_install_jags.md)
+  : Download and Open the JAGS Installer
+- [`cmsy_sources()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_sources.md)
+  : Sources of CMSY++ and the Software It Needs
+- [`cmsy_priors()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_priors.md)
+  : FishBase and SeaLifeBase Priors for CMSY++
+- [`cmsy_input()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_input.md)
+  : Prepare FAO Catch Data for CMSY++
+- [`cmsy_defaults()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_defaults.md)
+  : Settings of CMSY++ and Their Defaults
+- [`cmsy_run()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_run.md)
+  : Run CMSY++ on FAO Catch Data
+- [`cmsy_plot()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_plot.md)
+  : Charts of CMSY++ Results
+- [`cmsy_forecast()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_forecast.md)
+  : Project CMSY++ Results under Fishing Scenarios
+- [`cmsy_compare()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_compare.md)
+  : Compare CMSY++ Runs, or CMSY++ with Other Assessments
+- [`cmsy_tables()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_tables.md)
+  : Tables of CMSY++ Priors and Results for Reports
+
+## 📝 Reports
+
+A Word report of a fishing area, in Chinese or English, written from the
+results.
+
+- [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
+  : Assessment Report of an FAO Fishing Area
+
 ## 🎨 Settings and language
 
 Chart style, map projection, colours, fonts and Chinese names.
@@ -270,8 +455,9 @@ Chart style, map projection, colours, fonts and Chinese names.
 - [🚀 Get
   started](https://linbojun99.github.io/faofishingreport/articles/get-started.md):
 
-  Install faofishingreport, update the FAO data and produce the first
-  charts for the Eastern Central Atlantic (FAO area 34).
+  Install faofishingreport, update the FAO data, produce the first
+  charts for the Eastern Central Atlantic (FAO area 34) and write a Word
+  report in one call.
 
 - [💾 FAO data: download and
   customise](https://linbojun99.github.io/faofishingreport/articles/data.md):
@@ -297,8 +483,9 @@ Chart style, map projection, colours, fonts and Chinese names.
   trends](https://linbojun99.github.io/faofishingreport/articles/status-trends.md):
 
   species_group_composition(), stock_status(), peak_trend(),
-  area_overview() and regime_shift(): what is caught, how the stocks
-  have developed, and when things changed.
+  area_overview(), regime_shift(), pelagic_demersal() and
+  fao_pd_groups(): what is caught, how the stocks have developed, and
+  when things changed.
 
 - [🔍 Data quality, diversity and
   fleets](https://linbojun99.github.io/faofishingreport/articles/quality-diversity-fleets.md):
@@ -307,11 +494,55 @@ Chart style, map projection, colours, fonts and Chinese names.
   coastal_distant(): how reliable the data are, how diverse and
   concentrated the catch is, and who is fishing.
 
+- [🔬 Shocks, collapses, synchrony and
+  fleets](https://linbojun99.github.io/faofishingreport/articles/literature-analyses.md):
+
+  catch_shocks(), collapse_analysis(), catch_synchrony(),
+  distant_water_profile() and compare_releases(): abrupt falls and
+  collapses of the catch, how synchronously catches fluctuate, where a
+  country’s fleets fish, and what FAO revised between two data releases,
+  each following published methods.
+
+- [🌡️ Sea temperature and catch
+  temperature](https://linbojun99.github.io/faofishingreport/articles/sst-mtc.md):
+
+  fao_sst_products(), fao_area_sst(), download_sst_data() and
+  mean_temperature_catch(): the sea surface temperature of the FAO
+  fishing areas, how to use your own SST files, and what you must check
+  before using the mean temperature of the catch.
+
+- [🐠 FishBase and SeaLifeBase
+  traits](https://linbojun99.github.io/faofishingreport/articles/fishbase.md):
+
+  check_fishbase_update(), download_fishbase_data(), fishbase_table(),
+  fishbase_match() and fishbase_sources(): species traits from FishBase
+  and SeaLifeBase, how they are matched to the FAO species items, and
+  how the mean temperature of the catch and the CMSY++ priors use them.
+
+- [📉 CMSY++ catch-only stock
+  assessment](https://linbojun99.github.io/faofishingreport/articles/cmsy.md):
+
+  cmsy_area(), cmsy_system(), cmsy_setup(), cmsy_install_jags(),
+  cmsy_download_jags(), cmsy_jags_versions(), cmsy_sources(),
+  cmsy_priors(), cmsy_input(), cmsy_defaults(), cmsy_run(), cmsy_plot(),
+  cmsy_forecast(), cmsy_compare() and cmsy_tables(): catch-only
+  assessments of FAO catch series with the bundled CMSY++ code, FishBase
+  priors and JAGS.
+
+- [📝 Assessment report in
+  Word](https://linbojun99.github.io/faofishingreport/articles/report.md):
+
+  fao_report(): a Word assessment report of an FAO fishing area in
+  Chinese or English in one call. Its contents, arguments, sections and
+  their settings, format, citation styles, the CMSY++ part, the tables
+  it returns and the templates of its text.
+
 - [🎨 Customise charts and
   maps](https://linbojun99.github.io/faofishingreport/articles/customise.md):
 
   fao_settings(): language, theme, colour palettes, map projection and
-  centre, fonts, grid lines, resolution and PowerPoint output.
+  centre, fonts, grid lines, resolution, PowerPoint output and data
+  folders.
 
 ### 中文文档
 
@@ -324,43 +555,70 @@ Chart style, map projection, colours, fonts and Chinese names.
 - [🚀
   快速入门](https://linbojun99.github.io/faofishingreport/articles/zh/get-started.md):
 
-  安装 faofishingreport，更新 FAO 数据，并为中东大西洋（FAO 34
-  渔区）绘制第一批图表。
+  安装faofishingreport，更新FAO数据，为中东大西洋（FAO
+  34渔区）绘制第一批图表，并一键生成Word报告。
 
-- [💾 FAO
-  数据：下载与自定义](https://linbojun99.github.io/faofishingreport/articles/zh/data.md):
+- [💾
+  FAO数据：下载与自定义](https://linbojun99.github.io/faofishingreport/articles/zh/data.md):
 
-  数据从哪里来，如何检查和下载 FAO 的新版本，数据格式是什么样的，
+  数据从哪里来，如何检查和下载FAO的新版本，数据格式是什么样的，
   以及如何分析自己的数据子集。
 
 - [🌊
   渔区分析](https://linbojun99.github.io/faofishingreport/articles/zh/fishing-areas.md):
 
-  fishing_area_data()、fishing_area_species() 和
-  fishing_area_country()：某个 FAO
-  渔区的总产量、主要物种和主要捕捞国家，以及全部选项。
+  fishing_area_data()、fishing_area_species()和fishing_area_country()：某个FAO渔区的总产量、主要物种和主要捕捞国家，以及全部选项。
 
 - [🐟
   物种与国家分析](https://linbojun99.github.io/faofishingreport/articles/zh/species-countries.md):
 
-  species_country()、country_species() 和
-  country_analysis()：某个物种由哪些国家捕捞，某个国家在一个渔区捕什么，以及某个国家在全部
-  FAO 渔区的产量。
+  species_country()、country_species()和country_analysis()：某个物种由哪些国家捕捞，某个国家在一个渔区捕什么，以及某个国家在全部FAO渔区的产量。
 
 - [📈
   类群结构、资源状态与趋势](https://linbojun99.github.io/faofishingreport/articles/zh/status-trends.md):
 
-  species_group_composition()、stock_status()、peak_trend()、area_overview()
-  和 regime_shift()：捕捞了什么，各种群如何发展，以及何时发生了变化。
+  species_group_composition()、stock_status()、peak_trend()、area_overview()、regime_shift()、pelagic_demersal()和fao_pd_groups()：捕捞了什么，各种群如何发展，以及何时发生了变化。
 
 - [🔍
   数据质量、多样性与船队](https://linbojun99.github.io/faofishingreport/articles/zh/quality-diversity-fleets.md):
 
-  data_quality()、diversity_concentration()、country_group_summary() 和
-  coastal_distant()：数据有多可靠，产量的多样性和集中程度如何，以及是谁在捕捞。
+  data_quality()、diversity_concentration()、country_group_summary()和coastal_distant()：数据有多可靠，产量的多样性和集中程度如何，以及是谁在捕捞。
+
+- [🔬
+  渔获骤变、渔业崩溃、同步性与远洋捕捞](https://linbojun99.github.io/faofishingreport/articles/zh/literature-analyses.md):
+
+  catch_shocks()、collapse_analysis()、catch_synchrony()、distant_water_profile()和compare_releases()：按已发表的方法识别渔获量的骤降和崩溃，衡量各渔获序列波动的同步程度，追踪一个国家的船队在哪些渔区作业，并查看FAO在两个数据版本之间修订了什么。
+
+- [🌡️
+  海表温度与渔获平均温度](https://linbojun99.github.io/faofishingreport/articles/zh/sst-mtc.md):
+
+  fao_sst_products()、fao_area_sst()、download_sst_data()和mean_temperature_catch()：FAO渔区的海表温度，如何使用自己的SST文件，以及使用渔获平均温度之前必须核对的内容。
+
+- [🐠 FishBase 与 SeaLifeBase
+  物种特征](https://linbojun99.github.io/faofishingreport/articles/zh/fishbase.md):
+
+  check_fishbase_update()、download_fishbase_data()、fishbase_table()、fishbase_match()和fishbase_sources()：FishBase与SeaLifeBase的物种特征，它们如何与FAO物种条目匹配，以及渔获平均温度和CMSY++先验如何使用这些特征。
+
+- [📉
+  CMSY++仅渔获量资源评估](https://linbojun99.github.io/faofishingreport/articles/zh/cmsy.md):
+
+  cmsy_area()、cmsy_system()、cmsy_setup()、cmsy_install_jags()、cmsy_download_jags()、cmsy_jags_versions()、cmsy_sources()、cmsy_priors()、cmsy_input()、cmsy_defaults()、cmsy_run()、cmsy_plot()、cmsy_forecast()、cmsy_compare()和cmsy_tables()：用包内置的CMSY++代码、FishBase先验和JAGS，对FAO渔获序列做仅渔获量评估。
+
+- [📝 一键生成 Word
+  评估报告](https://linbojun99.github.io/faofishingreport/articles/zh/report.md):
+
+  fao_report()：一次调用即可生成某个FAO渔区的中文或英文Word评估报告。本文介绍报告的内容、参数、各分析章节及其设置、格式、引文格式、CMSY++部分、返回的表格以及报告文字的模板。
 
 - [🎨
   自定义图表与地图](https://linbojun99.github.io/faofishingreport/articles/zh/customise.md):
 
-  fao_settings()：语言、主题、色板、地图投影与中心、字体、网格线、分辨率和
-  PowerPoint 输出。
+  fao_settings()：语言、主题、色板、地图投影与中心、字体、网格线、分辨率、PowerPoint输出和数据文件夹。
+
+### 中文函数参考
+
+全部函数的中文说明，附英文原文对照（由 data-raw/make_zh_reference.R
+生成）。
+
+- [函数参考](https://linbojun99.github.io/faofishingreport/articles/zh/reference/index.md):
+
+  faofishingreport全部函数的中文说明

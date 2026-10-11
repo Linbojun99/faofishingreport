@@ -13,7 +13,7 @@ faofishingreport.&amp;lt;name&amp;gt;, so it can also be set with options()."><m
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,6 +30,11 @@ faofishingreport.&amp;lt;name&amp;gt;, so it can also be set with options()."><m
     <li><a class="dropdown-item" href="../articles/species-countries.html">🐟 Species and countries</a></li>
     <li><a class="dropdown-item" href="../articles/status-trends.html">📈 Composition, stock status and trends</a></li>
     <li><a class="dropdown-item" href="../articles/quality-diversity-fleets.html">🔍 Data quality, diversity and fleets</a></li>
+    <li><a class="dropdown-item" href="../articles/literature-analyses.html">🔬 Shocks, collapses, synchrony and fleets</a></li>
+    <li><a class="dropdown-item" href="../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
+    <li><a class="dropdown-item" href="../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
+    <li><a class="dropdown-item" href="../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
+    <li><a class="dropdown-item" href="../articles/report.html">📝 Assessment report in Word</a></li>
     <li><a class="dropdown-item" href="../articles/customise.html">🎨 Customise charts and maps</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -124,6 +129,22 @@ package). Default is FALSE.</p></dd>
 <dd><p>Folder where <code><a href="download_fao_data.html">download_fao_data()</a></code> saves FAO releases and where all
 functions look for them, e.g. a folder shared by a team. Default is NULL, the user data
 folder of R; see <code><a href="fao_data_dir.html">fao_data_dir()</a></code>.</p></dd>
+
+<dt>online</dt>
+<dd><p>Whether functions may connect to the internet to look for the newest FishBase
+release (see <code><a href="fishbase_table.html">fishbase_table()</a></code>). Default is TRUE; use FALSE to work offline with the
+downloaded copy, e.g. on a slow connection.</p></dd>
+
+<dt>sst</dt>
+<dd><p>The sea surface temperature (SST) data used by <code><a href="fao_area_sst.html">fao_area_sst()</a></code> and
+<code><a href="mean_temperature_catch.html">mean_temperature_catch()</a></code>: "ersst5" (default, NOAA ERSST v5, built into the package), a
+product downloaded with <code><a href="download_sst_data.html">download_sst_data()</a></code> (e.g. "hadisst1"), or the path of your own
+NetCDF file, or of a folder of NetCDF files (see <code><a href="fao_area_sst.html">fao_area_sst()</a></code>).</p></dd>
+
+<dt>silent</dt>
+<dd><p>Whether the CMSY++ functions (<code><a href="cmsy_run.html">cmsy_run()</a></code>, <code><a href="cmsy_plot.html">cmsy_plot()</a></code>, ...) work
+silently, without progress bars and messages. Default is FALSE. Their <code>silent</code> argument
+still takes precedence.</p></dd>
 
 
 </dl></dd>

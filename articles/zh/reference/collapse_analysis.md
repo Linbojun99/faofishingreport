@@ -1,0 +1,245 @@
+# collapse_analysis(): 渔业崩溃
+
+英文原页：[`collapse_analysis()`](https://linbojun99.github.io/faofishingreport/reference/collapse_analysis.md)
+
+## 说明
+
+本函数用Mullon等（2005）或Worm等（2006）的定义找出已崩溃的渔获量序列，给出崩溃序列的数量、崩溃发生的时间、所在的渔区和物种类群，并按Mullon等（2005）的方法给出崩溃前下降过程的形态。
+
+English
+
+This function finds collapsed catch series, with the definitions of
+Mullon et al. (2005) or Worm et al. (2006), and gives how many series
+collapsed, when, in which areas and species groups and, following Mullon
+et al. (2005), the shape of the decline before the collapse.
+
+## 用法
+
+``` r
+
+collapse_analysis(
+  area_data,
+  method = c("mullon2005", "worm2006"),
+  exclude_countries = c("Un. Sov. Soc. Rep.", "Yugoslavia SFR", "Czechoslovakia",
+    "South Africa", "Namibia", "China"),
+  complete_years = 20,
+  min_mean_catch = 500,
+  min_total_catch = 10000,
+  null_model = TRUE,
+  n_sim = 100,
+  plot = TRUE,
+  table = TRUE,
+  lang = NULL,
+  pptx = getOption("faofishingreport.pptx", FALSE),
+  label = NULL
+)
+```
+
+## 参数
+
+- `area_data`:
+
+  FAO渔获数据：`fishing_area_data()$area_data`，或[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)的任意子集（例如一个国家，或几个渔区）。
+
+  English
+
+  FAO catch data: `fishing_area_data()$area_data`, or any subset of
+  [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)
+  (e.g. one country, or several fishing areas).
+
+- `method`:
+
+  “mullon2005”（默认）或”worm2006”。
+
+  English
+
+  “mullon2005” (default) or “worm2006”.
+
+- `exclude_countries`:
+
+  方法为”mullon2005”时剔除的国家。默认为Mullon等（2005）剔除的国家。
+
+  English
+
+  Countries left out with method “mullon2005”. Default is those left out
+  by Mullon et al. (2005).
+
+- `complete_years`:
+
+  方法为”mullon2005”时，序列在数据最后这么多年中的每一年都必须有记录。默认为20。
+
+  English
+
+  With method “mullon2005”, series must have a record in each of the
+  last this many years of the data. Default is 20.
+
+- `min_mean_catch`:
+
+  方法为”mullon2005”时，序列的最低年平均渔获量（吨/年）。默认为500。
+
+  English
+
+  With method “mullon2005”, the minimum mean catch of a series in tonnes
+  a year. Default is 500.
+
+- `min_total_catch`:
+
+  方法为”worm2006”时，一个渔业的最低总渔获量（吨）。默认为10000。
+
+  English
+
+  With method “worm2006”, the minimum total catch of a fishery in
+  tonnes. Default is 10 000.
+
+- `null_model`:
+
+  逻辑值。为TRUE（默认）时，在没有趋势的随机序列（零模型）上重复分析（Wilberg和Miller，2007）。
+
+  English
+
+  A logical value. If TRUE (default), the analysis is repeated on random
+  series with no trend (Wilberg and Miller 2007).
+
+- `n_sim`:
+
+  零模型随机数据集的个数。默认为100。
+
+  English
+
+  The number of random data sets of the null model. Default is 100.
+
+- `plot`:
+
+  逻辑值。为TRUE（默认）时，图表保存在figures/png/summary/。
+
+  English
+
+  A logical value. If TRUE (default), charts are saved in
+  `figures/png/summary/`.
+
+- `table`:
+
+  逻辑值。为TRUE（默认）时，表格保存在tables/。
+
+  English
+
+  A logical value. If TRUE (default), tables are saved in `tables/`.
+
+- `lang`:
+
+  图表文字和名称的语言：“en”（英文）、“zh”（中文）或”both”（中英双语）。默认为NULL，即使用[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)设置的语言（未更改时为”en”）。
+
+  English
+
+  The language of the chart text and names: “en” (English), “zh”
+  (Chinese) or “both” (Chinese and English). Default is NULL, which uses
+  the language set with
+  [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+  (“en” unless changed).
+
+- `pptx`:
+
+  逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在figures/pptx/summary/。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。
+
+  English
+
+  A logical value. If TRUE, charts are also saved as editable PowerPoint
+  files in `figures/pptx/summary/`. Default is FALSE, which can be
+  changed for all functions with `fao_settings(pptx = TRUE)`.
+
+- `label`:
+
+  输出文件名中使用的名称。默认为数据所属的渔区（或国家）。
+
+  English
+
+  The name used in the output file names. Default is the fishing area
+  (or the country) of the data.
+
+## 返回值
+
+以不可见方式返回一个列表，包括`series`（每条序列一行：最高值、崩溃年份和类型）、`summary`（按类型统计的崩溃序列数量和比例，并附零模型的结果）、`by_year`（每年的崩溃次数，或处于崩溃状态的渔业所占的比例）和`by_group`（按FAO渔区和物种类群统计的崩溃序列比例）。
+
+English
+
+Invisibly, a list with `series` (one row per series: maximum, collapse
+year and type), `summary` (number and share of collapsed series by type,
+with the null model), `by_year` (collapses or the share of collapsed
+fisheries in each year) and `by_group` (share of collapsed series by FAO
+area and species group).
+
+## 详细说明
+
+- **“mullon2005”（默认）**：一条序列是一个国家在一个FAO渔区对一个物种或一个属的渔获量。按Mullon等（2005，第112页）的做法，剔除以下数据：未鉴定到属或种的条目；`exclude_countries`中的国家（默认为Mullon等剔除的国家：前苏联、南斯拉夫和捷克斯洛伐克，它们的序列随国家的消失而结束；南非和纳米比亚，它们的序列被拆分；以及中国，他们认为其序列失真）；最后`complete_years`（20）年中有缺失年份的序列；以及年平均渔获量低于`min_mean_catch`（500）吨的序列。如果在序列出现最高渔获量Xmax之后的某一年起，渔获量连续4年低于Xmax/10，则该序列已崩溃；这4年中的第一年为崩溃年Dc（第113页）。崩溃前的下降过程：若从Dc-8到Dc-3的每一年渔获量都高于Xmax/4，为*平台型*；若从Dc-10到Dc渔获量与时间的相关系数低于-0.7，为*平滑型*；其余为*波动型*（第114页）。Mullon等没有说明这些规则按什么顺序判定；本函数按上述顺序判定。距序列第一年不足10年的崩溃不作分类。Mullon等在1950—2000年的1519条序列中发现366次崩溃（24%）：21%为平台型，33%为平滑型，45%为波动型。
+- **“worm2006”**：一个渔业是所有国家合计的一个物种条目在一个FAO渔区的渔获量（Worm等（2006）使用的是Sea
+  Around
+  Us数据中各大海洋生态系统内的物种）。总渔获量低于`min_total_catch`（10000吨）的渔业不纳入分析。渔业从其渔获量首次达到最高值10%的那一年开始；某年渔获量低于其最高值的10%时，该渔业在该年处于崩溃状态（回升到该值以上即为恢复）。本函数逐年给出当前处于崩溃状态的渔业所占的比例，以及至少崩溃过一次的渔业所占的比例（Worm等，2006，正文及补充材料第4—5页）。
+
+仅凭渔获量数据，无法区分种群的崩溃与管理、市场或报告方式造成的渔获量下降。Wilberg和Miller（2007）表明，按Worm等（2006）的定义，没有趋势的随机渔获量序列同样会得出“崩溃”渔业比例不断上升的结果，因为序列的最高值随序列长度的增加而增大；`null_model = TRUE`时，本函数在这类随机序列（平稳的一阶自回归对数正态序列，变异系数为80%，自相关为0.75，与Wilberg和Miller（2007）相同）上重复同样的分析，随机序列的起始年份和长度与真实序列相同，以作对照。
+
+English
+
+- **“mullon2005” (default)**: A series is the catch of one species or
+  genus by one country in one FAO area. Left out, as by Mullon et
+  al. (2005, p. 112): items not identified to genus or species; the
+  countries in `exclude_countries` (by default those Mullon et al. left
+  out: the former USSR, Yugoslavia and Czechoslovakia, whose series end
+  with the country; South Africa and Namibia, whose series were split;
+  and China, whose series they considered distorted); series with a
+  missing year among the last `complete_years` (20) years; and series
+  whose mean catch is below `min_mean_catch` (500) tonnes a year. A
+  series has collapsed when, in a year after its maximum catch Xmax,
+  catch stays below Xmax/10 for 4 consecutive years; the first of these
+  years is the collapse year Dc (p. 113). The decline before the
+  collapse is *plateau* if catch was above Xmax/4 in every year from
+  Dc-8 to Dc-3, *smooth* if the correlation between catch and time from
+  Dc-10 to Dc is below -0.7, and *erratic* otherwise (p. 114). Mullon et
+  al. do not say in which order the rules apply; they are applied here
+  in that order. Collapses less than 10 years after the first year of
+  the series are not classified. Mullon et al. found 366 collapses among
+  1,519 series from 1950 to 2000 (24%): 21% plateau, 33% smooth and 45%
+  erratic.
+- **“worm2006”**: A fishery is the catch of one species item in one FAO
+  area, all countries together (Worm et al. 2006 used species in large
+  marine ecosystems from Sea Around Us data). Fisheries with a total
+  catch below `min_total_catch` (10 000 tonnes) are left out. A fishery
+  starts when its catch first reaches 10% of its maximum, and is
+  collapsed in a year when its catch is below 10% of its maximum
+  (recovered when it is back above). The function gives, for each year,
+  the share of fisheries currently collapsed and the share that have
+  collapsed at least once (Worm et al. 2006, main text and supplementary
+  pp. 4-5).
+
+Catch data alone cannot tell a collapse of the stock from a fall in
+catch caused by management, markets or reporting. Wilberg and Miller
+(2007) showed that random catch series with no trend also give a growing
+share of “collapsed” fisheries with the definition of Worm et
+al. (2006), because the maximum of a series grows with its length; with
+`null_model = TRUE` the function repeats the analysis on such random
+series (stationary first-order autoregressive lognormal series with a
+coefficient of variation of 80% and an autocorrelation of 0.75, as in
+Wilberg and Miller 2007), with the same start years and lengths as the
+real series, for comparison.
+
+## 参考文献
+
+Mullon, C., Freon, P. and Cury, P. (2005). The dynamics of collapse in
+world fisheries. Fish and Fisheries 6: 111-120.
+[doi:10.1111/j.1467-2979.2005.00181.x](https://doi.org/10.1111/j.1467-2979.2005.00181.x)
+
+Wilberg, M.J. and Miller, T.J. (2007). Comment on “Impacts of
+biodiversity loss on ocean ecosystem services”. Science 316: 1285.
+[doi:10.1126/science.1137946](https://doi.org/10.1126/science.1137946)
+
+Worm, B., Barbier, E.B., Beaumont, N. et al. (2006). Impacts of
+biodiversity loss on ocean ecosystem services. Science 314: 787-790.
+[doi:10.1126/science.1132294](https://doi.org/10.1126/science.1132294)
+
+## 示例
+
+``` r
+
+collapse_analysis(load_fao_data(), lang = "zh")                   # Mullon et al. (2005), world
+FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
+collapse_analysis(FAO34$area_data, method = "worm2006")
+```

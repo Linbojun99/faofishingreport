@@ -60,9 +60,9 @@ species_country(
 
 - h_value:
 
-  The minimum segment size, which must be greater than the number of
-  regressors. For the model `ts_data ~ 1`, this means `h_value` should
-  be greater than 1. The default value is 0.15.
+  The minimum segment size passed to
+  [`strucchange::breakpoints()`](https://rdrr.io/pkg/strucchange/man/breakpoints.html):
+  a fraction of the series length (default 0.15) or a number of years.
 
 - polygon_color:
 
@@ -112,8 +112,8 @@ species_country(
 
 - ZH:
 
-  A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the
-  same as `lang = "zh"`.
+  A logical value. If TRUE, chart text and names are in Chinese. Default
+  is FALSE. `ZH = TRUE` is the same as `lang = "zh"`.
 
 - lang:
 
@@ -129,6 +129,13 @@ species_country(
   TRUE they are also saved as editable PowerPoint files in
   `figures/pptx/`. Default is FALSE, which can be changed for all
   functions with `fao_settings(pptx = TRUE)`.
+
+## Value
+
+A data frame with the yearly catch of the species by the ranked
+countries (the others grouped); with `timeseries_analysis = TRUE`, a
+list of this data frame and the periods between breakpoints of each
+country. Charts and tables are saved if `plot` and `table` are TRUE.
 
 ## See also
 

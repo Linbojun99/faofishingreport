@@ -1,0 +1,372 @@
+# 🌡️ 海表温度与渔获平均温度
+
+``` r
+
+fao_settings(lang = "zh")   # 本文所有图表使用中文
+```
+
+FAO捕捞统计每个渔区每年只有一个数，没有渔区内部的空间信息。所以本包的海表温度（SST）也采用同样的形式：每个FAO主要海洋渔区每年一行。本包用它和渔获对照，计算**渔获平均温度**（MTC）。
+
+## 🌡️ FAO渔区的海表温度
+
+[`fao_area_sst()`](https://linbojun99.github.io/faofishingreport/reference/fao_area_sst.md)返回19个FAO主要海洋渔区的逐年SST。每次调用都会说明用的是哪一套SST数据：
+
+``` r
+
+sst34 <- fao_area_sst("34")
+#> SST: NOAA ERSST v5, built into the package (2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.
+head(sst34[, c("area_en", "year", "sst_mean", "sst_p10", "sst_p90", "sst_min_month", "sst_max_month")])
+#>                     area_en year sst_mean sst_p10 sst_p90 sst_min_month
+#> 1 Atlantic, Eastern Central 1950   24.510  20.834  27.147        23.620
+#> 2 Atlantic, Eastern Central 1951   24.644  20.983  27.301        23.546
+#> 3 Atlantic, Eastern Central 1952   24.581  20.892  27.285        23.614
+#> 4 Atlantic, Eastern Central 1953   24.642  20.997  27.377        23.726
+#> 5 Atlantic, Eastern Central 1954   24.237  20.406  27.085        23.392
+#> 6 Atlantic, Eastern Central 1955   24.724  21.230  27.405        23.716
+#>   sst_max_month
+#> 1        25.232
+#> 2        25.626
+#> 3        25.563
+#> 4        25.618
+#> 5        25.529
+#> 6        25.735
+```
+
+| 参数 | 含义 | 默认值 |
+|----|----|----|
+| `area` | FAO渔区代码（如`"34"`）或FAO数据中的渔区名称（如`"Atlantic, Eastern Central"`） | `NULL`：全部19个渔区 |
+| `sst` | SST数据：`"ersst5"`（内置）、用[`download_sst_data()`](https://linbojun99.github.io/faofishingreport/reference/download_sst_data.md)下载的产品名，或NetCDF文件（或存放NetCDF文件的文件夹）的路径 | [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)中的`sst`设置，未修改时为`"ersst5"` |
+| `variable` | 自己的NetCDF文件中SST变量的名称 | `NULL`：按变量名自动识别 |
+| `data_dir` | 存放下载数据和计算结果的文件夹 | [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) |
+
+| 列 | 含义 |
+|----|----|
+| `product`、`source` | SST产品和所用的SST数据 |
+| `area_code`、`area_en`、`year` | FAO渔区和年份 |
+| `sst_mean` | 渔区平均SST：12个月渔区平均值的平均（°C） |
+| `sst_p10`、`sst_p90` | 渔区内的范围：区内各格点年平均SST按面积加权的10%和90%分位 |
+| `sst_min_month`、`sst_max_month` | 季节范围：最冷月和最暖月的渔区平均值。横跨赤道的渔区，南北半球的季节会部分抵消，所以这个范围较窄 |
+| `n_cells` | 渔区内的格点数 |
+| `downloaded` | 数据下载或计算的日期 |
+
+### 内置的SST：NOAA ERSST v5
+
+为了控制包的大小，包里只内置一套SST数据：
+
+|          | NOAA ERSST v5                                         |
+|----------|-------------------------------------------------------|
+| 提供方   | 美国国家海洋和大气管理局国家环境信息中心（NOAA NCEI） |
+| 网格     | 2° × 2°（约220 km），逐月                             |
+| 包内年份 | 1950–2025                                             |
+| 观测来源 | 仅现场观测：船舶和浮标（ICOADS），1999年起含Argo浮标  |
+| 海冰     | 冰下约-1.8 °C                                         |
+| 许可     | NOAA数据，可免费使用和再分发                          |
+| 引用     | Huang et al. (2017)，见参考文献                       |
+
+ERSST
+v5是常用SST产品中最小的。它不用卫星资料，整个时段前后一致。不过2°网格对小渔区偏粗：地中海和黑海（37区）只有96个格点。
+
+### 使用自己的SST数据
+
+其他网格化的SST数据，只要给出**NetCDF文件的路径，或者存放NetCDF文件的文件夹路径**，就可以使用。可以只用于一次调用，也可以对整个会话生效：
+
+``` r
+
+fao_area_sst("34", sst = "D:/data/HadISST_sst.nc")       # 只用于这一次调用
+fao_settings(sst = "D:/data/HadISST_sst.nc")             # 本次会话的所有函数都用这个文件
+mean_temperature_catch(FAO34$area_data)                  # 现在使用这个文件
+fao_settings(sst = "ersst5")                             # 换回内置的SST
+```
+
+文件的读取规则如下：
+
+- 文件里要有一个带**经度、纬度和时间**维度的SST变量，逐月或逐日均可（如HadISST、COBE-SST2、OISST、ERSST，或气候模式输出）。变量按名字自动识别（`sst`、`analysed_sst`、`tos`等）；识别不了时用`variable = "..."`指定。
+- 经度用-180到180或0到360都可以。以开尔文为单位的值会换算成°C。有多个深度层时取第一层（表层）。低于-5
+  °C的值会被设为-1.8
+  °C，因为有些产品用这种值标记海冰（HadISST1用-1000）。
+- 逐日数据先按月平均，只保留12个月齐全的年份。分辨率细于1°的网格会先平均到约1°。
+- 渔区逐年平均值在第一次使用时计算（可能需要几分钟），结果保存在[`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md)的`sst`文件夹里。之后用同样的文件会直接读取保存的结果；文件有变化时会重新计算。
+- 读取NetCDF文件需要ncdf4包（Pierce
+  2025）：`install.packages("ncdf4")`。
+
+### 下载常用的SST产品
+
+[`fao_sst_products()`](https://linbojun99.github.io/faofishingreport/reference/fao_sst_products.md)（没有参数）列出本包认识的SST产品，包括提供方、网格、起始年份、数据来源、海冰处理、许可、引用（`citation`、`doi`）、网页（`homepage`）、下载服务器和每年的大致下载量（`mb_per_year`）：
+
+``` r
+
+knitr::kable(fao_sst_products()[, c("product", "name", "grid", "first_year", "data_sources", "mb_per_year")])
+```
+
+| product | name | grid | first_year | data_sources | mb_per_year |
+|:---|:---|:---|---:|:---|---:|
+| ersst5 | NOAA ERSST v5 | 2 x 2 degrees, monthly | 1854 | In situ only: ships and buoys (ICOADS), Argo floats from 1999 | 0.78 |
+| hadisst1 | Met Office HadISST1 | 1 x 1 degree, monthly | 1870 | In situ: Met Office Marine Data Bank (with GTS reports from 1982) and ICOADS monthly medians 1871-1995; reduced-space optimal interpolation | 3.10 |
+| cobe2 | JMA COBE-SST2 | 1 x 1 degree, monthly | 1850 | In situ SST and sea-ice observations; satellite observations used to reconstruct variability where observations are few | 3.40 |
+| oisst21 | NOAA OISST v2.1 | 0.25 x 0.25 degree, monthly means of daily analyses (averaged to 1 degree by the package) | 1982 | Satellite (AVHRR), ships, buoys and Argo floats | 11.00 |
+
+[`download_sst_data()`](https://linbojun99.github.io/faofishingreport/reference/download_sst_data.md)逐年下载其中一种产品并算好渔区表，之后按名字使用，例如`sst = "hadisst1"`：
+
+``` r
+
+download_sst_data("hadisst1")                 # 约240 MB；中断后重新运行会接着下载
+fao_area_sst("34", sst = "hadisst1")
+```
+
+| 参数 | 含义 | 默认值 |
+|----|----|----|
+| `product` | `"ersst5"`、`"hadisst1"`、`"cobe2"`或`"oisst21"`（ERSST v5的渔区表已内置，下载时只补充之后发布的年份） | `"ersst5"` |
+| `years` | 要下载的年份 | `NULL`：从1950年（OISST v2.1从1982年）到最近一个完整年份 |
+| `data_dir` | 保存文件的文件夹（文件放在其中的`sst`文件夹，`files.csv`记录每个文件的来源和下载时间） | [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) |
+| `overwrite` | 是否重新下载已下载过的年份 | `FALSE` |
+| `quiet` | 是否不显示进度信息 | `FALSE` |
+
+已下载的年份会跳过，所以下载中断后重新运行即可接着下载。函数返回与[`fao_area_sst()`](https://linbojun99.github.io/faofishingreport/reference/fao_area_sst.md)相同的渔区表。不同SST产品使用的观测和方法不同（HadISST1：Rayner
+et al. 2003；COBE-SST2：Hirahara et al. 2014；OISST v2.1：Huang et
+al. 2021），数值和趋势会有一定差异。换一种产品重复分析，可以看出结果在多大程度上依赖所选的产品。
+
+### 渔区平均值的计算方法
+
+每个格点按它与各个FAO主要渔区重叠的面积（在球面上计算）加权，计入它所覆盖的每个渔区。位于两个渔区交界处的格点由两边共享，沿岸格点只计算海洋部分。渔区边界来自包内的FAO渔区地图（CWP手册中的19个海洋渔区）。北冰洋和南极渔区的数值有一部分反映的是海冰，而不是实测的水温。
+
+## 🐟 渔获平均温度
+
+渔获平均温度（MTC；Cheung et
+al. 2013）是渔获物种偏好温度的平均值，按渔获量加权：
+
+``` math
+MTC_t = \frac{\sum_i T_i C_{i,t}}{\sum_i C_{i,t}}
+```
+
+其中$`T_i`$是物种$`i`$的偏好温度，$`C_{i,t}`$是它在第$`t`$年的渔获量；两个求和都只包括有偏好温度的条目。MTC上升，说明喜暖物种在渔获中所占的比例变大。
+
+``` r
+
+FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
+mtc <- mean_temperature_catch(FAO34$area_data)
+mtc$trend      # 斜率（°C/十年）、Mann-Kendall检验、与SST的相关
+```
+
+偏好温度来自FishBase和SeaLifeBase（`TempPrefMean`），由[`fishbase_match()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_match.md)与FAO物种条目对应；数据怎样获取、怎样匹配，见[🐠
+FishBase与SeaLifeBase物种特征](https://linbojun99.github.io/faofishingreport/articles/zh/fishbase.md)。默认`version = "latest"`时，联网的情况下第一次运行会下载所需的FishBase和SeaLifeBase表格（约23
+MB）；不联网时使用已下载的最新版本，没有下载过则使用包内置的表格。`version = "builtin"`总是使用内置表格，不需要下载。
+
+图的上半部分是MTC与渔区SST（及区内范围），下半部分是有偏好温度的渔获所占的比例（覆盖率）。覆盖率低于`min_coverage`的年份会淡化显示，并且不参与趋势计算。趋势分别按全部年份和`trend_from`之后的年份计算：线性回归斜率（°C/十年）、Mann-Kendall检验（Mann
+1945；Kendall
+1975，与[`peak_trend()`](https://linbojun99.github.io/faofishingreport/reference/peak_trend.md)相同），以及MTC与SST原序列和逐年差分的Pearson相关。
+
+| 参数 | 含义 | 默认值 |
+|----|----|----|
+| `area_data` | FAO产量数据：`fishing_area_data()$area_data`，或[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)的任意子集（含多个渔区时每个渔区各算一个MTC） | 必填 |
+| `version` | FishBase和SeaLifeBase的版本，如`"26.06"`；`"builtin"`表示使用包内置的表格（见[`fishbase_match()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_match.md)） | `"latest"` |
+| `min_coverage` | 有偏好温度的条目占渔获量的最低比例（%）；低于它的年份在图中淡化、在表中标出，并且不参与趋势和相关的计算（`0`表示保留所有年份） | `50` |
+| `trend_from` | 第二个趋势时段的起始年份（Cheung et al. 2013的研究时段从1970年开始） | `1970` |
+| `use_match` | 采用哪些匹配方式（[`fishbase_match()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_match.md)的`match_type`）得到的偏好温度 | `c("exact", "synonym", "WoRMS valid name (exact)", "WoRMS valid name (synonym)", "manual")` |
+| `match` | 用核对过的匹配表代替[`fishbase_match()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_match.md)：数据框，或CSV文件路径，如上一次运行得到的物种表（需要`species_en`、`match_type`和`temp_pref_mean`列） | `NULL` |
+| `sst` | 用于对比的SST：`"ersst5"`、已下载的产品、NetCDF文件路径、`FALSE`（不对比），或含`area_code`（或`area_en`）、`year`和`sst_mean`（可另加`sst_p10`、`sst_p90`）列的数据框 | [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)中的`sst`设置，未修改时为`"ersst5"` |
+| `plot` | 是否把图保存到`figures/png/summary/` | `TRUE` |
+| `table` | 是否把表格保存到`tables/` | `TRUE` |
+| `lang` | 图中文字和名称的语言：`"en"`、`"zh"`或`"both"` | `NULL`：使用[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)设定的语言 |
+| `pptx` | 是否同时把图保存为可编辑的PowerPoint文件，存放在`figures/pptx/summary/` | `FALSE` |
+| `label` | 输出文件名开头的名称 | 数据所属的渔区（或国家） |
+| `data_dir` | 存放下载数据的文件夹 | [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) |
+
+函数返回`yearly`（各渔区逐年的MTC、覆盖率、SST及所用产品）、`trend`（各渔区各时段的斜率、Mann-Kendall检验和相关）和`species`（每个渔区每个FAO物种条目一行）。
+
+### ⚠️ 包做什么，你必须核对什么
+
+本包负责计算MTC、它的趋势以及与SST的对比。各物种的偏好温度**没有经过本包核对**：它们是按FAO学名自动匹配FishBase或SeaLifeBase（`TempPrefMean`）得到的初配结果，并附有核对用的网址。不同数据库之间的物种名并不总能对上（Grenié
+et
+al. 2023），所以每个匹配和偏好温度是否正确，需要你查阅这些网页和文献后自行判断，然后才能使用结果：
+
+1.  打开物种表`tables/<label>_mtc_species.csv`。表按渔获量从大到小排序，越靠前的条目越重要。
+2.  对每个参与计算的条目（`used`为TRUE），打开`url`（匹配到的FishBase或SeaLifeBase物种页面）、`search_url`和`worms_url`（世界海洋物种名录）。核对两点：匹配到的物种是否就是这个FAO条目，偏好温度对该渔区的种群是否合理。
+3.  在`checked`列写上核对人或日期。值不对就改`temp_pref_mean`，并在`note`写明出处（如果要给原本不参与计算的条目，如属一级的条目，赋一个值，还要把它的`match_type`改为`"manual"`）；也可以把更正写进[`fishbase_match()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_match.md)的更正文件，之后每次运行都会自动采用。
+4.  用核对后的表重新运行：
+
+``` r
+
+mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern_Central_mtc_species.csv")
+```
+
+在所有参与计算的条目都核对完之前，函数会提示已核对的渔获占比，图注也会写明“偏好温度为自动初配结果，尚未全部经用户核对”。
+
+### 局限性
+
+- **偏好温度。**FishBase说明`TempPrefMean`是根据AquaMaps分布图估算的，计算脚本没有公开（Froese
+  2020），也没有说明用了哪些格点、用的是表层还是底层温度。有些物种的值远低于其主要渔获海域的温度。例如沙丁鱼（European
+  pilchard）为10.3 °C，而它2015–2024年83%的渔获来自34区。Cheung et
+  al. (2013)用的是基于物种模拟分布得到的温度剖面中位数，大多数区域研究也采用他们的数值（Tsikliras
+  and Stergiou 2014；Liang et al. 2018），而Dimarchopoulou et
+  al. (2022)和Lavin et
+  al. (2023)与本包一样采用FishBase的平均值。所以本包的MTC数值不能直接和已发表的数值比较。
+- **覆盖率。**种以上的类群条目（如”Marine fishes
+  nei”）不参与计算，这与已发表的研究一致。已发表研究的覆盖率从不足30%到超过90%不等（Tsikliras
+  et al. 2015；Liang et
+  al. 2018），没有任何文献规定最低覆盖率，`min_coverage = 50`是本包的约定。随着时间推移，鉴定到种的渔获越来越多，而早年数据并不回溯修订（Garibaldi
+  2012）；渔获也会在渔区之间重新归属，或以nei上报（FAO
+  2024）。这些都会改变MTC，而与温度无关。
+- **成因。**除了温度，捕捞对象、渔场、渔具、市场、管理和报告方式的变化也会改变MTC（如Alajmi
+  et al. 2024；Lavin et
+  al. 2023）。把某个变化归因于变暖之前，先用物种表中的`weight_pct`和`contribution_c`看清楚是哪些条目引起的。
+- **统计。**趋势用线性斜率和Mann-Kendall检验；与SST的对比用原序列和逐年差分的相关。两个序列都有自相关，所以p值偏小（Yue
+  et al. 2002；Pyper and Peterman
+  1998）；逐年差分的相关则可能漏掉只在几十年尺度上起作用的关系。在亚得里亚海，考虑自相关之后，MTC与SST的关系就不再显著（Kamberi
+  et al. 2025）。
+
+### 输出文件
+
+| 文件 | 内容 |
+|----|----|
+| `figures/png/summary/<label>_mtc.png` | MTC与SST（含区内范围）；单个渔区时下方是覆盖率 |
+| `figures/png/summary/<label>_mtc_coverage.png` | 各渔区的覆盖率（仅多个渔区时） |
+| `tables/<label>_mtc.csv` | 逐年MTC、覆盖率、SST及所用的SST数据 |
+| `tables/<label>_mtc_trend.csv` | 斜率、Mann-Kendall检验和与SST的相关 |
+| `tables/<label>_mtc_species.csv` | 每个物种条目：偏好温度、渔获量、权重、贡献、匹配方式、链接、`checked`和`note` |
+
+## 📝 写入Word报告
+
+[`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)用`mtc = TRUE`加入渔获平均温度一节（见[📝
+一键生成Word评估报告](https://linbojun99.github.io/faofishingreport/articles/zh/report.md)）。报告使用包内置的FishBase数据（`mtc_version = "builtin"`），不需要下载，在任何电脑上得到的数值都相同；`mtc_version = "latest"`则改用最新的FishBase版本。[`mean_temperature_catch()`](https://linbojun99.github.io/faofishingreport/reference/mean_temperature_catch.md)的其他设置以`mtc_`为前缀传入，例如`mtc_sst = "hadisst1"`或`mtc_match = "<核对过的物种表>"`。报告用到的物种及其匹配和链接以`report$mtc_species`返回，方便核对：
+
+``` r
+
+report <- fao_report(34, mtc = TRUE, mtc_min_coverage = 60)
+report$mtc_species
+```
+
+## 📖 参考文献
+
+Alajmi, A., Ben-Hasan, A., Alrushaid, T., Vahabnezhad, A. and Pauly, D.
+(2024). Mean temperature of the catch index can be masked by changes in
+catch composition unrelated to ocean warming. *Fisheries Management and
+Ecology* 31: e12659.
+[doi:10.1111/fme.12659](https://doi.org/10.1111/fme.12659)
+
+Cheung, W.W.L., Watson, R. and Pauly, D. (2013). Signature of ocean
+warming in global fisheries catch. *Nature* 497: 365–368.
+[doi:10.1038/nature12156](https://doi.org/10.1038/nature12156)
+
+CWP (Coordinating Working Party on Fishery Statistics). *CWP Handbook of
+Fishery Statistics*: Main water areas (FAO major fishing areas). Rome:
+FAO.
+<https://www.fao.org/cwp-on-fishery-statistics/handbook/general-concepts/main-water-areas/en/>
+
+Dimarchopoulou, D., Makino, M., Prayoga, M.R., Zeller, D., Vianna,
+G.M.S. and Humphries, A.T. (2022). Responses in fisheries catch data to
+a warming ocean along a latitudinal gradient in the western Pacific
+Ocean. *Environmental Biology of Fishes* 105: 1347–1362.
+[doi:10.1007/s10641-021-01162-z](https://doi.org/10.1007/s10641-021-01162-z)
+
+FAO (2026). *Global Capture Production 1950–2024*, release 2026.1.0. In:
+Fisheries and Aquaculture. Rome: FAO.
+<https://www.fao.org/fishery/collection/capture/en>. Licence: CC BY 4.0.
+Release file:
+<https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip>
+
+FAO (2024). *The State of World Fisheries and Aquaculture 2024 – Blue
+Transformation in action*. Rome: FAO.
+[doi:10.4060/cd0683en](https://doi.org/10.4060/cd0683en)
+
+Froese, R. (2020). Personal communication: R code (PrefTempBatch_5.R) to
+estimate preferred temperature from AquaMaps (version 10/2019). FishBase
+reference 123201.
+<https://www.fishbase.se/references/FBRefSummary.php?ID=123201>
+
+Froese, R. and Pauly, D. (Eds.) (2026). FishBase. World Wide Web
+electronic publication. Version (06/2026). <https://www.fishbase.se>
+
+Garibaldi, L. (2012). The FAO global capture production database: a
+six-decade effort to catch the trend. *Marine Policy* 36: 760–768.
+[doi:10.1016/j.marpol.2011.10.024](https://doi.org/10.1016/j.marpol.2011.10.024)
+
+Grenié, M., Berti, E., Carvajal-Quintero, J., Dädlow, G.M.L., Sagouis,
+A. and Winter, M. (2023). Harmonizing taxon names in biodiversity data:
+a review of tools, databases and best practices. *Methods in Ecology and
+Evolution* 14: 12–25.
+[doi:10.1111/2041-210X.13802](https://doi.org/10.1111/2041-210X.13802)
+
+Hirahara, S., Ishii, M. and Fukuda, Y. (2014). Centennial-scale sea
+surface temperature analysis and its uncertainty. *Journal of Climate*
+27: 57–75.
+[doi:10.1175/JCLI-D-12-00837.1](https://doi.org/10.1175/JCLI-D-12-00837.1)
+
+Huang, B., Thorne, P.W., Banzon, V.F., Boyer, T., Chepurin, G.,
+Lawrimore, J.H., Menne, M.J., Smith, T.M., Vose, R.S. and Zhang, H.-M.
+(2017). Extended Reconstructed Sea Surface Temperature, Version 5
+(ERSSTv5): upgrades, validations, and intercomparisons. *Journal of
+Climate* 30: 8179–8205.
+[doi:10.1175/JCLI-D-16-0836.1](https://doi.org/10.1175/JCLI-D-16-0836.1)
+
+Huang, B., Liu, C., Banzon, V., Freeman, E., Graham, G., Hankins, B.,
+Smith, T. and Zhang, H.-M. (2021). Improvements of the Daily Optimum
+Interpolation Sea Surface Temperature (DOISST) Version 2.1. *Journal of
+Climate* 34: 2923–2939.
+[doi:10.1175/JCLI-D-20-0166.1](https://doi.org/10.1175/JCLI-D-20-0166.1)
+
+Kamberi, E., Hala, E. and Möllmann, C. (2025). Impact of large-scale
+oceanic variability on Adriatic fisheries evidenced through the ‘mean
+temperature of the catch’ approach. *Frontiers in Marine Science* 12:
+1719738.
+[doi:10.3389/fmars.2025.1719738](https://doi.org/10.3389/fmars.2025.1719738)
+
+Kendall, M.G. (1975). *Rank correlation methods*, 4th edition. London:
+Charles Griffin.
+
+Lavin, C.P., Pauly, D., Dimarchopoulou, D., Liang, C. and Costello, M.J.
+(2023). Fishery catch is affected by geographic expansion, fishing down
+food webs and climate change in Aotearoa, New Zealand. *PeerJ* 11:
+e16070. [doi:10.7717/peerj.16070](https://doi.org/10.7717/peerj.16070)
+
+Liang, C., Xian, W. and Pauly, D. (2018). Impacts of ocean warming on
+China’s fisheries catches: an application of “mean temperature of the
+catch” concept. *Frontiers in Marine Science* 5: 26.
+[doi:10.3389/fmars.2018.00026](https://doi.org/10.3389/fmars.2018.00026)
+
+Mann, H.B. (1945). Nonparametric tests against trend. *Econometrica* 13:
+245–259. [doi:10.2307/1907187](https://doi.org/10.2307/1907187)
+
+NOAA National Centers for Environmental Information. Extended
+Reconstructed Sea Surface Temperature (ERSST) v5.
+<https://www.ncei.noaa.gov/products/extended-reconstructed-sst>
+
+Palomares, M.L.D. and Pauly, D. (Eds.) (2026). SeaLifeBase. World Wide
+Web electronic publication. Version (06/2026).
+<https://www.sealifebase.se>
+
+Pierce, D. (2025). ncdf4: Interface to Unidata netCDF (Version 4 or
+Earlier) Format Data Files. R package version 1.24.
+[doi:10.32614/CRAN.package.ncdf4](https://doi.org/10.32614/CRAN.package.ncdf4)
+
+Pyper, B.J. and Peterman, R.M. (1998). Comparison of methods to account
+for autocorrelation in correlation analyses of fish data. *Canadian
+Journal of Fisheries and Aquatic Sciences* 55: 2127–2140.
+[doi:10.1139/f98-104](https://doi.org/10.1139/f98-104)
+
+Rayner, N.A., Parker, D.E., Horton, E.B., Folland, C.K., Alexander,
+L.V., Rowell, D.P., Kent, E.C. and Kaplan, A. (2003). Global analyses of
+sea surface temperature, sea ice, and night marine air temperature since
+the late nineteenth century. *Journal of Geophysical Research* 108(D14):
+4407. [doi:10.1029/2002JD002670](https://doi.org/10.1029/2002JD002670).
+Dataset description, with the warning of 10 March 2016 on its use where
+high resolution or SST gradients matter:
+<https://coastwatch.pfeg.noaa.gov/erddap/info/erdHadISST/index.html>
+
+Tsikliras, A.C. and Stergiou, K.I. (2014). Mean temperature of the catch
+increases quickly in the Mediterranean Sea. *Marine Ecology Progress
+Series* 515: 281–284.
+[doi:10.3354/meps11005](https://doi.org/10.3354/meps11005)
+
+Tsikliras, A.C., Peristeraki, P., Tserpes, G. and Stergiou, K.I. (2015).
+Mean temperature of the catch (MTC) in the Greek Seas based on landings
+and survey data. *Frontiers in Marine Science* 2: 23.
+[doi:10.3389/fmars.2015.00023](https://doi.org/10.3389/fmars.2015.00023)
+
+WoRMS Editorial Board. World Register of Marine Species. Flanders Marine
+Institute (VLIZ). <https://www.marinespecies.org>,
+[doi:10.14284/170](https://doi.org/10.14284/170)
+
+Yue, S., Pilon, P., Phinney, B. and Cavadias, G. (2002). The influence
+of autocorrelation on the ability to detect trend in hydrological
+series. *Hydrological Processes* 16: 1807–1829.
+[doi:10.1002/hyp.1095](https://doi.org/10.1002/hyp.1095)

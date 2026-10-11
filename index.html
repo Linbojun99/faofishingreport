@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -50,6 +50,11 @@
     <li><a class="dropdown-item" href="articles/species-countries.html">🐟 Species and countries</a></li>
     <li><a class="dropdown-item" href="articles/status-trends.html">📈 Composition, stock status and trends</a></li>
     <li><a class="dropdown-item" href="articles/quality-diversity-fleets.html">🔍 Data quality, diversity and fleets</a></li>
+    <li><a class="dropdown-item" href="articles/literature-analyses.html">🔬 Shocks, collapses, synchrony and fleets</a></li>
+    <li><a class="dropdown-item" href="articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
+    <li><a class="dropdown-item" href="articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
+    <li><a class="dropdown-item" href="articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
+    <li><a class="dropdown-item" href="articles/report.html">📝 Assessment report in Word</a></li>
     <li><a class="dropdown-item" href="articles/customise.html">🎨 Customise charts and maps</a></li>
   </ul>
 </li>
@@ -83,10 +88,14 @@
 <h2 id="sparkles-features">✨ Features<a class="anchor" aria-label="anchor" href="#sparkles-features"></a>
 </h2>
 <ul>
-<li>💾 <strong>Always the latest data</strong>: check for and download new FAO releases with one command.</li>
-<li>🌊 <strong>Fishing area reports</strong>: total catch with breakpoints, main species, main countries, maps.</li>
-<li>🐟 <strong>Species and country profiles</strong>: who catches a species, what a country catches, and where.</li>
-<li>📊 <strong>Nine summary analyses</strong>: species group composition, stock status plots, peak and trend, data quality, diversity and concentration, country groups, synchronous breakpoints, coastal versus distant-water fleets, and an overview of all FAO marine areas.</li>
+<li>💾 <strong>Always the latest data</strong>: check for and download new FAO releases with one command, and compare releases to see what FAO revised.</li>
+<li>🌊 <strong>Fishing area analyses</strong>: total catch with breakpoints, share of the world marine catch, main species, main countries, maps.</li>
+<li>🐟 <strong>Species and country profiles</strong>: who catches a species, what a country catches, where it fishes and how far its distant-water fleet goes.</li>
+<li>📊 <strong>Summary analyses</strong>: species groups, stock status plots, peak and trend, data quality, diversity and concentration, country groups, synchronous breakpoints, coastal and distant-water fleets, pelagic to demersal ratio, and all FAO marine areas compared.</li>
+<li>🔬 <strong>Analyses from the literature</strong>: catch shocks (Cottrell et al. 2019; Gephart et al. 2017), fishery collapses (Mullon et al. 2005; Worm et al. 2006) with a random null model, synchrony and portfolio effect (Loreau &amp; de Mazancourt 2008).</li>
+<li>🌡️ <strong>FishBase and sea temperature</strong>: FishBase and SeaLifeBase traits matched to FAO species (data snapshots of the <a href="https://github.com/ropensci/rfishbase" class="external-link">rfishbase</a> project), sea surface temperature of the FAO areas, and the mean temperature of the catch (Cheung et al. 2013).</li>
+<li>📉 <strong>CMSY++ stock assessment</strong> of the main species (Froese et al. 2023; code of its authors from <a href="https://github.com/SISTA16/cmsyPlusPlus" class="external-link uri">https://github.com/SISTA16/cmsyPlusPlus</a>, bundled unchanged), with JAGS set up for your computer, charts, projections and tables of reference points and priors.</li>
+<li>📝 <strong>Word assessment report in one call</strong>: <code><a href="reference/fao_report.html">fao_report()</a></code> writes a report in Chinese or English (cover, abstract, data and methods, results, conclusions, references, appendix), with every analysis switched on or off and the settings of each function given with a prefix.</li>
 <li>🌐 <strong>English, Chinese or bilingual</strong> charts with the official FAO Chinese names.</li>
 <li>🎨 <strong>Your style</strong>: themes, colour palettes, map projections (Robinson, Mollweide, Equal Earth, …) and Pacific-centred maps, set once with <code><a href="reference/fao_settings.html">fao_settings()</a></code>.</li>
 <li>💻 <strong>Windows, macOS and Linux</strong>: a Chinese font is chosen automatically; tables open in Excel with Chinese names intact.</li>
@@ -98,8 +107,8 @@
 <p>faofishingreport needs R 4.2 or later. Install it from GitHub:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"Linbojun99/faofishingreport"</span><span class="op">)</span></span></code></pre></div>
-<p>For editable PowerPoint charts, also install eoffice: <code>install.packages("eoffice")</code> (on macOS it also needs <a href="https://www.xquartz.org" class="external-link">XQuartz</a>).</p>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"Linbojun99/faofishingreport"</span>, dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>All the packages it uses are installed with it (Word reports, PowerPoint, FishBase, sea surface temperature, CMSY++). CMSY++ also needs the JAGS program: run <code><a href="reference/cmsy_setup.html">cmsy_setup()</a></code> once. On macOS, editable PowerPoint charts need <a href="https://www.xquartz.org" class="external-link">XQuartz</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="rocket-quick-start">🚀 Quick start<a class="anchor" aria-label="anchor" href="#rocket-quick-start"></a>
@@ -120,9 +129,16 @@
 <span><span class="fu"><a href="reference/species_country.html">species_country</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, <span class="st">"European pilchard(=Sardine)"</span>, lang <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/country_species.html">country_species</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, <span class="st">"Morocco"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Summary analyses</span></span>
+<span><span class="co"># Summary analyses and analyses from the literature</span></span>
 <span><span class="fu"><a href="reference/stock_status.html">stock_status</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/coastal_distant.html">coastal_distant</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="reference/catch_shocks.html">catch_shocks</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, version <span class="op">=</span> <span class="st">"builtin"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># CMSY++ for the ten main species (run cmsy_setup() once before)</span></span>
+<span><span class="fu"><a href="reference/cmsy_area.html">cmsy_area</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, top <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># A Word assessment report of the area, in Chinese, with CMSY++ and catch shocks</span></span>
+<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span>, shocks <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>Charts are saved in <code>figures/png/</code> (and, if you want, editable PowerPoint in <code>figures/pptx/</code>), tables in <code>tables/</code>.</p>
 </div>
 <div class="section level2">
@@ -149,6 +165,14 @@
 <tr>
 <td><img src="reference/figures/readme-bilingual.png" alt="Bilingual chart of the main countries"></td>
 <td><img src="reference/figures/readme-area-map.png" alt="Pacific-centred Robinson map of FAO areas"></td>
+</tr>
+<tr>
+<td><strong>CMSY++ Kobe plot of the ten main species</strong></td>
+<td><strong>Mean temperature of the catch and sea surface temperature</strong></td>
+</tr>
+<tr>
+<td><img src="reference/figures/readme-cmsy-kobe.png" alt="CMSY++ Kobe plot of the main species of FAO area 34"></td>
+<td><img src="reference/figures/readme-mtc.png" alt="Mean temperature of the catch of FAO area 34"></td>
 </tr>
 </tbody>
 </table>
@@ -202,7 +226,7 @@
 <tbody>
 <tr>
 <td><code><a href="reference/fishing_area_data.html">fishing_area_data()</a></code></td>
-<td>Catch of one FAO fishing area: trend, breakpoints, share of world catch, map</td>
+<td>Catch of one FAO fishing area: trend, breakpoints, share of the world marine catch, map</td>
 </tr>
 <tr>
 <td><code><a href="reference/fishing_area_species.html">fishing_area_species()</a></code></td>
@@ -288,6 +312,184 @@
 </tr>
 </tbody>
 </table>
+<p><strong>🔬 Analyses from the literature</strong></p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Function</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code><a href="reference/catch_shocks.html">catch_shocks()</a></code></td>
+<td>Catch shocks (Cottrell et al. 2019 or Gephart et al. 2017), by year and group</td>
+</tr>
+<tr>
+<td><code><a href="reference/collapse_analysis.html">collapse_analysis()</a></code></td>
+<td>Fishery collapses (Mullon et al. 2005 or Worm et al. 2006) against random series</td>
+</tr>
+<tr>
+<td><code><a href="reference/catch_synchrony.html">catch_synchrony()</a></code></td>
+<td>Synchrony of species or country catches and the portfolio effect</td>
+</tr>
+<tr>
+<td><code><a href="reference/distant_water_profile.html">distant_water_profile()</a></code></td>
+<td>A country’s catch in adjacent and distant-water FAO areas over time</td>
+</tr>
+<tr>
+<td><code><a href="reference/compare_releases.html">compare_releases()</a></code></td>
+<td>Records revised, added or removed between two FAO releases</td>
+</tr>
+<tr>
+<td><code><a href="reference/pelagic_demersal.html">pelagic_demersal()</a></code></td>
+<td>Pelagic to demersal catch ratio (Caddy 1993; de Leiva Moreno et al. 2000)</td>
+</tr>
+<tr>
+<td><code><a href="reference/fao_pd_groups.html">fao_pd_groups()</a></code></td>
+<td>ISSCAAP groups counted as pelagic or demersal</td>
+</tr>
+</tbody>
+</table>
+<p><strong>🌡️ FishBase and temperature</strong></p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Function</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code><a href="reference/check_fishbase_update.html">check_fishbase_update()</a></code></td>
+<td>Latest FishBase and SeaLifeBase releases and the ones downloaded</td>
+</tr>
+<tr>
+<td><code><a href="reference/download_fishbase_data.html">download_fishbase_data()</a></code></td>
+<td>Download FishBase and SeaLifeBase tables</td>
+</tr>
+<tr>
+<td><code><a href="reference/fishbase_table.html">fishbase_table()</a></code></td>
+<td>Read a FishBase or SeaLifeBase table</td>
+</tr>
+<tr>
+<td><code><a href="reference/fishbase_match.html">fishbase_match()</a></code></td>
+<td>Match FAO species items to FishBase and SeaLifeBase, with their traits</td>
+</tr>
+<tr>
+<td><code><a href="reference/fishbase_sources.html">fishbase_sources()</a></code></td>
+<td>Sources, licences and matching rules of the traits</td>
+</tr>
+<tr>
+<td><code><a href="reference/fao_sst_products.html">fao_sst_products()</a></code></td>
+<td>Sea surface temperature products and their references</td>
+</tr>
+<tr>
+<td><code><a href="reference/download_sst_data.html">download_sst_data()</a></code></td>
+<td>Download a sea surface temperature product</td>
+</tr>
+<tr>
+<td><code><a href="reference/fao_area_sst.html">fao_area_sst()</a></code></td>
+<td>Sea surface temperature of the FAO areas by year</td>
+</tr>
+<tr>
+<td><code><a href="reference/mean_temperature_catch.html">mean_temperature_catch()</a></code></td>
+<td>Mean temperature of the catch and its trend, compared with SST</td>
+</tr>
+</tbody>
+</table>
+<p><strong>📉 CMSY++ stock assessment</strong></p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Function</th>
+<th>Description</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code><a href="reference/cmsy_area.html">cmsy_area()</a></code></td>
+<td>CMSY++ for the main species of an area in one call</td>
+</tr>
+<tr>
+<td><code><a href="reference/cmsy_system.html">cmsy_system()</a></code></td>
+<td>Check the computer: R, JAGS and the packages CMSY++ needs</td>
+</tr>
+<tr>
+<td><code><a href="reference/cmsy_setup.html">cmsy_setup()</a></code></td>
+<td>Install JAGS and the R packages of CMSY++</td>
+</tr>
+<tr>
+<td><code><a href="reference/cmsy_jags_versions.html">cmsy_jags_versions()</a></code></td>
+<td>JAGS and rjags versions that match each R version</td>
+</tr>
+<tr>
+<td><code><a href="reference/cmsy_download_jags.html">cmsy_download_jags()</a></code></td>
+<td>Download the JAGS installer for the computer</td>
+</tr>
+<tr>
+<td><code><a href="reference/cmsy_install_jags.html">cmsy_install_jags()</a></code></td>
+<td>Install JAGS</td>
+</tr>
+<tr>
+<td><code><a href="reference/cmsy_sources.html">cmsy_sources()</a></code></td>
+<td>Versions, links and citations of everything CMSY++ uses</td>
+</tr>
+<tr>
+<td><code><a href="reference/cmsy_priors.html">cmsy_priors()</a></code></td>
+<td>Priors of r from FishBase and SeaLifeBase</td>
+</tr>
+<tr>
+<td><code><a href="reference/cmsy_input.html">cmsy_input()</a></code></td>
+<td>FAO catch data to CMSY++ input files</td>
+</tr>
+<tr>
+<td><code><a href="reference/cmsy_defaults.html">cmsy_defaults()</a></code></td>
+<td>CMSY++ settings and their defaults</td>
+</tr>
+<tr>
+<td><code><a href="reference/cmsy_run.html">cmsy_run()</a></code></td>
+<td>Run CMSY++</td>
+</tr>
+<tr>
+<td><code><a href="reference/cmsy_plot.html">cmsy_plot()</a></code></td>
+<td>Charts of the CMSY++ results</td>
+</tr>
+<tr>
+<td><code><a href="reference/cmsy_forecast.html">cmsy_forecast()</a></code></td>
+<td>Projections under fishing scenarios</td>
+</tr>
+<tr>
+<td><code><a href="reference/cmsy_compare.html">cmsy_compare()</a></code></td>
+<td>Compare CMSY++ runs</td>
+</tr>
+<tr>
+<td><code><a href="reference/cmsy_tables.html">cmsy_tables()</a></code></td>
+<td>Tables of priors and results for reports</td>
+</tr>
+</tbody>
+</table>
+<p><strong>📝 Reports</strong></p>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr>
+<th>Function</th>
+<th>Description</th>
+</tr></thead>
+<tbody><tr>
+<td><code><a href="reference/fao_report.html">fao_report()</a></code></td>
+<td>Word assessment report of a fishing area, in Chinese or English, with every analysis switched on or off</td>
+</tr></tbody>
+</table>
 <p><strong>🎨 Settings and language</strong></p>
 <table class="table">
 <colgroup>
@@ -317,7 +519,8 @@
 <div class="section level2">
 <h2 id="open_book-documentation">📖 Documentation<a class="anchor" aria-label="anchor" href="#open_book-documentation"></a>
 </h2>
-<p>The <a href="https://linbojun99.github.io/faofishingreport/">website</a> has a guide for every part of the package: <a href="https://linbojun99.github.io/faofishingreport/articles/get-started.html">🚀 Get started</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/data.html">💾 FAO data</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/fishing-areas.html">🌊 Fishing areas</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/species-countries.html">🐟 Species and countries</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/status-trends.html">📈 Status and trends</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/quality-diversity-fleets.html">🔍 Quality, diversity and fleets</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/customise.html">🎨 Customise</a></p>
+<p>The <a href="https://linbojun99.github.io/faofishingreport/">website</a> has a guide for every part of the package: <a href="https://linbojun99.github.io/faofishingreport/articles/get-started.html">🚀 Get started</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/data.html">💾 FAO data</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/fishing-areas.html">🌊 Fishing areas</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/species-countries.html">🐟 Species and countries</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/status-trends.html">📈 Status and trends</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/quality-diversity-fleets.html">🔍 Quality, diversity and fleets</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/literature-analyses.html">🔬 Shocks, collapses, synchrony and fleets</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/fishbase.html">🐠 FishBase traits</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/cmsy.html">📉 CMSY++</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/report.html">📝 Word report</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/customise.html">🎨 Customise</a></p>
+<p>Every guide ends with the references of the methods and data it uses, with their DOI or link.</p>
 </div>
 <div class="section level2">
 <h2 id="bar_chart-data-source">📊 Data source<a class="anchor" aria-label="anchor" href="#bar_chart-data-source"></a>
@@ -373,6 +576,7 @@
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
 <li>Hongyu Lin <br><small class="roles"> Author, maintainer </small>   </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 

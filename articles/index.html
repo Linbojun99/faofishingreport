@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,6 +24,11 @@
     <li><a class="dropdown-item" href="../articles/species-countries.html">🐟 Species and countries</a></li>
     <li><a class="dropdown-item" href="../articles/status-trends.html">📈 Composition, stock status and trends</a></li>
     <li><a class="dropdown-item" href="../articles/quality-diversity-fleets.html">🔍 Data quality, diversity and fleets</a></li>
+    <li><a class="dropdown-item" href="../articles/literature-analyses.html">🔬 Shocks, collapses, synchrony and fleets</a></li>
+    <li><a class="dropdown-item" href="../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
+    <li><a class="dropdown-item" href="../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
+    <li><a class="dropdown-item" href="../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
+    <li><a class="dropdown-item" href="../articles/report.html">📝 Assessment report in Word</a></li>
     <li><a class="dropdown-item" href="../articles/customise.html">🎨 Customise charts and maps</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -46,7 +51,7 @@
       <div class="section-desc"></div>
 
       <dl><dt><a href="get-started.html">🚀 Get started</a></dt>
-        <dd><p>Install faofishingreport, update the FAO data and produce the first charts for the Eastern Central Atlantic (FAO area 34).</p>
+        <dd><p>Install faofishingreport, update the FAO data, produce the first charts for the Eastern Central Atlantic (FAO area 34) and write a Word report in one call.</p>
         </dd><dt><a href="data.html">💾 FAO data: download and customise</a></dt>
         <dd><p>Where the data come from, how to check for and download FAO releases, the data format, and how to analyse your own subsets.</p>
         </dd><dt><a href="fishing-areas.html">🌊 Fishing area analysis</a></dt>
@@ -54,11 +59,21 @@
         </dd><dt><a href="species-countries.html">🐟 Species and countries</a></dt>
         <dd><p>species_country(), country_species() and country_analysis(): who catches a species, what a country catches in an area, and a country’s catch in all FAO areas.</p>
         </dd><dt><a href="status-trends.html">📈 Composition, stock status and trends</a></dt>
-        <dd><p>species_group_composition(), stock_status(), peak_trend(), area_overview() and regime_shift(): what is caught, how the stocks have developed, and when things changed.</p>
+        <dd><p>species_group_composition(), stock_status(), peak_trend(), area_overview(), regime_shift(), pelagic_demersal() and fao_pd_groups(): what is caught, how the stocks have developed, and when things changed.</p>
         </dd><dt><a href="quality-diversity-fleets.html">🔍 Data quality, diversity and fleets</a></dt>
         <dd><p>data_quality(), diversity_concentration(), country_group_summary() and coastal_distant(): how reliable the data are, how diverse and concentrated the catch is, and who is fishing.</p>
+        </dd><dt><a href="literature-analyses.html">🔬 Shocks, collapses, synchrony and fleets</a></dt>
+        <dd><p>catch_shocks(), collapse_analysis(), catch_synchrony(), distant_water_profile() and compare_releases(): abrupt falls and collapses of the catch, how synchronously catches fluctuate, where a country’s fleets fish, and what FAO revised between two data releases, each following published methods.</p>
+        </dd><dt><a href="sst-mtc.html">🌡️ Sea temperature and catch temperature</a></dt>
+        <dd><p>fao_sst_products(), fao_area_sst(), download_sst_data() and mean_temperature_catch(): the sea surface temperature of the FAO fishing areas, how to use your own SST files, and what you must check before using the mean temperature of the catch.</p>
+        </dd><dt><a href="fishbase.html">🐠 FishBase and SeaLifeBase traits</a></dt>
+        <dd><p>check_fishbase_update(), download_fishbase_data(), fishbase_table(), fishbase_match() and fishbase_sources(): species traits from FishBase and SeaLifeBase, how they are matched to the FAO species items, and how the mean temperature of the catch and the CMSY++ priors use them.</p>
+        </dd><dt><a href="cmsy.html">📉 CMSY++ catch-only stock assessment</a></dt>
+        <dd><p>cmsy_area(), cmsy_system(), cmsy_setup(), cmsy_install_jags(), cmsy_download_jags(), cmsy_jags_versions(), cmsy_sources(), cmsy_priors(), cmsy_input(), cmsy_defaults(), cmsy_run(), cmsy_plot(), cmsy_forecast(), cmsy_compare() and cmsy_tables(): catch-only assessments of FAO catch series with the bundled CMSY++ code, FishBase priors and JAGS.</p>
+        </dd><dt><a href="report.html">📝 Assessment report in Word</a></dt>
+        <dd><p>fao_report(): a Word assessment report of an FAO fishing area in Chinese or English in one call. Its contents, arguments, sections and their settings, format, citation styles, the CMSY++ part, the tables it returns and the templates of its text.</p>
         </dd><dt><a href="customise.html">🎨 Customise charts and maps</a></dt>
-        <dd><p>fao_settings(): language, theme, colour palettes, map projection and centre, fonts, grid lines, resolution and PowerPoint output.</p>
+        <dd><p>fao_settings(): language, theme, colour palettes, map projection and centre, fonts, grid lines, resolution, PowerPoint output and data folders.</p>
       </dd></dl></div>
     <div class="section ">
       <h3>中文文档</h3>
@@ -67,19 +82,36 @@
       <dl><dt><a href="zh/index.html">faofishingreport 中文文档</a></dt>
         <dd><p>用 FAO 全球捕捞产量数据，按渔区、国家和物种生成报告用的图表、地图和表格，支持中文、英文和中英双语。</p>
         </dd><dt><a href="zh/get-started.html">🚀 快速入门</a></dt>
-        <dd><p>安装 faofishingreport，更新 FAO 数据，并为中东大西洋（FAO 34 渔区）绘制第一批图表。</p>
-        </dd><dt><a href="zh/data.html">💾 FAO 数据：下载与自定义</a></dt>
-        <dd><p>数据从哪里来，如何检查和下载 FAO 的新版本，数据格式是什么样的， 以及如何分析自己的数据子集。</p>
+        <dd><p>安装faofishingreport，更新FAO数据，为中东大西洋（FAO 34渔区）绘制第一批图表，并一键生成Word报告。</p>
+        </dd><dt><a href="zh/data.html">💾 FAO数据：下载与自定义</a></dt>
+        <dd><p>数据从哪里来，如何检查和下载FAO的新版本，数据格式是什么样的， 以及如何分析自己的数据子集。</p>
         </dd><dt><a href="zh/fishing-areas.html">🌊 渔区分析</a></dt>
-        <dd><p>fishing_area_data()、fishing_area_species() 和 fishing_area_country()：某个 FAO 渔区的总产量、主要物种和主要捕捞国家，以及全部选项。</p>
+        <dd><p>fishing_area_data()、fishing_area_species()和fishing_area_country()：某个FAO渔区的总产量、主要物种和主要捕捞国家，以及全部选项。</p>
         </dd><dt><a href="zh/species-countries.html">🐟 物种与国家分析</a></dt>
-        <dd><p>species_country()、country_species() 和 country_analysis()：某个物种由哪些国家捕捞，某个国家在一个渔区捕什么，以及某个国家在全部 FAO 渔区的产量。</p>
+        <dd><p>species_country()、country_species()和country_analysis()：某个物种由哪些国家捕捞，某个国家在一个渔区捕什么，以及某个国家在全部FAO渔区的产量。</p>
         </dd><dt><a href="zh/status-trends.html">📈 类群结构、资源状态与趋势</a></dt>
-        <dd><p>species_group_composition()、stock_status()、peak_trend()、area_overview() 和 regime_shift()：捕捞了什么，各种群如何发展，以及何时发生了变化。</p>
+        <dd><p>species_group_composition()、stock_status()、peak_trend()、area_overview()、regime_shift()、pelagic_demersal()和fao_pd_groups()：捕捞了什么，各种群如何发展，以及何时发生了变化。</p>
         </dd><dt><a href="zh/quality-diversity-fleets.html">🔍 数据质量、多样性与船队</a></dt>
-        <dd><p>data_quality()、diversity_concentration()、country_group_summary() 和 coastal_distant()：数据有多可靠，产量的多样性和集中程度如何，以及是谁在捕捞。</p>
+        <dd><p>data_quality()、diversity_concentration()、country_group_summary()和coastal_distant()：数据有多可靠，产量的多样性和集中程度如何，以及是谁在捕捞。</p>
+        </dd><dt><a href="zh/literature-analyses.html">🔬 渔获骤变、渔业崩溃、同步性与远洋捕捞</a></dt>
+        <dd><p>catch_shocks()、collapse_analysis()、catch_synchrony()、distant_water_profile()和compare_releases()：按已发表的方法识别渔获量的骤降和崩溃，衡量各渔获序列波动的同步程度，追踪一个国家的船队在哪些渔区作业，并查看FAO在两个数据版本之间修订了什么。</p>
+        </dd><dt><a href="zh/sst-mtc.html">🌡️ 海表温度与渔获平均温度</a></dt>
+        <dd><p>fao_sst_products()、fao_area_sst()、download_sst_data()和mean_temperature_catch()：FAO渔区的海表温度，如何使用自己的SST文件，以及使用渔获平均温度之前必须核对的内容。</p>
+        </dd><dt><a href="zh/fishbase.html">🐠 FishBase 与 SeaLifeBase 物种特征</a></dt>
+        <dd><p>check_fishbase_update()、download_fishbase_data()、fishbase_table()、fishbase_match()和fishbase_sources()：FishBase与SeaLifeBase的物种特征，它们如何与FAO物种条目匹配，以及渔获平均温度和CMSY++先验如何使用这些特征。</p>
+        </dd><dt><a href="zh/cmsy.html">📉 CMSY++仅渔获量资源评估</a></dt>
+        <dd><p>cmsy_area()、cmsy_system()、cmsy_setup()、cmsy_install_jags()、cmsy_download_jags()、cmsy_jags_versions()、cmsy_sources()、cmsy_priors()、cmsy_input()、cmsy_defaults()、cmsy_run()、cmsy_plot()、cmsy_forecast()、cmsy_compare()和cmsy_tables()：用包内置的CMSY++代码、FishBase先验和JAGS，对FAO渔获序列做仅渔获量评估。</p>
+        </dd><dt><a href="zh/report.html">📝 一键生成 Word 评估报告</a></dt>
+        <dd><p>fao_report()：一次调用即可生成某个FAO渔区的中文或英文Word评估报告。本文介绍报告的内容、参数、各分析章节及其设置、格式、引文格式、CMSY++部分、返回的表格以及报告文字的模板。</p>
         </dd><dt><a href="zh/customise.html">🎨 自定义图表与地图</a></dt>
-        <dd><p>fao_settings()：语言、主题、色板、地图投影与中心、字体、网格线、分辨率和 PowerPoint 输出。</p>
+        <dd><p>fao_settings()：语言、主题、色板、地图投影与中心、字体、网格线、分辨率、PowerPoint输出和数据文件夹。</p>
+      </dd></dl></div>
+    <div class="section ">
+      <h3>中文函数参考</h3>
+      <div class="section-desc"><p>全部函数的中文说明，附英文原文对照（由 data-raw/make_zh_reference.R 生成）。</p></div>
+
+      <dl><dt><a href="zh/reference/index.html">函数参考</a></dt>
+        <dd><p>faofishingreport全部函数的中文说明</p>
       </dd></dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

@@ -1,0 +1,250 @@
+# cmsy_input(): 将FAO渔获数据转换为CMSY++输入文件
+
+英文原页：[`cmsy_input()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_input.md)
+
+## 说明
+
+本函数将FAO渔获数据转换为CMSY++（Froese等，2021，2023）的两个输入文件：渔获量文件（`Stock`、`yr`、`ct`、`bt`）和ID文件（每个种群一行，包含先验和设置）。每个种群的恢复力和种群内禀增长率r的先验取自本包内置的FishBase和SeaLifeBase数据表（见[`cmsy_priors()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_priors.md)），并注明每个值的来源。
+
+English
+
+This function turns FAO catch data into the two input files of CMSY++
+(Froese et al. 2021, 2023): the catch file (`Stock`, `yr`, `ct`, `bt`)
+and the ID file, one row per stock, with the priors and settings. Each
+stock gets its resilience and r prior from the built-in FishBase and
+SeaLifeBase table (see
+[`cmsy_priors()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_priors.md)),
+with the source of each value.
+
+## 用法
+
+``` r
+
+cmsy_input(
+  area_data,
+  species = NULL,
+  by = c("area", "country"),
+  priors = NULL,
+  default_resilience = NULL,
+  min_years = 10,
+  min_catch = 1000,
+  max_filled = 0.2,
+  table = TRUE,
+  lang = NULL,
+  label = NULL,
+  silent = fao_setting("silent")
+)
+```
+
+## 参数
+
+- `area_data`:
+
+  FAO渔获数据：`fishing_area_data()$area_data`，或[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)的任意子集（例如一个国家，或几个渔区）。
+
+  English
+
+  FAO catch data: `fishing_area_data()$area_data`, or any subset of
+  [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)
+  (e.g. one country, or several fishing areas).
+
+- `species`:
+
+  要保留的物种（可选），可以用FAO英文或中文名称、中英文名称合写（与`lang = "both"`时显示的形式相同）、学名或FAO三字母代码，例如`c("European pilchard(=Sardine)", "Sardinella aurita", "BOG")`，也可以用中文名称。默认为NULL，即所有物种。
+
+  English
+
+  Optional species to keep, by English or Chinese FAO name, both
+  together (as shown with `lang = "both"`), scientific name or FAO
+  3-alpha code, e.g.
+  `c("European pilchard(=Sardine)", "Sardinella aurita", "BOG")` or
+  Chinese names. Default is NULL, all species.
+
+- `by`:
+
+  “area”（默认）：每个物种条目和渔区为一个种群，按国家合计；“country”：每个物种条目、渔区和国家为一个种群。
+
+  English
+
+  “area” (default): one stock per species item and fishing area, summed
+  over countries; or “country”: one stock per species item, fishing area
+  and country.
+
+- `priors`:
+
+  可选的数据框，给出用于替代默认值的先验和设置，每个种群或物种一行。用`Stock`、`alpha3`、`species_en`或`species`列识别各行（`species`：任何名称，与`species`参数相同），并可包含ID文件的以下任意列：`Resilience`、`r.low`、`r.hi`、`stb.low`、`stb.hi`、`int.yr`、`intb.low`、`intb.hi`、`endb.low`、`endb.hi`、`StartYear`、`EndYear`和`Comment`。在这里给出的值，其来源记为”user”（用户）。
+
+  English
+
+  Optional data frame of priors and settings that replace the defaults,
+  one row per stock or species. It identifies the rows by a `Stock`,
+  `alpha3`, `species_en` or `species` column (`species`: any name, as in
+  the `species` argument) and can have any of the ID file columns
+  `Resilience`, `r.low`, `r.hi`, `stb.low`, `stb.hi`, `int.yr`,
+  `intb.low`, `intb.hi`, `endb.low`, `endb.hi`, `StartYear`, `EndYear`
+  and `Comment`. Values given here are recorded as “user”.
+
+- `default_resilience`:
+
+  物种在FishBase或SeaLifeBase中没有恢复力或r先验时，其种群所用的恢复力（“High”、“Medium”、“Low”或”Very
+  low”）。默认为NULL：由于用户指南没有给出默认值，这类种群不予纳入。
+
+  English
+
+  Resilience (“High”, “Medium”, “Low” or “Very low”) for stocks whose
+  species has no resilience or prior r in FishBase or SeaLifeBase.
+  Default is NULL: such stocks are left out, since the user guide gives
+  no default.
+
+- `min_years`:
+
+  从有渔获量的第一年到最后一年的最少年数。默认为10。
+
+  English
+
+  Minimum number of years from the first to the last year with catch.
+  Default is 10.
+
+- `min_catch`:
+
+  一个种群的最小总渔获量，单位为吨。默认为1000。
+
+  English
+
+  Minimum total catch of a stock, in tonnes. Default is 1000.
+
+- `max_filled`:
+
+  一个种群中可用插值填补的年份所占的最大比例。默认为0.2。
+
+  English
+
+  Maximum share of the years of a stock that may be filled by
+  interpolation. Default is 0.2.
+
+- `table`:
+
+  逻辑值。为TRUE（默认）时，表格保存在tables/。
+
+  English
+
+  A logical value. If TRUE (default), tables are saved in `tables/`.
+
+- `lang`:
+
+  图表文字和名称的语言：“en”（英文）、“zh”（中文）或”both”（中英双语）。默认为NULL，即使用[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)设置的语言（未更改时为”en”）。
+
+  English
+
+  The language of the chart text and names: “en” (English), “zh”
+  (Chinese) or “both” (Chinese and English). Default is NULL, which uses
+  the language set with
+  [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+  (“en” unless changed).
+
+- `label`:
+
+  输出文件名中使用的名称。默认为数据所属的渔区（或国家）。
+
+  English
+
+  The name used in the output file names. Default is the fishing area
+  (or the country) of the data.
+
+- `silent`:
+
+  逻辑值。为TRUE时不输出任何提示信息。默认为FALSE，或使用`fao_settings(silent = )`设置的值。
+
+  English
+
+  A logical value. If TRUE, no messages are printed. Default is FALSE,
+  or the value set with `fao_settings(silent = )`.
+
+## 返回值
+
+以不可见方式返回一个`cmsy_input`类的列表，包含`catch`和`id`（CMSY++的两个输入表）、`stocks`（每个种群一行，包括物种、渔区、年份、填补的年份、渔获量及其r先验的来源）和`excluded`（未纳入的种群及原因）。`table`为TRUE时，这四个表格保存在tables/cmsy/。
+
+English
+
+Invisibly, a list of class `cmsy_input` with `catch` and `id` (the two
+CMSY++ input tables), `stocks` (one row per stock with its species,
+area, years, filled years, catch and the source of its r prior) and
+`excluded` (stocks left out, with the reason). When `table` is TRUE the
+four tables are saved in `tables/cmsy/`.
+
+## 详细说明
+
+FAO统计数据只有渔获量，没有资源丰度指数（CPUE或调查生物量），因此每个种群都只用CMSY++中仅基于渔获量的部分（CMSY：`btype = "None"`，`bt`为空）进行评估，不运行贝叶斯Schaefer模型（BSM）。因此，结果主要取决于相对生物量（B/k）的先验；除非在`priors`中给出，这些先验由CMSY++的人工神经网络设定。结果仅供参考，不能替代资源评估。
+
+一个种群是指一个FAO物种条目在一个渔区内的年渔获量，可以是所有国家的合计（`by = "area"`，与[`stock_status()`](https://linbojun99.github.io/faofishingreport/reference/stock_status.md)相同），也可以是单个国家的渔获量（`by = "country"`）。只使用鉴定到种且以吨为单位的条目。按照用户指南的要求，年份必须连续，不允许有缺口：种群从有渔获量的第一年开始，到有渔获量的最后一年结束，其间缺失或为零的渔获量用相邻年份之间的线性插值填补（会报告填补的年数）。以下种群不予纳入：年数少于`min_years`（CMSY++用最初十年和最后十年设定默认先验）、总渔获量少于`min_catch`吨、填补年份所占比例超过`max_filled`，或没有r先验。
+
+每个种群都保留其数据和先验来源的链接：`url`（该物种的FishBase或SeaLifeBase页面）、`data_url`（读取先验所用的FishBase或SeaLifeBase数据表）、`rule_url`（CMSY++用户指南）和`fao_data_url`（FAO数据的发布版本）。
+
+English
+
+The FAO statistics contain catches only, with no abundance index (CPUE
+or survey biomass), so every stock is assessed with the catch-only part
+of CMSY++ (CMSY: `btype = "None"`, `bt` empty) and the Bayesian Schaefer
+model (BSM) is not run. The results then depend mostly on the priors for
+relative biomass (B/k), which CMSY++ sets with its neural network unless
+they are given in `priors`; they are indicative and do not replace stock
+assessments.
+
+A stock is the yearly catch of one FAO species item in one fishing area,
+summed over all countries (`by = "area"`, as in
+[`stock_status()`](https://linbojun99.github.io/faofishingreport/reference/stock_status.md)),
+or of one country (`by = "country"`). Only items identified to species
+and measured in tonnes are used. Following the user guide, years must be
+consecutive and gaps are not allowed: a stock starts with its first and
+ends with its last year with catch, and missing or zero catches in
+between are filled by linear interpolation between the adjacent years
+(the number of filled years is reported). Stocks are left out when they
+have fewer than `min_years` years (CMSY++ uses the first and the last
+ten years for its default priors), less than `min_catch` tonnes in
+total, more than `max_filled` of their years filled, or no prior for r.
+
+Every stock keeps the links to the sources of its data and priors: `url`
+(the FishBase or SeaLifeBase page of the species), `data_url` (the
+FishBase or SeaLifeBase table the prior was read from), `rule_url` (the
+CMSY++ user guide) and `fao_data_url` (the FAO data release).
+
+## 参考文献
+
+Froese, R., Demirel, N., Coro, G. and Winker, H. (2021). User Guide for
+CMSY++. GEOMAR, Germany, 17
+pp. <https://oceanrep.geomar.de/id/eprint/52147/>
+
+Froese, R., Winker, H., Coro, G., et al. (2023). New developments in the
+analysis of catch time series as the basis for fish stock assessments:
+the CMSY++ method. Acta Ichthyologica et Piscatoria 53: 173-189.
+[doi:10.3897/aiep.53.105910](https://doi.org/10.3897/aiep.53.105910)
+
+## 示例
+
+``` r
+
+FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
+
+# All species of the area that CMSY++ can assess with catch only
+input <- cmsy_input(FAO34$area_data, table = FALSE)
+input
+head(input$stocks[, c("Stock", "species_en", "first_year", "Resilience", "r.low", "r.hi", "r_source")])
+table(input$excluded$reason)                      # why the others are left out
+
+# Some species only, by English name, scientific name or FAO 3-alpha code
+input <- cmsy_input(FAO34$area_data, species = c("European pilchard(=Sardine)", "Sardinella aurita", "GRB"),
+                    table = FALSE)
+
+# Expert B/k priors (user guide Tables 1 and 3): sardine thought to be depleted in the last year
+input <- cmsy_input(FAO34$area_data, species = "PIL", table = FALSE,
+                    priors = data.frame(species = "Sardina pilchardus", endb.low = 0.2, endb.hi = 0.5))
+input$id[, c("Stock", "endb.low", "endb.hi")]
+
+# A start year chosen by the user, and a resilience for species without a FishBase prior
+input <- cmsy_input(FAO34$area_data, table = FALSE, default_resilience = "Medium",
+                    priors = data.frame(alpha3 = "PIL", StartYear = 1973))
+
+# One stock per country instead of one per area
+by_country <- cmsy_input(FAO34$area_data, species = "PIL", by = "country", table = FALSE)
+by_country$stocks[, c("Stock", "country", "first_year", "last_year")]
+```

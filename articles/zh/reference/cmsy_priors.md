@@ -1,0 +1,164 @@
+# cmsy_priors(): 来自FishBase和SeaLifeBase的CMSY++先验
+
+英文原页：[`cmsy_priors()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_priors.md)
+
+## 说明
+
+本函数在内置的CMSY++先验表中查找FAO物种条目：物种的恢复力，以及（如有）r的先验范围（“Prior
+r = …, 95% CL = …”，取自FishBase或SeaLifeBase物种页面的”Estimates based
+on
+models”部分）。该表可离线使用。每一行都以链接形式给出其数值的来源，因此每个数值都可以在网上核对（`open = TRUE`会打开物种页面）：
+
+- **url**：该物种的FishBase或SeaLifeBase页面，页面上显示其恢复力和先验r（未找到该物种时，为数据库的搜索页面）；
+- **data_url**：读取该数值所用的FishBase或SeaLifeBase版本的数据表（先验r来自`estimate`表，恢复力来自`stocks`表）；
+- **rule_url**：CMSY++用户手册，其表1和表2说明如何把这些数值换算为r的范围。
+
+English
+
+This function searches the built-in table of CMSY++ priors for the FAO
+species items: the resilience of the species and, where available, the
+prior range of r (“Prior r = …, 95% CL = …”, from the “Estimates based
+on models” section of the FishBase or SeaLifeBase species page). The
+table works offline. Every row gives the sources of its values as links,
+so each value can be checked online (`open = TRUE` opens the species
+pages):
+
+- **url**: the FishBase or SeaLifeBase page of the species, which shows
+  its resilience and prior r (or a search of the database when the
+  species was not found);
+- **data_url**: the table of the FishBase or SeaLifeBase release the
+  value was read from (`estimate` for prior r, `stocks` for resilience);
+- **rule_url**: the CMSY++ user guide, whose Tables 1 and 2 turn these
+  values into the r range.
+
+## 用法
+
+``` r
+
+cmsy_priors(species = NULL, open = FALSE, lang = NULL)
+```
+
+## 参数
+
+- `species`:
+
+  可选，要查找的名称：英文名、中文名或学名，或FAO三字母代码，也可以是名称的一部分（例如”Atlantic
+  cod”、“Gadus
+  morhua”、“COD”、“cod”或中文名）。默认为NULL，即返回所有行。
+
+  English
+
+  Optional names to search for: English, Chinese or scientific names, or
+  FAO 3-alpha codes, or parts of them (e.g. “Atlantic cod”, “Gadus
+  morhua”, “COD”, “cod” or the Chinese name). Default is NULL, all rows.
+
+- `open`:
+
+  逻辑值。为TRUE时，在浏览器中打开找到的各行（最多10行）的FishBase或SeaLifeBase页面。默认为FALSE。
+
+  English
+
+  A logical value. If TRUE, the FishBase or SeaLifeBase pages of the
+  rows found (at most 10) are opened in the browser. Default is FALSE.
+
+- `lang`:
+
+  `species_name`列使用的语言：“en”（英文）、“zh”（中文）或”both”（中英双语）。默认为NULL，即使用[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)设置的语言。`species_en`和`species_zh`两列始终同时给出两种名称。
+
+  English
+
+  The language of the `species_name` column: “en” (English), “zh”
+  (Chinese) or “both”. Default is NULL, the language set with
+  [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md).
+  The `species_en` and `species_zh` columns always give both names.
+
+## 返回值
+
+一个数据框，每个FAO物种条目一行。
+
+English
+
+A data frame with one row per FAO species item.
+
+## 详细说明
+
+物种可以用FAO英文名或中文名、`lang = "both"`时显示的中英文名（例如”中文名
+(英文名)“）、学名、FishBase有效名或FAO三字母代码给出。每个值先按完整名称精确匹配（不区分大小写）；没有精确匹配时，返回名称中包含该值的所有物种。
+
+该表根据FishBase和SeaLifeBase
+26.06版，为FAO捕捞统计中种一级的物种条目编制。每个FAO学名先在FishBase（鱼类）或SeaLifeBase（其他动物）中作为有效种名查找，再在该数据库自己的同物异名表中作为异名查找；有歧义的异名，以及属、科或更高分类阶元的条目都不赋值。`match_type`列说明每个条目是如何匹配的。
+
+提供给CMSY++的r范围按照其用户手册（Froese等，2021）确定：
+
+- 物种在FishBase中有先验r时，用先验r的95%置信限（“Alternatively and
+  better, get the prior range of r from the section ‘Estimates based on
+  models’”，用户手册表1）；
+- 否则用该物种恢复力对应的范围（用户手册表2）：High（高）0.6-1.5，Medium（中）0.2-0.8，Low（低）0.05-0.5，Very
+  low（很低）0.015-0.1；
+- 否则不给范围：用户手册没有给出默认值，因此先验必须由用户提供（例如r接近2M或2Fmsy，用户手册表1）；见[`cmsy_input()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_input.md)中的`priors`。
+
+当FishBase列出某物种的多个种群且其恢复力不同时，使用该物种全物种范围的种群（即第一条种群记录，显示在物种页面上）的值，其他值在`resilience_note`中给出。
+
+English
+
+Species can be given by their English or Chinese FAO name, both together
+as shown with `lang = "both"` (e.g. “Chinese (English)”), scientific
+name, FishBase valid name or FAO 3-alpha code. Each value is first
+matched exactly (ignoring case); otherwise every species whose names
+contain it is returned.
+
+The table was made from FishBase and SeaLifeBase release 26.06 for the
+species-level items of the FAO capture statistics. Each FAO scientific
+name is looked up in FishBase (fishes) or SeaLifeBase (other animals) as
+a valid species name, then as a synonym in the database’s own synonym
+table; ambiguous synonyms and genus, family or higher groups get no
+values. The `match_type` column tells how each item was matched.
+
+The r range given to CMSY++ follows its user guide (Froese et al. 2021):
+
+- the 95% confidence limits of FishBase’s prior r when the species has
+  one (“Alternatively and better, get the prior range of r from the
+  section ‘Estimates based on models’”, user guide Table 1);
+- otherwise the range of the species’ resilience (user guide Table 2):
+  High 0.6-1.5, Medium 0.2-0.8, Low 0.05-0.5, Very low 0.015-0.1;
+- otherwise none: the user guide gives no default, so the prior has to
+  come from the user (e.g. r close to 2 M or 2 Fmsy, user guide Table
+  1); see `priors` in
+  [`cmsy_input()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_input.md).
+
+When FishBase lists several stocks of a species with different
+resilience, the value of its species-wide stock (the first stock record,
+shown on the species page) is used and the other values are given in
+`resilience_note`.
+
+## 参考文献
+
+Froese, R., Demirel, N., Coro, G. and Winker, H. (2021). User Guide for
+CMSY++. GEOMAR, Germany, 17
+pp. <https://oceanrep.geomar.de/id/eprint/52147/>
+
+Froese, R. and Pauly, D. (Eds.) (2026). FishBase. Version (06/2026).
+<https://www.fishbase.se>
+
+Palomares, M.L.D. and Pauly, D. (Eds.) (2026). SeaLifeBase. Version
+(06/2026). <https://www.sealifebase.se>
+
+## 示例
+
+``` r
+
+# By scientific name, English name or FAO 3-alpha code (Chinese names work as well)
+cmsy_priors("Gadus morhua")
+cmsy_priors(c("COD", "European pilchard(=Sardine)"), lang = "both")
+
+# Part of a name finds every matching species
+cmsy_priors("sardin")[, c("alpha3", "species_en", "scientific_name", "resilience", "r_low", "r_high")]
+
+# The sources of a value, to check it online
+cmsy_priors("Gadus morhua")[, c("url", "data_url", "rule_url")]
+
+# How the FAO names were matched, and the species without a prior for r
+p <- cmsy_priors()
+table(p$match_type)
+head(p[is.na(p$r_source), c("alpha3", "species_en", "scientific_name")])
+```

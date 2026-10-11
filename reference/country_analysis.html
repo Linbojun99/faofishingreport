@@ -11,7 +11,7 @@ based on production within the specified rank range."><meta property="og:image" 
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,6 +28,11 @@ based on production within the specified rank range."><meta property="og:image" 
     <li><a class="dropdown-item" href="../articles/species-countries.html">🐟 Species and countries</a></li>
     <li><a class="dropdown-item" href="../articles/status-trends.html">📈 Composition, stock status and trends</a></li>
     <li><a class="dropdown-item" href="../articles/quality-diversity-fleets.html">🔍 Data quality, diversity and fleets</a></li>
+    <li><a class="dropdown-item" href="../articles/literature-analyses.html">🔬 Shocks, collapses, synchrony and fleets</a></li>
+    <li><a class="dropdown-item" href="../articles/sst-mtc.html">🌡️ Sea temperature and catch temperature</a></li>
+    <li><a class="dropdown-item" href="../articles/fishbase.html">🐠 FishBase and SeaLifeBase traits</a></li>
+    <li><a class="dropdown-item" href="../articles/cmsy.html">📉 CMSY++ stock assessment</a></li>
+    <li><a class="dropdown-item" href="../articles/report.html">📝 Assessment report in Word</a></li>
     <li><a class="dropdown-item" href="../articles/customise.html">🎨 Customise charts and maps</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -101,13 +106,12 @@ the percentage labels are placed in the faceted time series plot. Default is 10.
 
 
 <dt id="arg-h-value">h_value<a class="anchor" aria-label="anchor" href="#arg-h-value"></a></dt>
-<dd><p>The minimum segment size, which must be greater than the
-number of regressors. For the model <code>ts_data ~ 1</code>, this means <code>h_value</code>
-should be greater than 1. The default value is 0.15.</p></dd>
+<dd><p>The minimum segment size passed to <code><a href="https://rdrr.io/pkg/strucchange/man/breakpoints.html" class="external-link">strucchange::breakpoints()</a></code>: a fraction of
+the series length (default 0.15) or a number of years.</p></dd>
 
 
 <dt id="arg-zh">ZH<a class="anchor" aria-label="anchor" href="#arg-zh"></a></dt>
-<dd><p>A logical value to Chinese. Default is "FALSE". <code>ZH = TRUE</code> is the same as <code>lang = "zh"</code>.</p></dd>
+<dd><p>A logical value. If TRUE, chart text and names are in Chinese. Default is FALSE. <code>ZH = TRUE</code> is the same as <code>lang = "zh"</code>.</p></dd>
 
 
 <dt id="arg-fill-scale">fill_scale<a class="anchor" aria-label="anchor" href="#arg-fill-scale"></a></dt>
@@ -133,6 +137,14 @@ also saved as editable PowerPoint files in <code>figures/pptx/</code>. Default i
 changed for all functions with <code>fao_settings(pptx = TRUE)</code>.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>A list with <code>country_species_ranked</code> (yearly catch of the ranked species),
+<code>country_species_ranked_coefs_data</code> (periods between breakpoints of each species),
+<code>table</code> (catch by species and FAO area), <code>country_species_area_total</code> (total catch of
+each species in each area) and <code>country_yearly_area_production</code> (yearly catch in each
+area). Charts and tables are saved if <code>plot</code> and <code>table</code> are TRUE.</p>
+    </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Other species and country analyses:

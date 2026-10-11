@@ -107,6 +107,35 @@ fao_settings(..., reset = FALSE)
       R; see
       [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md).
 
+  online
+
+  :   Whether functions may connect to the internet to look for the
+      newest FishBase release (see
+      [`fishbase_table()`](https://linbojun99.github.io/faofishingreport/reference/fishbase_table.md)).
+      Default is TRUE; use FALSE to work offline with the downloaded
+      copy, e.g. on a slow connection.
+
+  sst
+
+  :   The sea surface temperature (SST) data used by
+      [`fao_area_sst()`](https://linbojun99.github.io/faofishingreport/reference/fao_area_sst.md)
+      and
+      [`mean_temperature_catch()`](https://linbojun99.github.io/faofishingreport/reference/mean_temperature_catch.md):
+      "ersst5" (default, NOAA ERSST v5, built into the package), a
+      product downloaded with
+      [`download_sst_data()`](https://linbojun99.github.io/faofishingreport/reference/download_sst_data.md)
+      (e.g. "hadisst1"), or the path of your own NetCDF file, or of a
+      folder of NetCDF files (see
+      [`fao_area_sst()`](https://linbojun99.github.io/faofishingreport/reference/fao_area_sst.md)).
+
+  silent
+
+  :   Whether the CMSY++ functions
+      ([`cmsy_run()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_run.md),
+      [`cmsy_plot()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_plot.md),
+      ...) work silently, without progress bars and messages. Default is
+      FALSE. Their `silent` argument still takes precedence.
+
 - reset:
 
   A logical value. If TRUE, all settings go back to their defaults

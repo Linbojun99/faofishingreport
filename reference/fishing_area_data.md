@@ -2,7 +2,9 @@
 
 This function extracts and returns data for a specified FAO major
 fishing area. If the plot parameter is TRUE, it will also generate and
-save plots to the figures directory.
+save plots to the figures directory. The percentage chart shows the
+share of the area in the world catch of all marine areas (or, for an
+inland area, of all inland waters).
 
 ## Usage
 
@@ -52,11 +54,13 @@ fishing_area_data(
 
 - timeseries_analysis:
 
-  A logical value indicating whether to analysis timeseries.
+  A logical value. If TRUE (default), the total catch chart shows the
+  periods between breakpoints in the mean catch (Bai-Perron test,
+  [`strucchange::breakpoints()`](https://rdrr.io/pkg/strucchange/man/breakpoints.html)).
 
 - area_color1:
 
-  The color to use for the area plot. Default is "grey80".
+  The fill colour of the total catch chart. Default is "grey80".
 
 - area_alpha:
 
@@ -64,7 +68,7 @@ fishing_area_data(
 
 - area_color2:
 
-  The color to use for the area plot. Default is "black".
+  The outline colour of the total catch chart. Default is "black".
 
 - line_color:
 
@@ -98,27 +102,30 @@ fishing_area_data(
 
 - axis_text_face:
 
-  The font face of the axis text. Default is "plain".
+  The font face of the axis text of the total catch chart. Default is
+  "plain".
 
 - axis_title_face:
 
-  The font face of the axis title. Default is "bold".
+  The font face of the axis titles of the charts and the map. Default is
+  "bold".
 
 - strip_text_face:
 
-  The font face of the strip text. Default is "bold".
+  Not used (the charts have no panels). Default is "bold".
 
 - axis_text_size:
 
-  The size of the axis text. Default is 10.
+  The size of the axis text of the percentage chart. Default is 10.
 
 - axis_title_size:
 
-  The size of the axis title text. Default is 12.
+  The size of the axis titles of the total catch and percentage charts.
+  Default is 12.
 
 - strip_text_size:
 
-  The size of the strip text. Default is 12.
+  Not used (the charts have no panels). Default is 12.
 
 - polygon_color:
 
@@ -148,8 +155,8 @@ fishing_area_data(
 
 - ZH:
 
-  A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the
-  same as `lang = "zh"`.
+  A logical value. If TRUE, chart text and names are in Chinese. Default
+  is FALSE. `ZH = TRUE` is the same as `lang = "zh"`.
 
 - lang:
 
@@ -176,7 +183,9 @@ fishing_area_data(
 
 ## Value
 
-A data frame containing data for the specified fishing area.
+A list with `area_data` (the FAO data of the area), `coefs_data` (start
+year, end year and mean catch of each period between breakpoints) and
+`act_world_map` (the map data).
 
 ## See also
 
