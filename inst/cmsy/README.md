@@ -24,7 +24,8 @@ method go to them; problems with how faofishingreport runs it go to
 every change (see `cmsy_system()`): the operating-system changes of the user guide (step 12:
 `windows()` to `quartz()` and `antialias = "cleartype"` to `"default"` on macOS), the removal of
 the automatic package installation, of `setwd(rstudioapi::...)` and of the archived snpar package
-(whose runs test is reproduced), and the settings of the run.
+(whose runs test is reproduced from snpar 1.0, Debin Qiu, GPL >= 2:
+<https://cran.r-project.org/src/contrib/Archive/snpar/>, source mirror <https://github.com/cran/snpar>), and the settings of the run.
 
 Please cite:
 

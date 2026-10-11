@@ -133,7 +133,8 @@ cmsy_setup()
 
 1. installs the missing R packages from CRAN (R2jags, rjags, coda, gplots, mvtnorm, neuralnet,
    conicfit); snpar, archived on CRAN on 2022-05-10, is replaced by the same approximate runs
-   test;
+   test, reproduced from snpar 1.0 (Debin Qiu, GPL ≥ 2; [CRAN archive](https://cran.r-project.org/src/contrib/Archive/snpar/),
+   source mirror <https://github.com/cran/snpar>);
 2. downloads the JAGS installer for the system and R version from its pinned link, checks its
    size and MD5 checksum and opens it (`.exe` on Windows, `.pkg` on macOS; on Linux it downloads
    the source and shows the commands). JAGS is a separate program: restart R after installing it

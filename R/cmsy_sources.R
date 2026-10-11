@@ -57,6 +57,9 @@ cmsy_oceanrep_zip <- "https://oceanrep.geomar.de/id/eprint/52147/4/UserGuideCode
 cmsy_oceanrep_page <- "https://oceanrep.geomar.de/id/eprint/52147/"
 cmsy_sf <- "https://downloads.sourceforge.net/project/mcmc-jags/"
 cmsy_sf_page <- "https://sourceforge.net/projects/mcmc-jags/files/"
+# snpar, used by CMSY++16.R for its runs test, was archived on CRAN; cmsy_run() reproduces the test
+cmsy_snpar_archive <- "https://cran.r-project.org/src/contrib/Archive/snpar/"
+cmsy_snpar_github <- "https://github.com/cran/snpar"
 
 cmsy_cite_paper <- paste(
   "Froese R, Winker H, Coro G, Palomares MLD, Tsikliras AC, Dimarchopoulou D, Touloumis K,",
@@ -164,6 +167,10 @@ cmsy_registry <- function() {
         "dac0e7f2da817a15d8a796025ce2f36f0aa3154921bd520be4f98df2753f617a",
         "GPL-2", "2026-08-14", "JAGS 5.x; a C++ compiler", FALSE, "citation(\"rjags\")"),
     # Other R packages loaded by CMSY++16.R (snpar, archived on CRAN, is replaced; see cmsy_system())
+    row("snpar (runs test reproduced in cmsy_run())", "1.0", "all", "snpar_1.0.tar.gz",
+        paste0(cmsy_snpar_archive, "snpar_1.0.tar.gz"), cmsy_snpar_github, license = "GPL (>= 2)",
+        released = "2014-08-16; archived on CRAN 2022-05-10",
+        citation = "Qiu D (2014). snpar: Supplementary Non-parametric Statistics Methods. R package version 1.0."),
     cran("R2jags", "0.8-9", "GPL (> 2)", "rjags"),
     cran("coda", "0.19-4.1", "GPL (>= 2)"),
     cran("gplots", "3.3.0", "GPL-2"),

@@ -335,7 +335,7 @@ cmsy_changes <- function(os, device) {
     applies_to = c("all", "all", "all", "all", os, os, "all"),
     what = c(
       "Lines that install missing packages on every run are removed (cmsy_setup() installs them).",
-      "library(snpar) is removed and snpar::runs.test() is replaced by the same approximate runs test (snpar was archived on CRAN on 2022-05-10).",
+      paste0("library(snpar) is removed and snpar::runs.test() is replaced by the same approximate runs test, reproduced from snpar 1.0 (Debin Qiu, GPL >= 2; archived on CRAN on 2022-05-10: ", cmsy_snpar_archive, "; source mirror: ", cmsy_snpar_github, ")."),
       "setwd(rstudioapi::getActiveDocumentContext()$path) is removed, so RStudio is not needed; each stock runs in its own folder.",
       "File names, the stock, the chart switches and the general settings (CMSY++ defaults unless changed with cmsy_run(settings = ), including the MCMC iterations of the JAGS call) are set by cmsy_run() after the original settings section.",
       paste0("The test grepl(\"win\", sysname), which is also true on macOS (\"Darwin\"), is replaced; windows(): ", device_text, "."),

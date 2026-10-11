@@ -115,7 +115,7 @@ cmsy_setup()
 
 `cmsy_setup()`在安装任何东西之前都会先询问，然后依次：
 
-1. 从CRAN安装缺少的R包：R2jags、rjags、coda、gplots、mvtnorm、neuralnet、conicfit。原代码依赖的snpar已于2022-05-10从CRAN下架，本包用一段相同的近似游程检验代码代替了它；
+1. 从CRAN安装缺少的R包：R2jags、rjags、coda、gplots、mvtnorm、neuralnet、conicfit。原代码依赖的snpar已于2022-05-10从CRAN下架，本包用一段相同的近似游程检验代码代替了它，该代码复现自snpar 1.0（Debin Qiu，GPL ≥ 2；[CRAN存档](https://cran.r-project.org/src/contrib/Archive/snpar/)，源代码镜像<https://github.com/cran/snpar>）；
 2. 按当前系统和R版本，从固定链接下载JAGS安装程序，核对文件大小和MD5后打开安装程序：Windows上是`.exe`，macOS上是`.pkg`；Linux上下载源码，并显示安装命令。JAGS是独立程序，安装完成后需要重启R，再运行一次`cmsy_setup()`检查；
 3. 核对包内CMSY++文件。
 

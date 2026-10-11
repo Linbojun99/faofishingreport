@@ -344,7 +344,8 @@ cmsy_settings_code <- function(stock, sys, plots, seed, settings = cmsy_default_
     if (!is.null(seed)) paste0("set.seed(", as.integer(seed), ")"),
     paste0("cmsy_antialias <- \"", sys$antialias, "\""),
     paste0("cmsy_open_device <- function(width, height) ", device),
-    "# Approximate two-sided Wald-Wolfowitz runs test, as snpar::runs.test() (snpar 1.0, D. Qiu, GPL >= 2)",
+    paste0("# Approximate two-sided Wald-Wolfowitz runs test, reproduced from snpar::runs.test() (snpar 1.0, ",
+           "Debin Qiu 2014, GPL >= 2; archived on CRAN: ", cmsy_snpar_archive, ", source mirror: ", cmsy_snpar_github, ")"),
     "cmsy_runs_test <- function(x) {",
     "  x <- x[is.finite(x)]",
     "  N <- length(x)",
@@ -561,6 +562,8 @@ cmsy_run_sources <- function(sys, input, seed, settings = NULL) {
   rbind(
     row(bundled$component, bundled$version, bundled$url, bundled$citation),
     row("JAGS", sys$jags, "https://mcmc-jags.sourceforge.io/", cmsy_cite_jags),
+    row("snpar runs test (reproduced)", "1.0", cmsy_snpar_github,
+        "Qiu D (2014). snpar: Supplementary Non-parametric Statistics Methods. R package version 1.0."),
     row(sys$packages$package, sys$packages$installed, paste0("https://cran.r-project.org/package=", sys$packages$package)),
     row("R", sys$r_version, "https://www.r-project.org/"),
     row("Operating system", paste0(sys$os, " (", sys$arch, if (sys$os != sys$os_detected) paste0("; detected ", sys$os_detected), ")"), ""),
