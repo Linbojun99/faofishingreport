@@ -37,6 +37,24 @@ fao_report_sections <- function() {
     fleets = list(fun = "coastal_distant", part = "results", methods = character(0),
                   run = fao_section_simple_run("coastal_distant"), values = fao_section_fleets_values,
                   write = fao_section_fleets_write, abstract = NULL, conclusion = "concl_fleets"),
+    shocks = list(fun = "catch_shocks", part = "results", methods = "shocks",
+                  run = fao_section_simple_run("catch_shocks"), values = fao_section_shocks_values,
+                  write = fao_section_shocks_write, abstract = NULL, conclusion = "concl_shocks"),
+    collapse = list(fun = "collapse_analysis", part = "results", methods = "collapse", extra = "seed",
+                    run = fao_section_collapse_run, values = fao_section_collapse_values,
+                    write = fao_section_collapse_write, abstract = NULL, conclusion = "concl_collapse"),
+    synchrony = list(fun = "catch_synchrony", part = "results", methods = "synchrony",
+                     run = fao_section_simple_run("catch_synchrony"), values = fao_section_synchrony_values,
+                     write = fao_section_synchrony_write, abstract = NULL, conclusion = "concl_synchrony"),
+    pelagic = list(fun = "pelagic_demersal", part = "results", methods = "pelagic",
+                   run = fao_section_simple_run("pelagic_demersal"), values = fao_section_pelagic_values,
+                   write = fao_section_pelagic_write, abstract = NULL, conclusion = "concl_pelagic"),
+    mtc = list(fun = "mean_temperature_catch", part = "results", methods = "mtc",
+               run = fao_section_mtc_run, values = fao_section_mtc_values, write = fao_section_mtc_write,
+               abstract = NULL, conclusion = "concl_mtc"),
+    distant = list(fun = "distant_water_profile", part = "results", methods = "distant", extra = "countries",
+                   run = fao_section_distant_run, values = fao_section_distant_values,
+                   write = fao_section_distant_write, abstract = NULL, conclusion = "concl_distant"),
     cmsy = list(fun = "cmsy_area", part = "assessment", methods = "cmsy",
                 run = fao_section_cmsy_run, values = fao_section_cmsy_values, write = fao_section_cmsy_write,
                 abstract = "abstract_cmsy", conclusion = NULL)
@@ -45,7 +63,9 @@ fao_report_sections <- function() {
 
 # Paragraphs of the methods and their names in the abstract
 fao_report_methods <- c(breakpoints = "methods_bp", trend = "methods_trend", status = "methods_status",
-                        diversity = "methods_diversity", cmsy = "methods_cmsy")
+                        diversity = "methods_diversity", shocks = "methods_shocks", collapse = "methods_collapse",
+                        synchrony = "methods_synchrony", pelagic = "methods_pelagic", mtc = "methods_mtc",
+                        distant = "methods_distant", cmsy = "methods_cmsy")
 
 # Settings of the analyses: arguments of fao_report() starting with a section name and "_" go to
 # the function of that section, e.g. species_h_value = 0.2 -> fishing_area_species(h_value = 0.2)
@@ -65,7 +85,7 @@ fao_report_args <- function(dots, sections) {
     }
     prefix <- prefix[which.max(nchar(prefix))]
     arg <- substring(name, nchar(prefix) + 2)
-    allowed <- fao_report_allowed_args(sections[[prefix]]$fun)
+    allowed <- c(fao_report_allowed_args(sections[[prefix]]$fun), sections[[prefix]]$extra)
     if (!arg %in% allowed) {
       stop("fao_report(): ", name, " would set ", arg, ", which is not an argument of ", sections[[prefix]]$fun,
            "(). Its arguments: ", paste(allowed, collapse = ", "), call. = FALSE)
@@ -183,12 +203,12 @@ fao_section_total_values <- function(ctx) {
     growth10 = sprintf("%.1f", recent$growth_pct_per_year),
     trend10 = fao_report_text(paste0("trend10_", recent$trend), lang, list(p = fao_report_p(recent$p_value, lang))),
     n_stages = if (is.null(stages)) 1 else nrow(stages),
-    stage_years = if (is.null(stages)) paste0(first_year, "–", last_year) else
-      list_text(paste0(stages$from, "–", stages$to, if (lang == "zh") " 年")),
+    stage_years = if (is.null(stages)) paste0(first_year, "\u2013", last_year) else
+      list_text(paste0(stages$from, "\u2013", stages$to, if (lang == "zh") " \u5e74")),
     break_years = if (is.null(stages)) "" else list_text(stages$from[-1]),
     stages = if (is.null(stages)) "" else paste(vapply(seq_len(nrow(stages)), function(i) {
       fao_report_text("stage", lang, list(from = stages$from[i], to = stages$to[i], mean = catch(stages$mean[i])))
-    }, character(1)), collapse = if (lang == "zh") "；" else "; "),
+    }, character(1)), collapse = if (lang == "zh") "\uff1b" else "; "),
     has_stages = !is.null(stages),
     share_last = fao_report_pct(share[length(share)]), share_mean = fao_report_pct(mean(share, na.rm = TRUE))
   )
@@ -384,6 +404,18 @@ fao_section_diversity_write <- function(x, ctx) {
 }
 
 # ---- Coastal countries and distant-water fleets ----------------------------------------------
+# Distant-water countries of the area ranked by their catch of the last five years (English names)
+fao_section_distant_ranking <- function(ctx) {
+  if (is.null(ctx$distant_ranking)) {
+    fleets <- suppressMessages(coastal_distant(ctx$area_data, top_n = 1000, plot = FALSE, table = FALSE, lang = "en"))
+    recent <- fleets$distant[fleets$distant$Year > max(ctx$area_data$Year) - 5, ]
+    recent <- recent[as.character(recent$category) != fao_label("other_distant", "en"), ]
+    sums <- sort(tapply(recent$Tonnes, as.character(recent$category), sum), decreasing = TRUE)
+    ctx$distant_ranking <- sums[sums > 0]
+  }
+  ctx$distant_ranking
+}
+
 fao_section_fleets_values <- function(ctx) {
   lang <- ctx$lang
   fleets <- ctx$results$fleets$value
@@ -396,18 +428,297 @@ fao_section_fleets_values <- function(ctx) {
   coastal <- 100 * by_year(levels[1]) / total
   distant <- 100 * by_year(levels[2]) / total
   peak <- which.max(distant)
-  recent <- fleets$distant[fleets$distant$Year > max(ctx$area_data$Year) - 5 &
-                             as.character(fleets$distant$category) != fao_label("other_distant", lang), ]
-  top <- utils::head(sort(tapply(recent$Tonnes, as.character(recent$category), sum), decreasing = TRUE), 3)
+  top <- names(utils::head(fao_section_distant_ranking(ctx), 3))
+  if (lang == "zh") top <- fao_translate(top, "country", "zh")
   list(coastal_pct = fao_report_pct(coastal[length(coastal)]), distant_pct = fao_report_pct(distant[length(distant)]),
        distant_peak_year = names(distant)[peak], distant_peak_pct = fao_report_pct(distant[peak]),
        distant_change = fao_report_text(if (distant[length(distant)] < 0.8 * distant[peak]) "distant_down" else "distant_same", lang),
-       top_distant = fao_report_list(names(top), lang))
+       top_distant = fao_report_list(top, lang))
 }
 
 fao_section_fleets_write <- function(x, ctx) {
   x <- fao_report_par(x, ctx$text("fleets_p1", fig_fleets = fao_report_ref(x, "figures", "fleets")))
   fao_report_figure(x, "fleets", fao_section_chart(ctx, "fleets", n = 1), ctx$text("fig_fleets"))
+}
+
+# ---- Catch shocks ------------------------------------------------------------------------------
+fao_section_shocks_values <- function(ctx) {
+  lang <- ctx$lang
+  result <- ctx$results$shocks$value
+  args <- ctx$args$shocks
+  method <- if (is.null(args$method)) "cottrell2019" else args$method[1]
+  by <- if (is.null(args$by)) "country" else args$by
+  series <- fao_report_list(vapply(by, function(b) fao_report_text(paste0("shock_series_", b), lang), character(1)), lang)
+  shocks <- result$shocks
+  values <- list(
+    shocks_methods = fao_report_text(paste0("methods_shocks_", method), lang,
+                                     list(shock_series = series, shock_min_years = if (is.null(args$min_years)) 20 else args$min_years)),
+    n_shock_series = nrow(result$series), n_shocks = nrow(shocks),
+    n_series_shocked = sum(result$series$n_shocks > 0),
+    shocks_per_series = sprintf("%.2f", nrow(shocks) / max(1, nrow(result$series))),
+    shock_median_loss = "-", n_unrecovered = 0, shock_peak_years = "-", largest_shock = "-"
+  )
+  if (nrow(shocks) > 0) {
+    by_year <- result$by_year[result$by_year$n_shocks > 0, ]
+    peak <- by_year$Year[by_year$n_shocks == max(by_year$n_shocks)]
+    largest <- shocks[which.max(shocks$loss_tonnes), ]
+    values$shock_peak_years <- fao_report_list(utils::head(sort(peak), 5), lang)
+    values$shock_median_loss <- fao_report_pct(stats::median(shocks$loss_pct, na.rm = TRUE))
+    values$n_unrecovered <- sum(is.na(shocks$recovery_years))
+    values$largest_shock <- fao_report_text("largest_shock", lang, list(
+      name = sub("[|].*$", "", largest$series_name), year = largest$Year, loss_pct = fao_report_pct(largest$loss_pct),
+      loss = fao_report_catch(largest$loss_tonnes, lang)))
+  }
+  values
+}
+
+fao_section_shocks_write <- function(x, ctx) {
+  if (ctx$values$n_shocks == 0) return(fao_report_par(x, ctx$text("shocks_none")))
+  x <- fao_report_par(x, ctx$text("shocks_p1", fig_shocks = fao_report_ref(x, "figures", "shocks"),
+                                  fig_shocks_series = fao_report_ref(x, "figures", "shocks_series")))
+  x <- fao_report_figure(x, "shocks", fao_section_chart(ctx, "shocks", "_shocks[.]png$"), ctx$text("fig_shocks"))
+  fao_report_figure(x, "shocks_series", fao_section_chart(ctx, "shocks", "_shocks_series[.]png$"), ctx$text("fig_shocks_series"))
+}
+
+# ---- Fishery collapses -------------------------------------------------------------------------
+# The random series of the null model use the random number generator: the report sets the seed
+# (collapse_seed, default 1) so that it gives the same numbers every time, and restores the state
+fao_section_collapse_run <- function(ctx, args) {
+  seed <- if (is.null(args$seed)) 1 else args$seed
+  args$seed <- NULL
+  if (exists(".Random.seed", envir = globalenv())) {
+    old_seed <- get(".Random.seed", envir = globalenv())
+    on.exit(assign(".Random.seed", old_seed, envir = globalenv()), add = TRUE)
+  }
+  set.seed(seed)
+  ctx$step("collapse_analysis", fao_section_call(ctx, "collapse_analysis", args,
+                                                 list(area_data = ctx$area_data, table = FALSE, lang = ctx$lang)))
+}
+
+fao_section_collapse_values <- function(ctx) {
+  lang <- ctx$lang
+  result <- ctx$results$collapse$value
+  method <- if (is.null(ctx$args$collapse$method)) "mullon2005" else ctx$args$collapse$method[1]
+  s <- result$summary
+  compare <- function(x, null) {
+    fao_report_text(if (abs(x - null) < 2) "compare_close" else if (x > null) "compare_higher" else "compare_lower", lang)
+  }
+  groups <- result$by_group[result$by_group$grouping == "species_group" & result$by_group$n_series >= 3, ]
+  groups <- utils::head(groups[order(-groups$pct_collapsed), ], 3)
+  values <- list(
+    collapse_methods = fao_report_text(paste0("methods_collapse_", method), lang),
+    collapse_method = method, n_collapse_series = s$n_series[1],
+    collapse_groups = fao_report_list(vapply(seq_len(nrow(groups)), function(i) {
+      fao_report_text("collapse_group", lang, list(name = groups$group_name[i], collapsed = groups$n_collapsed[i],
+                                                   n = groups$n_series[i], pct = fao_report_pct(groups$pct_collapsed[i])))
+    }, character(1)), lang)
+  )
+  if (method == "mullon2005") {
+    row <- function(type) s[s$type == type, ]
+    values <- c(values, list(
+      n_collapsed = row("collapsed")$n, collapse_pct = fao_report_pct(row("collapsed")$pct_of_series),
+      collapse_null_pct = fao_report_pct(row("collapsed")$null_pct_of_series),
+      collapse_compare = compare(row("collapsed")$pct_of_series, row("collapsed")$null_pct_of_series),
+      plateau_pct = fao_report_pct(row("plateau")$pct_of_collapses), smooth_pct = fao_report_pct(row("smooth")$pct_of_collapses),
+      erratic_pct = fao_report_pct(row("erratic")$pct_of_collapses)))
+  } else {
+    current <- s[s$type == "collapsed in the last year", ]
+    ever <- s[s$type == "collapsed at least once", ]
+    values <- c(values, list(
+      collapse_pct_current = fao_report_pct(current$pct_of_series), collapse_null_current = fao_report_pct(current$null_pct_of_series),
+      collapse_pct_ever = fao_report_pct(ever$pct_of_series), collapse_null_ever = fao_report_pct(ever$null_pct_of_series)))
+  }
+  values$collapse_conclusion <- fao_report_text(paste0("concl_collapse_", method), lang, c(values, list(last_year = max(ctx$area_data$Year))))
+  values
+}
+
+fao_section_collapse_write <- function(x, ctx) {
+  method <- ctx$values$collapse_method
+  x <- fao_report_par(x, ctx$text(paste0("collapse_p_", method), fig_collapse = fao_report_ref(x, "figures", "collapse"),
+                                  fig_collapse_group = fao_report_ref(x, "figures", "collapse_group")))
+  x <- fao_report_figure(x, "collapse", fao_section_chart(ctx, "collapse", paste0("_collapse_", method, "[.]png$")),
+                         ctx$text(paste0("fig_collapse_", method)))
+  x <- fao_report_figure(x, "collapse_group", fao_section_chart(ctx, "collapse", "_by_group[.]png$"), ctx$text("fig_collapse_group"))
+  fao_report_par(x, ctx$text("collapse_note"))
+}
+
+# ---- Synchrony and portfolio effect ------------------------------------------------------------
+fao_section_synchrony_values <- function(ctx) {
+  lang <- ctx$lang
+  result <- ctx$results$synchrony$value
+  args <- ctx$args$synchrony
+  by <- if (is.null(args$by)) "species" else args$by[1]
+  detrend <- if (is.null(args$detrend)) "linear" else args$detrend[1]
+  s <- result$summary
+  w <- result$windows
+  level <- function(phi) fao_report_text(if (phi < 0.3) "sync_low" else if (phi < 0.6) "sync_moderate" else "sync_high", lang)
+  window_label <- function(i) paste0(w$first_year[i], "\u2013", w$last_year[i])
+  top <- utils::head(result$series[order(-result$series$share_of_variability_pct), ], 2)
+  name_of <- if (by == "species") {
+    function(en) fao_report_species_names(en, lang, fao_group_table()$species)$plain
+  } else {
+    function(en) if (lang == "zh") fao_translate(en, "country", "zh") else en
+  }
+  values <- list(
+    sync_unit = fao_report_text(paste0("sync_unit_", by), lang), sync_by = by,
+    sync_detrend = fao_report_text(paste0("sync_detrend_", detrend), lang),
+    sync_window = if (is.null(args$window)) 20 else args$window,
+    n_sync = s$n_series, phi = sprintf("%.3f", s$synchrony_phi), sync_level = level(s$synchrony_phi),
+    cv_total = sprintf("%.3f", s$cv_total), mean_cv = sprintf("%.3f", s$mean_cv_series),
+    portfolio = sprintf("%.0f", s$portfolio_effect_pct), mean_r = sprintf("%.3f", s$mean_pairwise_correlation),
+    positive_r = fao_report_pct(s$positive_correlations_pct),
+    sync_top = fao_report_list(vapply(seq_len(nrow(top)), function(i) {
+      fao_report_text("sync_source", lang, list(name = name_of(top$series_en[i]), pct = fao_report_pct(top$share_of_variability_pct[i])))
+    }, character(1)), lang),
+    phi_max_window = "-", phi_max = "-", phi_min_window = "-", phi_min = "-", phi_last_window = "-", phi_last = "-"
+  )
+  if (!is.null(w) && nrow(w) > 0) {
+    values$phi_max_window <- window_label(which.max(w$synchrony_phi))
+    values$phi_max <- sprintf("%.3f", max(w$synchrony_phi))
+    values$phi_min_window <- window_label(which.min(w$synchrony_phi))
+    values$phi_min <- sprintf("%.3f", min(w$synchrony_phi))
+    values$phi_last_window <- window_label(nrow(w))
+    values$phi_last <- sprintf("%.3f", w$synchrony_phi[nrow(w)])
+  }
+  values
+}
+
+fao_section_synchrony_write <- function(x, ctx) {
+  by <- ctx$values$sync_by
+  x <- fao_report_par(x, ctx$text("synchrony_p1", fig_sync_cv = fao_report_ref(x, "figures", "sync_cv"),
+                                  fig_sync = fao_report_ref(x, "figures", "sync")))
+  x <- fao_report_figure(x, "sync_cv", fao_section_chart(ctx, "synchrony", paste0("_synchrony_", by, "_cv[.]png$")), ctx$text("fig_sync_cv"))
+  fao_report_figure(x, "sync", fao_section_chart(ctx, "synchrony", paste0("_synchrony_", by, "[.]png$")), ctx$text("fig_sync"))
+}
+
+# ---- Pelagic to demersal ratio -----------------------------------------------------------------
+fao_section_pelagic_values <- function(ctx) {
+  lang <- ctx$lang
+  result <- ctx$results$pelagic$value
+  definition <- if (is.null(ctx$args$pelagic$definition)) "de_leiva_moreno" else ctx$args$pelagic$definition[1]
+  yearly <- result$yearly[result$yearly$area_en == ctx$area$name, ]
+  decades <- result$decades[result$decades$area_en == ctx$area$name, ]
+  if (nrow(yearly) == 0) {
+    yearly <- result$yearly
+    decades <- result$decades
+  }
+  last <- yearly[which.max(yearly$year), ]
+  # "1990 nian dai" / "the 1990s", or the years of an unfinished decade ("2020-2024")
+  period <- function(i) {
+    if (decades$n_years[i] < 10) {
+      years <- paste0(decades$first_year[i], "\u2013", decades$last_year[i])
+      return(if (lang == "zh") paste0(years, " \u5e74") else years)
+    }
+    if (lang == "zh") paste0(decades$first_year[i] %/% 10 * 10, " \u5e74\u4ee3") else paste0("the ", decades$first_year[i] %/% 10 * 10, "s")
+  }
+  list(
+    pelagic_methods = fao_report_text(paste0("methods_pelagic_", definition), lang),
+    pd_last = sprintf("%.2f", last$pd_ratio), pel_last = fao_report_catch(last$pelagic_tonnes, lang),
+    dem_last = fao_report_catch(last$demersal_tonnes, lang),
+    pd_max_period = period(which.max(decades$pd_mean)), pd_max = sprintf("%.2f", max(decades$pd_mean, na.rm = TRUE)),
+    pd_min_period = period(which.min(decades$pd_mean)), pd_min = sprintf("%.2f", min(decades$pd_mean, na.rm = TRUE)),
+    pd_recent_period = period(nrow(decades)), pd_recent = sprintf("%.2f", decades$pd_mean[nrow(decades)]),
+    pd_counted = fao_report_pct(100 * sum(yearly$pelagic_tonnes + yearly$demersal_tonnes) / sum(yearly$total_tonnes))
+  )
+}
+
+fao_section_pelagic_write <- function(x, ctx) {
+  x <- fao_report_par(x, ctx$text("pelagic_p1", fig_pd = fao_report_ref(x, "figures", "pd"),
+                                  fig_pd_share = fao_report_ref(x, "figures", "pd_share")))
+  x <- fao_report_figure(x, "pd", fao_section_chart(ctx, "pelagic", "_pelagic_demersal_ratio[.]png$"), ctx$text("fig_pd"))
+  fao_report_figure(x, "pd_share", fao_section_chart(ctx, "pelagic", "_pelagic_demersal_share[.]png$"), ctx$text("fig_pd_share"))
+}
+
+# ---- Mean temperature of the catch -------------------------------------------------------------
+# By default the report uses the FishBase traits bundled with the package (no download); give
+# mtc_version = "latest" to download the latest FishBase release
+fao_section_mtc_run <- function(ctx, args) {
+  ctx$step("mean_temperature_catch", fao_section_call(ctx, "mean_temperature_catch", args, list(
+    area_data = ctx$area_data, version = "builtin", table = FALSE, lang = ctx$lang)))
+}
+
+fao_section_mtc_values <- function(ctx) {
+  lang <- ctx$lang
+  result <- ctx$results$mtc$value
+  args <- ctx$args$mtc
+  from <- if (is.null(args$trend_from)) 1970 else args$trend_from
+  trend <- result$trend[result$trend$period_start >= from, ]
+  trend <- if (nrow(trend) > 0) trend[1, ] else result$trend[nrow(result$trend), ]
+  yearly <- result$yearly
+  species <- result$species[result$species$used %in% TRUE, ]
+  species <- utils::head(species[order(-species$weight_pct), ], 3)
+  sst <- if (is.null(args$sst)) fao_setting("sst") else args$sst
+  sst_product <- if (is.character(sst) && length(sst) == 1) sst else "user"
+  slope <- sprintf("%.2f", abs(trend$mtc_slope_per_decade))
+  list(
+    mtc_min_coverage = if (is.null(args$min_coverage)) 50 else args$min_coverage,
+    sst_name = if (identical(sst_product, "ersst5")) fao_report_text("sst_ersst5", lang) else
+      fao_report_text("sst_other", lang, list(product = sst_product)),
+    sst_cite = if (identical(sst_product, "ersst5")) "{cite:huang2017}" else "",
+    mtc_from = trend$period_start, mtc_to = trend$period_end,
+    mtc_change = fao_report_text(paste0("mtc_", trend$trend), lang, list(slope = slope)),
+    mtc_p = fao_report_p(trend$kendall_p, lang), sst_slope = sprintf("%.2f", trend$sst_slope_per_decade),
+    mtc_cor = sprintf("%.2f", trend$cor_mtc_sst),
+    mtc_last = sprintf("%.1f", yearly$mtc[which.max(yearly$year)]),
+    mtc_coverage = fao_report_pct(100 * sum(yearly$catch_used_tonnes, na.rm = TRUE) / sum(yearly$catch_tonnes, na.rm = TRUE)),
+    mtc_top = fao_report_list(vapply(seq_len(nrow(species)), function(i) {
+      fao_report_text("mtc_item", lang, list(
+        name = fao_report_species_names(species$species_en[i], lang, fao_group_table()$species)$plain,
+        temp = sprintf("%.1f", species$temp_pref_mean[i]), weight = fao_report_pct(species$weight_pct[i])))
+    }, character(1)), lang),
+    mtc_species = result$species
+  )
+}
+
+fao_section_mtc_write <- function(x, ctx) {
+  x <- fao_report_par(x, ctx$text("mtc_p1", fig_mtc = fao_report_ref(x, "figures", "mtc")))
+  x <- fao_report_figure(x, "mtc", fao_section_chart(ctx, "mtc", "_mtc[.]png$"), ctx$text("fig_mtc"))
+  x <- fao_report_par(x, ctx$text("mtc_p2"))
+  fao_report_par(x, ctx$text("mtc_note"), "FAONote")
+}
+
+# ---- Profiles of the distant-water fleets --------------------------------------------------------
+# The countries with the largest distant-water catch in the area over the last five years
+# (distant_countries: their number, default 3, or their English names)
+fao_section_distant_run <- function(ctx, args) {
+  countries <- if (is.null(args$countries)) 3 else args$countries
+  args$countries <- NULL
+  if (is.numeric(countries)) countries <- utils::head(names(fao_section_distant_ranking(ctx)), countries)
+  out <- lapply(countries, function(country) {
+    ctx$step(paste("distant_water_profile:", country), fao_section_call(ctx, "distant_water_profile", args, list(
+      country_name = country, table = FALSE, lang = ctx$lang, data_version = ctx$data_version)))
+  })
+  list(value = stats::setNames(lapply(out, `[[`, "value"), countries),
+       files = stats::setNames(lapply(out, `[[`, "files"), countries))
+}
+
+fao_section_distant_values <- function(ctx) {
+  lang <- ctx$lang
+  results <- ctx$results$distant$value
+  countries <- names(results)
+  local <- if (lang == "zh") fao_translate(countries, "country", "zh") else countries
+  profiles <- lapply(seq_along(countries), function(i) {
+    r <- results[[i]]
+    last <- r$yearly[which.max(r$yearly$Year), ]
+    here <- r$areas[r$areas$area_en == ctx$area$name, ]
+    list(country = local[i], last_year = last$Year, d_pct = fao_report_pct(last$distant_pct),
+         n_areas = last$n_areas, n_distant_areas = last$n_distant_areas,
+         first_year = min(r$yearly$Year), area_share = if (nrow(here) > 0) fao_report_pct(here$share_of_distant_pct) else "-",
+         area_first = if (nrow(here) > 0) here$first_year else "-")
+  })
+  list(n_distant_countries = length(countries), distant_list = fao_report_list(local, lang), distant_profiles = profiles)
+}
+
+fao_section_distant_write <- function(x, ctx) {
+  files <- ctx$results$distant$files
+  for (i in seq_along(ctx$values$distant_profiles)) {
+    p <- ctx$values$distant_profiles[[i]]
+    id <- paste0("distant_", i)
+    x <- fao_report_par(x, do.call(ctx$text, c(list("distant_country", fig = fao_report_ref(x, "figures", id)), p)))
+    chart <- files[[i]][grepl("_distant_water_areas[.]png$", files[[i]])]
+    x <- fao_report_figure(x, id, if (length(chart) > 0) chart[1] else NA_character_, ctx$text("fig_distant", country = p$country))
+  }
+  x
 }
 
 # ---- CMSY++ ------------------------------------------------------------------------------------

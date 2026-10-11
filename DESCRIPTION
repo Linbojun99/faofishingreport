@@ -35,8 +35,7 @@ Imports:
     parallel,
     stats,
     tools,
-    utils
-Suggests:
+    utils,
     coda,
     conicfit,
     eoffice,
@@ -48,7 +47,8 @@ Suggests:
     nanoparquet,
     ncdf4,
     neuralnet,
-    patchwork,
+    patchwork
+Suggests:
     R2jags,
     rjags,
     testthat (>= 3.0.0),

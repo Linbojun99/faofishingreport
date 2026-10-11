@@ -198,7 +198,7 @@ fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
 fao_settings(grid = FALSE)
 ```
 
-PowerPoint 文件由 eoffice 包生成，安装 faofishingreport 时不会自动安装它：需要时运行一次 `install.packages("eoffice")`（macOS 上 eoffice 还需要安装 [XQuartz](https://www.xquartz.org)）。
+PowerPoint 文件由 eoffice 包生成，它会随 faofishingreport 一起安装；在 macOS 上还需要安装 [XQuartz](https://www.xquartz.org)。
 
 ```{r, eval = FALSE}
 fao_settings(dpi = 300)      # PNG 文件更小

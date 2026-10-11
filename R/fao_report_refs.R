@@ -3,7 +3,7 @@
 
 # References of the report: the FAO data used, R and the package (made from the data and the
 # session), and the references in inst/extdata/report_references.csv
-fao_report_references <- function(info, date, cmsy_result = NULL) {
+fao_report_references <- function(info, date, fishbase = NULL) {
   accessed <- format(as.Date(info$download_date), "%Y-%m-%d")
   today <- format(as.Date(date), "%Y-%m-%d")
   release_year <- substr(info$release_date, 1, 4)
@@ -21,9 +21,7 @@ fao_report_references <- function(info, date, cmsy_result = NULL) {
                                            utils::packageVersion("faofishingreport")),
                             accessed = today, url = "https://linbojun99.github.io/faofishingreport/")
   )
-  if (!is.null(cmsy_result)) {
-    sources <- cmsy_result$sources
-    fishbase <- sources$version[sources$component == "FishBase"]
+  if (!is.null(fishbase)) {
     version <- if (length(fishbase) == 1 && grepl("^[0-9]{2}[.][0-9]{2}$", fishbase)) {
       paste0(substr(fishbase, 4, 5), "/20", substr(fishbase, 1, 2))
     } else {
@@ -100,6 +98,8 @@ fao_ref_entry <- function(ref, style, suffix = "") {
       M = paste0(authors, ". ", ref$title, "[M]. ", if (!is.null(edition)) paste0(edition, " ed. "),
                  ref$place, ": ", ref$publisher, ", ", ref$year, ".",
                  if (!is.null(ref$doi)) paste0(" DOI: ", ref$doi, ".")),
+      R = paste0(authors, ". ", ref$title, if (!is.null(ref$series)) paste0(": ", ref$series), "[R]. ",
+                 ref$place, ": ", ref$publisher, ", ", ref$year, ".", if (!is.null(ref$url)) paste0(" ", ref$url, ".")),
       C = paste0(authors, ". ", ref$title, ": ", ref$container, "[C]. ", ref$place, ", ", ref$year,
                  if (!is.null(ref$pages)) paste0(", ", ref$pages), "."),
       DB = paste0(authors, ". ", ref$title, if (!is.null(ref$version)) paste0(" (", ref$version, ")"), "[DB/OL]. ",
@@ -120,6 +120,8 @@ fao_ref_entry <- function(ref, style, suffix = "") {
       M = paste0(authors, " (", year, "). *", ref$title, "*", if (!is.null(edition)) paste0(" (", edition, " ed.)"), ".",
                  if (!identical(ref$publisher, ref$author)) paste0(" ", ref$publisher, "."),
                  if (!is.null(doi)) paste0(" ", doi)),
+      R = paste0(authors, " (", year, "). *", ref$title, "*", if (!is.null(ref$series)) paste0(" (", ref$series, ")"), ".",
+                 if (!identical(ref$publisher, ref$author)) paste0(" ", ref$publisher, "."), if (!is.null(ref$url)) paste0(" ", ref$url)),
       C = paste0(authors, " (", year, "). ", ref$title, ". In *", ref$container, "*",
                  if (!is.null(pages)) paste0(" (pp. ", pages, ")"), ".", if (!is.null(ref$url)) paste0(" ", ref$url)),
       DB = paste0(authors, " (", year, "). *", ref$title, "*", version, " [Data set]. ", ref$url),
@@ -137,6 +139,8 @@ fao_ref_entry <- function(ref, style, suffix = "") {
                  if (!is.null(ref$series)) paste0(ref$series, ". "), ref$place,
                  if (!identical(ref$publisher, ref$author)) paste0(", ", ref$publisher), ".",
                  if (!is.null(doi)) paste0(" ", doi)),
+      R = paste0(authors, " ", year, ". *", ref$title, "*. ", if (!is.null(ref$series)) paste0(ref$series, ". "),
+                 ref$place, ", ", ref$publisher, ".", if (!is.null(ref$url)) paste0(" ", ref$url)),
       C = paste0(authors, " ", year, ". ", ref$title, ". In: *", ref$container, "*",
                  if (!is.null(pages)) paste0(", pp. ", pages), ". ", ref$place, ".",
                  if (!is.null(ref$url)) paste0(" ", ref$url)),

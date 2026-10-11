@@ -60,3 +60,21 @@ test_that("settings of the analyses are passed by section prefix", {
   expect_error(fao_report_args(list(spcies_h_value = 0.2), sections), "Unknown argument")
   expect_error(fao_report_args(list(0.2), sections), "must be named")
 })
+
+test_that("new sections take their settings and extra settings", {
+  sections <- fao_report_sections()
+  expect_true(all(c("shocks", "collapse", "synchrony", "pelagic", "mtc", "distant") %in% names(sections)))
+  args <- fao_report_args(list(collapse_method = "worm2006", collapse_seed = 2, distant_countries = 5,
+                               mtc_version = "builtin", pelagic_definition = "grainger_garcia"), sections)
+  expect_identical(args$collapse$method, "worm2006")
+  expect_identical(args$collapse$seed, 2)
+  expect_identical(args$distant$countries, 5)
+  expect_error(fao_report_args(list(shocks_seed = 1), sections), "not an argument of catch_shocks")
+  # every method of a section has its paragraph
+  methods <- unique(unlist(lapply(sections, `[[`, "methods")))
+  expect_true(all(methods %in% names(fao_report_methods)))
+  texts <- fao_extdata_csv("report_text.csv")
+  expect_true(all(fao_report_methods %in% texts$key))
+  expect_true(all(paste0("topic_", names(sections)) %in% texts$key))
+  expect_true(all(paste0("method_", methods) %in% texts$key))
+})

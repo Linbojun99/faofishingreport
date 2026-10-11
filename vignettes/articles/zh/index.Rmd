@@ -30,10 +30,10 @@ description: >
 
 ```r
 install.packages("remotes")
-remotes::install_github("Linbojun99/faofishingreport")
+remotes::install_github("Linbojun99/faofishingreport", dependencies = TRUE)
 ```
 
-如需输出可编辑的 PowerPoint 图表，再安装 eoffice：`install.packages("eoffice")`（macOS 上还需要安装 [XQuartz](https://www.xquartz.org)）。
+用到的所有 R 包（Word 报告、PowerPoint、FishBase、海表温度、CMSY++ 等）都会随本包一起安装。CMSY++ 还需要 JAGS 程序：运行一次 `cmsy_setup()` 即可。在 macOS 上输出可编辑的 PowerPoint 图表还需要安装 [XQuartz](https://www.xquartz.org)。
 
 ## 🚀 快速上手
 

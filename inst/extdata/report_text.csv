@@ -185,3 +185,85 @@ concl_diversity,"In {last_year}, the catch was {conc_species} by species (Shanno
 concl_fleets,Coastal countries take {coastal_pct}% of the catch and distant-water fleets {distant_pct}%.,沿岸国渔获量占 {coastal_pct}%，远洋捕捞国家和地区占 {distant_pct}%。
 concl_cmsy,"Of the {n_ok} main species assessed with CMSY++, {n_overfished} were overfished in their last year.",CMSY++ 评估的 {n_ok} 个主要物种中，{n_overfished} 个在最后评估年份处于过度捕捞状态。
 concl_number,({n}) ,（{n}）
+h_shocks,Catch shocks,渔获骤变
+topic_shocks,catch shocks,渔获骤变
+method_shocks,shock detection,渔获骤变检测
+methods_shocks,{shocks_methods},{shocks_methods}
+methods_shocks_cottrell2019,"Catch shocks were identified with the method of Cottrell et al. {cite:cottrell2019}: a LOESS curve (span 0.6) was fitted to every catch series ({shock_series}), years with a Cook's distance above 0.3 were flagged, and flagged years whose catch was below the median of the previous seven years were taken as shocks. Only series with catch in at least {shock_min_years} years were analysed.",采用 Cottrell 等的方法{cite:cottrell2019}识别渔获骤变：对每条渔获序列（{shock_series}）拟合局部加权回归曲线（LOESS，跨度 0.6），将 Cook 距离大于 0.3 的年份标记为异常，其中渔获量低于此前 7 年中位数的年份判定为骤变。仅分析有渔获年份不少于 {shock_min_years} 年的序列。
+methods_shocks_gephart2017,"Catch shocks were identified with the method of Gephart et al. {cite:gephart2017}: a lowess curve (span 2/3) was fitted to every catch series ({shock_series}), years with a Cook's distance above 0.35 were flagged, and flagged years whose catch was below the mean of the previous five years were taken as shocks. Only series with catch in at least {shock_min_years} years were analysed.",采用 Gephart 等的方法{cite:gephart2017}识别渔获骤变：对每条渔获序列（{shock_series}）拟合局部加权回归曲线（lowess，跨度 2/3），将 Cook 距离大于 0.35 的年份标记为异常，其中渔获量低于此前 5 年均值的年份判定为骤变。仅分析有渔获年份不少于 {shock_min_years} 年的序列。
+shock_series_country,the catch of each country,各国家（地区）的渔获量
+shock_series_species,the catch of each species item,各物种条目的渔获量
+shock_series_area,the total catch of the area,渔区总渔获量
+shocks_p1,"Of the {n_shock_series} catch series analysed, {n_series_shocked} had at least one shock, with {n_shocks} shocks in all ({shocks_per_series} per series) ({fig_shocks}). Shocks were most frequent in {shock_peak_years}. The catch in the year of a shock was {shock_median_loss}% below the baseline (median), and after {n_unrecovered} of the shocks the catch has not yet recovered. The largest loss was {largest_shock} ({fig_shocks_series}).",共分析 {n_shock_series} 条渔获序列，其中 {n_series_shocked} 条出现过骤变，共计 {n_shocks} 次，平均每条序列 {shocks_per_series} 次（{fig_shocks}）。骤变最多的年份为 {shock_peak_years} 年。骤变当年渔获量较基准水平下降的中位数为 {shock_median_loss}%，有 {n_unrecovered} 次骤变后渔获量尚未恢复到基准水平。渔获损失最大的为{largest_shock}（{fig_shocks_series}）。
+shocks_none,No shock was found in the {n_shock_series} catch series analysed.,在分析的 {n_shock_series} 条渔获序列中未发现渔获骤变。
+largest_shock,"the shock of {name} in {year}, a loss of {loss_pct}% (about {loss})",{name}{year} 年的骤变，渔获量下降 {loss_pct}%（约 {loss}）
+fig_shocks,Yearly frequency of catch shocks in {area},{area}渔获骤变的年际频率
+fig_shocks_series,Catch shocks of the main catch series in {area},{area}主要渔获序列的骤变
+concl_shocks,"{n_shocks} catch shocks were found in {n_series_shocked} of the {n_shock_series} catch series, with a median loss of {shock_median_loss}%.",{n_shock_series} 条渔获序列中有 {n_series_shocked} 条出现过骤变，共 {n_shocks} 次，骤变当年渔获量下降的中位数为 {shock_median_loss}%。
+h_collapse,Fishery collapses,渔业崩溃
+topic_collapse,fishery collapses,渔业崩溃
+method_collapse,collapse analysis,渔业崩溃分析
+methods_collapse,{collapse_methods},{collapse_methods}
+methods_collapse_mullon2005,"Fishery collapses were identified as defined by Mullon et al. {cite:mullon2005}: a catch series is the catch of one species (or genus) by one country in the area, and it has collapsed when, after its maximum catch, the catch stays below one tenth of the maximum for four consecutive years; the decline before a collapse is classified as plateau, smooth or erratic. Random catch series without trend were analysed in the same way to separate collapses from random fluctuations {cite:wilberg2007}.",按 Mullon 等的定义{cite:mullon2005}识别渔业崩溃：以国家与物种（或属）在该海域的渔获量为一条渔获序列，若在最高渔获量出现之后连续 4 年渔获量低于最高值的 1/10，则判定为崩溃，并按崩溃前的下降形态分为平台型、平滑型和波动型。为区分崩溃与随机波动，对无趋势的随机渔获序列进行了同样的分析作为对照{cite:wilberg2007}。
+methods_collapse_worm2006,"Fishery collapses were identified as defined by Worm et al. {cite:worm2006}: a fishery is the catch of one species item in the area, all countries together, and it is collapsed in a year when its catch is below 10% of its maximum. Random catch series without trend were analysed in the same way to separate collapses from random fluctuations {cite:wilberg2007}.",按 Worm 等的定义{cite:worm2006}识别渔业崩溃：以物种条目在该海域的渔获量（各国合计）为一个渔业，当年渔获量低于其历史最高值的 10% 时判定为崩溃。为区分崩溃与随机波动，对无趋势的随机渔获序列进行了同样的分析作为对照{cite:wilberg2007}。
+collapse_p_mullon2005,"Of the {n_collapse_series} catch series analysed, {n_collapsed} ({collapse_pct}%) have collapsed, {collapse_compare} the {collapse_null_pct}% of the random series ({fig_collapse}). Before the collapse, the decline was a plateau in {plateau_pct}% of the collapses, smooth in {smooth_pct}% and erratic in {erratic_pct}%. The species groups with the largest share of collapsed series were {collapse_groups} ({fig_collapse_group}).",在分析的 {n_collapse_series} 条渔获序列中，{n_collapsed} 条（{collapse_pct}%）发生了崩溃，{collapse_compare}无趋势随机序列的 {collapse_null_pct}%（{fig_collapse}）。崩溃前的下降形态中，平台型、平滑型和波动型分别占 {plateau_pct}%、{smooth_pct}% 和 {erratic_pct}%。崩溃序列比例最高的类群为{collapse_groups}（{fig_collapse_group}）。
+collapse_p_worm2006,"Of the {n_collapse_series} fisheries analysed, {collapse_pct_current}% were collapsed in {last_year} and {collapse_pct_ever}% have collapsed at least once, against {collapse_null_current}% and {collapse_null_ever}% of the random series ({fig_collapse}). The species groups with the largest share of collapsed fisheries were {collapse_groups} ({fig_collapse_group}).",在分析的 {n_collapse_series} 个渔业中，{last_year} 年处于崩溃状态的占 {collapse_pct_current}%，曾经崩溃的占 {collapse_pct_ever}%，无趋势随机序列的相应比例分别为 {collapse_null_current}% 和 {collapse_null_ever}%（{fig_collapse}）。崩溃比例最高的类群为{collapse_groups}（{fig_collapse_group}）。
+collapse_note,"A falling catch does not always mean a collapsed stock: it may also come from management, markets or changes in reporting, and random series show that part of the ""collapses"" can come from natural fluctuations of the catch {cite:wilberg2007}.",需要指出的是，渔获量下降并不等同于资源崩溃，也可能源于管理措施、市场或统计口径的变化；随机序列对照表明，部分“崩溃”可能仅是渔获量自然波动的结果{cite:wilberg2007}。
+compare_higher,higher than,高于
+compare_lower,lower than,低于
+compare_close,close to,接近
+collapse_group,"{name} ({collapsed}/{n}, {pct}%)",{name}（{collapsed}/{n}，{pct}%）
+fig_collapse_mullon2005,Collapses of catch series in {area} by year and type of decline,{area}渔获序列崩溃的年份与下降形态
+fig_collapse_worm2006,"Share of collapsed fisheries in {area}, compared with random series",{area}崩溃渔业的比例及随机序列对照
+fig_collapse_group,Share of collapsed series by ISSCAAP group in {area},{area}各 ISSCAAP 类群的崩溃比例
+concl_collapse_mullon2005,{collapse_pct}% of the catch series have collapsed ({collapse_null_pct}% of random series).,{collapse_pct}% 的渔获序列发生过崩溃（随机序列对照为 {collapse_null_pct}%）。
+concl_collapse_worm2006,"In {last_year}, {collapse_pct_current}% of the fisheries were collapsed ({collapse_null_current}% of random series).",{last_year} 年 {collapse_pct_current}% 的渔业处于崩溃状态（随机序列对照为 {collapse_null_current}%）。
+h_synchrony,Synchrony of the catch and portfolio effect,渔获同步性与组合效应
+topic_synchrony,the synchrony of the catch,渔获同步性
+method_synchrony,synchrony analysis,同步性分析
+methods_synchrony,"The synchrony of the year-to-year fluctuations of the catch of the {sync_unit} was measured with the index φ of Loreau and de Mazancourt {cite:loreau2008}, from 0 (fluctuations fully compensating) to 1 (fully synchronous). The CV of the total catch is √φ times the weighted mean CV of the series {cite:thibaut2013}, and the portfolio effect is the increase of the mean CV of the series over the CV of the total {cite:carlson2011,ong2021}. Before the calculation, {sync_detrend} {cite:leps2019}; moving windows of {sync_window} years show the changes over time.","采用 Loreau 和 de Mazancourt 的同步性指数 φ{cite:loreau2008}衡量各{sync_unit}渔获量年际波动的同步程度，φ 为 0 表示波动完全相互补偿，为 1 表示完全同步。总渔获量的变异系数等于 √φ 与各序列变异系数加权平均值的乘积{cite:thibaut2013}；组合效应为各序列平均变异系数相对于总渔获量变异系数的增幅{cite:carlson2011,ong2021}。计算前{sync_detrend}{cite:leps2019}，并以 {sync_window} 年滑动窗口分析其随时间的变化。"
+sync_unit_species,species items,物种
+sync_unit_country,countries,国家（地区）
+sync_detrend_linear,the linear trend of every series was removed,各序列均去除了线性趋势
+sync_detrend_none,the series were not detrended,各序列未去除趋势
+sync_low,low,较低
+sync_moderate,moderate,中等
+sync_high,high,较高
+synchrony_p1,"The synchrony φ of the {n_sync} series of {sync_unit} was {phi} ({sync_level}). The CV of the total catch ({cv_total}) was lower than the mean CV of the series ({mean_cv}), a portfolio effect of {portfolio}% ({fig_sync_cv}); the mean pairwise correlation was {mean_r}, and {positive_r}% of the pairs were positively correlated. In moving windows, φ was highest in {phi_max_window} ({phi_max}) and lowest in {phi_min_window} ({phi_min}), and was {phi_last} in {phi_last_window} ({fig_sync}). The main sources of the variability of the total catch were {sync_top}.",{n_sync} 条{sync_unit}渔获序列的同步性指数 φ 为 {phi}，同步性{sync_level}。总渔获量的变异系数（{cv_total}）低于各序列的平均变异系数（{mean_cv}），组合效应为 {portfolio}%（{fig_sync_cv}）；各序列两两相关系数的平均值为 {mean_r}，{positive_r}% 的序列对为正相关。滑动窗口分析表明，φ 在 {phi_max_window} 年最高（{phi_max}），在 {phi_min_window} 年最低（{phi_min}），{phi_last_window} 年为 {phi_last}（{fig_sync}）。总渔获量波动的主要来源为{sync_top}。
+sync_source,{name} ({pct}%),{name}（{pct}%）
+fig_sync,Synchrony φ and portfolio effect of the catch in {area} in moving windows,{area}渔获同步性 φ 与组合效应的滑动窗口变化
+fig_sync_cv,Coefficient of variation of the total catch and of the main series in {area},{area}总渔获量与主要序列的变异系数
+concl_synchrony,The synchrony of the catch of the {sync_unit} was {sync_level} (φ = {phi}); their compensating fluctuations made the total catch more stable (portfolio effect {portfolio}%).,各{sync_unit}渔获量波动的同步性{sync_level}（φ={phi}），相互补偿使总渔获量更为稳定（组合效应 {portfolio}%）。
+h_pelagic,Pelagic to demersal ratio,中上层鱼类与底层鱼类渔获比
+topic_pelagic,the pelagic to demersal ratio,中上层与底层渔获比
+method_pelagic,the pelagic to demersal ratio (P/D),中上层与底层渔获比（P/D）
+methods_pelagic,{pelagic_methods},{pelagic_methods}
+methods_pelagic_de_leiva_moreno,"Following Caddy {cite:caddy1993} and de Leiva Moreno et al. {cite:deleiva2000}, the ratio of the catch of small pelagic fishes to that of demersal fishes and crustaceans (P/D) was used as an indicator of the nutrient level and of changes in the ecosystem.",参照 Caddy{cite:caddy1993}和 de Leiva Moreno 等{cite:deleiva2000}的方法，以小型中上层鱼类渔获量与底层鱼类及甲壳类渔获量之比（P/D）作为海域营养状况和生态系统变化的指标。
+methods_pelagic_grainger_garcia,"Following Grainger and Garcia {cite:grainger1996}, the ratio of the catch of pelagic fishes to that of demersal fishes (P/D) was used to follow changes in the composition of the catch and in the ecosystem.",参照 Grainger 和 Garcia 的划分{cite:grainger1996}，以中上层鱼类与底层鱼类渔获量之比（P/D）反映渔获组成和生态系统的变化。
+pelagic_p1,"In {last_year}, the P/D ratio of the area was {pd_last} (pelagic catch {pel_last}, demersal catch {dem_last}) ({fig_pd}). By decade, P/D was highest in {pd_max_period} ({pd_max}) and lowest in {pd_min_period} ({pd_min}), and was {pd_recent} in {pd_recent_period}. The groups counted in the ratio made up {pd_counted}% of the catch ({fig_pd_share}). The ratio also depends on nutrient loads, hypoxia and fishing, and should be read with other information {cite:hondorp2010}.",{last_year} 年该海域 P/D 为 {pd_last}（中上层渔获 {pel_last}，底层渔获 {dem_last}）（{fig_pd}）。按年代平均，P/D 在 {pd_max_period}最高（{pd_max}），在 {pd_min_period}最低（{pd_min}），{pd_recent_period}为 {pd_recent}。计入 P/D 的类群占总渔获量的 {pd_counted}%（{fig_pd_share}）。P/D 同时受营养盐输入、缺氧和捕捞等因素影响，应结合其他资料解释{cite:hondorp2010}。
+fig_pd,Pelagic to demersal ratio (P/D) of the catch in {area},{area}中上层与底层渔获比（P/D）
+fig_pd_share,"Pelagic, demersal and other catch in {area}",{area}中上层、底层及其他渔获的占比
+concl_pelagic,The P/D ratio was highest in {pd_max_period} ({pd_max}) and was {pd_recent} in {pd_recent_period}.,P/D 比值在 {pd_max_period}最高（{pd_max}），{pd_recent_period}为 {pd_recent}。
+h_mtc,Mean temperature of the catch,渔获平均温度
+topic_mtc,the mean temperature of the catch,渔获平均温度
+method_mtc,the mean temperature of the catch (MTC),渔获平均温度（MTC）
+methods_mtc,"The mean temperature of the catch (MTC) was computed as in Cheung et al. {cite:cheung2013}: the mean of the preferred temperatures of the species, weighted by their catch. Preferred temperatures come from FishBase and SeaLifeBase {cite:fishbase}; only items identified to species and matched in FishBase were used, and years in which these covered less than {mtc_min_coverage}% of the catch were left out of the trends. Sea surface temperature (SST) is {sst_name}{sst_cite}. Trends of MTC and SST were tested with linear regression and the Mann-Kendall test; the p-values do not account for autocorrelation {cite:pyper1998}.",按 Cheung 等的方法{cite:cheung2013}计算渔获平均温度（MTC），即以渔获量加权的各物种偏好温度的平均值。物种偏好温度取自 FishBase 和 SeaLifeBase{cite:fishbase}，仅使用鉴定到种并与 FishBase 匹配的物种条目，可用渔获量占比低于 {mtc_min_coverage}% 的年份不参与趋势分析。海表温度（SST）采用{sst_name}{sst_cite}。MTC 和海表温度的趋势采用线性回归和 Mann-Kendall 检验，p 值未考虑自相关的影响{cite:pyper1998}。
+sst_ersst5,"the Extended Reconstructed SST, version 5 (ERSST v5)", ERSST v5 扩展重建海表温度数据
+sst_other,{product}, {product}
+mtc_up,increased by {slope} °C per decade,以每 10 年 {slope}°C 的速率上升
+mtc_down,decreased by {slope} °C per decade,以每 10 年 {slope}°C 的速率下降
+mtc_none,"changed by {slope} °C per decade, without a significant trend",每 10 年变化 {slope}°C，趋势不显著
+mtc_p1,"Over {mtc_from}–{mtc_to}, the MTC of the area {mtc_change} (Mann-Kendall test, {mtc_p}), while the SST changed by {sst_slope} °C per decade; the correlation between MTC and SST was {mtc_cor} ({fig_mtc}). In {last_year}, the MTC was {mtc_last} °C. The items used covered {mtc_coverage}% of the catch, and the MTC was driven mainly by {mtc_top}.",{mtc_from}–{mtc_to} 年，该海域 MTC {mtc_change}（Mann-Kendall 检验，{mtc_p}），同期海表温度每 10 年变化 {sst_slope}°C，两者的相关系数为 {mtc_cor}（{fig_mtc}）。{last_year} 年 MTC 为 {mtc_last}°C。可用于计算的物种条目占总渔获量的 {mtc_coverage}%，MTC 主要由{mtc_top}决定。
+mtc_item,"{name} ({temp} °C, {weight}% of the weight)",{name}（偏好温度 {temp}°C，权重 {weight}%）
+mtc_p2,"The preferred temperatures are automatic matches that have not all been checked, and changes in the composition of the catch unrelated to ocean warming can also change the MTC {cite:alajmi2024}.",需要注意，物种偏好温度为自动匹配的结果，尚未逐一核对；与海洋变暖无关的渔获组成变化也会影响 MTC{cite:alajmi2024}。
+mtc_note,[To be completed: check the preferred temperatures of the main species (returned by fao_report() in mtc_species) and correct the matches if needed.],【待补充：请核对主要物种的偏好温度（fao_report() 返回结果中的 mtc_species），必要时修正匹配结果。】
+fig_mtc,Mean temperature of the catch (MTC) and sea surface temperature in {area},{area}渔获平均温度（MTC）与海表温度
+concl_mtc,"Over {mtc_from}–{mtc_to}, the mean temperature of the catch {mtc_change}, and the SST changed by {sst_slope} °C per decade.",{mtc_from}–{mtc_to} 年渔获平均温度{mtc_change}，同期海表温度每 10 年变化 {sst_slope}°C。
+h_distant,Profiles of the distant-water fleets,远洋捕捞国家（地区）概况
+topic_distant,the distant-water fleets fishing in the area,远洋捕捞国家（地区）
+method_distant,profiles of distant-water fleets,远洋捕捞特征分析
+methods_distant,"For the {n_distant_countries} countries with the largest distant-water catch in the area over the last five years, the catch in FAO areas adjacent to them and in distant waters, and the number of areas fished, were followed over time, as a measure of the expansion of fishing {cite:swartz2010,garibaldi2003}. An area is adjacent to a country when its coast lies within 20 km of the area.","对近 5 年在该海域远洋渔获量最高的 {n_distant_countries} 个国家和地区，统计其各年在毗邻渔区和远洋渔区的渔获量及作业渔区数量，分析其远洋捕捞的扩张过程{cite:swartz2010,garibaldi2003}。毗邻渔区根据各国海岸线与 FAO 渔区边界的距离（20 km 以内）确定。"
+distant_country,"{country}: in {last_year}, {d_pct}% of its marine catch came from distant waters, and it fished in {n_areas} FAO areas ({n_distant_areas} of them distant). The area took {area_share}% of its distant-water catch over {first_year}–{last_year}, and its first catch in the area was in {area_first} ({fig}).",{country}：{last_year} 年其海洋渔获量中远洋渔获占 {d_pct}%，共在 {n_areas} 个 FAO 渔区作业（其中远洋渔区 {n_distant_areas} 个）；该海域占其 {first_year}–{last_year} 年远洋渔获量的 {area_share}%，最早于 {area_first} 年在该海域有渔获记录（{fig}）。
+fig_distant,Distant-water catch of {country} by FAO area,{country}远洋渔获量的渔区分布
+concl_distant,The main distant-water fleets in the area were those of {distant_list}.,在该海域作业的主要远洋捕捞国家和地区为{distant_list}。
+concl_collapse,{collapse_conclusion},{collapse_conclusion}

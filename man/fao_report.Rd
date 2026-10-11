@@ -28,6 +28,12 @@ fao_report(
   quality = TRUE,
   diversity = TRUE,
   fleets = TRUE,
+  shocks = FALSE,
+  collapse = FALSE,
+  synchrony = FALSE,
+  pelagic = FALSE,
+  mtc = FALSE,
+  distant = FALSE,
   cmsy = FALSE
 )
 }
@@ -39,8 +45,14 @@ code, e.g. 34.}
 \code{\link[=fishing_area_data]{fishing_area_data()}}, \code{species_} for \code{\link[=fishing_area_species]{fishing_area_species()}}, \code{countries_} for
 \code{\link[=fishing_area_country]{fishing_area_country()}}, \code{groups_} for \code{\link[=species_group_composition]{species_group_composition()}}, \code{status_} for
 \code{\link[=stock_status]{stock_status()}}, \code{quality_} for \code{\link[=data_quality]{data_quality()}}, \code{diversity_} for
-\code{\link[=diversity_concentration]{diversity_concentration()}}, \code{fleets_} for \code{\link[=coastal_distant]{coastal_distant()}} and \code{cmsy_} for
-\code{\link[=cmsy_area]{cmsy_area()}} (and \code{\link[=cmsy_input]{cmsy_input()}}). For example \code{species_h_value = 0.2},
+\code{\link[=diversity_concentration]{diversity_concentration()}}, \code{fleets_} for \code{\link[=coastal_distant]{coastal_distant()}}, \code{shocks_} for
+\code{\link[=catch_shocks]{catch_shocks()}}, \code{collapse_} for \code{\link[=collapse_analysis]{collapse_analysis()}} (and \code{collapse_seed}, the seed of
+its random series, default 1), \code{synchrony_} for \code{\link[=catch_synchrony]{catch_synchrony()}}, \code{pelagic_} for
+\code{\link[=pelagic_demersal]{pelagic_demersal()}}, \code{mtc_} for \code{\link[=mean_temperature_catch]{mean_temperature_catch()}} (the report uses
+\code{mtc_version = "builtin"}, the FishBase data bundled with the package, unless another
+version is given), \code{distant_} for \code{\link[=distant_water_profile]{distant_water_profile()}} (and \code{distant_countries},
+the number of distant-water countries profiled, default 3, or their names) and
+\code{cmsy_} for \code{\link[=cmsy_area]{cmsy_area()}} (and \code{\link[=cmsy_input]{cmsy_input()}}). For example \code{species_h_value = 0.2},
 \code{countries_line_linewidth = 1}, \code{status_smooth = TRUE}, \code{cmsy_top = 5} or
 \code{cmsy_settings = list(n.iter = 100000)}. A name that is not an argument of the
 function gives an error listing its arguments.}
@@ -84,6 +96,13 @@ stock status plots (\code{\link[=stock_status]{stock_status()}}), the data quali
 diversity and concentration of the catch (\code{\link[=diversity_concentration]{diversity_concentration()}}) and the
 coastal and distant-water fleets (\code{\link[=coastal_distant]{coastal_distant()}}). All TRUE by default.}
 
+\item{shocks, collapse, synchrony, pelagic, mtc, distant}{Logical values: whether the report has
+the sections on catch shocks (\code{\link[=catch_shocks]{catch_shocks()}}), fishery collapses
+(\code{\link[=collapse_analysis]{collapse_analysis()}}), the synchrony of the catch and the portfolio effect
+(\code{\link[=catch_synchrony]{catch_synchrony()}}), the pelagic to demersal ratio (\code{\link[=pelagic_demersal]{pelagic_demersal()}}), the mean
+temperature of the catch (\code{\link[=mean_temperature_catch]{mean_temperature_catch()}}) and the profiles of the main
+distant-water fleets in the area (\code{\link[=distant_water_profile]{distant_water_profile()}}). All FALSE by default.}
+
 \item{cmsy}{A logical value. If TRUE, the main species are also assessed with CMSY++
 (\code{\link[=cmsy_area]{cmsy_area()}}), and the report has a part on the assessment, with the results of
 every species and appendix tables of the reference points, priors and their sources.
@@ -92,7 +111,9 @@ write the report without running CMSY++ again. CMSY++ needs JAGS: see \code{\lin
 }
 \value{
 Invisibly, a list of class \code{fao_report} with the path of the Word file (\code{file}) and
-the tables of the report as data frames: \code{main_species} and \code{main_countries}, and with
+the tables of the report as data frames: \code{main_species} and \code{main_countries}, the
+species of the mean temperature of the catch with their FishBase matches
+(\code{mtc_species}), the results of all analyses (\code{analyses}), and with
 CMSY++ \code{cmsy_reference_points} (r, k, MSY, Fmsy, Bmsy, B/Bmsy and F/Fmsy with 95\%
 confidence limits), \code{cmsy_priors} (resilience, r, k and B/k priors, their sources and
 the links to FishBase or SeaLifeBase, the FishBase data, the CMSY++ code and the FAO
@@ -134,6 +155,10 @@ The text templates are in \code{inst/extdata/report_text.csv} and the references
 fao_report(34)                                  # Chinese or English, from fao_settings()
 fao_report("Atlantic, Eastern Central", lang = "zh", author = "Hongyu Lin")
 fao_report(34, lang = "en", font = "Times New Roman", citation = "fao")
+
+# The other analyses of the package, with their settings
+fao_report(34, lang = "zh", shocks = TRUE, collapse = TRUE, synchrony = TRUE, pelagic = TRUE,
+           mtc = TRUE, distant = TRUE, collapse_method = "worm2006", distant_countries = 5)
 
 # Only some sections, with settings of their functions
 fao_report(34, lang = "zh", quality = FALSE, diversity = FALSE,

@@ -31,8 +31,14 @@
 #'        [fishing_area_data()], `species_` for [fishing_area_species()], `countries_` for
 #'        [fishing_area_country()], `groups_` for [species_group_composition()], `status_` for
 #'        [stock_status()], `quality_` for [data_quality()], `diversity_` for
-#'        [diversity_concentration()], `fleets_` for [coastal_distant()] and `cmsy_` for
-#'        [cmsy_area()] (and [cmsy_input()]). For example `species_h_value = 0.2`,
+#'        [diversity_concentration()], `fleets_` for [coastal_distant()], `shocks_` for
+#'        [catch_shocks()], `collapse_` for [collapse_analysis()] (and `collapse_seed`, the seed of
+#'        its random series, default 1), `synchrony_` for [catch_synchrony()], `pelagic_` for
+#'        [pelagic_demersal()], `mtc_` for [mean_temperature_catch()] (the report uses
+#'        `mtc_version = "builtin"`, the FishBase data bundled with the package, unless another
+#'        version is given), `distant_` for [distant_water_profile()] (and `distant_countries`,
+#'        the number of distant-water countries profiled, default 3, or their names) and
+#'        `cmsy_` for [cmsy_area()] (and [cmsy_input()]). For example `species_h_value = 0.2`,
 #'        `countries_line_linewidth = 1`, `status_smooth = TRUE`, `cmsy_top = 5` or
 #'        `cmsy_settings = list(n.iter = 100000)`. A name that is not an argument of the
 #'        function gives an error listing its arguments.
@@ -62,13 +68,21 @@
 #'        stock status plots ([stock_status()]), the data quality ([data_quality()]), the
 #'        diversity and concentration of the catch ([diversity_concentration()]) and the
 #'        coastal and distant-water fleets ([coastal_distant()]). All TRUE by default.
+#' @param shocks,collapse,synchrony,pelagic,mtc,distant Logical values: whether the report has
+#'        the sections on catch shocks ([catch_shocks()]), fishery collapses
+#'        ([collapse_analysis()]), the synchrony of the catch and the portfolio effect
+#'        ([catch_synchrony()]), the pelagic to demersal ratio ([pelagic_demersal()]), the mean
+#'        temperature of the catch ([mean_temperature_catch()]) and the profiles of the main
+#'        distant-water fleets in the area ([distant_water_profile()]). All FALSE by default.
 #' @param cmsy A logical value. If TRUE, the main species are also assessed with CMSY++
 #'        ([cmsy_area()]), and the report has a part on the assessment, with the results of
 #'        every species and appendix tables of the reference points, priors and their sources.
 #'        Default is FALSE. The result of an earlier [cmsy_area()] run can also be given, to
 #'        write the report without running CMSY++ again. CMSY++ needs JAGS: see [cmsy_setup()].
 #' @return Invisibly, a list of class `fao_report` with the path of the Word file (`file`) and
-#'         the tables of the report as data frames: `main_species` and `main_countries`, and with
+#'         the tables of the report as data frames: `main_species` and `main_countries`, the
+#'         species of the mean temperature of the catch with their FishBase matches
+#'         (`mtc_species`), the results of all analyses (`analyses`), and with
 #'         CMSY++ `cmsy_reference_points` (r, k, MSY, Fmsy, Bmsy, B/Bmsy and F/Fmsy with 95%
 #'         confidence limits), `cmsy_priors` (resilience, r, k and B/k priors, their sources and
 #'         the links to FishBase or SeaLifeBase, the FishBase data, the CMSY++ code and the FAO
@@ -84,6 +98,10 @@
 #' fao_report(34)                                  # Chinese or English, from fao_settings()
 #' fao_report("Atlantic, Eastern Central", lang = "zh", author = "Hongyu Lin")
 #' fao_report(34, lang = "en", font = "Times New Roman", citation = "fao")
+#'
+#' # The other analyses of the package, with their settings
+#' fao_report(34, lang = "zh", shocks = TRUE, collapse = TRUE, synchrony = TRUE, pelagic = TRUE,
+#'            mtc = TRUE, distant = TRUE, collapse_method = "worm2006", distant_countries = 5)
 #'
 #' # Only some sections, with settings of their functions
 #' fao_report(34, lang = "zh", quality = FALSE, diversity = FALSE,
@@ -105,7 +123,8 @@ fao_report <- function(area, ..., file = NULL, lang = NULL, title = NULL, report
                        font = NULL, font_zh = "FangSong", citation = c("apa", "fao"),
                        top_n = 10, data_version = "latest",
                        total = TRUE, species = TRUE, countries = TRUE, groups = TRUE, status = TRUE,
-                       quality = TRUE, diversity = TRUE, fleets = TRUE, cmsy = FALSE) {
+                       quality = TRUE, diversity = TRUE, fleets = TRUE, shocks = FALSE, collapse = FALSE,
+                       synchrony = FALSE, pelagic = FALSE, mtc = FALSE, distant = FALSE, cmsy = FALSE) {
   fao_check_report_packages()
   sections <- fao_report_sections()
   args <- fao_report_args(list(...), sections)
@@ -120,7 +139,8 @@ fao_report <- function(area, ..., file = NULL, lang = NULL, title = NULL, report
 
   # The switched-on sections; cmsy may be the result of an earlier cmsy_area() run
   switches <- list(total = total, species = species, countries = countries, groups = groups, status = status,
-                   quality = quality, diversity = diversity, fleets = fleets,
+                   quality = quality, diversity = diversity, fleets = fleets, shocks = shocks,
+                   collapse = collapse, synchrony = synchrony, pelagic = pelagic, mtc = mtc, distant = distant,
                    cmsy = isTRUE(cmsy) || inherits(cmsy, "cmsy_result"))
   ctx <- new.env()
   ctx$sections <- sections
@@ -156,7 +176,8 @@ fao_report <- function(area, ..., file = NULL, lang = NULL, title = NULL, report
   )
   message("Writing ", file, " ...")
   cmsy_result <- if ("cmsy" %in% ctx$on) ctx$results$cmsy$value
-  doc <- fao_report_new(lang, font, font_zh, citation, report_no, fao_report_references(info, date, cmsy_result))
+  fishbase <- fao_report_fishbase_version(ctx, cmsy_result)
+  doc <- fao_report_new(lang, font, font_zh, citation, report_no, fao_report_references(info, date, fishbase))
   doc <- fao_report_body(doc, meta, ctx)
   fao_report_save(doc, file, meta)
   message("Report saved: ", file)
@@ -176,6 +197,8 @@ fao_report <- function(area, ..., file = NULL, lang = NULL, title = NULL, report
                                      share_pct = s$share, peak_year = s$peak_year, pct_of_peak = s$pct_of_peak,
                                      trend_10_years = s$trend, stringsAsFactors = FALSE)
   }
+  if ("mtc" %in% ctx$on) out$mtc_species <- values$mtc_species
+  out$analyses <- lapply(ctx$results[ctx$on], `[[`, "value")
   if ("cmsy" %in% ctx$on) {
     out$cmsy <- cmsy_result
     out$cmsy_reference_points <- values$cmsy_reference_points
@@ -190,12 +213,31 @@ print.fao_report <- function(x, ...) {
   tables <- c(main_species = "main species of the last five years",
               main_countries = "main fishing countries of the last five years",
               cmsy_reference_points = "CMSY++ biological reference points with 95% confidence limits",
-              cmsy_priors = "CMSY++ priors, their sources and links")
+              cmsy_priors = "CMSY++ priors, their sources and links",
+              mtc_species = "species of the mean temperature of the catch, with FishBase matches")
   for (name in names(tables)) {
     if (!is.null(x[[name]])) cat(sprintf("  $%-22s %s (%d rows)\n", name, tables[[name]], nrow(x[[name]])))
   }
   if (!is.null(x$cmsy)) cat("  $cmsy                   CMSY++ result (folder ", x$cmsy$dir, ")\n", sep = "")
+  if (length(x$analyses) > 0) cat("  $analyses               results of the analyses: ", paste(names(x$analyses), collapse = ", "), "\n", sep = "")
   invisible(x)
+}
+
+# The FishBase version cited by the report: from the CMSY++ run, or of the FishBase data used for
+# the mean temperature of the catch (bundled with the package unless mtc_version is given)
+fao_report_fishbase_version <- function(ctx, cmsy_result = NULL) {
+  if (!is.null(cmsy_result)) {
+    version <- cmsy_result$sources$version[cmsy_result$sources$component == "FishBase"]
+    if (length(version) == 1) return(version)
+  }
+  if (!"mtc" %in% ctx$on) return(NULL)
+  version <- ctx$args$mtc$version
+  if (is.null(version) || identical(version, "builtin")) {
+    bundled <- new.env()
+    load(system.file("extdata", "fishbase_traits.rda", package = "faofishingreport"), envir = bundled)
+    version <- attr(bundled$fishbase_traits, "fishbase_version")[["fishbase"]]
+  }
+  version
 }
 
 # officer writes the Word file and xml2 edits it; both are suggested packages

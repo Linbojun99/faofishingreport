@@ -37,11 +37,12 @@ faofishingreport needs R 4.2 or later. Install it from GitHub:
 
 ```r
 install.packages("remotes")
-remotes::install_github("Linbojun99/faofishingreport")
+remotes::install_github("Linbojun99/faofishingreport", dependencies = TRUE)
 ```
 
-For editable PowerPoint charts, also install eoffice: `install.packages("eoffice")` (on macOS it
-also needs [XQuartz](https://www.xquartz.org)).
+All the packages it uses are installed with it (Word reports, PowerPoint, FishBase, sea surface
+temperature, CMSY++). CMSY++ also needs the JAGS program: run `cmsy_setup()` once. On macOS,
+editable PowerPoint charts need [XQuartz](https://www.xquartz.org).
 
 ## 🚀 Quick start
 

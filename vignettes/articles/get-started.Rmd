@@ -34,10 +34,12 @@ faofishingreport needs **R 4.2 or later**. Install it from GitHub:
 
 ```{r, eval = FALSE}
 install.packages("remotes")
-remotes::install_github("Linbojun99/faofishingreport")
+remotes::install_github("Linbojun99/faofishingreport", dependencies = TRUE)
 ```
 
-All required packages (dplyr, ggplot2, sf, rnaturalearth, ...) are installed automatically.
+All the packages it uses (dplyr, ggplot2, sf, rnaturalearth, officer for Word reports, FishBase and
+sea surface temperature readers, the R packages of CMSY++, ...) are installed automatically.
+CMSY++ also needs the JAGS program: run `cmsy_setup()` once.
 
 ::: callout-note
 **Windows and macOS** use binary packages, so no compiler (Rtools) is needed.

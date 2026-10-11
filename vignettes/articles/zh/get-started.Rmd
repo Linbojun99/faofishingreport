@@ -35,10 +35,10 @@ faofishingreport 需要 **R 4.2 或以上版本**，从 GitHub 安装：
 
 ```{r, eval = FALSE}
 install.packages("remotes")
-remotes::install_github("Linbojun99/faofishingreport")
+remotes::install_github("Linbojun99/faofishingreport", dependencies = TRUE)
 ```
 
-所需的依赖包（dplyr、ggplot2、sf、rnaturalearth 等）都会自动安装。
+用到的所有依赖包（dplyr、ggplot2、sf、rnaturalearth，以及生成 Word 报告的 officer、读取 FishBase 和海表温度数据的包、CMSY++ 所需的 R 包等）都会自动安装。CMSY++ 还需要 JAGS 程序：运行一次 `cmsy_setup()` 即可。
 
 ::: callout-note
 **Windows 和 macOS** 安装的是二进制包，不需要编译器（Rtools）。
