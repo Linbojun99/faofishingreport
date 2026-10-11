@@ -92,6 +92,7 @@ reference:
   contents:
   - catch_shocks
   - collapse_analysis
+  - catch_synchrony
   - distant_water_profile
   - compare_releases
 - title: "🌡️ FishBase and temperature"
