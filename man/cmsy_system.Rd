@@ -65,6 +65,10 @@ cmsy_system(silent = TRUE)$jags_installer[, c("version", "file", "url")]
 cmsy_system(jags = "latest", silent = TRUE)$jags_installer[, c("version", "file", "requires")]
 }
 }
+\references{
+Froese, R., Demirel, N., Coro, G. and Winker, H. (2021). User Guide for CMSY++. GEOMAR,
+Germany, 17 pp. \url{https://oceanrep.geomar.de/id/eprint/52147/}
+}
 \seealso{
 [cmsy_setup()] to install what is missing, [cmsy_sources()] for versions and links.
 }

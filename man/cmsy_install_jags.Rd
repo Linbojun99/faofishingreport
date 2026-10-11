@@ -29,8 +29,9 @@ set with `fao_settings(silent = )`.}
 Invisibly, the path of the downloaded installer.
 }
 \description{
-This function downloads the JAGS installer for the operating system from its pinned link (see
-[cmsy_sources()]), checks its size and checksum, and opens it: the `.exe` installer on
+This function downloads the JAGS installer that matches the operating system and R version
+(see [cmsy_jags_versions()] and [cmsy_download_jags()]), checks its size and checksums, and
+opens it: the `.exe` installer on
 Windows and the `.pkg` installer on macOS. On Linux it downloads the source code and shows
 how to install JAGS with the package manager or from source. An installer placed in the
 package folder `inst/jags/` (installed as `jags/`) is used instead of downloading.
@@ -46,4 +47,9 @@ path <- cmsy_install_jags(open = FALSE)
 # Download the Windows installer on a Mac, e.g. for a colleague
 cmsy_install_jags(os = "windows", open = FALSE)
 }
+}
+\references{
+Plummer, M. (2003). JAGS: A program for analysis of Bayesian graphical models using Gibbs
+sampling. Proceedings of the 3rd International Workshop on Distributed Statistical Computing
+(DSC 2003), Vienna. \url{https://mcmc-jags.sourceforge.io/}
 }

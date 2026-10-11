@@ -1,6 +1,7 @@
-# CMSY++ on Windows, macOS and Linux: downloads JAGS with cmsy_install_jags() (checksum checked),
-# installs it, runs the CMSY tests with real CMSY++ runs, and runs cmsy_area() on two species of
-# FAO area 34. The CMSY++ output, charts and tables of each system are kept as artifacts.
+# CMSY++ on Windows, macOS and Linux, for each combination of R version and JAGS version listed
+# by cmsy_jags_versions(): downloads the matching JAGS (and rjags 5 for JAGS 5) with
+# cmsy_download_jags() (checksums checked), installs it, runs the CMSY tests with real CMSY++
+# runs, and runs cmsy_area() on two species of FAO area 34. The output of each run is kept.
 on:
   push:
     branches: [main, master, dev]
@@ -24,11 +25,22 @@ permissions: read-all
 jobs:
   cmsy:
     runs-on: ${{ matrix.os }}
-    name: CMSY++ on ${{ matrix.os }}
+    name: CMSY++ on ${{ matrix.os }}, R ${{ matrix.r }}, JAGS ${{ matrix.jags }}
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        include:
+          # JAGS 4 (default): the installer that cmsy_jags_versions() gives for each R version
+          - {os: windows-latest, r: 'release', jags: 'recommended'}   # R 4.6 -> JAGS 4.3.2
+          - {os: windows-latest, r: '4.4',     jags: 'recommended'}   # R 4.4 -> JAGS 4.3.1
+          - {os: windows-latest, r: '4.3',     jags: 'recommended'}   # R 4.3 -> JAGS 4.3.1
+          - {os: windows-latest, r: '4.2',     jags: 'recommended'}   # R 4.2 -> JAGS 4.3.1
+          - {os: macos-latest,   r: 'release', jags: 'recommended'}   # R 4.6 -> JAGS 4.3.2
+          - {os: macos-latest,   r: '4.2',     jags: 'recommended'}   # R 4.2 -> JAGS 4.3.1
+          - {os: ubuntu-latest,  r: 'release', jags: 'recommended'}   # JAGS of the package manager
+          # JAGS 5.0.0 with rjags 5-3 from SourceForge
+          - {os: windows-latest, r: 'release', jags: 'latest'}
+          - {os: macos-latest,   r: 'release', jags: 'latest'}
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       FAOFISHINGREPORT_CMSY_TESTS: "true"
@@ -37,7 +49,7 @@ jobs:
 
       - uses: r-lib/actions/setup-r@v2
         with:
-          r-version: release
+          r-version: ${{ matrix.r }}
           use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
@@ -57,11 +69,20 @@ jobs:
             any::MASS
             local::.
 
-      - name: Download the JAGS installer with cmsy_install_jags()
+      - name: Show which JAGS this R version needs
+        run: |
+          print(faofishingreport::cmsy_jags_versions()[, c("system", "r_versions", "jags", "installer", "rjags", "this_computer")])
+        shell: Rscript {0}
+
+      - name: Download the matching JAGS (and rjags 5) with cmsy_download_jags()
         if: runner.os != 'Linux'
         run: |
-          path <- faofishingreport::cmsy_install_jags(open = FALSE)
-          cat("JAGS_INSTALLER=", normalizePath(path), "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
+          files <- faofishingreport::cmsy_download_jags(version = "${{ matrix.jags }}")
+          print(files[, c("component", "version", "file", "verified")])
+          installer <- files$path[files$component == "JAGS"]
+          cat("JAGS_INSTALLER=", normalizePath(installer), "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
+          rjags <- files$path[files$component == "rjags"]
+          if (length(rjags) == 1) cat("RJAGS_FILE=", normalizePath(rjags), "\n", sep = "", file = Sys.getenv("GITHUB_ENV"), append = TRUE)
         shell: Rscript {0}
 
       - name: Install JAGS (Windows, silent installer)
@@ -77,11 +98,20 @@ jobs:
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y jags
 
+      - name: Install rjags 5-3 for JAGS 5
+        if: matrix.jags == 'latest'
+        run: |
+          path <- Sys.getenv("RJAGS_FILE")
+          install.packages(path, repos = NULL, type = if (grepl("tar.gz$", path)) "source" else "binary")
+          cat("rjags", as.character(packageVersion("rjags")), "\n")
+        shell: Rscript {0}
+
       - name: Check the computer for CMSY++
         run: |
           sys <- faofishingreport::cmsy_system()
           print(sys$changes[, c("change", "applies_to")])
           if (is.na(sys$jags)) stop("JAGS was not found: ", sys$jags_message)
+          if ("${{ matrix.jags }}" == "latest" && !startsWith(sys$jags, "5")) stop("JAGS 5 expected, found ", sys$jags)
           if (!all(sys$packages$ok)) stop("Missing R packages: ", paste(sys$packages$package[!sys$packages$ok], collapse = ", "))
         shell: Rscript {0}
 
@@ -105,6 +135,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cmsy-${{ matrix.os }}
+          name: cmsy-${{ matrix.os }}-R${{ matrix.r }}-JAGS-${{ matrix.jags }}
           path: cmsy-ci
           if-no-files-found: ignore

@@ -34,6 +34,9 @@
 #'         and `rjags_source`, the chart `device` and `antialias` settings, and the `changes`
 #'         made to the CMSY++ code.
 #' @seealso [cmsy_setup()] to install what is missing, [cmsy_sources()] for versions and links.
+#' @references
+#' Froese, R., Demirel, N., Coro, G. and Winker, H. (2021). User Guide for CMSY++. GEOMAR,
+#' Germany, 17 pp. \url{https://oceanrep.geomar.de/id/eprint/52147/}
 #' @export
 #' @examples
 #' \donttest{
@@ -60,7 +63,7 @@ cmsy_system <- function(os = "auto", device = c("file", "screen"), jags = "recom
   packages <- cmsy_packages()
   jags_found <- cmsy_jags_installed()
   installer <- tryCatch(cmsy_jags_choice(jags, os, r_version), error = function(e) NULL)
-  rjags_source <- if (!is.null(installer)) cmsy_rjags_choice(installer$version, os, arch) else NULL
+  rjags_source <- if (!is.null(installer)) cmsy_rjags_choice(installer$version, os, arch, r_version) else NULL
 
   result <- list(
     os = os, os_detected = detected, arch = arch, r_version = as.character(r_version),
@@ -78,16 +81,20 @@ cmsy_system <- function(os = "auto", device = c("file", "screen"), jags = "recom
 #' Install JAGS and the R Packages Needed by CMSY++
 #'
 #' This function prepares the computer for [cmsy_run()]: it installs the missing R packages from
-#' CRAN, downloads the JAGS installer for this system from its pinned link (checking its size
-#' and checksum, see [cmsy_sources()]) and opens it, and checks the bundled CMSY++ files. It asks
-#' before installing anything when R is used interactively.
+#' CRAN, downloads the JAGS installer that matches this system and R version (see
+#' [cmsy_jags_versions()]; with [cmsy_download_jags()], which checks its size and checksums) and
+#' opens it, and checks the bundled CMSY++ files. It asks before installing anything when R is
+#' used interactively.
 #'
 #' JAGS is a separate program, so it cannot be installed from R. On Windows and macOS the
 #' installer is opened and you click through it; on Linux the commands to install it are shown.
 #' Restart R after installing JAGS and run `cmsy_setup()` again to check.
 #'
-#' JAGS 4.3.2 (or 4.3.1 for older R versions) is used by default because rjags on CRAN (4-17)
-#' needs JAGS 4. JAGS 5.0.0 (`jags = "latest"`) also installs rjags 5-3 from SourceForge.
+#' The JAGS installer must match the R version (see [cmsy_jags_versions()]): on Windows JAGS
+#' 4.3.2 for R 4.5 and 4.6 and JAGS 4.3.1 for R 4.2 to 4.4; on macOS JAGS 4.3.2 for R 4.3 and
+#' later and 4.3.1 for R 4.2; on Linux the JAGS of the package manager. JAGS 4 is used by
+#' default because rjags on CRAN (4-17) needs JAGS 4. JAGS 5.0.0 (`jags = "latest"`) also
+#' installs rjags 5-3 from SourceForge.
 #'
 #' @inheritParams cmsy_system
 #' @param ask A logical value. If TRUE (default), ask before installing anything. In a
@@ -96,6 +103,10 @@ cmsy_system <- function(os = "auto", device = c("file", "screen"), jags = "recom
 #' @return Invisibly, the result of [cmsy_system()] after the installation. With `silent = TRUE`
 #'         no summary or download messages are printed (questions are still asked when `ask`
 #'         is TRUE).
+#' @references
+#' Plummer, M. (2003). JAGS: A program for analysis of Bayesian graphical models using Gibbs
+#' sampling. Proceedings of the 3rd International Workshop on Distributed Statistical Computing
+#' (DSC 2003), Vienna. \url{https://mcmc-jags.sourceforge.io/}
 #' @export
 #' @examples
 #' \dontrun{
@@ -131,9 +142,25 @@ cmsy_setup <- function(jags = "recommended", os = "auto", ask = TRUE, data_dir =
     utils::install.packages(missing)
   }
 
-  # 2. JAGS
+  # 2. The JAGS that matches this system and R version (see cmsy_jags_versions())
   target <- sys$jags_installer
-  if (is.null(target)) stop("No JAGS installer is available for this system and R version.", call. = FALSE)
+  if (is.null(target)) {
+    stop("No JAGS installer is known for R ", sys$r_version, " on this system; see cmsy_jags_versions().", call. = FALSE)
+  }
+  if (!silent) {
+    message("R ", sys$r_version, " on ", sys$os, " needs JAGS ", target$version, " (", target$file, ") and rjags ",
+            if (cmsy_major(target$version) >= 5) "5-x" else "4-x", "; see cmsy_jags_versions().")
+  }
+  # rjags 5-x (for JAGS 5) is installed first, as it is needed to find JAGS 5
+  if (cmsy_major(target$version) >= 5 && !is.null(sys$rjags_source) && (is.na(sys$rjags) || cmsy_major(sys$rjags) < 5)) {
+    entry <- sys$rjags_source
+    if (agree(paste0("JAGS 5 needs rjags ", entry$version, " (not on CRAN). Install it from ", entry$url, "?"))) {
+      path <- cmsy_fetch(entry, data_dir, quiet = silent)
+      type <- if (entry$platform == "source") "source" else "binary"
+      utils::install.packages(path, repos = NULL, type = type)
+      sys <- cmsy_system(os = os, jags = jags, silent = TRUE)
+    }
+  }
   need_jags <- is.na(sys$jags) || cmsy_major(sys$jags) != cmsy_major(target$version)
   if (need_jags) {
     if (agree(paste0("JAGS ", target$version, " is needed. Download ", target$file, " (",
@@ -143,18 +170,7 @@ cmsy_setup <- function(jags = "recommended", os = "auto", ask = TRUE, data_dir =
     }
   }
 
-  # 3. rjags 5-x for JAGS 5
-  if (!need_jags && cmsy_major(target$version) >= 5 && !is.null(sys$rjags_source) &&
-      (is.na(sys$rjags) || cmsy_major(sys$rjags) < 5)) {
-    entry <- sys$rjags_source
-    if (agree(paste0("JAGS 5 needs rjags ", entry$version, ". Install it from ", entry$url, "?"))) {
-      path <- cmsy_fetch(entry, data_dir, quiet = silent)
-      type <- if (entry$platform == "source") "source" else "binary"
-      utils::install.packages(path, repos = NULL, type = type)
-    }
-  }
-
-  # 4. The bundled CMSY++ files
+  # 3. The bundled CMSY++ files
   bundled <- cmsy_registry()
   bundled <- bundled[bundled$bundled, ]
   for (i in seq_len(nrow(bundled))) {
@@ -170,8 +186,9 @@ cmsy_setup <- function(jags = "recommended", os = "auto", ask = TRUE, data_dir =
 
 #' Download and Open the JAGS Installer
 #'
-#' This function downloads the JAGS installer for the operating system from its pinned link (see
-#' [cmsy_sources()]), checks its size and checksum, and opens it: the `.exe` installer on
+#' This function downloads the JAGS installer that matches the operating system and R version
+#' (see [cmsy_jags_versions()] and [cmsy_download_jags()]), checks its size and checksums, and
+#' opens it: the `.exe` installer on
 #' Windows and the `.pkg` installer on macOS. On Linux it downloads the source code and shows
 #' how to install JAGS with the package manager or from source. An installer placed in the
 #' package folder `inst/jags/` (installed as `jags/`) is used instead of downloading.
@@ -180,6 +197,10 @@ cmsy_setup <- function(jags = "recommended", os = "auto", ask = TRUE, data_dir =
 #' @param version The JAGS version: "recommended" (default), "latest" or a version number.
 #' @param open A logical value. If TRUE (default), the installer is opened.
 #' @return Invisibly, the path of the downloaded installer.
+#' @references
+#' Plummer, M. (2003). JAGS: A program for analysis of Bayesian graphical models using Gibbs
+#' sampling. Proceedings of the 3rd International Workshop on Distributed Statistical Computing
+#' (DSC 2003), Vienna. \url{https://mcmc-jags.sourceforge.io/}
 #' @export
 #' @examples
 #' \dontrun{
@@ -196,7 +217,7 @@ cmsy_install_jags <- function(version = "recommended", os = "auto", open = TRUE,
                               data_dir = fao_data_dir(), silent = fao_setting("silent")) {
   os <- cmsy_os(os)
   entry <- cmsy_jags_choice(version, os, getRversion())
-  path <- cmsy_fetch(entry, data_dir, quiet = silent)
+  path <- cmsy_download_jags(entry$version, os = os, rjags = FALSE, data_dir = data_dir, silent = TRUE)$path[1]
   if (!silent) {
     message("JAGS ", entry$version, " (", entry$file, ", ", entry$license, "): ", path,
             "\nSource: ", entry$page, "\nRequires: ", entry$requires)
@@ -282,40 +303,6 @@ cmsy_jags_installed <- function() {
 # Package libraries of this session, for R child processes (R_LIBS)
 cmsy_lib_paths <- function() {
   paste(.libPaths(), collapse = .Platform$path.sep)
-}
-
-# JAGS installer in the registry for the version, system and R version
-cmsy_jags_choice <- function(version = "recommended", os = cmsy_os(), r_version = getRversion()) {
-  jags <- cmsy_registry()
-  jags <- jags[jags$component == "JAGS", ]
-  platform <- if (os == "linux") "source" else os
-  r_version <- numeric_version(r_version)
-  if (identical(version, "recommended")) {
-    version <- if (os == "windows" && r_version < "4.5.0") "4.3.1" else
-      if (os == "macos" && r_version < "4.3.0") "4.3.1" else "4.3.2"
-  } else if (identical(version, "latest")) {
-    version <- max(numeric_version(jags$version))
-    version <- as.character(version)
-  }
-  entry <- jags[jags$version == version & jags$platform == platform, ]
-  if (nrow(entry) == 0) {
-    stop("JAGS ", version, " is not available for ", os, ". Versions: ",
-         paste(unique(jags$version[jags$platform == platform]), collapse = ", "), call. = FALSE)
-  }
-  if (version == "5.0.0" && os == "windows" && (r_version < "4.5.0" || r_version >= "4.7.0")) {
-    stop("The Windows build of JAGS 5.0.0 is for R 4.5 and 4.6; use jags = \"recommended\".", call. = FALSE)
-  }
-  entry
-}
-
-# rjags package matching a JAGS version: CRAN for JAGS 4, SourceForge files for JAGS 5
-cmsy_rjags_choice <- function(jags_version, os, arch) {
-  rjags <- cmsy_registry()
-  rjags <- rjags[rjags$component == "rjags", ]
-  if (cmsy_major(jags_version) < 5) return(rjags[rjags$version == "4-17", ])
-  platform <- switch(os, windows = "windows", macos = paste0("macos-", if (arch == "arm64") "arm64" else "x86_64"),
-                     "source")
-  rjags[rjags$version == "5-3" & rjags$platform == platform, ]
 }
 
 # How CMSY++ opens a chart window on each system

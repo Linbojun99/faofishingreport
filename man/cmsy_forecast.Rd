@@ -100,4 +100,10 @@ projection$share
 Froese, R., Winker, H., Coro, G., Demirel, N., Tsikliras, A.C., Dimarchopoulou, D., Scarcella,
 G., Quaas, M. and Matz-Lueck, N. (2018). Status and rebuilding of European fisheries. Marine
 Policy 93: 159-170. \doi{10.1016/j.marpol.2018.04.018}
+
+Froese, R., Winker, H., Coro, G., Palomares, M.L.D., Tsikliras, A.C., Dimarchopoulou, D.,
+Touloumis, K., Demirel, N., Vianna, G.M.S., Scarcella, G., Schijns, R., Liang, C. and Pauly,
+D. (2023). New developments in the analysis of catch time series as the basis for fish stock
+assessments: the CMSY++ method. Acta Ichthyologica et Piscatoria 53: 173-189.
+\doi{10.3897/aiep.53.105910}
 }

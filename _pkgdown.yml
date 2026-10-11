@@ -115,6 +115,8 @@ reference:
   - cmsy_area
   - cmsy_system
   - cmsy_setup
+  - cmsy_jags_versions
+  - cmsy_download_jags
   - cmsy_install_jags
   - cmsy_sources
   - cmsy_priors

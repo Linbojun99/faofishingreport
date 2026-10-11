@@ -21,7 +21,8 @@ cmsy_compare(
 FAO name, scientific name or FAO 3-alpha code. Default is NULL, all stocks that ran.}
 
 \item{external}{Optional data frame of other estimates, with columns `Stock`, `Year`, `B_Bmsy`
-(and optionally `F_Fmsy`) and `source` (e.g. "ICES 2024" or "JABBA").}
+(and optionally `F_Fmsy`) and `source` (the name shown in the legend, e.g. the agency or
+model of the other assessment).}
 
 \item{lang}{The language of the chart text and names: "en" (English), "zh" (Chinese) or
 "both" (Chinese and English). Default is NULL, which uses the language set with

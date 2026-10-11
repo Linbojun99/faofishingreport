@@ -26,6 +26,7 @@
   * Species can be given by English or Chinese name, scientific name or FAO 3-alpha code everywhere, and every result links to its sources (FishBase page and table, CMSY++ user guide, FAO release).
   * Progress bars with elapsed and remaining time; `silent = TRUE`, or `fao_settings(silent = TRUE)`, turns them and the messages off.
   * `cmsy_run(settings = )` changes the general settings of CMSY++ (process error, catch CV, MCMC chains and iterations, ...), which otherwise keep their CMSY++ defaults; `cmsy_defaults()` lists them with their defaults and meaning, checks changed values, and the values used are saved with each run.
+  * `cmsy_jags_versions()` tells which JAGS installer (and rjags version) goes with each R version on Windows, macOS and Linux, with the evidence for each rule, and `cmsy_download_jags()` downloads the matching installer automatically (checksums checked), also for other systems or R versions; `cmsy_setup()` and `cmsy_install_jags()` use it.
   * The output of the CMSY++ processes is written to `log.txt` from within R, the same way on every system. A GitHub Actions workflow runs CMSY++ for real on Windows, macOS and Linux (JAGS downloaded with `cmsy_install_jags()`).
 
 # faofishingreport 0.2.0
