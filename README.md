@@ -37,7 +37,8 @@ in English, Chinese or both.
 - 📉 **CMSY++ stock assessment** of the main species (Froese et al. 2023; code of its authors from
   <https://github.com/SISTA16/cmsyPlusPlus>, bundled unchanged), with JAGS set up for
   your computer, charts, projections and tables of reference points and priors.
-- 📝 **Word assessment report in one call**: `fao_report()` writes a report in Chinese or English
+- 📝 **Assessment report in one call**: `fao_report()` writes a report in Chinese or English, as
+  Word, LaTeX or PDF
   (cover, abstract, data and methods, results, conclusions, references, appendix), with every
   analysis switched on or off and the settings of each function given with a prefix.
 - 🌐 **English, Chinese or bilingual** charts with the official FAO Chinese names.
@@ -85,8 +86,9 @@ mean_temperature_catch(FAO34$area_data, version = "builtin")
 # CMSY++ for the ten main species (run cmsy_setup() once before)
 cmsy_area("Atlantic, Eastern Central", top = 10)
 
-# A Word assessment report of the area, in Chinese, with CMSY++ and catch shocks
-report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE)
+# An assessment report of the area, in Chinese, with CMSY++ and catch shocks,
+# as Word and PDF (LaTeX)
+report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE, format = c("docx", "pdf"))
 ```
 
 Charts are saved in `figures/png/` (and, if you want, editable PowerPoint in `figures/pptx/`),
@@ -236,6 +238,11 @@ downloaded on 10 October 2026 from
 - Licence: [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/), with the
   [FAO terms of use](https://www.fao.org/contact-us/terms/db-terms-of-use/en).
 - `fao_data_info()` shows the release your analyses use and how to cite it.
+- FAO websites: [FAO](https://www.fao.org/home/en),
+  [FAOSTAT data](https://www.fao.org/faostat/en/#data) and the
+  [FAO fishery data files](https://www.fao.org/fishery/static/Data/).
+
+> This package is not affiliated with FAO; the data come from FAO.
 
 ## 📝 Citation
 
