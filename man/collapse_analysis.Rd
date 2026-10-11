@@ -60,9 +60,9 @@ with no trend (Wilberg and Miller 2007).}
 country) of the data.}
 }
 \value{
-Invisibly, a list with `series` (one row per series: maximum, collapse year and type),
-        `summary` (number and share of collapsed series by type, with the null model), `by_year`
-        (collapses or the share of collapsed fisheries in each year) and `by_group` (share of
+Invisibly, a list with \code{series} (one row per series: maximum, collapse year and type),
+        \code{summary} (number and share of collapsed series by type, with the null model), \code{by_year}
+        (collapses or the share of collapsed fisheries in each year) and \code{by_group} (share of
         collapsed series by FAO area and species group).
 }
 \description{
@@ -74,11 +74,11 @@ and, following Mullon et al. (2005), the shape of the decline before the collaps
 \describe{
   \item{"mullon2005" (default)}{A series is the catch of one species or genus by one country in
     one FAO area. Left out, as by Mullon et al. (2005, p. 112): items not identified to genus or
-    species; the countries in `exclude_countries` (by default those Mullon et al. left out: the
+    species; the countries in \code{exclude_countries} (by default those Mullon et al. left out: the
     former USSR, Yugoslavia and Czechoslovakia, whose series end with the country; South Africa
     and Namibia, whose series were split; and China, whose series they considered distorted);
-    series with a missing year among the last `complete_years` (20) years; and series whose mean
-    catch is below `min_mean_catch` (500) tonnes a year. A series has collapsed when, in a year
+    series with a missing year among the last \code{complete_years} (20) years; and series whose mean
+    catch is below \code{min_mean_catch} (500) tonnes a year. A series has collapsed when, in a year
     after its maximum catch Xmax, catch stays below Xmax/10 for 4 consecutive years; the first
     of these years is the collapse year Dc (p. 113). The decline before the collapse is
     \emph{plateau} if catch was above Xmax/4 in every year from Dc-8 to Dc-3, \emph{smooth} if the
@@ -89,7 +89,7 @@ and, following Mullon et al. (2005), the shape of the decline before the collaps
     21\% plateau, 33\% smooth and 45\% erratic.}
   \item{"worm2006"}{A fishery is the catch of one species item in one FAO area, all countries
     together (Worm et al. 2006 used species in large marine ecosystems from Sea Around Us data).
-    Fisheries with a total catch below `min_total_catch` (10 000 tonnes) are left out. A fishery
+    Fisheries with a total catch below \code{min_total_catch} (10 000 tonnes) are left out. A fishery
     starts when its catch first reaches 10\% of its maximum, and is collapsed in a year when its
     catch is below 10\% of its maximum (recovered when it is back above). The function gives,
     for each year, the share of fisheries currently collapsed and the share that have collapsed
@@ -99,7 +99,7 @@ and, following Mullon et al. (2005), the shape of the decline before the collaps
 Catch data alone cannot tell a collapse of the stock from a fall in catch caused by management,
 markets or reporting. Wilberg and Miller (2007) showed that random catch series with no trend
 also give a growing share of "collapsed" fisheries with the definition of Worm et al. (2006),
-because the maximum of a series grows with its length; with `null_model = TRUE` the function
+because the maximum of a series grows with its length; with \code{null_model = TRUE} the function
 repeats the analysis on such random series (stationary first-order autoregressive lognormal
 series with a coefficient of variation of 80\% and an autocorrelation of 0.75, as in Wilberg
 and Miller 2007), with the same start years and lengths as the real series, for comparison.

@@ -362,6 +362,12 @@ fao_sst_source <- function(sst, variable = NULL, data_dir = fao_data_dir()) {
                 "See ?fao_area_sst to use other SST data.")
         return(built_in)
       }
+      # the downloaded years replace the same years of the built-in table; the others are kept
+      columns <- intersect(names(built_in), names(table))
+      keep <- !paste(built_in$area_code, built_in$year) %in% paste(table$area_code, table$year)
+      table <- rbind(built_in[keep, columns], table[, columns])
+      table <- table[order(table$area_code, table$year), ]
+      rownames(table) <- NULL
       where <- "updated with download_sst_data()"
     } else if (is.null(table)) {
       stop(info$name, " has not been downloaded. Run download_sst_data(\"", sst, "\") first (about ",

@@ -127,3 +127,11 @@ fao_category_table <- function(yearly, category_label) {
 #' @name summary_params
 #' @keywords internal
 NULL
+
+# Start and end year of each period of a breakpoint analysis. `breaks` are the positions of the
+# last observation of every period but the last (`strucchange::breakpoints()$breakpoints`, NA
+# when there is no break) and `years` the year of each observation of the series.
+fao_bp_periods <- function(breaks, years) {
+  breaks <- breaks[!is.na(breaks)]
+  data.frame(start_year = years[c(1, breaks + 1)], end_year = years[c(breaks, length(years))])
+}

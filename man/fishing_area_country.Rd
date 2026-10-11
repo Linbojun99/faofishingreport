@@ -2,7 +2,7 @@
 % Please edit documentation in R/fishing_area_country.R
 \name{fishing_area_country}
 \alias{fishing_area_country}
-\title{Fishing Area country Analysis}
+\title{Fishing Area Country Analysis}
 \usage{
 fishing_area_country(
   area_data,
@@ -74,9 +74,9 @@ fishing_area_country(
 
 \item{line_linewidth}{A numeric value specifying the line width for the line geom. Default is 1.5.}
 
-\item{text_hjust}{A numeric value specifying the horizontal justification of the text geom. Default is 0.8.}
+\item{text_hjust}{A numeric value specifying the horizontal justification of the text geom. Default is 0.9.}
 
-\item{text_vjust}{A numeric value specifying the vertical justification of the text geom. Default is -8.}
+\item{text_vjust}{A numeric value specifying the vertical justification of the text geom. Default is -4.}
 
 \item{text_size}{A numeric value specifying the size of the text geom. Default is 4.5.}
 
@@ -84,11 +84,10 @@ fishing_area_country(
 
 \item{facet_ncol}{A numeric value specifying the number of columns to be used in facet_wrap. Default is 2.}
 
-\item{h_value}{The minimum segment size, which must be greater than the
-number of regressors. For the model \code{ts_data ~ 1}, this means \code{h_value}
-should be greater than 1. The default value is 0.15.}
+\item{h_value}{The minimum segment size passed to \code{strucchange::breakpoints()}: a fraction of
+the series length (default 0.15) or a number of years.}
 
-\item{ZH}{A logical value to Chinese. Default is "FALSE". \code{ZH = TRUE} is the same as \code{lang = "zh"}.}
+\item{ZH}{A logical value. If TRUE, chart text and names are in Chinese. Default is FALSE. \code{ZH = TRUE} is the same as \code{lang = "zh"}.}
 
 \item{lang}{The language of the chart text and names: "en" (English), "zh" (Chinese) or "both"
 (Chinese and English). Default is NULL, which uses "zh" if \code{ZH = TRUE}, and otherwise the language
@@ -99,7 +98,11 @@ also saved as editable PowerPoint files in \verb{figures/pptx/}. Default is FALS
 changed for all functions with \code{fao_settings(pptx = TRUE)}.}
 }
 \value{
-NULL. The function saves the generated plots to the specified directory if plot = TRUE.
+A list with \code{area_country} (yearly catch of every country in the area),
+\code{area_country_ranked} (yearly catch of the ranked countries, with the others grouped),
+\code{area_country_ranked_total} (total catch and rank of the selected countries) and
+\code{coefs_data} (start year, end year and mean catch of each period between breakpoints).
+Charts and tables are saved if \code{plot} and \code{table} are TRUE.
 }
 \description{
 This function analyzes the fishing area data and generates plots for specified country based on their ranking in terms of total tonnes.

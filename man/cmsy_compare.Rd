@@ -17,7 +17,7 @@ cmsy_compare(
 \arguments{
 \item{...}{Results of \code{\link[=cmsy_run]{cmsy_run()}}, named or not (e.g. \verb{default = run1, start_1980 = run2}).}
 
-\item{stocks}{Optional stocks to draw: `Stock` identifiers or species, by English or Chinese
+\item{stocks}{Optional stocks to compare: \code{Stock} identifiers or species, by English or Chinese
 FAO name, scientific name or FAO 3-alpha code. Default is NULL, all stocks that ran.}
 
 \item{external}{Optional data frame of other estimates, with columns \code{Stock}, \code{Year}, \code{B_Bmsy}
@@ -31,15 +31,14 @@ model of the other assessment).}
 \item{annotations}{The text added to the axis titles and labels: FALSE (default) none, TRUE
 all, or any of "title", "subtitle", "caption", "legend" and "labels" (text inside the
 chart). The default can be changed for the session with
-`options(faofishingreport.cmsy_annotations = TRUE)`.}
+\code{options(faofishingreport.cmsy_annotations = TRUE)}.}
 
-\item{pptx}{A logical value. If TRUE, charts are also saved as editable PowerPoint files in
-\verb{figures/pptx/summary/}. Default is FALSE, which can be changed for all functions with
+\item{pptx}{A logical value. If TRUE, the charts are also saved as editable PowerPoint files in
+figures/pptx/cmsy/compare/. Default is FALSE, which can be changed for all functions with
 \code{fao_settings(pptx = TRUE)}.}
 
-\item{silent}{A logical value. If FALSE (default), a progress bar shows how many stocks have
-been drawn. If TRUE, nothing is printed. The default can be changed for the session
-with `fao_settings(silent = TRUE)`.}
+\item{silent}{A logical value. If TRUE, the messages on how the stocks were matched are not
+printed. Default is FALSE, or the value set with \code{fao_settings(silent = )}.}
 }
 \value{
 Invisibly, a list with \code{last_year} (one row per stock and run) and \code{plots}.

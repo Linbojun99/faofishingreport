@@ -40,13 +40,14 @@ fishing_area_data(
 
 \item{plot}{A logical indicating whether to generate and save plots. Default is TRUE.}
 
-\item{timeseries_analysis}{A logical value indicating whether to analysis timeseries.}
+\item{timeseries_analysis}{A logical value. If TRUE (default), the total catch chart shows the
+periods between breakpoints in the mean catch (Bai-Perron test, \code{strucchange::breakpoints()}).}
 
-\item{area_color1}{The color to use for the area plot. Default is "grey80".}
+\item{area_color1}{The fill colour of the total catch chart. Default is "grey80".}
 
 \item{area_alpha}{The alpha transparency for the area plot. Default is 0.7.}
 
-\item{area_color2}{The color to use for the area plot. Default is "black".}
+\item{area_color2}{The outline colour of the total catch chart. Default is "black".}
 
 \item{line_color}{The color to use for line plots. Default is "black".}
 
@@ -62,17 +63,17 @@ fishing_area_data(
 
 \item{line_linewidth}{Line width for the line geom. Default is 1.5.}
 
-\item{axis_text_face}{The font face of the axis text. Default is "plain".}
+\item{axis_text_face}{The font face of the axis text of the total catch chart. Default is "plain".}
 
-\item{axis_title_face}{The font face of the axis title. Default is "bold".}
+\item{axis_title_face}{The font face of the axis titles of the charts and the map. Default is "bold".}
 
-\item{strip_text_face}{The font face of the strip text. Default is "bold".}
+\item{strip_text_face}{Not used (the charts have no panels). Default is "bold".}
 
-\item{axis_text_size}{The size of the axis text. Default is 10.}
+\item{axis_text_size}{The size of the axis text of the percentage chart. Default is 10.}
 
-\item{axis_title_size}{The size of the axis title text. Default is 12.}
+\item{axis_title_size}{The size of the axis titles of the total catch and percentage charts. Default is 12.}
 
-\item{strip_text_size}{The size of the strip text. Default is 12.}
+\item{strip_text_size}{Not used (the charts have no panels). Default is 12.}
 
 \item{polygon_color}{The color of the borders of the polygons in the map plot. Default is "grey90".}
 
@@ -85,7 +86,7 @@ fishing_area_data(
 
 \item{legend_text_size_map}{The size of the legend text in the map plot. Default is 12.}
 
-\item{ZH}{A logical value to Chinese. Default is "FALSE". \code{ZH = TRUE} is the same as \code{lang = "zh"}.}
+\item{ZH}{A logical value. If TRUE, chart text and names are in Chinese. Default is FALSE. \code{ZH = TRUE} is the same as \code{lang = "zh"}.}
 
 \item{lang}{The language of the chart text: "en" (English), "zh" (Chinese) or "both"
 (Chinese and English). Default is NULL, which uses "zh" if \code{ZH = TRUE}, and otherwise the language
@@ -100,7 +101,8 @@ also saved as editable PowerPoint files in \verb{figures/pptx/}. Default is FALS
 changed for all functions with \code{fao_settings(pptx = TRUE)}.}
 }
 \value{
-A data frame containing data for the specified fishing area.
+A list with \code{area_data} (the FAO data of the area), \code{coefs_data} (start year, end year
+and mean catch of each period between breakpoints) and \code{act_world_map} (the map data).
 }
 \description{
 This function extracts and returns data for a specified FAO major fishing area.

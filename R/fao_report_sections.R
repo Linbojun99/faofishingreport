@@ -160,7 +160,32 @@ fao_report_base_values <- function(ctx) {
   list(area = ctx$area$label, first_year = min(data$Year), last_year = last_year,
        y5 = last_year - 4, y10 = last_year - 9, top_n = ctx$top_n,
        n_countries = length(unique(data$Country..Name.[data$Production > 0])),
-       n_species = length(unique(data$ASFIS.species..Name.[data$Production > 0])))
+       n_species = length(unique(data$ASFIS.species..Name.[data$Production > 0])),
+       bp_h = fao_report_bp_h(ctx))
+}
+
+# The setting of a section's function: given in the call (with the section prefix) or its default
+fao_report_setting <- function(ctx, section, name) {
+  value <- ctx$args[[section]][[name]]
+  if (!is.null(value)) return(value)
+  eval(formals(get(ctx$sections[[section]]$fun, envir = asNamespace("faofishingreport")))[[name]])
+}
+
+# Minimum segment length of the breakpoint analyses: the total catch always uses 15% of the
+# series; the main species and countries use their `h_value`
+fao_report_bp_h <- function(ctx) {
+  zh <- ctx$lang == "zh"
+  h <- c(total = 0.15)
+  for (name in intersect(c("species", "countries"), ctx$on)) h[[name]] <- fao_report_setting(ctx, name, "h_value")
+  pct <- paste0(format(100 * h, trim = TRUE), "%")
+  if (length(unique(h)) == 1) return(pct[1])
+  what <- if (zh) {
+    c(total = "\u603b\u6e14\u83b7\u91cf", species = "\u4e3b\u8981\u6e14\u83b7\u79cd\u7c7b",
+      countries = "\u4e3b\u8981\u6355\u635e\u56fd\u5bb6\uff08\u5730\u533a\uff09")
+  } else {
+    c(total = "total catch", species = "main species", countries = "main countries")
+  }
+  fao_report_list(paste0(pct, if (zh) "\uff08" else " (", what[names(h)], if (zh) "\uff09" else ")"), ctx$lang)
 }
 
 # ---- Total catch ---------------------------------------------------------------------------
@@ -355,8 +380,21 @@ fao_section_status_values <- function(ctx) {
   last <- last[order(as.integer(last$status_label)), ]
   oc <- as.integer(last$status_label) %in% c(3, 4)
   pcts <- function(column) fao_report_list(paste0(fao_report_pct(last[[column]]), "%"), ctx$lang)
+  setting <- function(name) fao_report_setting(ctx, "status", name)
+  taxa <- intersect(c("species", "genus", "family", "higher"), setting("taxon_levels"))
+  taxa_zh <- c(species = "\u79cd", genus = "\u5c5e", family = "\u79d1", higher = "\u66f4\u9ad8\u5206\u7c7b\u9636\u5143")
+  taxa <- if (ctx$lang == "zh") {
+    if (length(taxa) > 1) paste0(paste(taxa_zh[taxa[-length(taxa)]], collapse = "\u3001"), "\u6216", taxa_zh[taxa[length(taxa)]]) else taxa_zh[taxa]
+  } else {
+    taxa <- sub("higher", "higher levels", taxa)
+    if (length(taxa) > 1) paste0(paste(taxa[-length(taxa)], collapse = ", "), " or ", taxa[length(taxa)]) else taxa
+  }
   list(n_stocks = nrow(status$stocks), stock_pcts = pcts("stocks_pct"), catch_pcts = pcts("catch_pct"),
-       oc_pct = fao_report_pct(sum(last$stocks_pct[oc])), oc_catch_pct = fao_report_pct(sum(last$catch_pct[oc])))
+       oc_pct = fao_report_pct(sum(last$stocks_pct[oc])), oc_catch_pct = fao_report_pct(sum(last$catch_pct[oc])),
+       status_taxa = unname(taxa), status_min_years = setting("min_years"),
+       status_min_consecutive = setting("min_consecutive"),
+       status_min_catch = format(setting("min_catch"), big.mark = " ", scientific = FALSE, trim = TRUE),
+       status_smooth = if (isTRUE(setting("smooth"))) paste0(if (ctx$lang == "en") " ", fao_report_text("status_smooth", ctx$lang)) else "")
 }
 
 fao_section_status_write <- function(x, ctx) {
@@ -753,7 +791,7 @@ fao_report_body <- function(x, meta, ctx) {
   x <- blank(x, "FAOCoverText")
   x <- fao_report_par(x, meta$title, "FAOCoverTitle")
   for (i in 1:6) x <- blank(x, "FAOCoverText")
-  x <- fao_report_par(x, text("cover_no", value = meta$report_no), "FAOCoverText")
+  x <- fao_report_par(x, text("cover_no", value = meta$report_number), "FAOCoverText")
   x <- fao_report_par(x, text("cover_author", value = meta$author), "FAOCoverText")
   if (!is.null(meta$affiliation)) x <- fao_report_par(x, text("cover_affiliation", value = meta$affiliation), "FAOCoverText")
   x <- fao_report_par(x, text("cover_date", value = meta$date), "FAOCoverText")
@@ -817,7 +855,13 @@ fao_report_body <- function(x, meta, ctx) {
   if (state$citation == "numeric") {
     entries <- paste0("[", seq_along(entries), "] ", entries)
   } else {
-    entries <- entries[order(tolower(gsub("[*]", "", entries)))]
+    # by the family names of all authors, then year and title (APA 7, 9.44-9.47)
+    sort_key <- vapply(state$cited, function(k) {
+      ref <- state$references[[k]]
+      family <- sub(",.*", "", trimws(strsplit(ref$author, ";")[[1]]))
+      tolower(paste(c(family, paste0(ref$year, state$suffix[[k]]), ref$title), collapse = " "))
+    }, character(1))
+    entries <- entries[order(sort_key)]
   }
   for (entry in entries) x <- fao_report_par(x, entry, "FAOReference")
   x <- par(x, paste0("ref_note_", state$citation), "FAONote")

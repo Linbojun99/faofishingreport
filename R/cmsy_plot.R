@@ -9,7 +9,7 @@ cmsy_annotation_types <- c("title", "subtitle", "caption", "legend", "labels")
 
 #' Charts of CMSY++ Results
 #'
-#' This function draws the results of [cmsy_run()]. For each stock it draws the charts of the
+#' This function draws the results of \code{\link{cmsy_run}()}. For each stock it draws the charts of the
 #' CMSY++ user guide (Froese et al. 2021), from the results saved by the run:
 #' \describe{
 #'   \item{analysis}{the six panels A-F of the CMSY++ analysis chart in one figure: catch, the
@@ -36,7 +36,7 @@ cmsy_annotation_types <- c("title", "subtitle", "caption", "legend", "labels")
 #'   \item{prior_posterior}{prior and posterior densities of r, k, MSY and B/k in the first,
 #'     intermediate and last years, with the prior-posterior variance ratio PPVR (Figure 4);}
 #'   \item{retrospective}{B/Bmsy and F/Fmsy when the last one, two or three years are left out,
-#'     with Mohn's rho (Figure 5; needs `cmsy_run(plots = "retrospective")`).}
+#'     with Mohn's rho (Figure 5; needs \code{cmsy_run(plots = "retrospective")}).}
 #' }
 #' For several stocks together:
 #' \describe{
@@ -52,8 +52,8 @@ cmsy_annotation_types <- c("title", "subtitle", "caption", "legend", "labels")
 #'     Bmsy, of the stocks with results in each year;}
 #'   \item{map}{median last-year B/Bmsy of the stocks of each FAO fishing area on a map.}
 #' }
-#' Status classes (`classes`) follow FAO (2026) for catch-only (Tier 3) results by default:
-#' maximally sustainably fished (B/Bmsy at least 0.8) or overfished. `classes = "palomares"` uses
+#' Status classes (\code{classes}) follow FAO (2026) for catch-only (Tier 3) results by default:
+#' maximally sustainably fished (B/Bmsy at least 0.8) or overfished. \code{classes = "palomares"} uses
 #' the five classes of Palomares et al. (2018), used by many CMSY studies: healthy (at least 1),
 #' slightly overfished (0.8-1), overfished (0.5-0.8), grossly overfished (0.2-0.5) and collapsed
 #' (below 0.2).
@@ -61,25 +61,28 @@ cmsy_annotation_types <- c("title", "subtitle", "caption", "legend", "labels")
 #' By default the charts show only the axis titles and axis labels, so they can be used directly
 #' in reports with captions of their own. Titles, subtitles, captions (method, data and prior
 #' sources), legends and text inside the charts (probabilities, PPVR, Mohn's rho) are added with
-#' `annotations`.
+#' \code{annotations}.
 #'
-#' Charts are saved in `figures/png/cmsy/<stock>/` and `figures/png/cmsy/summary/` (and as
-#' PowerPoint when `pptx` is TRUE). CMSY++'s own JPEG charts are in the folder of each stock (see
-#' `result$summary$folder`).
+#' Charts are saved in \code{figures/png/cmsy/<stock>/} and \code{figures/png/cmsy/summary/} (and as
+#' PowerPoint when \code{pptx} is TRUE). CMSY++'s own JPEG charts are in the folder of each stock (see
+#' \code{result$summary$folder}).
 #'
 #' @inheritParams summary_params
-#' @param result The result of [cmsy_run()].
-#' @param stocks Optional stocks to draw: `Stock` identifiers or species, by English or Chinese
+#' @param result The result of \code{\link{cmsy_run}()}.
+#' @param stocks Optional stocks to draw: \code{Stock} identifiers or species, by English or Chinese
 #'        FAO name, scientific name or FAO 3-alpha code. Default is NULL, all stocks that ran.
-#' @param charts The charts to draw (see Details). Default is all of them.
+#' @param charts The charts to draw (listed in the description above). Default is all of them.
+#' @param pptx A logical value. If TRUE, the charts are also saved as editable PowerPoint files in
+#'        figures/pptx/cmsy/<stock>/ and figures/pptx/cmsy/summary/. Default is FALSE, which can be
+#'        changed for all functions with \code{fao_settings(pptx = TRUE)}.
 #' @param classes The status classes: "fao" (default, two classes) or "palomares" (five classes).
 #' @param annotations The text added to the axis titles and labels: FALSE (default) none, TRUE
 #'        all, or any of "title", "subtitle", "caption", "legend" and "labels" (text inside the
 #'        chart). The default can be changed for the session with
-#'        `options(faofishingreport.cmsy_annotations = TRUE)`.
+#'        \code{options(faofishingreport.cmsy_annotations = TRUE)}.
 #' @param silent A logical value. If FALSE (default), a progress bar shows how many stocks have
 #'        been drawn. If TRUE, nothing is printed. The default can be changed for the session
-#'        with `fao_settings(silent = TRUE)`.
+#'        with \code{fao_settings(silent = TRUE)}.
 #' @return Invisibly, a named list of the ggplot objects.
 #' @references
 #' Froese, R., Demirel, N., Coro, G. and Winker, H. (2021). User Guide for CMSY++. GEOMAR,

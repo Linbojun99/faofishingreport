@@ -15,7 +15,9 @@
 #' @param quiet A logical value. If TRUE, no message is printed. Default is FALSE.
 #' @return Invisibly, a data frame with one row per server: newest online release (NA when
 #'   offline), newest downloaded release, number of tables online and downloaded, and whether an
-#'   update is available.
+#'   update is available (`update_available`: TRUE when nothing has been downloaded or a newer
+#'   release is online; a release of which only the tables the package needs were downloaded is
+#'   up to date).
 #' @references
 #' Froese, R. and Pauly, D. (Eds.) FishBase. World Wide Web electronic publication.
 #' \url{https://www.fishbase.se}
@@ -44,8 +46,7 @@ check_fishbase_update <- function(server = c("fishbase", "sealifebase"), data_di
     local <- if (length(local_versions) > 0) local_versions[length(local_versions)] else NA_character_
     tables_online <- if (is.na(latest)) NA_integer_ else nrow(fb_list_files(sv, latest))
     tables_local <- if (is.na(local)) 0L else length(fb_local_tables(sv, local, data_dir))
-    update <- !is.na(latest) && (is.na(local) || numeric_version(latest) > numeric_version(local) ||
-                                   (latest == local && tables_local < tables_online))
+    update <- !is.na(latest) && (is.na(local) || numeric_version(latest) > numeric_version(local))
     data.frame(server = sv, latest_online = latest, newest_local = local,
                tables_online = tables_online, tables_local = tables_local,
                update_available = update, stringsAsFactors = FALSE)
@@ -63,7 +64,9 @@ check_fishbase_update <- function(server = c("fishbase", "sealifebase"), data_di
         message("  Run download_fishbase_data(\"", r$server, "\") to download the latest release ",
                 "(or the tables of it that are missing).")
       } else if (!is.na(r$latest_online)) {
-        message("  Your copy is up to date.")
+        message("  Your copy is up to date.",
+                if (r$tables_local < r$tables_online) paste0(" The other ", r$tables_online - r$tables_local,
+                  " tables can be downloaded with download_fishbase_data(\"", r$server, "\", tables = \"all\")."))
       }
     }
   }

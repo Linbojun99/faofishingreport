@@ -13,20 +13,19 @@ cmsy_tables(
 )
 }
 \arguments{
-\item{result}{The result of [cmsy_run()].}
+\item{result}{The result of \code{\link{cmsy_run}()}.}
 
-\item{stocks}{Optional stocks to draw: `Stock` identifiers or species, by English or Chinese
-FAO name, scientific name or FAO 3-alpha code. Default is NULL, all stocks that ran.}
+\item{stocks}{Optional stocks to put in the tables: \code{Stock} identifiers or species, by English or
+Chinese FAO name, scientific name or FAO 3-alpha code. Default is NULL, all stocks that ran.}
 
 \item{table}{A logical value. If TRUE (default), the tables are saved in \verb{tables/cmsy/}.}
 
-\item{lang}{The language of the chart text and names: "en" (English), "zh" (Chinese) or
-"both" (Chinese and English). Default is NULL, which uses the language set with
+\item{lang}{The language of the column names and other names of the tables: "en" (English),
+"zh" (Chinese) or "both". Default is NULL, which uses the language set with
 \code{fao_settings()} ("en" unless changed).}
 
-\item{silent}{A logical value. If FALSE (default), a progress bar shows how many stocks have
-been drawn. If TRUE, nothing is printed. The default can be changed for the session
-with `fao_settings(silent = TRUE)`.}
+\item{silent}{A logical value. If TRUE, the messages on how the stocks were matched are not
+printed. Default is FALSE, or the value set with \code{fao_settings(silent = )}.}
 }
 \value{
 Invisibly, a list with the data frames \code{priors} and \code{results}. The results give the
@@ -36,7 +35,7 @@ of Palomares et al. (2018).
 \description{
 This function makes the two tables that CMSY++ studies usually give: the priors of each stock
 (years used, r and k ranges, MSY prior, and the B/k priors of the first, intermediate and last
-years, with their sources) and the results (r, k, MSY, Fmsy and Bmsy with their 95\\%
+years, with their sources) and the results (r, k, MSY, Fmsy and Bmsy with their 95\%
 confidence limits, last-year B/Bmsy and F/Fmsy, Kobe probabilities and status). Values are
 rounded and ranges written as "low-high", with the column names in the chosen language.
 }

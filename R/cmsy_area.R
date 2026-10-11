@@ -27,6 +27,14 @@
 #'
 #' @inheritParams cmsy_run
 #' @inheritParams cmsy_plot
+#' @param auto_start As in [cmsy_run()], but TRUE by default here: a stock whose start biomass is
+#'        ambiguous starts in the first year with at least 40% of the maximum catch, as suggested
+#'        by CMSY++.
+#' @param seed The random seed of the runs, so that the results can be repeated. Default is 1.
+#' @param charts The charts to draw (see [cmsy_plot()]). Default is all of them.
+#' @param pptx A logical value. If TRUE, the charts are also saved as editable PowerPoint files in
+#'        `<out_dir>/<area>/figures_pptx/`. Default is FALSE, which can be changed for all functions
+#'        with `fao_settings(pptx = TRUE)`.
 #' @param area FAO major fishing area name(s), as in [fishing_area_data()] (e.g.
 #'        "Atlantic, Eastern Central"), or FAO catch data such as `fishing_area_data()$area_data`.
 #' @param top Number of species with the largest catch to assess. Default is 10.

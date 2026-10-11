@@ -10,9 +10,8 @@
 #' @param plot A logical value indicating whether to generate and save plots.
 #' @param table A logical value indicating whether to generate and save tables
 #' @param timeseries_analysis A logical value indicating whether to analysis timeseries.
-#' @param h_value The minimum segment size, which must be greater than the
-#'        number of regressors. For the model `ts_data ~ 1`, this means `h_value`
-#'        should be greater than 1. The default value is 0.15.
+#' @param h_value The minimum segment size passed to `strucchange::breakpoints()`: a fraction of
+#'        the series length (default 0.15) or a number of years.
 #' @param polygon_color The color of the borders of the polygons in the map plot. Default is "grey90".
 #' @param fill_scale The colour palette of the map. Default is NULL, which uses `map_palette` of
 #'        `fao_settings()` ("deep-orange" unless changed); see `?fao_settings` for the choices.
@@ -24,7 +23,7 @@
 #' @param axis_text_size The size of the axis text. Default is 10.
 #' @param axis_title_size The size of the axis title text. Default is 12.
 #' @param strip_text_size The size of the strip text. Default is 12.
-#' @param ZH A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the same as `lang = "zh"`.
+#' @param ZH A logical value. If TRUE, chart text and names are in Chinese. Default is FALSE. `ZH = TRUE` is the same as `lang = "zh"`.
 #' @param lang The language of the chart text and names: "en" (English), "zh" (Chinese) or "both"
 #'        (Chinese and English). Default is NULL, which uses "zh" if `ZH = TRUE`, and otherwise the language
 #'        set with `fao_settings()` ("en" unless changed).
@@ -34,6 +33,10 @@
 #' @family species and country analyses
 #' @export
 #'
+#' @return A data frame with the yearly catch of the species by the ranked countries (the others
+#'         grouped); with `timeseries_analysis = TRUE`, a list of this data frame and the periods
+#'         between breakpoints of each country. Charts and tables are saved if `plot` and `table`
+#'         are TRUE.
 #' @examples
 #' \dontrun{
 #' species_country(FAO34[["area_data"]], species_name = "European pilchard(=Sardine)",c(1, 10), plot=TRUE,table=TRUE,h_value = 0.15) #area_data=Fao34
@@ -49,8 +52,8 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
                             strip_text_size = 12,ZH = FALSE, lang = NULL,
                             pptx = getOption("faofishingreport.pptx", FALSE)) {
 
-
-  options(scipen=999,digits=2)
+  old_options <- options(scipen = 999, digits = 2)
+  on.exit(options(old_options), add = TRUE)
 
 #draw set
   lang <- fao_lang(lang, ZH)
@@ -231,10 +234,10 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
         bp <- breakpoints(ts_data ~ 1, h = h_value)
         coefs <- coef(bp)
 
-        bps <- c(min(years), breakpoints(bp)$breakpoints + min(years) - 1, max(years))
-
-        start_years <- bps[-length(bps)]
-        end_years <- bps[-1]
+        periods <- fao_bp_periods(breakpoints(bp)$breakpoints, years)
+        start_years <- periods$start_year
+        end_years <- periods$end_year
+        bps <- c(start_years, max(years))
 
         if (length(coefs) == length(start_years)) {
           coefs_data <- data.frame(

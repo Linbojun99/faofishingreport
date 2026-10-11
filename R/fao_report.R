@@ -41,17 +41,21 @@
 #'        `cmsy_` for [cmsy_area()] (and [cmsy_input()]). For example `species_h_value = 0.2`,
 #'        `countries_line_linewidth = 1`, `status_smooth = TRUE`, `cmsy_top = 5` or
 #'        `cmsy_settings = list(n.iter = 100000)`. A name that is not an argument of the
-#'        function gives an error listing its arguments.
+#'        function gives an error listing its arguments. The arguments the report sets itself
+#'        (`area_data`, `area_name`, `area`, `lang`, `table` and `pptx`) cannot be changed.
 #' @param file The Word file to write. Default is `reports/FAO<code>_report_<lang>.docx` in the
 #'        working directory.
 #' @param lang The language of the report: "zh" (Chinese) or "en" (English). Default is NULL,
 #'        the language set with `fao_settings()` ("both" gives a Chinese report).
 #' @param title The report title. Default is generated from the area, e.g. "Assessment of
-#'        Marine Capture Production in FAO Major Fishing Area 34 (Eastern Central Atlantic)".
+#'        Marine Capture Production in FAO Major Fishing Area 34 (Atlantic, Eastern Central)".
 #' @param report_no The number of the report, shown as "Report 1" (in Chinese reports with a
 #'        Chinese numeral) and used in the figure and table numbers (1-1, 1-2, ...). Default is 1.
-#' @param author,affiliation The author and affiliation on the cover and title page.
-#' @param project The text at the top of the cover. Default is "Project Report".
+#' @param author The author on the cover and below the title. Default is NULL, which writes
+#'        "Author" ("作者" in Chinese reports) as a placeholder.
+#' @param affiliation The affiliation on the cover. Default is NULL, none.
+#' @param project The text at the top of the cover. Default is NULL, which writes "Project Report"
+#'        ("课题报告" in Chinese reports).
 #' @param date The date on the cover. Default is today.
 #' @param font The font of the text in Latin script. Default is "Times New Roman" in Chinese
 #'        reports and "Arial" in English reports.
@@ -79,7 +83,8 @@
 #'        every species and appendix tables of the reference points, priors and their sources.
 #'        Default is FALSE. The result of an earlier [cmsy_area()] run can also be given, to
 #'        write the report without running CMSY++ again. CMSY++ needs JAGS: see [cmsy_setup()].
-#' @return Invisibly, a list of class `fao_report` with the path of the Word file (`file`) and
+#' @return Invisibly, a list of class `fao_report` with the path of the Word file (`file`), the
+#'         sections in the report (`sections`) and
 #'         the tables of the report as data frames: `main_species` and `main_countries`, the
 #'         species of the mean temperature of the catch with their FishBase matches
 #'         (`mtc_species`), the results of all analyses (`analyses`), and with
@@ -169,6 +174,7 @@ fao_report <- function(area, ..., file = NULL, lang = NULL, title = NULL, report
   meta <- list(
     title = if (is.null(title)) ctx$text("title") else title,
     report_no = ctx$text("report_no", no = fao_report_number(report_no, lang)),
+    report_number = as.character(report_no),
     author = if (is.null(author)) ctx$text("author_default") else author,
     affiliation = affiliation,
     project = if (is.null(project)) ctx$text("project_default") else project,

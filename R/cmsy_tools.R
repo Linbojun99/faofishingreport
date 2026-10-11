@@ -15,6 +15,11 @@
 #' as in the management results of CMSY++. Catch is F times biomass, as CMSY++ defines F.
 #'
 #' @inheritParams cmsy_plot
+#' @param stocks Optional stocks to project: `Stock` identifiers or species, by English or Chinese
+#'        FAO name, scientific name or FAO 3-alpha code. Default is NULL, all stocks that ran.
+#' @param silent A logical value. If FALSE (default), a progress bar shows how many stocks have
+#'        been projected. If TRUE, nothing is printed. The default can be changed for the session
+#'        with `fao_settings(silent = TRUE)`.
 #' @param years Number of years to project. Default is 10.
 #' @param f Fishing mortality scenarios as multiples of Fmsy. Default is `c(0.5, 0.6, 0.8, 0.95)`.
 #' @param status_quo A logical value. If TRUE (default), the last-year fishing mortality is also
@@ -27,8 +32,8 @@
 #'        `figures/png/cmsy/summary/forecast_share.png`) and the table (`tables/cmsy/`) are saved.
 #'        Default is TRUE.
 #' @return Invisibly, a list with `projection` (by stock, scenario and year: median B/Bmsy,
-#'         F/Fmsy and catch with 95\% limits, and the probability that B is at least Bmsy) and
-#'         `share` (by scenario and year: share of stocks at or above Bmsy, with 95\% limits).
+#'         F/Fmsy and catch with 95% limits, and the probability that B is at least Bmsy) and
+#'         `share` (by scenario and year: share of stocks at or above Bmsy, with 95% limits).
 #' @references
 #' Froese, R., Winker, H., Coro, G., Demirel, N., Tsikliras, A.C., Dimarchopoulou, D., Scarcella,
 #' G., Quaas, M. and Matz-Lueck, N. (2018). Status and rebuilding of European fisheries. Marine
@@ -225,6 +230,13 @@ cmsy_chart_forecast <- function(projection, series, lang, ann) {
 #' assessments, and gives a table of their last-year values.
 #'
 #' @inheritParams cmsy_plot
+#' @param stocks Optional stocks to compare: `Stock` identifiers or species, by English or Chinese
+#'        FAO name, scientific name or FAO 3-alpha code. Default is NULL, all stocks that ran.
+#' @param pptx A logical value. If TRUE, the charts are also saved as editable PowerPoint files in
+#'        figures/pptx/cmsy/compare/. Default is FALSE, which can be changed for all functions with
+#'        `fao_settings(pptx = TRUE)`.
+#' @param silent A logical value. If TRUE, the messages on how the stocks were matched are not
+#'        printed. Default is FALSE, or the value set with `fao_settings(silent = )`.
 #' @param ... Results of [cmsy_run()], named or not (e.g. `default = run1, start_1980 = run2`).
 #' @param external Optional data frame of other estimates, with columns `Stock`, `Year`, `B_Bmsy`
 #'        (and optionally `F_Fmsy`) and `source` (the name shown in the legend, e.g. the agency or
@@ -302,11 +314,18 @@ cmsy_compare <- function(..., stocks = NULL, external = NULL, lang = NULL,
 #'
 #' This function makes the two tables that CMSY++ studies usually give: the priors of each stock
 #' (years used, r and k ranges, MSY prior, and the B/k priors of the first, intermediate and last
-#' years, with their sources) and the results (r, k, MSY, Fmsy and Bmsy with their 95\%
+#' years, with their sources) and the results (r, k, MSY, Fmsy and Bmsy with their 95%
 #' confidence limits, last-year B/Bmsy and F/Fmsy, Kobe probabilities and status). Values are
 #' rounded and ranges written as "low-high", with the column names in the chosen language.
 #'
 #' @inheritParams cmsy_plot
+#' @param stocks Optional stocks to put in the tables: `Stock` identifiers or species, by English or
+#'        Chinese FAO name, scientific name or FAO 3-alpha code. Default is NULL, all stocks that ran.
+#' @param lang The language of the column names and other names of the tables: "en" (English),
+#'        "zh" (Chinese) or "both". Default is NULL, which uses the language set with
+#'        `fao_settings()` ("en" unless changed).
+#' @param silent A logical value. If TRUE, the messages on how the stocks were matched are not
+#'        printed. Default is FALSE, or the value set with `fao_settings(silent = )`.
 #' @param table A logical value. If TRUE (default), the tables are saved in `tables/cmsy/`.
 #' @return Invisibly, a list with the data frames `priors` and `results`. The results give the
 #'         status in the two classes of FAO (2026) for catch-only results and in the five classes

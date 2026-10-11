@@ -40,3 +40,12 @@ test_that("peak_trend works for all series, including short ones", {
   expect_true(is.na(result$p_value[result$name_en == "B"]))
   expect_identical(result$trend[result$name_en == "B"], "none")
 })
+
+test_that("breakpoint periods start after and end at the breakpoints", {
+  periods <- fao_bp_periods(c(21, 37), 1950:2024)
+  expect_identical(periods$start_year, c(1950L, 1971L, 1987L))
+  expect_identical(periods$end_year, c(1970L, 1986L, 2024L))
+  expect_identical(fao_bp_periods(NA, 1950:2024)$end_year, 2024L)
+  # years of the series, also when a year is missing
+  expect_identical(fao_bp_periods(2, c(2000L, 2001L, 2003L, 2004L))$start_year, c(2000L, 2003L))
+})

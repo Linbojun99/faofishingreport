@@ -20,7 +20,9 @@ check_fishbase_update(
 \value{
 Invisibly, a data frame with one row per server: newest online release (NA when
 offline), newest downloaded release, number of tables online and downloaded, and whether an
-update is available.
+update is available (\code{update_available}: TRUE when nothing has been downloaded or a newer
+release is online; a release of which only the tables the package needs were downloaded is
+up to date).
 }
 \description{
 This function lists the FishBase and SeaLifeBase releases published online (the static

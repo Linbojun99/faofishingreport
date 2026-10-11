@@ -17,7 +17,7 @@
 #'     against the mean catch of the previous 5 years (Gephart et al. 2017, section 2, and their
 #'     code at \url{https://github.com/jagephart/Shock_Detection}).}
 #' }
-#' A shock has recovered in the first later year in which catch is back to at least 95\% of that
+#' A shock has recovered in the first later year in which catch is back to at least 95% of that
 #' baseline. The yearly shock frequency is the number of shocks in a year divided by the number of
 #' series with catch in that year (Cottrell et al. 2019); the shock rate of an area, country or
 #' species group is the number of shocks divided by the number of its series (Gephart et al. 2017).
@@ -75,6 +75,12 @@ catch_shocks <- function(area_data, by = c("country", "area"), method = c("cottr
   info <- data[!duplicated(data$series), c("series", unname(columns[by]), unname(extra))]
   group_names <- list(isscaap_en = unique(data[, c("isscaap_en", "isscaap_zh")]),
                       continent_en = unique(data[, c("continent_en", "continent_zh")]))
+  # countries without a continent (the USSR, "Other nei") are counted as "Other"
+  if ("continent_en" %in% names(info) && anyNA(info$continent_en)) {
+    info$continent_en[is.na(info$continent_en)] <- "Other"
+    known <- group_names$continent_en[!is.na(group_names$continent_en$continent_en), ]
+    group_names$continent_en <- rbind(known, data.frame(continent_en = "Other", continent_zh = "\u5176\u4ed6"))
+  }
   # Series of countries that no longer exist (USSR, Yugoslavia SFR, ...) end in their last year with
   # catch, so that the end of the country is not counted as a shock
   former <- if ("country" %in% by) unique(info$series[info$Country..Name. %in% fao_former_countries$name_en]) else character(0)

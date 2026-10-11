@@ -38,17 +38,11 @@ data. Default is 10.}
 
 \item{out_dir}{The folder in which a folder per area is made. Default is "cmsy_areas".}
 
-\item{auto_start}{A logical value. When the mean (smoothed) catch of the first three years is
-below a third of the maximum, the start year is before 2000 and no start B/k prior is
-given, CMSY++ warns that the start biomass is ambiguous (depleted or unexploited) and
-suggests starting in the first year with at least 40\% of the maximum catch (reported
-in \code{suggested_start_year}). If TRUE, the stock starts in that year. CMSY++'s own
-setting for this (\code{auto.start}) stops with an error in \verb{CMSY++16.R} (the year range no
-longer matches the catch years), so the same rule is applied here to \code{StartYear}
-before the run. Default is FALSE, as in CMSY++; the user guide prefers setting
-\code{StartYear} or the start B/k prior (\code{stb.low}, \code{stb.hi}) in \code{\link[=cmsy_input]{cmsy_input()}}.}
+\item{auto_start}{As in \code{\link[=cmsy_run]{cmsy_run()}}, but TRUE by default here: a stock whose start biomass is
+ambiguous starts in the first year with at least 40\% of the maximum catch, as suggested
+by CMSY++.}
 
-\item{seed}{Optional random seed, so runs can be repeated with the same results.}
+\item{seed}{The random seed of the runs, so that the results can be repeated. Default is 1.}
 
 \item{parallel}{The number of stocks run at the same time. Each uses two more processes for
 its two MCMC chains. Default is half the number of processor cores.}
@@ -59,7 +53,7 @@ settings, their defaults and what they do. Default is no change: CMSY++ runs wit
 defaults. The settings used are saved in \code{settings_used.csv} of the run folder and in
 \code{result$settings}.}
 
-\item{charts}{The charts to draw (see Details). Default is all of them.}
+\item{charts}{The charts to draw (see \code{\link[=cmsy_plot]{cmsy_plot()}}). Default is all of them.}
 
 \item{classes}{The status classes: "fao" (default, two classes) or "palomares" (five classes).}
 
@@ -69,15 +63,15 @@ default fishing scenarios of \code{\link[=cmsy_forecast]{cmsy_forecast()}}.}
 \item{annotations}{The text added to the axis titles and labels: FALSE (default) none, TRUE
 all, or any of "title", "subtitle", "caption", "legend" and "labels" (text inside the
 chart). The default can be changed for the session with
-`options(faofishingreport.cmsy_annotations = TRUE)`.}
+\code{options(faofishingreport.cmsy_annotations = TRUE)}.}
 
 \item{lang}{The language of the chart text and names: "en" (English), "zh" (Chinese) or
 "both" (Chinese and English). Default is NULL, which uses the language set with
 \code{fao_settings()} ("en" unless changed).}
 
-\item{pptx}{A logical value. If TRUE, charts are also saved as editable PowerPoint files in
-\verb{figures/pptx/summary/}. Default is FALSE, which can be changed for all functions with
-\code{fao_settings(pptx = TRUE)}.}
+\item{pptx}{A logical value. If TRUE, the charts are also saved as editable PowerPoint files in
+\verb{<out_dir>/<area>/figures_pptx/}. Default is FALSE, which can be changed for all functions
+with \code{fao_settings(pptx = TRUE)}.}
 
 \item{silent}{A logical value. If FALSE (default), a progress bar shows how many stocks have
 finished, with the elapsed and the estimated remaining time, and messages report the

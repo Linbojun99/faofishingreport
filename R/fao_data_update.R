@@ -73,6 +73,11 @@ check_fao_update <- function(data_dir = fao_data_dir(), quiet = FALSE) {
 #' }
 download_fao_data <- function(version = "latest", data_dir = fao_data_dir(),
                               overwrite = FALSE, quiet = FALSE) {
+  # a named release that is already downloaded is read without going online
+  if (!identical(version, "latest") && !overwrite && file.exists(fao_data_file(version, data_dir))) {
+    if (!quiet) message("Release ", version, " is already downloaded: ", fao_data_file(version, data_dir))
+    return(invisible(readRDS(fao_data_file(version, data_dir))))
+  }
   releases <- fao_list_releases()
   if (identical(version, "latest")) {
     version <- releases$version[nrow(releases)]

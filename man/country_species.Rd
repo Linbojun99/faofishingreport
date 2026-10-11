@@ -34,11 +34,10 @@ country_species(
 \item{time_analysis_text_displacement}{The number of years after the first year of data at which
 the percentage labels are placed in the faceted time series plot. Default is 10.}
 
-\item{h_value}{The minimum segment size, which must be greater than the
-number of regressors. For the model \code{ts_data ~ 1}, this means \code{h_value}
-should be greater than 1. The default value is 0.15.}
+\item{h_value}{The minimum segment size passed to \code{strucchange::breakpoints()}: a fraction of
+the series length (default 0.15) or a number of years.}
 
-\item{ZH}{A logical value to Chinese. Default is "FALSE". \code{ZH = TRUE} is the same as \code{lang = "zh"}.}
+\item{ZH}{A logical value. If TRUE, chart text and names are in Chinese. Default is FALSE. \code{ZH = TRUE} is the same as \code{lang = "zh"}.}
 
 \item{lang}{The language of the chart text and names: "en" (English), "zh" (Chinese) or "both"
 (Chinese and English). Default is NULL, which uses "zh" if \code{ZH = TRUE}, and otherwise the language
@@ -47,6 +46,10 @@ set with \code{fao_settings()} ("en" unless changed).}
 \item{pptx}{A logical value. Charts are always saved as PNG in \verb{figures/png/}; if TRUE they are
 also saved as editable PowerPoint files in \verb{figures/pptx/}. Default is FALSE, which can be
 changed for all functions with \code{fao_settings(pptx = TRUE)}.}
+}
+\value{
+A data frame with the yearly catch of the country by the ranked species (the others
+grouped). Charts and tables are saved if \code{plot} and \code{table} are TRUE.
 }
 \description{
 This function takes the fishing area data and a country name,

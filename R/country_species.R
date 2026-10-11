@@ -12,10 +12,9 @@
 #' @param time_analysis_text_displacement The number of years after the first year of data at which
 #'        the percentage labels are placed in the faceted time series plot. Default is 10.
 #' @param rank_range A numeric vector of length 2 specifying the rank range of species to be analyzed.
-#' @param h_value The minimum segment size, which must be greater than the
-#'        number of regressors. For the model `ts_data ~ 1`, this means `h_value`
-#'        should be greater than 1. The default value is 0.15.
-#' @param ZH A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the same as `lang = "zh"`.
+#' @param h_value The minimum segment size passed to `strucchange::breakpoints()`: a fraction of
+#'        the series length (default 0.15) or a number of years.
+#' @param ZH A logical value. If TRUE, chart text and names are in Chinese. Default is FALSE. `ZH = TRUE` is the same as `lang = "zh"`.
 #' @param lang The language of the chart text and names: "en" (English), "zh" (Chinese) or "both"
 #'        (Chinese and English). Default is NULL, which uses "zh" if `ZH = TRUE`, and otherwise the language
 #'        set with `fao_settings()` ("en" unless changed).
@@ -25,6 +24,8 @@
 #' @family species and country analyses
 #' @export
 #'
+#' @return A data frame with the yearly catch of the country by the ranked species (the others
+#'         grouped). Charts and tables are saved if `plot` and `table` are TRUE.
 #' @examples
 #' \dontrun{
 #' country_species(FAO34[["area_data"]], country_name = "Morocco",c(1, 10), plot=TRUE,table=TRUE) #area_data=Fao34
@@ -32,7 +33,8 @@
 country_species <- function(area_data, country_name, rank_range = c(1, 10),plot=TRUE,table=TRUE,timeseries_analysis=TRUE,time_analysis_text_displacement=10,h_value=0.15,ZH = FALSE, lang = NULL,
                             pptx = getOption("faofishingreport.pptx", FALSE)) {
 
-  options(scipen=999,digits=2)
+  old_options <- options(scipen = 999, digits = 2)
+  on.exit(options(old_options), add = TRUE)
 
 
   #draw set
@@ -159,11 +161,10 @@ country_species <- function(area_data, country_name, rank_range = c(1, 10),plot=
       bp <- breakpoints(ts_data ~ 1, h = h_value)
       coefs <- coef(bp)
 
-      bps <- c(min(country_data$Year), breakpoints(bp)$breakpoints + min(country_data$Year), max(country_data$Year))
-
-
-      start_years <- bps[-length(bps)]
-      end_years <- bps[-1] - 1
+      periods <- fao_bp_periods(breakpoints(bp)$breakpoints, country_data$Year)
+      start_years <- periods$start_year
+      end_years <- periods$end_year
+      bps <- c(start_years, max(country_data$Year))
 
       if (length(coefs) == length(start_years)) {
         coefs_data <- data.frame(

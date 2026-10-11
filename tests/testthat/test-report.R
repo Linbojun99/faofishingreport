@@ -35,7 +35,7 @@ test_that("report text templates exist in both languages", {
 test_that("proceedings and databases with editors are formatted", {
   jags <- list(type = "C", author = "Plummer, M.", year = "2003", title = "JAGS",
                container = "Proceedings of DSC 2003", place = "Vienna", pages = "1-10")
-  expect_identical(fao_ref_entry(jags, "numeric"), "Plummer M. JAGS: Proceedings of DSC 2003[C]. Vienna, 2003, 1-10.")
+  expect_identical(fao_ref_entry(jags, "numeric"), "Plummer M. JAGS[C]//Proceedings of DSC 2003. Vienna, 2003: 1-10.")
   expect_match(fao_ref_entry(jags, "apa"), "In \\*Proceedings of DSC 2003\\* \\(pp. 1–10\\)")
   fishbase <- list(type = "DB", author = "Froese, R.; Pauly, D.", editors = TRUE, year = "2026",
                    title = "FishBase", version = "version 06/2026", accessed = "2026-10-10",
@@ -77,4 +77,18 @@ test_that("new sections take their settings and extra settings", {
   expect_true(all(fao_report_methods %in% texts$key))
   expect_true(all(paste0("topic_", names(sections)) %in% texts$key))
   expect_true(all(paste0("method_", methods) %in% texts$key))
+})
+
+test_that("author-date citations after the authors' names give only the year", {
+  state <- list(citation = "apa", references = list(
+    caddy1993 = list(author = "Caddy, J. F.", year = "1993"),
+    deleiva2000 = list(author = "de Leiva Moreno, J. I.; Agostini, V. N.; Caddy, J. F.", year = "2000"),
+    loreau2008 = list(author = "Loreau, M.; de Mazancourt, C.", year = "2008")))
+  expect_true(fao_report_narrative(state, "caddy1993", "Following Caddy "))
+  expect_true(fao_report_narrative(state, "deleiva2000", "and de Leiva Moreno et al. "))
+  expect_true(fao_report_narrative(state, "loreau2008", "the index of Loreau and de Mazancourt "))
+  expect_false(fao_report_narrative(state, "caddy1993", "the ratio was used "))
+  expect_false(fao_report_narrative(state, c("caddy1993", "loreau2008"), "Caddy "))
+  state$citation <- "numeric"
+  expect_false(fao_report_narrative(state, "caddy1993", "Following Caddy "))
 })

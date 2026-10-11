@@ -55,7 +55,8 @@ the number of distant-water countries profiled, default 3, or their names) and
 \code{cmsy_} for \code{\link[=cmsy_area]{cmsy_area()}} (and \code{\link[=cmsy_input]{cmsy_input()}}). For example \code{species_h_value = 0.2},
 \code{countries_line_linewidth = 1}, \code{status_smooth = TRUE}, \code{cmsy_top = 5} or
 \code{cmsy_settings = list(n.iter = 100000)}. A name that is not an argument of the
-function gives an error listing its arguments.}
+function gives an error listing its arguments. The arguments the report sets itself
+(\code{area_data}, \code{area_name}, \code{area}, \code{lang}, \code{table} and \code{pptx}) cannot be changed.}
 
 \item{file}{The Word file to write. Default is \verb{reports/FAO<code>_report_<lang>.docx} in the
 working directory.}
@@ -64,14 +65,18 @@ working directory.}
 the language set with \code{fao_settings()} ("both" gives a Chinese report).}
 
 \item{title}{The report title. Default is generated from the area, e.g. "Assessment of
-Marine Capture Production in FAO Major Fishing Area 34 (Eastern Central Atlantic)".}
+Marine Capture Production in FAO Major Fishing Area 34 (Atlantic, Eastern Central)".}
 
 \item{report_no}{The number of the report, shown as "Report 1" (in Chinese reports with a
 Chinese numeral) and used in the figure and table numbers (1-1, 1-2, ...). Default is 1.}
 
-\item{author, affiliation}{The author and affiliation on the cover and title page.}
+\item{author}{The author on the cover and below the title. Default is NULL, which writes
+"Author" ("作者" in Chinese reports) as a placeholder.}
 
-\item{project}{The text at the top of the cover. Default is "Project Report".}
+\item{affiliation}{The affiliation on the cover. Default is NULL, none.}
+
+\item{project}{The text at the top of the cover. Default is NULL, which writes "Project Report"
+("课题报告" in Chinese reports).}
 
 \item{date}{The date on the cover. Default is today.}
 
@@ -110,7 +115,8 @@ Default is FALSE. The result of an earlier \code{\link[=cmsy_area]{cmsy_area()}}
 write the report without running CMSY++ again. CMSY++ needs JAGS: see \code{\link[=cmsy_setup]{cmsy_setup()}}.}
 }
 \value{
-Invisibly, a list of class \code{fao_report} with the path of the Word file (\code{file}) and
+Invisibly, a list of class \code{fao_report} with the path of the Word file (\code{file}), the
+sections in the report (\code{sections}) and
 the tables of the report as data frames: \code{main_species} and \code{main_countries}, the
 species of the mean temperature of the catch with their FishBase matches
 (\code{mtc_species}), the results of all analyses (\code{analyses}), and with

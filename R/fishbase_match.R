@@ -581,7 +581,12 @@ fb_apply_corrections <- function(result, file, dbs, is_default) {
       if (is.na(server)) server <- if (identical(result$major_group[i[1]], "PISCES")) "fishbase" else "sealifebase"
       db <- dbs[[server]]
       j <- if (is.null(db)) NA else match(as.integer(corr$SpecCode[k]), db$traits$SpecCode)
-      if (is.null(db)) {
+      if (is.null(db) && !any(unlist(corr[k, setdiff(fb_trait_columns, "trophic_level_se")]) != "")) {
+        warning("Correction for ", corr$alpha3[k], ": ", fb_server_name(server), " is not available, so SpecCode ",
+                corr$SpecCode[k], " cannot be looked up, and the file gives no values; the correction is skipped.",
+                call. = FALSE)
+        next
+      } else if (is.null(db)) {
         warning("Correction for ", corr$alpha3[k], ": ", fb_server_name(server), " is not available, so SpecCode ",
                 corr$SpecCode[k], " cannot be looked up; only the values given in the file are applied.", call. = FALSE)
       } else if (is.na(j)) {

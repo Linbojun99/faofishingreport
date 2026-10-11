@@ -1,4 +1,4 @@
-#' Fishing Area country Analysis
+#' Fishing Area Country Analysis
 #'
 #' This function analyzes the fishing area data and generates plots for specified country based on their ranking in terms of total tonnes.
 #'
@@ -21,22 +21,25 @@
 #' @param smooth_method A character string specifying the smoothing method to be used. Default is "loess".
 #' @param smooth_linetype A character string specifying the line type for the smoothing curve. Default is "dashed".
 #' @param line_linewidth A numeric value specifying the line width for the line geom. Default is 1.5.
-#' @param text_hjust A numeric value specifying the horizontal justification of the text geom. Default is 0.8.
-#' @param text_vjust A numeric value specifying the vertical justification of the text geom. Default is -8.
+#' @param text_hjust A numeric value specifying the horizontal justification of the text geom. Default is 0.9.
+#' @param text_vjust A numeric value specifying the vertical justification of the text geom. Default is -4.
 #' @param text_size A numeric value specifying the size of the text geom. Default is 4.5.
 #' @param text_color A character string specifying the color of the text geom. Default is "black".
 #' @param facet_ncol A numeric value specifying the number of columns to be used in facet_wrap. Default is 2.
-#' @param h_value The minimum segment size, which must be greater than the
-#'        number of regressors. For the model `ts_data ~ 1`, this means `h_value`
-#'        should be greater than 1. The default value is 0.15.
-#' @param ZH A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the same as `lang = "zh"`.
+#' @param h_value The minimum segment size passed to `strucchange::breakpoints()`: a fraction of
+#'        the series length (default 0.15) or a number of years.
+#' @param ZH A logical value. If TRUE, chart text and names are in Chinese. Default is FALSE. `ZH = TRUE` is the same as `lang = "zh"`.
 #' @param lang The language of the chart text and names: "en" (English), "zh" (Chinese) or "both"
 #'        (Chinese and English). Default is NULL, which uses "zh" if `ZH = TRUE`, and otherwise the language
 #'        set with `fao_settings()` ("en" unless changed).
 #' @param pptx A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are
 #'        also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
 #'        changed for all functions with `fao_settings(pptx = TRUE)`.
-#' @return NULL. The function saves the generated plots to the specified directory if plot = TRUE.
+#' @return A list with `area_country` (yearly catch of every country in the area),
+#'         `area_country_ranked` (yearly catch of the ranked countries, with the others grouped),
+#'         `area_country_ranked_total` (total catch and rank of the selected countries) and
+#'         `coefs_data` (start year, end year and mean catch of each period between breakpoints).
+#'         Charts and tables are saved if `plot` and `table` are TRUE.
 #' @family fishing area analyses
 #' @export
 #'
@@ -212,10 +215,10 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
 
       coefs <- coef(bp)
 
-      bps <- c(min(years), breakpoints(bp)$breakpoints + min(years), max(years))
-
-      start_years <- bps[-length(bps)]
-      end_years <- bps[-1] - 1
+      periods <- fao_bp_periods(breakpoints(bp)$breakpoints, years)
+      start_years <- periods$start_year
+      end_years <- periods$end_year
+      bps <- c(start_years, max(years))
 
       if (length(coefs) == length(start_years)) {
         coefs_data <- data.frame(

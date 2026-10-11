@@ -87,7 +87,8 @@ fao_report_ref <- function(x, kind, ids) {
 }
 
 # The text of citations: superscript numbers, or author and year
-fao_report_cite <- function(x, keys) {
+# narrative: the authors are already named in the text before the citation ("Caddy (1993)")
+fao_report_cite <- function(x, keys, narrative = FALSE) {
   state <- attr(x, "fao_report")
   for (key in keys) {
     if (is.null(state$references[[key]])) stop("Unknown reference: ", key, call. = FALSE)
@@ -97,6 +98,8 @@ fao_report_cite <- function(x, keys) {
     n <- sort(match(keys, state$cited))
     label <- if (length(n) > 2 && all(diff(n) == 1)) paste0(n[1], "-", n[length(n)]) else paste(n, collapse = ",")
     list(list(text = paste0("[", label, "]"), sup = TRUE))
+  } else if (narrative) {
+    list(list(text = paste0("(", state$references[[keys]]$year, state$suffix[[keys]], ")")))
   } else {
     parts <- vapply(keys, function(k) {
       paste0(fao_ref_short(state$references[[k]]$author, state$citation), ", ",
@@ -104,6 +107,16 @@ fao_report_cite <- function(x, keys) {
     }, character(1))
     list(list(text = paste0("(", paste(sort(parts), collapse = "; "), ")")))
   }
+}
+
+# Whether the text before an author-date citation of one reference ends with its authors
+# ("Following Caddy {cite:caddy1993}"), so that only the year is added in brackets
+fao_report_narrative <- function(state, keys, before) {
+  if (state$citation == "numeric" || length(keys) != 1 || is.null(state$references[[keys]])) return(FALSE)
+  author <- state$references[[keys]]$author
+  before <- sub("\\s+$", "", before)
+  names <- c(fao_ref_short(author, "apa"), fao_ref_short(author, "fao"))
+  any(endsWith(before, names))
 }
 
 # Splits marked text into runs: citations, *italics*, ^superscripts^ and ~subscripts~
@@ -123,7 +136,10 @@ fao_report_runs <- function(x, text, numbered = FALSE, spacing = TRUE) {
       mark <- substr(text, start, end)
       inner <- substr(mark, 2, nchar(mark) - 1)
       runs <- c(runs, switch(substr(mark, 1, 1),
-        "{" = fao_report_cite(x, trimws(strsplit(sub("^cite:", "", inner), ",")[[1]])),
+        "{" = {
+          keys <- trimws(strsplit(sub("^cite:", "", inner), ",")[[1]])
+          fao_report_cite(x, keys, narrative = fao_report_narrative(state, keys, substr(text, pos, start - 1)))
+        },
         "*" = list(list(text = inner, italic = TRUE)),
         "^" = list(list(text = inner, sup = TRUE)),
         "~" = list(list(text = inner, sub = TRUE))

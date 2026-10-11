@@ -7,9 +7,10 @@
 #'
 #' @param area_name The name of the FAO major fishing area.
 #' @param plot A logical indicating whether to generate and save plots. Default is TRUE.
-#' @param timeseries_analysis A logical value indicating whether to analysis timeseries.
-#' @param area_color1 The color to use for the area plot. Default is "grey80".
-#' @param area_color2 The color to use for the area plot. Default is "black".
+#' @param timeseries_analysis A logical value. If TRUE (default), the total catch chart shows the
+#'        periods between breakpoints in the mean catch (Bai-Perron test, `strucchange::breakpoints()`).
+#' @param area_color1 The fill colour of the total catch chart. Default is "grey80".
+#' @param area_color2 The outline colour of the total catch chart. Default is "black".
 #' @param area_alpha The alpha transparency for the area plot. Default is 0.7.
 #' @param line_color The color to use for line plots. Default is "black".
 #' @param line_alpha The alpha transparency for line plots. Default is 0.8.
@@ -18,19 +19,19 @@
 #' @param hline_alpha The alpha transparency of the horizontal line in the percentage plot. Default is 0.7.
 #' @param hline_linewidth Line width for the horizontal line. Default is 1.5.
 #' @param line_linewidth Line width for the line geom. Default is 1.5.
-#' @param axis_text_face The font face of the axis text. Default is "plain".
-#' @param axis_title_face The font face of the axis title. Default is "bold".
-#' @param strip_text_face The font face of the strip text. Default is "bold".
-#' @param axis_text_size The size of the axis text. Default is 10.
-#' @param axis_title_size The size of the axis title text. Default is 12.
-#' @param strip_text_size The size of the strip text. Default is 12.
+#' @param axis_text_face The font face of the axis text of the total catch chart. Default is "plain".
+#' @param axis_title_face The font face of the axis titles of the charts and the map. Default is "bold".
+#' @param strip_text_face Not used (the charts have no panels). Default is "bold".
+#' @param axis_text_size The size of the axis text of the percentage chart. Default is 10.
+#' @param axis_title_size The size of the axis titles of the total catch and percentage charts. Default is 12.
+#' @param strip_text_size Not used (the charts have no panels). Default is 12.
 #' @param polygon_color The color of the borders of the polygons in the map plot. Default is "grey90".
 #' @param fill_scale The colour palette of the map. Default is NULL, which uses `map_palette` of
 #'        `fao_settings()` ("deep-orange" unless changed); see `?fao_settings` for the choices.
 #' @param axis_title_size_map The size of the axis title text in the map plot. Default is 14.
 #' @param axis_text_size_map The size of the axis text in the map plot. Default is 12.
 #' @param legend_text_size_map The size of the legend text in the map plot. Default is 12.
-#' @param ZH A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the same as `lang = "zh"`.
+#' @param ZH A logical value. If TRUE, chart text and names are in Chinese. Default is FALSE. `ZH = TRUE` is the same as `lang = "zh"`.
 #' @param lang The language of the chart text: "en" (English), "zh" (Chinese) or "both"
 #'        (Chinese and English). Default is NULL, which uses "zh" if `ZH = TRUE`, and otherwise the language
 #'        set with `fao_settings()` ("en" unless changed).
@@ -40,7 +41,8 @@
 #' @param data_version The FAO data release to use: "latest" (default) uses the newest of the
 #'        releases downloaded with `download_fao_data()` and the data bundled with the package;
 #'        "bundled" uses the data bundled with the package; or a release such as "2026.1.0".
-#' @return A data frame containing data for the specified fishing area.
+#' @return A list with `area_data` (the FAO data of the area), `coefs_data` (start year, end year
+#'         and mean catch of each period between breakpoints) and `act_world_map` (the map data).
 #' @family fishing area analyses
 #' @export
 #' @examples
@@ -86,10 +88,10 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
       bp <- breakpoints(ts_data1 ~ 1)
       coefs <- coef(bp)
 
-      bps <- c(start_year1, breakpoints(bp)$breakpoints + start_year1, end_year1)
-
-      start_years <- bps[-length(bps)]
-      end_years <- bps[-1] - 1
+      periods <- fao_bp_periods(breakpoints(bp)$breakpoints, data$Year)
+      start_years <- periods$start_year
+      end_years <- periods$end_year
+      bps <- c(start_years, max(data$Year))
 
       if(length(coefs) == length(start_years)) {
         coefs_data <- data.frame(
@@ -147,8 +149,9 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
           text = ggplot2::element_text(family = fao_font()),
           panel.grid.minor.x = ggplot2::element_blank(),
 
-          axis.title.x = ggplot2::element_text(size=axis_text_size,face = axis_text_face),
-          axis.title.y = ggplot2::element_text(size=axis_text_size,face = axis_text_face),
+          axis.text = ggplot2::element_text(face = axis_text_face),
+          axis.title.x = ggplot2::element_text(size=axis_title_size,face = axis_title_face),
+          axis.title.y = ggplot2::element_text(size=axis_title_size,face = axis_title_face),
           legend.position = "bottom") +
         ggplot2::labs(x=xlab, y=ylab)
       fao_save_plot(p1, "fishing_trend", width = 12, height = 6, pptx = pptx)
@@ -169,8 +172,9 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
         text = ggplot2::element_text(family = fao_font()),
         panel.grid.minor.x = ggplot2::element_blank(),
 
-        axis.title.x = ggplot2::element_text(size=axis_text_size,face = axis_text_face),
-        axis.title.y = ggplot2::element_text(size=axis_text_size,face = axis_text_face),
+        axis.text = ggplot2::element_text(face = axis_text_face),
+          axis.title.x = ggplot2::element_text(size=axis_title_size,face = axis_title_face),
+        axis.title.y = ggplot2::element_text(size=axis_title_size,face = axis_title_face),
         legend.position = "bottom") +
       ggplot2::labs(x=xlab, y=ylab)
 

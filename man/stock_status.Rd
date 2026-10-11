@@ -62,11 +62,11 @@ share of catch in each status over time.
 A "stock" is the yearly catch of one FAO species item, summed over all countries in the data
 (usually one fishing area). Each year of a stock is classified as:
 \itemize{
-\item Developing: before the year of peak catch, with catch at most 50\\% of the peak;
-\item Exploited: catch above 50\\% of the peak;
-\item Over-exploited: after the peak, catch between 10\\% and 50\\% of the peak;
-\item Collapsed: after the peak, catch below 10\\% of the peak;
-\item Rebuilding: after the peak and after a collapse, catch back between 10\\% and 50\\% of the peak.
+\item Developing: before the year of peak catch, with catch at most 50\% of the peak;
+\item Exploited: catch above 50\% of the peak;
+\item Over-exploited: after the peak, catch between 10\% and 50\% of the peak;
+\item Collapsed: after the peak, catch below 10\% of the peak;
+\item Rebuilding: after the peak and after a collapse, catch back between 10\% and 50\% of the peak.
 }
 Only series that meet the inclusion criteria are classified: items identified to species,
 genus or family (pooled groups such as "Marine fishes nei" are excluded), at least \code{min_years}

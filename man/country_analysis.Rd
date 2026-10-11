@@ -33,11 +33,10 @@ country_analysis(
 \item{time_analysis_text_displacement}{The number of years after the first year of data at which
 the percentage labels are placed in the faceted time series plot. Default is 10.}
 
-\item{h_value}{The minimum segment size, which must be greater than the
-number of regressors. For the model \code{ts_data ~ 1}, this means \code{h_value}
-should be greater than 1. The default value is 0.15.}
+\item{h_value}{The minimum segment size passed to \code{strucchange::breakpoints()}: a fraction of
+the series length (default 0.15) or a number of years.}
 
-\item{ZH}{A logical value to Chinese. Default is "FALSE". \code{ZH = TRUE} is the same as \code{lang = "zh"}.}
+\item{ZH}{A logical value. If TRUE, chart text and names are in Chinese. Default is FALSE. \code{ZH = TRUE} is the same as \code{lang = "zh"}.}
 
 \item{fill_scale}{The colour palette of the map. Default is NULL, which uses \code{map_palette} of
 \code{fao_settings()} ("deep-orange" unless changed); see \code{?fao_settings} for the choices.}
@@ -53,6 +52,13 @@ releases downloaded with \code{download_fao_data()} and the data bundled with th
 \item{pptx}{A logical value. Charts are always saved as PNG in \verb{figures/png/}; if TRUE they are
 also saved as editable PowerPoint files in \verb{figures/pptx/}. Default is FALSE, which can be
 changed for all functions with \code{fao_settings(pptx = TRUE)}.}
+}
+\value{
+A list with \code{country_species_ranked} (yearly catch of the ranked species),
+\code{country_species_ranked_coefs_data} (periods between breakpoints of each species),
+\code{table} (catch by species and FAO area), \code{country_species_area_total} (total catch of
+each species in each area) and \code{country_yearly_area_production} (yearly catch in each
+area). Charts and tables are saved if \code{plot} and \code{table} are TRUE.
 }
 \description{
 This function takes a country name, analyzes the catch of that country in all

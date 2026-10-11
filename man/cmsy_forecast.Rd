@@ -22,9 +22,9 @@ cmsy_forecast(
 )
 }
 \arguments{
-\item{result}{The result of [cmsy_run()].}
+\item{result}{The result of \code{\link{cmsy_run}()}.}
 
-\item{stocks}{Optional stocks to draw: `Stock` identifiers or species, by English or Chinese
+\item{stocks}{Optional stocks to project: \code{Stock} identifiers or species, by English or Chinese
 FAO name, scientific name or FAO 3-alpha code. Default is NULL, all stocks that ran.}
 
 \item{years}{Number of years to project. Default is 10.}
@@ -52,20 +52,20 @@ Default is TRUE.}
 \item{annotations}{The text added to the axis titles and labels: FALSE (default) none, TRUE
 all, or any of "title", "subtitle", "caption", "legend" and "labels" (text inside the
 chart). The default can be changed for the session with
-`options(faofishingreport.cmsy_annotations = TRUE)`.}
+\code{options(faofishingreport.cmsy_annotations = TRUE)}.}
 
-\item{pptx}{A logical value. If TRUE, charts are also saved as editable PowerPoint files in
-\verb{figures/pptx/summary/}. Default is FALSE, which can be changed for all functions with
-\code{fao_settings(pptx = TRUE)}.}
+\item{pptx}{A logical value. If TRUE, the charts are also saved as editable PowerPoint files in
+figures/pptx/cmsy/<stock>/ and figures/pptx/cmsy/summary/. Default is FALSE, which can be
+changed for all functions with \code{fao_settings(pptx = TRUE)}.}
 
 \item{silent}{A logical value. If FALSE (default), a progress bar shows how many stocks have
-been drawn. If TRUE, nothing is printed. The default can be changed for the session
-with `fao_settings(silent = TRUE)`.}
+been projected. If TRUE, nothing is printed. The default can be changed for the session
+with \code{fao_settings(silent = TRUE)}.}
 }
 \value{
 Invisibly, a list with \code{projection} (by stock, scenario and year: median B/Bmsy,
-F/Fmsy and catch with 95\\% limits, and the probability that B is at least Bmsy) and
-\code{share} (by scenario and year: share of stocks at or above Bmsy, with 95\\% limits).
+F/Fmsy and catch with 95\% limits, and the probability that B is at least Bmsy) and
+\code{share} (by scenario and year: share of stocks at or above Bmsy, with 95\% limits).
 }
 \description{
 This function projects each stock forward from the results of \code{\link[=cmsy_run]{cmsy_run()}} under fishing
