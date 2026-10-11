@@ -1,0 +1,204 @@
+---
+title: "💾 FAO 数据：下载与自定义"
+description: >
+  数据从哪里来，如何检查和下载 FAO 的新版本，数据格式是什么样的，
+  以及如何分析自己的数据子集。
+---
+
+```{r setup, include = FALSE}
+source("../_setup.R")
+```
+
+```{r}
+fao_settings(lang = "zh")   # 本文所有图表使用中文
+```
+
+## 📚 数据简介
+
+faofishingreport 使用的是 **FAO 全球捕捞产量**（Global Capture Production）统计：1950 年以来每个国家按物种条目和 FAO 主要渔区统计的年产量。数据只包括捕捞渔业（不含水产养殖），单位为活重吨。
+
+```{r}
+data <- load_fao_data()
+c(rows = nrow(data), first_year = min(data$Year), last_year = max(data$Year),
+  countries = length(unique(data$Country..Name.)),
+  species = length(unique(data$ASFIS.species..Name.)),
+  areas = length(unique(data$FAO.major.fishing.area..Name.)))
+```
+
+FAO 大约每年发布一次新版本（通常在 3 月），每次增加一年的数据，并修订往年的数据。本包自带一个较新的版本，也可以直接从 [FAO 统计服务器](https://www.fao.org/fishery/static/Data/)下载更新的版本。
+
+## 🔎 检查是否有新版本
+
+`check_fao_update()` 列出 FAO 服务器上的所有版本，并把其中最新的版本与包自带数据以及你已下载的数据进行比较：
+
+```{r, eval = FALSE}
+check_fao_update()
+#> FAO Global Capture Production
+#>   Latest online release: 2026.1.0 (published 2026-03-30)
+#>   Bundled with package:  2026.1.0
+#>   Downloaded locally:    none
+#>   Your data is up to date.
+```
+
+它还会以不可见（invisible）的方式返回一个列表，其中包括各数据的版本号和所有版本的一览表：
+
+```{r, eval = FALSE}
+releases <- check_fao_update(quiet = TRUE)
+releases$update_available
+#> [1] FALSE
+tail(releases$releases, 3)
+#>    version       date size                                                          url
+#> 9 2024.1.0 2024-04-04 4.5M https://www.fao.org/fishery/static/Data/Capture_2024.1.0.zip
+#> 10 2025.1.0 2025-09-04 5.0M https://www.fao.org/fishery/static/Data/Capture_2025.1.0.zip
+#> 11 2026.1.0 2026-03-30 5.5M https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip
+```
+
+## ⬇️ 下载某个版本
+
+`download_fao_data()` 下载一个版本（约 5 MB），转换成本包的数据格式并保存到你的电脑上。之后无需重复下载：
+再次调用时会直接读取已保存的文件。
+
+```{r, eval = FALSE}
+download_fao_data()                       # 最新版本
+download_fao_data(version = "2023.1.1")   # 较早的版本，例如用于重现以前的报告
+download_fao_data(overwrite = TRUE)       # 重新下载
+```
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `version` | 要下载的版本，如 `"2026.1.0"`，或 `"latest"` | `"latest"` |
+| `data_dir` | 保存该版本数据的文件夹 | `fao_data_dir()` |
+| `overwrite` | 即使该版本已经保存过，也重新下载 | `FALSE` |
+| `quiet` | 不显示进度信息 | `FALSE` |
+
+每个版本保存为三个文件：
+
+| 文件 | 内容 |
+|---|---|
+| `Global_Production_long_<version>.rds` | 产量数据 |
+| `fao_names_<version>.rds` | 国家、物种和渔区的官方中文名称 |
+| `fao_groups_<version>.rds` | 物种类群（ISSCAAP、分类阶元）、国家分组和渔区分组 |
+
+### 📂 选择数据文件夹
+
+默认情况下，这些文件保存在 R 的用户数据文件夹中：
+
+```{r, eval = FALSE}
+fao_data_dir()
+#> [1] "C:/Users/<you>/AppData/Local/R/data/R/faofishingreport"            # Windows
+#> [1] "~/Library/Application Support/org.R-project.R/R/faofishingreport"  # macOS
+```
+
+如果想把数据放在别处，例如团队共享的文件夹，只需设置一次 `data_dir`。此后下载的数据都会保存到那里，所有函数也都从那里读取数据：
+
+```{r, eval = FALSE}
+fao_settings(data_dir = "D:/shared/fao_data")
+download_fao_data()
+```
+
+## 🧭 使用哪个版本
+
+所有函数都使用可用的**最新**数据：即已下载的最新版本；如果包自带数据更新，则使用包自带数据。
+`fishing_area_data()` 和 `country_analysis()` 可以用 `data_version` 指定使用哪个版本：
+
+```{r, eval = FALSE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")                            # 最新数据
+FAO34 <- fishing_area_data("Atlantic, Eastern Central", data_version = "bundled")  # 包自带数据
+FAO34 <- fishing_area_data("Atlantic, Eastern Central", data_version = "2023.1.1") # 已下载的某个版本
+```
+
+`load_fao_data()` 返回完整的数据集，`version` 的取值方式相同：
+
+```{r, eval = FALSE}
+data <- load_fao_data()                  # 最新数据
+data <- load_fao_data("2023.1.1")        # 已下载的某个版本
+```
+
+## 📋 数据格式
+
+每个版本都会转换成相同的八列，因此所有分析都适用于任何版本：
+
+```{r}
+show_table(data, n = 6)
+```
+
+| 列 | 内容 |
+|---|---|
+| `Country..Name.` | 国家（FAO 简称，如 "Korea, Republic of"） |
+| `ASFIS.species..Name.` | 物种条目（ASFIS 英文名；未鉴定到种的条目以 "nei" 结尾） |
+| `FAO.major.fishing.area..Name.` | FAO 主要渔区 |
+| `Unit..Name.`, `Unit` | 均为活重吨 |
+| `Year` | 年份 |
+| `Production` | 产量（吨） |
+| `Production.Type` | `actual`（官方数据）、`estimate`（由该国或 FAO 估算）、`neligible`（低于 0.5 吨）等 |
+
+## ✂️ 分析自己的数据子集
+
+各分析函数的输入都是包含上述各列的数据框，因此任何数据子集都可以拿来分析。
+`fishing_area_data()` 是提取单个渔区最简便的方法，但你也可以自己构建子集：
+
+```{r}
+# 多个渔区合并的产量，例如整个大西洋
+atlantic <- subset(data, grepl("^Atlantic", FAO.major.fishing.area..Name.))
+unique(atlantic$FAO.major.fishing.area..Name.)
+```
+
+```{r, figures = TRUE}
+# 2000 年以来整个大西洋的物种类群结构
+species_group_composition(subset(atlantic, Year >= 2000), label = "Atlantic since 2000")
+```
+
+`label` 参数用于命名输出文件；默认使用渔区名称。更多示例：
+
+```{r, eval = FALSE}
+# 某个国家在所有渔区的产量
+china <- subset(data, Country..Name. == "China")
+peak_trend(china, by = "area", label = "China")
+
+# 某个物种在所有渔区的产量
+skipjack <- subset(data, ASFIS.species..Name. == "Skipjack tuna")
+peak_trend(skipjack, by = "area", label = "Skipjack tuna")
+
+# 只取 34 渔区最近 30 年的数据
+FAO34_recent <- subset(FAO34$area_data, Year >= 1995)
+fishing_area_species(FAO34_recent)
+```
+
+查找国家、物种和渔区的准确名称：
+
+```{r}
+head(sort(unique(data$Country..Name.)), 10)
+grep("tuna", unique(data$ASFIS.species..Name.), value = TRUE)
+```
+
+## 🌐 中文名称
+
+中文名称来自 FAO 随每个版本发布的代码表和 FAO ASFIS 物种名录；没有官方中文名的条目由本包自带的对照表补充，仍然没有的则保留英文。用 `fao_translate()` 可以查看这些名称：
+
+```{r}
+fao_translate(c("Morocco", "Spain", "Korea, Republic of"), "country", "zh")
+fao_translate(c("European pilchard(=Sardine)", "Skipjack tuna"), "species", "both")
+fao_translate("Atlantic, Eastern Central", "area", "zh")
+```
+
+FAO 没有为 ISSCAAP 物种类群、大类和收入分组提供中文名称；本包的译名保存在
+`inst/extdata/group_names_zh.csv`，所有图表标签保存在 `inst/extdata/chart_labels.csv`。
+如需修改措辞，可在包的源代码中编辑这些文件，然后重新安装。
+
+## ⚠️ 数据注意事项
+
+- **近几年的数据常为估算值。** 某个国家尚未上报时，FAO 会估算其产量。在 34 渔区，2024 年约三分之一的产量
+  是估算值；这些数值通常会在下一个版本中修订。`data_quality()` 可以显示任一渔区的这一情况。
+- **未分类（nei）类别**（"not elsewhere included"，即"未另列明"）是未鉴定到种的产量，例如
+  "Marine fishes nei"。在某些渔区，这部分产量占比很大。
+- **已不存在的国家**，如苏联（数据截至 1991 年），作为单独的国家列出。
+- **不同版本之间存在差异**：FAO 会修订往年数据，因此用不同版本得到的结果可能略有不同。请在报告中注明所用的版本
+  （下载数据的版本可以用 `attr(data, "fao_version")` 查看）。
+
+## 🔄 维护者须知：更新包自带数据
+
+包自带数据、中文名称和分组可以用以下命令根据 FAO 最新版本重新生成：
+
+```bash
+Rscript data-raw/update_bundled_data.R
+```

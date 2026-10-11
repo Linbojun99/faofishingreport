@@ -1,0 +1,125 @@
+---
+title: "🐟 物种与国家分析"
+description: >
+  species_country()、country_species() 和 country_analysis()：某个物种由哪些国家捕捞，某个国家在一个渔区捕什么，以及某个国家在全部 FAO 渔区的产量。
+---
+
+```{r setup, include = FALSE}
+source("../_setup.R")
+FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+```
+
+```{r}
+fao_settings(lang = "zh")   # 本文所有图表使用中文
+```
+
+这些函数以 `fishing_area_data()` 返回的渔区数据（这里是 34 渔区）为输入，聚焦于单个物种或单个国家。`country_analysis()` 则分析一个国家在全部 FAO 渔区的捕捞情况。
+
+```{r, eval = FALSE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+```
+
+## 1️⃣ `species_country()`：某个物种由哪些国家捕捞
+
+物种名必须与 FAO 物种名称完全一致；不妨先看看该渔区的主要物种：
+
+```{r}
+top <- aggregate(Production ~ ASFIS.species..Name., data = FAO34$area_data, FUN = sum)
+head(top[order(-top$Production), "ASFIS.species..Name."], 10)
+```
+
+```{r, figures = TRUE}
+sardine <- species_country(FAO34$area_data, species_name = "European pilchard(=Sardine)")
+```
+
+| 文件 | 图表 |
+|---|---|
+| `<species>_country_map.png` | 世界地图：各国历年累计的该物种产量 |
+| `species/<species>_country_ranked_total.png` | 前十个主要国家的总产量及占比 |
+| `species/<species>_country_ranked.png` | 这些国家的产量随时间的变化 |
+| `species/<species>_country_ranked_wrap.png` | 每个国家一个分面，标出占比、线性趋势和突变点 |
+| `species/<species>_country_pie_selected.png` | 主要国家在各年代以及近几年逐年的占比 |
+
+表格 `tables/<species>_country_ranked_table.csv` 列出每个国家各年代的平均产量、最近五年的产量，以及最后一年的占比：
+
+```{r}
+table <- read.csv("tables/European_pilchard__Sardine__country_ranked_table.csv",
+                  fileEncoding = "UTF-8-BOM", check.names = FALSE)
+show_table(table, n = 10, digits = 0)
+```
+
+### 参数
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `species_name` | FAO 物种名 | |
+| `rank_range` | 显示的国家排名范围 | `c(1, 10)` |
+| `timeseries_analysis` | 在分面图中做突变点分析（否则绘制平滑曲线） | `TRUE` |
+| `h_value` | 突变点分析的最短时段长度（比例或年数） | `0.15` |
+| `polygon_color`, `fill_scale` | 地图边界颜色和色板 | `"grey90"`、`fao_settings()` 的地图色板 |
+| `axis_*`, `strip_*`, `legend_text_size_map` | 文字大小和字体样式 | |
+| `table`, `plot`, `lang`, `pptx` | 输出内容和语言 | |
+
+有些国家的金枪鱼产量序列较短；把 `h_value` 设大一些，突变点会更清晰：
+
+```{r, figures = "wrap"}
+species_country(FAO34$area_data, species_name = "Skipjack tuna", h_value = 5, lang = "zh")
+```
+
+## 2️⃣ `country_species()`：某个国家在渔区内捕什么
+
+```{r, figures = TRUE}
+morocco <- country_species(FAO34$area_data, country_name = "Morocco")
+```
+
+| 文件 | 图表 |
+|---|---|
+| `country/<country>_species_ranked_total.png` | 该国前十个主要物种的总产量及占比 |
+| `country/<country>_species_ranked.png` | 这些物种的产量随时间的变化 |
+| `country/<country>_species_ranked_wrap.png` | 每个物种一个分面，标出占比、趋势和突变点 |
+| `country/<country>_species_pie_selected.png` | 各物种在各年代以及近几年逐年的占比 |
+
+`time_analysis_text_displacement` 用来移动分面图中占比标签的位置（以首次出现产量后的年数计），当标签与曲线重叠时很有用：
+
+```{r, figures = "wrap"}
+country_species(FAO34$area_data, country_name = "Spain", h_value = 5,
+                time_analysis_text_displacement = 6, lang = "both")
+```
+
+## 3️⃣ `country_analysis()`：某个国家在全部 FAO 渔区的捕捞
+
+`country_analysis()` 使用一个国家在**全部** FAO 渔区的产量，因此只需提供国家名：
+
+```{r, figures = TRUE}
+morocco_global <- country_analysis(country_name = "Morocco")
+```
+
+除了物种相关的图表（与 `country_species()` 相同，文件名为 `<country>analysis_...`），它还会保存：
+
+| 文件 | 图表 |
+|---|---|
+| `country/<country>fishing_area_map.png` | 该国在各 FAO 渔区的总产量；该国本身以红色标出 |
+| `country/<country>analysis_species_by_area.png` | 主要物种的产量，按渔区拆分 |
+| `country/<country>analysis_area_total_production.png` | 各渔区的总产量及占比 |
+| `country/<country>yearly_area_production.png` | 各渔区产量随时间的变化 |
+| `country/<country>yearly_area_production_wrap.png` | 每个渔区一个分面 |
+
+函数返回绘图所用的数据：
+
+```{r}
+names(morocco_global)
+show_table(morocco_global$country_species_area_total, n = 8, digits = 1)
+```
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `country_name` | FAO 国家名 | |
+| `rank_range` | 显示的物种排名范围 | `c(1, 10)` |
+| `timeseries_analysis`, `h_value`, `time_analysis_text_displacement` | 同上 | |
+| `fill_scale` | 地图色板 | `fao_settings()` 的地图色板 |
+| `data_version` | FAO 数据版本 | `"latest"` |
+| `table`, `plot`, `lang`, `pptx` | 输出内容和语言 | |
+
+::: callout-tip
+国家名采用 FAO 的名称，例如 `"Korea, Republic of"`、`"Russian Federation"`、`"Taiwan Province of China"`。可以这样查找：`grep("Korea", unique(load_fao_data()$Country..Name.), value = TRUE)`。
+:::

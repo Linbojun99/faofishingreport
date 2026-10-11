@@ -6,3 +6,5 @@
 .DS_Store
 .Rapp.history
 faofishingreport_*.tar.gz
+docs/
+.claude/launch.json

@@ -97,7 +97,7 @@ releases downloaded with `download_fao_data()` and the data bundled with the pac
 
 \item{pptx}{A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are
 also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
-changed for all functions with `options(faofishingreport.pptx = TRUE)`.}
+changed for all functions with `fao_settings(pptx = TRUE)`.}
 }
 \value{
 A data frame containing data for the specified fishing area.

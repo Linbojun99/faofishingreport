@@ -10,5 +10,13 @@ fao_data_dir()
 A character string with the directory path.
 }
 \description{
-Returns the default directory where `download_fao_data()` saves releases.
+Returns the directory where `download_fao_data()` saves releases and where all functions
+look for them: the folder set with `fao_settings(data_dir = ...)`, or otherwise the user data
+folder of R (`tools::R_user_dir("faofishingreport", "data")`).
+}
+\examples{
+\dontrun{
+fao_data_dir()
+fao_settings(data_dir = "D:/shared/fao_data")   # e.g. a folder shared by a team
+}
 }

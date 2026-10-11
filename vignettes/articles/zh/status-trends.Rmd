@@ -1,0 +1,149 @@
+---
+title: "📈 类群结构、资源状态与趋势"
+description: >
+  species_group_composition()、stock_status()、peak_trend()、area_overview() 和 regime_shift()：捕捞了什么，各种群如何发展，以及何时发生了变化。
+---
+
+```{r setup, include = FALSE}
+source("../_setup.R")
+FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+```
+
+```{r}
+fao_settings(lang = "zh")   # 本文所有图表使用中文
+```
+
+汇总分析适用于任何产量数据：可以是 `fishing_area_data()` 得到的某个渔区，也可以是 `load_fao_data()` 的任意子集（见 [💾 FAO 数据](data.html)）。图表保存在 `figures/png/summary/`，表格保存在 `tables/`，文件名以渔区名称（或 `label` 的值）开头。
+
+```{r, eval = FALSE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+```
+
+## 🧺 物种类群结构
+
+`species_group_composition()` 按 **ISSCAAP 物种类群**（FAO 将物种划分为约 50 个类群的分类体系，如 "Herrings, sardines, anchovies"）或按**大类**（鱼类、甲壳类、软体动物……）汇总产量。
+
+```{r, figures = TRUE}
+groups <- species_group_composition(FAO34$area_data)
+```
+
+第一幅图显示各类群的产量，第二幅图显示各类群在每年总产量中的占比。产量最大的 `top_n` 个类群单独显示（默认 8 个），其余合并为一类：
+
+```{r}
+show_table(groups$table, digits = 0)
+```
+
+```{r, figures = TRUE}
+species_group_composition(FAO34$area_data, group = "major", lang = "zh")
+```
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `group` | `"isscaap"` 或 `"major"` | `"isscaap"` |
+| `top_n` | 单独显示的类群数 | `8` |
+
+## 🚦 资源状态图
+
+`stock_status()` 根据每个物种的产量相对于其序列**峰值产量**的比例，逐年判定该产量序列的资源开发状态（Kleisner et al. 2013）：
+
+| 状态 | 判定规则 |
+|---|---|
+| 开发中 (Developing) | 峰值年之前，产量不超过峰值的 50% |
+| 充分开发 (Exploited) | 产量高于峰值的 50% |
+| 过度开发 (Over-exploited) | 峰值年之后，产量在峰值的 10% 至 50% 之间 |
+| 崩溃 (Collapsed) | 峰值年之后，产量低于峰值的 10% |
+| 恢复中 (Rebuilding) | 崩溃之后，产量回升至峰值的 10% 至 50% 之间 |
+
+```{r, figures = TRUE}
+status <- stock_status(FAO34$area_data)
+```
+
+第一幅图是处于各状态的**种群**数量占比，第二幅图是各状态的**产量**占比。这里的“种群”指数据中的一个物种条目（所有国家合计）。只有符合纳入标准的序列才会参与分类：
+
+| 参数 | 标准 | 默认值 |
+|---|---|---|
+| `taxon_levels` | 鉴定到种、属或科的条目（"Marine fishes nei" 等合并类群不纳入） | `c("species", "genus", "family")` |
+| `min_years` | 从首次到最后一次有产量的年数 | `10` |
+| `min_consecutive` | 连续有产量的年数 | `5` |
+| `min_catch` | 总产量（吨） | `1000` |
+| `smooth` | 分类前先做 3 年滑动平均 | `FALSE` |
+
+种群表列出每个种群的峰值年份及其最后一年的状态：
+
+```{r}
+show_table(status$stocks, digits = 0)
+table(status$stocks$status_last_year)
+```
+
+```{r, figures = TRUE}
+# 平滑后的产量，更严格的纳入标准
+stock_status(FAO34$area_data, smooth = TRUE, min_catch = 10000, label = "FAO34 smoothed")
+```
+
+::: callout-note
+资源状态图只使用产量数据。产量下降也可能源于管理措施、市场或数据上报的变化，因此结果仅供参考，不能替代资源评估。
+:::
+
+## ⛰️ 峰值与趋势
+
+`peak_trend()` 针对总产量以及主要物种（或国家、渔区），找出**峰值产量**出现的年份和数值、最后一年产量相当于**峰值的百分比**，以及最近 `recent_years` 年的趋势：
+
+- **年均增长率**：这段时间首年到末年之间的年平均变化；
+- **趋势**：Mann-Kendall 趋势检验（年份与产量之间的 Kendall τ）；p < 0.05 时判定为 "increasing"（上升）或 "decreasing"（下降）。
+
+```{r, figures = TRUE}
+species_trend <- peak_trend(FAO34$area_data, by = "species", top_n = 10)
+```
+
+```{r}
+show_table(species_trend[, c("name", "peak_year", "pct_of_peak", "growth_pct_per_year", "kendall_tau", "p_value", "trend")])
+```
+
+```{r, figures = TRUE}
+peak_trend(FAO34$area_data, by = "country", top_n = 15, recent_years = 20, lang = "zh")
+```
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `by` | `"species"`、`"country"` 或 `"area"` | `"species"` |
+| `top_n` | 序列数（`Inf` 表示全部） | `10` |
+| `recent_years` | 用于计算趋势的年数 | `10` |
+
+## 🌍 全部 FAO 海洋渔区
+
+`area_overview()` 对比全部 FAO 海洋渔区：给出各渔区产量随时间的变化并标出峰值，以及各渔区的峰值与趋势图：
+
+```{r, figures = TRUE}
+overview <- area_overview()
+```
+
+```{r}
+show_table(overview[, c("name", "peak_year", "peak_tonnes", "last_year_tonnes", "pct_of_peak", "trend")], n = 20, digits = 0)
+```
+
+## 🔀 突变点同步性
+
+`regime_shift()` 对主要物种（默认 20 个）做突变点分析，并统计每一年有多少个物种的平均产量发生变化。许多物种在同一年发生变化，可能意味着整个生态系统发生了生态系统转变 (regime shift)，也可能源于管理或数据上报方式的改变。
+
+```{r, figures = TRUE}
+shifts <- regime_shift(FAO34$area_data, top_n = 20)
+```
+
+```{r}
+show_table(shifts$breakpoints[, c("species", "first_year", "n_breakpoints", "breakpoint_years")], n = 20)
+head(shifts$yearly[order(-shifts$yearly$n_species), ], 5)
+```
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `top_n` | 分析的主要物种数 | `20` |
+| `h_value` | 最短时段长度（比例或年数） | `0.15` |
+
+## 📖 参考文献
+
+Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global catch data for inferences
+on the world's marine fisheries. *Fish and Fisheries* 14: 293–311.
+[doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
+
+Zeileis, A., Kleiber, C., Krämer, W. and Hornik, K. (2003). Testing and dating of structural
+changes in practice. *Computational Statistics & Data Analysis* 44: 109–123.

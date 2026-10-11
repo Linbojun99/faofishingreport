@@ -34,6 +34,9 @@
 #'   \item{grid}{Whether charts have background grid lines (and maps graticules). Default is FALSE.}
 #'   \item{dpi}{Resolution of the PNG files. Default is 600.}
 #'   \item{pptx}{Whether charts are also saved as editable PowerPoint files. Default is FALSE.}
+#'   \item{data_dir}{Folder where `download_fao_data()` saves FAO releases and where all
+#'     functions look for them, e.g. a folder shared by a team. Default is NULL, the user data
+#'     folder of R; see `fao_data_dir()`.}
 #' }
 #' @param reset A logical value. If TRUE, all settings go back to their defaults first.
 #' @return Invisibly, a list of the current settings.
@@ -83,7 +86,7 @@ fao_settings <- function(..., reset = FALSE) {
   if (length(new) == 0 && !reset) {
     for (name in names(current)) {
       value <- current[[name]]
-      shown <- if (inherits(value, "theme")) "<ggplot2 theme>" else paste(format(value), collapse = ", ")
+      shown <- if (inherits(value, "theme")) "<ggplot2 theme>" else if (name == "data_dir") fao_data_dir() else paste(format(value), collapse = ", ")
       cat(sprintf("  %-15s %s\n", name, shown))
     }
   }
@@ -93,7 +96,7 @@ fao_settings <- function(..., reset = FALSE) {
 fao_defaults <- list(
   lang = "en", theme = "bw", base_size = 12, palette = "npg", map_palette = "deep-orange",
   map_center = 0, map_projection = "longlat", map_land = "grey90", map_ocean = NA,
-  grid = FALSE, dpi = 600, pptx = FALSE
+  grid = FALSE, dpi = 600, pptx = FALSE, data_dir = NULL
 )
 
 fao_setting <- function(name) {

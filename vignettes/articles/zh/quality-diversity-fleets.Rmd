@@ -1,0 +1,102 @@
+---
+title: "🔍 数据质量、多样性与船队"
+description: >
+  data_quality()、diversity_concentration()、country_group_summary() 和 coastal_distant()：数据有多可靠，产量的多样性和集中程度如何，以及是谁在捕捞。
+---
+
+```{r setup, include = FALSE}
+source("../_setup.R")
+FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+```
+
+```{r}
+fao_settings(lang = "zh")   # 本文所有图表使用中文
+```
+
+```{r, eval = FALSE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+```
+
+## 🧪 数据质量
+
+`data_quality()` 展示统计数据在两个方面随时间的变化：
+
+- 根据 FAO 的状态标记，**官方上报**的产量占比，以及**估算**（由国家估算或由 FAO 插补）的产量占比；
+- 根据 FAO 的分类编码，**鉴定到种**、属、科，或只归到 "Marine fishes nei" 等更高级类群的产量占比。
+
+```{r, figures = TRUE}
+quality <- data_quality(FAO34$area_data)
+```
+
+最近几年估算占比偏高，通常是因为 FAO 还没有收到各国的上报数据；这些数值往往会在下一版数据中修订。国家表针对最近五年产量最大的几个国家，列出其产量中有多少是估算的、有多少鉴定到种：
+
+```{r}
+show_table(quality$countries, digits = 1)
+```
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `top_n` | 国家表中的国家数 | `10` |
+
+## 🌈 多样性与集中度
+
+`diversity_concentration()` 逐年计算以下指标：
+
+| 指标 | 计算方法 |
+|---|---|
+| 上报的物种数 | 有产量且鉴定到种的条目数 |
+| 国家数 | 有产量的国家数 |
+| 香农多样性指数 | $H = -\sum_i p_i \ln p_i$，其中 $p_i$ 为物种条目 $i$ 在当年产量中的占比 |
+| 物种 / 国家的 HHI 集中度 | $\text{HHI} = \sum_i (100\,p_i)^2$，取值 0 至 10 000 |
+| 前 N 名占比 | 产量最大的 `top_n` 个物种条目或国家所占的比例 |
+
+```{r, figures = TRUE}
+diversity <- diversity_concentration(FAO34$area_data, top_n = 5)
+```
+
+```{r}
+show_table(subset(diversity, Year %in% c(1970, 1990, 2010, max(Year))), digits = 2)
+```
+
+**指标解读**：香农多样性指数越高，说明物种条目越多、各条目的产量越均匀；有 $S$ 个条目时，其最大值为 $\ln S$。HHI 低于 1 500 通常视为不集中，1 500 至 2 500 为中度集中，高于 2 500 为高度集中。例如，三个物种的占比分别为 50%、30% 和 20%，则 $H = 1.03$，$\text{HHI} = 50^2 + 30^2 + 20^2 = 3\,800$。
+
+::: callout-note
+这些指标基于 FAO 的物种条目，其中包括未分类（nei）类群。当 FAO 把某个未分类（nei）类群拆分为具体物种时，即使海里什么都没有改变，香农多样性指数也会上升，HHI 集中度也会下降。国家拆分时国家指标同样会变化，例如 1991 年的苏联。
+:::
+
+## 🏳️ 国家分组
+
+`country_group_summary()` 依据 FAO 国家列表，按国家分组汇总产量：**世界银行收入分组**、**大洲**或**地区**。
+
+```{r, figures = TRUE}
+income <- country_group_summary(FAO34$area_data, group = "income")
+```
+
+```{r, figures = TRUE}
+country_group_summary(FAO34$area_data, group = "region", top_n = 6, lang = "zh")
+```
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `group` | `"income"`、`"continent"` 或 `"region"` | `"income"` |
+| `top_n` | 单独显示的分组数 | `8` |
+
+## 🚢 沿岸国与远洋捕捞国
+
+`coastal_distant()` 把产量分为与该渔区**接壤**的沿岸国和来自其他地区的**远洋**捕捞船队两部分，并列出主要的远洋捕捞国。
+
+若一个国家的陆地（包括海外领土）位于 FAO 渔区边界 20 km 以内，即视为该渔区的沿岸国。苏联等已不存在的国家采用其继承国的海岸线。例如在 34 渔区，西班牙和葡萄牙分别因加那利群岛和马德拉群岛而被算作沿岸国。
+
+```{r, figures = TRUE}
+fleets <- coastal_distant(FAO34$area_data)
+```
+
+```{r}
+show_table(fleets$table, digits = 0)
+```
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `top_n` | 单独显示的远洋捕捞国数量 | `8` |
+
+该分析只适用于海洋渔区；数据中的内陆渔区会被剔除，并给出提示信息。

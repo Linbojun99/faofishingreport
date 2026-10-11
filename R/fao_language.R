@@ -241,7 +241,8 @@ fao_save_plot <- function(plot, name, width, height, pptx = FALSE) {
   plot <- plot + ggplot2::theme(plot.margin = ggplot2::margin(5.5, 18, 5.5, 5.5))
   png_file <- file.path("figures", "png", paste0(name, ".png"))
   fao_ensure_dirs(dirname(png_file))
-  ggplot2::ggsave(filename = png_file, plot = plot, dpi = fao_setting("dpi"), width = width, height = height)
+  ggplot2::ggsave(filename = png_file, plot = plot, device = ragg::agg_png, dpi = fao_setting("dpi"),
+                  width = width, height = height)
   if (isTRUE(pptx)) {
     pptx_file <- file.path("figures", "pptx", paste0(name, ".pptx"))
     fao_ensure_dirs(dirname(pptx_file))

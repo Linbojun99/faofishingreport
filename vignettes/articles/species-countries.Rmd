@@ -1,0 +1,129 @@
+---
+title: "🐟 Species and countries"
+description: >
+  species_country(), country_species() and country_analysis(): who catches a species,
+  what a country catches in an area, and a country's catch in all FAO areas.
+---
+
+```{r setup, include = FALSE}
+source("_setup.R")
+FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+```
+
+These functions take the fishing area data of `fishing_area_data()` (here area 34) and look at
+one species or one country. `country_analysis()` looks at a country in all FAO areas.
+
+```{r, eval = FALSE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+```
+
+## 1️⃣ `species_country()`: who catches a species
+
+Names must match the FAO species names exactly; the main species of an area are a good start:
+
+```{r}
+top <- aggregate(Production ~ ASFIS.species..Name., data = FAO34$area_data, FUN = sum)
+head(top[order(-top$Production), "ASFIS.species..Name."], 10)
+```
+
+```{r, figures = TRUE}
+sardine <- species_country(FAO34$area_data, species_name = "European pilchard(=Sardine)")
+```
+
+| File | Chart |
+|---|---|
+| `<species>_country_map.png` | Catch of the species by country over all years, on a world map |
+| `species/<species>_country_ranked_total.png` | Total catch and share of the ten main countries |
+| `species/<species>_country_ranked.png` | Their catch over time |
+| `species/<species>_country_ranked_wrap.png` | One panel per country, with share, linear trend and breakpoints |
+| `species/<species>_country_pie_selected.png` | Shares of the main countries per decade and in each recent year |
+
+The table `tables/<species>_country_ranked_table.csv` has the average catch per decade, the catch
+in the last five years and the share of each country in the last year:
+
+```{r}
+table <- read.csv("tables/European_pilchard__Sardine__country_ranked_table.csv",
+                  fileEncoding = "UTF-8-BOM", check.names = FALSE)
+show_table(table, n = 10, digits = 0)
+```
+
+### Options
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `species_name` | FAO species name | |
+| `rank_range` | Ranks of the countries shown | `c(1, 10)` |
+| `timeseries_analysis` | Breakpoints in the panel chart (else a smooth curve) | `TRUE` |
+| `h_value` | Minimum period length for breakpoints (fraction or years) | `0.15` |
+| `polygon_color`, `fill_scale` | Map borders and palette | `"grey90"`, map palette of `fao_settings()` |
+| `axis_*`, `strip_*`, `legend_text_size_map` | Text sizes and faces | |
+| `table`, `plot`, `lang`, `pptx` | Outputs and language | |
+
+Tuna series are short in some countries; a larger `h_value` gives clearer breakpoints:
+
+```{r, figures = "wrap"}
+species_country(FAO34$area_data, species_name = "Skipjack tuna", h_value = 5, lang = "zh")
+```
+
+## 2️⃣ `country_species()`: what a country catches in the area
+
+```{r, figures = TRUE}
+morocco <- country_species(FAO34$area_data, country_name = "Morocco")
+```
+
+| File | Chart |
+|---|---|
+| `country/<country>_species_ranked_total.png` | Total catch and share of the country's ten main species |
+| `country/<country>_species_ranked.png` | Their catch over time |
+| `country/<country>_species_ranked_wrap.png` | One panel per species, with share, trend and breakpoints |
+| `country/<country>_species_pie_selected.png` | Species shares per decade and in each recent year |
+
+`time_analysis_text_displacement` moves the share labels in the panel chart (years after the first
+catch), useful when they overlap the lines:
+
+```{r, figures = "wrap"}
+country_species(FAO34$area_data, country_name = "Spain", h_value = 5,
+                time_analysis_text_displacement = 6, lang = "both")
+```
+
+## 3️⃣ `country_analysis()`: a country in all FAO areas
+
+`country_analysis()` uses the catch of a country in **all** FAO areas, so it takes the country name
+only:
+
+```{r, figures = TRUE}
+morocco_global <- country_analysis(country_name = "Morocco")
+```
+
+Besides the species charts (as in `country_species()`, file names `<country>analysis_...`), it
+saves:
+
+| File | Chart |
+|---|---|
+| `country/<country>fishing_area_map.png` | The country's total catch in each FAO area; the country in red |
+| `country/<country>analysis_species_by_area.png` | Catch of the main species, split by fishing area |
+| `country/<country>analysis_area_total_production.png` | Total catch and share by fishing area |
+| `country/<country>yearly_area_production.png` | Catch in each area over time |
+| `country/<country>yearly_area_production_wrap.png` | One panel per area |
+
+It returns the data behind the charts:
+
+```{r}
+names(morocco_global)
+show_table(morocco_global$country_species_area_total, n = 8, digits = 1)
+```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `country_name` | FAO country name | |
+| `rank_range` | Ranks of the species shown | `c(1, 10)` |
+| `timeseries_analysis`, `h_value`, `time_analysis_text_displacement` | As above | |
+| `fill_scale` | Map palette | map palette of `fao_settings()` |
+| `data_version` | FAO release | `"latest"` |
+| `table`, `plot`, `lang`, `pptx` | Outputs and language | |
+
+::: callout-tip
+Country names follow FAO: e.g. `"Korea, Republic of"`, `"Russian Federation"`,
+`"Taiwan Province of China"`. Find them with
+`grep("Korea", unique(load_fao_data()$Country..Name.), value = TRUE)`.
+:::

@@ -2,6 +2,9 @@
 
 ## New features
 
+* A package website (<https://linbojun99.github.io/faofishingreport/>) with a guide for every part of the package, illustrated with FAO area 34, in English with a Chinese version (switch with the button at the top right).
+* New logo.
+* `fao_settings(data_dir = ...)` keeps downloaded FAO data in a chosen folder, e.g. one shared by a team; `fao_data_dir()` returns it.
 * `fao_settings()` sets, for the session, the default language, chart theme, font size, category palette, map palette, map centre (longitudes -180 to 180 or 0 to 360), map projection (longitude-latitude, Robinson, Mollweide, Equal Earth, Winkel Tripel, Mercator, or any PROJ string or EPSG code), map colours, grid lines, PNG resolution and PowerPoint output.
 * Maps are drawn with sf: countries come from Natural Earth and are matched on ISO3 codes instead of a hand-made name list, FAO area boundaries are simplified for world maps, and maps centred on the Pacific join the parts that the data split at the dateline. Fishing area maps show land without country borders.
 * New summary analyses, each saving charts in `figures/png/summary/` and tables in `tables/`:
@@ -19,7 +22,7 @@
 * Chinese names of countries, species and fishing areas now come from the FAO official code lists and the ASFIS species list (`fao_translate()`), with the package's earlier tables filling the gaps.
 * The chart font is chosen for the operating system (SimSun on Windows, Songti SC on macOS, Noto Serif CJK SC on Linux) and can be changed with `fao_font()`. Previously "Songti SC" was hard-coded, so Chinese text did not display on Windows.
 * CSV tables are written as UTF-8 with a byte order mark, so Excel shows Chinese names correctly.
-* Charts are saved as PNG by default. Editable PowerPoint files are optional: add `pptx = TRUE` to a function, or set `options(faofishingreport.pptx = TRUE)` for all functions. Previously every chart was saved in both formats.
+* Charts are saved as PNG by default. Editable PowerPoint files are optional: add `pptx = TRUE` to a function, or set `fao_settings(pptx = TRUE)` for all functions. Previously every chart was saved in both formats.
 * `fishing_area_species()` now saves PNG charts too, in `figures/png/area/` (PowerPoint in `figures/pptx/area/`, previously `figures/`), like `fishing_area_country()`.
 * Charts have no background grid lines by default; `options(faofishingreport.grid = TRUE)` brings them back. Year axes are labelled up to the last year of the data.
 * The PowerPoint charts of `fishing_area_data()` have the same size as the PNG (12 x 6 inches) instead of the size of the current graphics window.
@@ -48,3 +51,4 @@
 * Functions no longer place `Global_Production_long`, `ASFIS_sp` or `name_mapping` in the global environment.
 * The package works without `library()` (e.g. `faofishingreport::country_analysis()`), and all required packages are declared, including `sf`, `maps` and `rnaturalearth`.
 * Help pages for every function, generated with roxygen2.
+* Unit tests (testthat), and GitHub Actions for R CMD check on Windows, macOS and Linux, test coverage and the website.

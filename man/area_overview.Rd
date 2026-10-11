@@ -26,7 +26,7 @@ area_overview(
 
 \item{pptx}{A logical value. If TRUE, charts are also saved as editable PowerPoint files in
 `figures/pptx/summary/`. Default is FALSE, which can be changed for all functions with
-`options(faofishingreport.pptx = TRUE)`.}
+`fao_settings(pptx = TRUE)`.}
 
 \item{data_version}{The FAO data release to use; see `fishing_area_data()`.}
 }
