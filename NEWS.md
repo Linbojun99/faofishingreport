@@ -43,6 +43,8 @@ These changes concern how the package runs CMSY++. The model of `CMSY++16.R` is 
 * Pages are less crowded: wider line spacing (above all in Chinese), main sections separated by a thin line, subsections marked with a bar, and more space between paragraphs, list items, code, tables and figures.
 * In the tutorial, the explanation under each chart ("How to read it" and the result for area 67) is in its own box, with a dashed line before the result, so that each chart and its text stand apart from the next chart.
 * The documentation links on the home pages are grouped (start here, data and analyses, assessment and report, more) instead of one run of links.
+* Charts in the articles no longer show the path of their file below them.
+* The home page (the README) always opens in English, also after Chinese pages were visited (other pages keep the chosen language); the Chinese home page links to it at its top.
 
 # faofishingreport 0.6.0
 

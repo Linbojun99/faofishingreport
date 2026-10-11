@@ -299,8 +299,10 @@
     var buttons = document.querySelectorAll('a.nav-link[href$="#lang"]');
     buttons.forEach(function (button) { button.classList.add("fao-lang-button"); });
 
-    // Keep the chosen language when an English page with a Chinese version is opened
-    if (!onZhPage && hasZhVersion && stored === "zh") {
+    // Keep the chosen language when an English page with a Chinese version is opened; the home
+    // page (the README) always opens in English, with the link to the Chinese home page at its top
+    var onHome = rel === "" || rel === "index.html";
+    if (!onZhPage && hasZhVersion && stored === "zh" && !onHome) {
       window.location.replace(root + counterpart(rel, true) + window.location.hash);
       return;
     }

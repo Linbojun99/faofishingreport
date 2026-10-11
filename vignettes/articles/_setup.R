@@ -29,10 +29,10 @@ knitr::knit_hooks$set(figures = function(before, options) {
   files <- files[file.mtime(files) >= site_figures$start]
   if (is.character(options$figures)) files <- files[grepl(options$figures, files)]
   files <- files[order(file.mtime(files))]
+  # the charts only, without the path of the file below them
   html <- vapply(files, function(file) {
-    shown <- substring(file, nchar(site_output) + 2)
-    sprintf('<figure class="fao-figure"><img src="%s" alt="%s" loading="lazy"><figcaption><code>%s</code></figcaption></figure>',
-            knitr::image_uri(file), basename(file), shown)
+    sprintf('<figure class="fao-figure"><img src="%s" alt="%s" loading="lazy"></figure>',
+            knitr::image_uri(file), basename(file))
   }, character(1))
   paste0("\n", paste(html, collapse = "\n"), "\n")
 })

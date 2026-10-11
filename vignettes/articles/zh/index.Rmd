@@ -12,6 +12,8 @@ description: >
 [![R ≥ 4.2](https://img.shields.io/badge/R-%E2%89%A5%204.2-276DC3.svg)](https://www.r-project.org/)
 [![License: GPL-3](https://img.shields.io/badge/license-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
+> 🌐 **English**：[faofishingreport English home page (README)](../../index.html)（网站右上角也可以随时切换英文）
+
 **faofishingreport** 把 [FAO 全球捕捞产量统计](https://www.fao.org/fishery/collection/capture/en)（Global Capture Production）按渔区、国家和物种整理成报告用的图表、地图和表格，图表可以是中文、英文或中英双语。
 
 ## ✨ 主要功能
