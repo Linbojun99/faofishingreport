@@ -30,5 +30,7 @@ utils::globalVariables(c(
   "scenario", "Stock", "tonnes",
   # catch_shocks()
   "group_name", "last_year", "loss_pct", "n_series", "n_shocks", "series_name", "shock_frequency_pct",
-  "shocks_per_series"
+  "shocks_per_series",
+  # collapse_analysis()
+  "n_collapsed", "n_collapses", "offset", "pct", "pct_collapsed", "rel", "type", "what"
 ))

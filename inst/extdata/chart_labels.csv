@@ -73,3 +73,18 @@ shock_frequency,Series with a shock (%),出现骤变的序列占比 (%)
 shocks_per_series,Shocks per series,每条序列的骤变次数
 shock_loss,Loss (% of baseline),损失（占基线的%）
 shock_method_note,Shocks: {n},骤变判定：{n}
+collapse_type,Decline before collapse,崩溃前的下降形态
+collapse_plateau,Plateau,平台型
+collapse_smooth,Smooth,平滑型
+collapse_erratic,Erratic,波动型
+collapse_unclassified,Not classified,未分类
+n_collapses,Number of collapses,崩溃次数
+pct_collapsed,Collapsed series (%),崩溃序列占比 (%)
+years_from_collapse,Years from the collapse year,距崩溃年份的年数
+catch_rel_max,Catch / maximum catch,渔获量/最高渔获量
+collapsed_current,Collapsed in the year,当年处于崩溃
+collapsed_cumulative,Collapsed at least once,曾经崩溃
+catch_data,Catch data,渔获数据
+null_model,Random series with no trend (Wilberg & Miller 2007),无趋势随机序列（Wilberg & Miller 2007）
+collapse_note_mullon2005,"Collapse: catch below 1/10 of the maximum for 4 years after the maximum (Mullon et al. 2005)",崩溃：最高渔获之后连续4年低于最高值的1/10（Mullon et al. 2005）
+collapse_note_worm2006,"Collapsed: catch below 10% of the maximum (Worm et al. 2006)",崩溃：渔获低于最高值的10%（Worm et al. 2006）

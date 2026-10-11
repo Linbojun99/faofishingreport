@@ -91,6 +91,7 @@ reference:
   desc: Analyses that follow published methods, each citing its sources.
   contents:
   - catch_shocks
+  - collapse_analysis
   - distant_water_profile
   - compare_releases
 - title: "🌡️ FishBase and temperature"

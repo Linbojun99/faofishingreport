@@ -69,6 +69,56 @@ test_that("shock frequencies are shocks per series with catch", {
   expect_length(list.files(), 0)
 })
 
+test_that("collapses and their shapes follow Mullon et al. (2005)", {
+  years <- 1950:2000
+  plateau <- c(seq(100, 1000, length.out = 20), rep(900, 16), 300, 200, rep(50, 13))   # high until 2 years before
+  smooth <- c(seq(100, 1000, length.out = 20), seq(1000, 50, length.out = 21), rep(50, 10))
+  erratic <- c(seq(100, 1000, length.out = 20), rep(c(150, 600), 8), 200, 300, 150, rep(50, 12))
+  steady <- rep(1000, length(years))
+  short_dip <- c(rep(1000, 30), rep(50, 3), rep(1000, 18))                             # only 3 years below
+  expect_equal(fao_mullon_collapse(years, plateau)$type, "plateau")
+  expect_equal(fao_mullon_collapse(years, smooth)$type, "smooth")
+  expect_equal(fao_mullon_collapse(years, erratic)$type, "erratic")
+  expect_false(fao_mullon_collapse(years, steady)$collapsed)
+  expect_false(fao_mullon_collapse(years, short_dip)$collapsed)
+  expect_equal(fao_mullon_collapse(years, smooth)$collapse_year, years[which(smooth < 100)[1]])
+  for (catch in list(plateau, smooth, erratic, steady, short_dip)) {
+    expect_equal(fao_mullon_is_collapsed(catch), fao_mullon_collapse(years, catch)$collapsed)
+  }
+})
+
+test_that("Worm et al. (2006) collapse shares and the random-series check", {
+  catch <- c(5, 50, 100, 80, 5, 5, 60, 70)                 # starts in year 2, collapsed in years 5-6
+  state <- fao_worm_states(catch)
+  expect_equal(state$start, 2)
+  expect_equal(which(state$collapsed), c(5L, 6L))
+  shares <- fao_worm_shares(list(state, fao_worm_states(rep(10, 8))), 1:8)
+  expect_equal(shares$pct_current[5], 50)
+  expect_equal(shares$pct_cumulative[8], 50)
+  set.seed(3)
+  sims <- fao_null_series(list(list(catch = c(NA, NA, 1:48))), 1:50, n_sim = 200)
+  values <- unlist(lapply(sims, function(s) s[[1]][-(1:2)]))
+  expect_true(all(is.na(sims[[1]][[1]][1:2])))
+  expect_equal(stats::sd(values) / mean(values), 0.8, tolerance = 0.15)
+})
+
+test_that("collapse_analysis() returns its tables without writing files", {
+  withr::local_dir(withr::local_tempdir())
+  area <- local({
+    data <- load_fao_data("bundled")
+    data[data$FAO.major.fishing.area..Name. == "Atlantic, Eastern Central", ]
+  })
+  set.seed(4)
+  m <- suppressMessages(collapse_analysis(area, n_sim = 5, plot = FALSE, table = FALSE))
+  expect_named(m, c("series", "summary", "by_year", "by_group"))
+  expect_false(any(m$series$Country..Name. %in% c("Un. Sov. Soc. Rep.", "South Africa", "China")))
+  expect_equal(sum(m$summary$n[-1]), m$summary$n[1])
+  w <- suppressMessages(collapse_analysis(area, method = "worm2006", n_sim = 5, plot = FALSE, table = FALSE))
+  expect_true(all(w$by_year$pct_cumulative >= w$by_year$pct_current, na.rm = TRUE))
+  expect_true(all(c("null_pct_current", "null_pct_cumulative") %in% names(w$by_year)))
+  expect_length(list.files(), 0)
+})
+
 test_that("the distant-water profile splits a country's catch by adjacent and distant areas", {
   withr::local_dir(withr::local_tempdir())
   dw <- suppressMessages(distant_water_profile("Spain", plot = FALSE, table = FALSE, data_version = "bundled"))
