@@ -35,7 +35,8 @@ fao_settings(..., reset = FALSE)
   \item{map_ocean}{Fill colour of the ocean on maps. Default is NA (no fill).}
   \item{grid}{Whether charts have background grid lines (and maps graticules). Default is FALSE.}
   \item{dpi}{Resolution of the PNG files. Default is 600.}
-  \item{pptx}{Whether charts are also saved as editable PowerPoint files. Default is FALSE.}
+  \item{pptx}{Whether charts are also saved as editable PowerPoint files (needs the eoffice
+    package). Default is FALSE.}
   \item{data_dir}{Folder where `download_fao_data()` saves FAO releases and where all
     functions look for them, e.g. a folder shared by a team. Default is NULL, the user data
     folder of R; see `fao_data_dir()`.}

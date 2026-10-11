@@ -23,6 +23,7 @@
 * The chart font is chosen for the operating system (SimSun on Windows, Songti SC on macOS, Noto Serif CJK SC on Linux) and can be changed with `fao_font()`. Previously "Songti SC" was hard-coded, so Chinese text did not display on Windows.
 * CSV tables are written as UTF-8 with a byte order mark, so Excel shows Chinese names correctly.
 * Charts are saved as PNG by default. Editable PowerPoint files are optional: add `pptx = TRUE` to a function, or set `fao_settings(pptx = TRUE)` for all functions. Previously every chart was saved in both formats.
+* eoffice, used only for PowerPoint files, is now suggested instead of required, so the package loads on macOS without XQuartz. Install it with `install.packages("eoffice")` to save PowerPoint files.
 * `fishing_area_species()` now saves PNG charts too, in `figures/png/area/` (PowerPoint in `figures/pptx/area/`, previously `figures/`), like `fishing_area_country()`.
 * Charts have no background grid lines by default; `options(faofishingreport.grid = TRUE)` brings them back. Year axes are labelled up to the last year of the data.
 * The PowerPoint charts of `fishing_area_data()` have the same size as the PNG (12 x 6 inches) instead of the size of the current graphics window.

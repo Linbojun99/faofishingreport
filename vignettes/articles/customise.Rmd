@@ -44,7 +44,7 @@ fao_settings()
 | `map_land`, `map_ocean` | Colour of countries without data, of the ocean | `"grey90"`, none |
 | `grid` | Background grid lines (graticules on maps) | `FALSE` |
 | `dpi` | Resolution of the PNG files | `600` |
-| `pptx` | Also save editable PowerPoint files | `FALSE` |
+| `pptx` | Also save editable PowerPoint files (needs the eoffice package) | `FALSE` |
 | `data_dir` | Folder of downloaded FAO data | R user data folder |
 
 `fao_settings(reset = TRUE)` restores the defaults. A wrong name or value gives an error at once,
@@ -200,6 +200,10 @@ fao_settings(grid = TRUE)
 fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
 fao_settings(grid = FALSE)
 ```
+
+PowerPoint files are written with the eoffice package, which is not installed with
+faofishingreport: run `install.packages("eoffice")` once (on macOS, eoffice also needs
+[XQuartz](https://www.xquartz.org)).
 
 ```{r, eval = FALSE}
 fao_settings(dpi = 300)      # smaller PNG files
