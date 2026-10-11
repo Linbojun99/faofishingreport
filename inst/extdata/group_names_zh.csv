@@ -1,0 +1,63 @@
+type,name_en,name_zh
+major,PISCES,鱼类
+major,CRUSTACEA,甲壳类
+major,MOLLUSCA,软体动物
+major,INVERTEBRATA AQUATICA,其他水生无脊椎动物
+major,PLANTAE AQUATICAE,水生植物
+major,"AMPHIBIA, REPTILIA",两栖和爬行类
+major,MAMMALIA,水生哺乳动物
+isscaap,"Carps, barbels and other cyprinids",鲤、鲃及其他鲤科鱼类
+isscaap,"Cods, hakes, haddocks",鳕、无须鳕、黑线鳕类
+isscaap,"Flounders, halibuts, soles",鲆、鲽、鳎类
+isscaap,"Herrings, sardines, anchovies",鲱、沙丁鱼、鳀类
+isscaap,Marine fishes not identified,未鉴定的海洋鱼类
+isscaap,Miscellaneous coastal fishes,其他沿岸鱼类
+isscaap,Miscellaneous demersal fishes,其他底层鱼类
+isscaap,Miscellaneous diadromous fishes,其他洄游性鱼类
+isscaap,Miscellaneous freshwater fishes,其他淡水鱼类
+isscaap,Miscellaneous pelagic fishes,其他中上层鱼类
+isscaap,River eels,河鳗类
+isscaap,"Salmons, trouts, smelts",鲑、鳟、胡瓜鱼类
+isscaap,Shads,西鲱类
+isscaap,"Sharks, rays, chimaeras",鲨、鳐、银鲛类
+isscaap,"Sturgeons, paddlefishes",鲟、匙吻鲟类
+isscaap,Tilapias and other cichlids,罗非鱼及其他丽鱼科鱼类
+isscaap,"Tunas, bonitos, billfishes",金枪鱼、狐鲣、旗鱼类
+isscaap,"Crabs, sea-spiders",蟹、蜘蛛蟹类
+isscaap,Freshwater crustaceans,淡水甲壳类
+isscaap,"King crabs, squat-lobsters",帝王蟹、铠甲虾类
+isscaap,"Krill, planktonic crustaceans",磷虾及浮游甲壳类
+isscaap,"Lobsters, spiny-rock lobsters",螯龙虾、龙虾类
+isscaap,Miscellaneous marine crustaceans,其他海洋甲壳类
+isscaap,"Shrimps, prawns",虾类
+isscaap,"Abalones, winkles, conchs",鲍、玉黍螺、凤螺类
+isscaap,"Clams, cockles, arkshells",蛤、鸟蛤、蚶类
+isscaap,Freshwater molluscs,淡水软体动物
+isscaap,Miscellaneous marine molluscs,其他海洋软体动物
+isscaap,Mussels,贻贝类
+isscaap,Oysters,牡蛎类
+isscaap,"Pearls, mother-of-pearl, shells",珍珠、珍珠母、贝壳
+isscaap,"Scallops, pectens",扇贝类
+isscaap,"Squids, cuttlefishes, octopuses",鱿鱼、乌贼、章鱼类
+isscaap,Corals,珊瑚
+isscaap,Horseshoe crabs and other arachnoids,鲎及其他蛛形类
+isscaap,Miscellaneous aquatic invertebrates,其他水生无脊椎动物
+isscaap,Sea-squirts and other tunicates,海鞘及其他被囊类
+isscaap,Sea-urchins and other echinoderms,海胆及其他棘皮动物
+isscaap,Sponges,海绵
+isscaap,"Blue-whales, fin-whales",蓝鲸、长须鲸类
+isscaap,"Eared seals, hair seals, walruses",海狮、海豹、海象类
+isscaap,Miscellaneous aquatic mammals,其他水生哺乳动物
+isscaap,"Sperm-whales, pilot-whales",抹香鲸、领航鲸类
+isscaap,Crocodiles and alligators,鳄类
+isscaap,Frogs and other amphibians,蛙及其他两栖类
+isscaap,Turtles,龟鳖类
+isscaap,Brown seaweeds,褐藻
+isscaap,Green seaweeds,绿藻
+isscaap,Miscellaneous aquatic plants,其他水生植物
+isscaap,Red seaweeds,红藻
+income,High-income countries,高收入国家
+income,Upper-middle income countries,中高收入国家
+income,Lower-middle income countries,中低收入国家
+income,Low-income countries,低收入国家
+income,Countries not classified by World Bank,世界银行未分类

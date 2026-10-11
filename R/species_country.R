@@ -14,7 +14,8 @@
 #'        number of regressors. For the model `ts_data ~ 1`, this means `h_value`
 #'        should be greater than 1. The default value is 0.15.
 #' @param polygon_color The color of the borders of the polygons in the map plot. Default is "grey90".
-#' @param fill_scale The color scale for filling polygons in the map plot. Default is "deep-orange".
+#' @param fill_scale The colour palette of the map. Default is NULL, which uses `map_palette` of
+#'        `fao_settings()` ("deep-orange" unless changed); see `?fao_settings` for the choices.
 #' @param axis_title_size_map The size of the axis title text in the map plot. Default is 14.
 #' @param axis_text_size_map The size of the axis text in the map plot. Default is 12.
 #' @param legend_text_size_map The size of the legend text in the map plot. Default is 12.
@@ -23,7 +24,13 @@
 #' @param axis_text_size The size of the axis text. Default is 10.
 #' @param axis_title_size The size of the axis title text. Default is 12.
 #' @param strip_text_size The size of the strip text. Default is 12.
-#' @param ZH A logical value to Chinese. Default is "FALSE"
+#' @param ZH A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the same as `lang = "zh"`.
+#' @param lang The language of the chart text and names: "en" (English), "zh" (Chinese) or "both"
+#'        (Chinese and English). Default is NULL, which uses "zh" if `ZH = TRUE`, and otherwise the language
+#'        set with `fao_settings()` ("en" unless changed).
+#' @param pptx A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are
+#'        also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
+#'        changed for all functions with `options(faofishingreport.pptx = TRUE)`.
 #' @export
 #'
 #' @examples
@@ -31,42 +38,29 @@
 #' species_country(FAO34[["area_data"]], species_name = "European pilchard(=Sardine)",c(1, 10), plot=TRUE,table=TRUE,h_value = 0.15) #area_data=Fao34
 #' }
 species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=TRUE,table=TRUE,timeseries_analysis=TRUE,h_value = 0.15,
-                            polygon_color="grey90",fill_scale="deep-orange",
+                            polygon_color="grey90",fill_scale=NULL,
                             axis_title_face="bold",
                             axis_title_size_map = 14,
                             axis_text_size_map = 12,
                             legend_text_size_map = 12,
                             strip_text_face = "bold",
                             axis_text_size = 10, axis_title_size = 12,
-                            strip_text_size = 12,ZH = FALSE) {
+                            strip_text_size = 12,ZH = FALSE, lang = NULL,
+                            pptx = getOption("faofishingreport.pptx", FALSE)) {
 
 
   options(scipen=999,digits=2)
 
 #draw set
-  ylab="Million Tonnes"
-  xlab2="Percentage of Total Production"
-  xlab="Year"
-  legendtext="Country..Name."
-  Other="Other"
-  Othernei="Other nei"
-if(ZH){
-  ylab="百万吨"
-  xlab="年"
-  xlab2="捕捞产量占比"
-  legendtext="国家"
-  Other="其余国家"
-  Othernei="未分类的国家"
-}
-
-  data_path <- system.file("extdata", "countries_name_data.rda", package="faofishingreport")
-  load(data_path, envir = .GlobalEnv)
-  colnames(name_mapping)[1]<-"Country..Name."
-  colnames(name_mapping)[7]<-"Short..name.ZH"
-
-
-
-  # 如果ZH为TRUE，使用提供的替换规则来更新Country..Name.
+  lang <- fao_lang(lang, ZH)
+  ylab <- fao_label("million_tonnes", lang)
+  xlab2 <- fao_label("share", lang)
+  xlab <- fao_label("year", lang)
+  legendtext <- fao_label("country", lang)
+  Other <- fao_label("other_country", lang)
+  Othernei <- fao_translate("Other nei", "country", lang)
+  last_year <- max(area_data$Year, na.rm = TRUE)
+  year_breaks <- fao_year_breaks(area_data$Year)
 
 
   species_data <- area_data %>%
@@ -88,108 +82,27 @@ if(ZH){
   species_country_total <- species_country_total %>%
     dplyr::mutate(percentage_country=(country_production/total_species_country)*100)
 
-  #####map
-
-  # 地图绘制代码
-  # 创建一个命名的替换规则向量
-  replace_rules <- c(
-    "Cape Verde" = "Cabo Verde",
-    "Curacao" = "Cura?ao",
-    "Netherlands" = "Netherlands (Kingdom of the)",
-    "Democratic Republic of the Congo" = "Congo, Dem. Rep. of the",
-    "Republic of Congo" = "Congo",
-    "North Korea" = "Korea, Dem. People's Rep",
-    "South Korea" = "Korea, Republic of",
-    "Russia" = "Russian Federation",
-    "Vietnam" = "Viet Nam",
-    "Laos" = "Lao People's Democratic Republic",
-    "Moldova" = "Republic of Moldova",
-    "Czech Republic" = "Czechia",
-    "Ivory Coast" = "C?te d'Ivoire",
-    "UK" = "United Kingdom",
-    "Syria" = "Syrian Arab Republic",
-    "Guam" = "Guam (USA)",
-    "New Caledonia" = "New Caledonia (France)",
-    "Martinique" = "Martinique (France)",
-    "Mayotte" = "Mayotte (France)",
-    "Saint Pierre and Miquelon" = "Saint Pierre & Miquelon (France)",
-    "Bermuda" = "Bermuda (UK)",
-    "Saint Helena" = "Saint Helena (UK)",
-    "Turks and Caicos Islands" = "Turks & Caicos Isl. (UK)",
-    "Virgin Islands" = "British Virgin Isl. (UK)",
-    "Northern Mariana Islands" = "North Marianas (USA)",
-    "Niue" = "Niue (New Zealand)",
-    "Taiwan" = "Taiwan Province of China",
-    "USA" = "United States of America",
-    "Saint Vincent" = "Saint Vincent/Grenadines",
-    "Saint Kitts" = "Saint Kitts and Nevis"
-  )
-
-  # 应用替换规则
-
-  worldMap <- ggplot2::map_data("world") %>%
-    dplyr::filter(region != "Antarctica") %>%
-    dplyr::rename(country = region) %>%
-    dplyr::mutate(country = dplyr::recode(country, !!!replace_rules))
-
-
-
-
-
-  worldMap %>%
-    dplyr::left_join(species_country_total, by = c("country" = "Country..Name.")) -> act_world_map
-
-  map_plot <- ggplot2::ggplot() +
-    ggplot2::geom_polygon(act_world_map,
-                          mapping=ggplot2::aes(x = long, y = lat, group = group,
-                                               fill= country_production/1e6),
-                          colour = polygon_color) +
-    ggplot2::coord_sf() +
-    ggsci::scale_fill_material(fill_scale, na.value = "grey90") +
-    ggplot2::labs(fill=ylab) +
-    metR::scale_x_longitude() +
-    metR::scale_y_latitude() +
-    ggplot2::theme_minimal() +
-    ggplot2::theme(
-      panel.grid.minor.x = ggplot2::element_blank(),
-      strip.background = ggplot2::element_rect(fill = "white", colour = "black"),
-      strip.text = ggplot2::element_text(face = strip_text_face, size=strip_text_size),
-      axis.title.x = ggplot2::element_text(size=axis_title_size_map, face = axis_title_face),
-      axis.title.y = ggplot2::element_text(size=axis_title_size_map, face = axis_title_face),
-      axis.text.y = ggplot2::element_text(size=axis_text_size_map),
-      axis.text.x = ggplot2::element_text(size=axis_text_size_map),
-      legend.text = ggplot2::element_text(size=legend_text_size_map),
-      legend.position = "bottom",
-      legend.box = "horizontal",
-      text = ggplot2::element_text(family = "Songti SC"))
-
-
-
-  filename <- paste0("figures/pptx/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_map.pptx")
-  eoffice::topptx(figure=map_plot,filename = filename, width = 12, height = 6)
-  filename <- paste0("figures/png/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_map.png")
-  ggsave(plot=map_plot,filename = filename,dpi=600, width=12, height=6)
+  if (plot) {
+    #####map：各国该物种的总产量，国家按 ISO3 代码匹配
+    map_plot <- fao_country_value_map(species_country_total$Country..Name., species_country_total$country_production / 1e6,
+                                      ylab, polygon_color, fill_scale)$plot +
+      ggplot2::theme(
+        text = ggplot2::element_text(family = fao_font()),
+        axis.title.x = ggplot2::element_text(size=axis_title_size_map, face = axis_title_face),
+        axis.title.y = ggplot2::element_text(size=axis_title_size_map, face = axis_title_face),
+        axis.text.y = ggplot2::element_text(size=axis_text_size_map),
+        axis.text.x = ggplot2::element_text(size=axis_text_size_map),
+        legend.text = ggplot2::element_text(size=legend_text_size_map),
+        legend.position = "bottom",
+        legend.box = "horizontal")
+    fao_save_plot(map_plot, paste0(fao_file_name(species_name), "_country_map"), width = 12, height = 6, pptx = pptx)
+  }
 
   ###
 
 
-  if (ZH) {
-    # 假设name_mapping是一个数据框，它包含两列：Country..Name.和Short name ZH
-    # name_mapping <- data.frame(Country..Name. = c("USA", "China"), Short name ZH = c("美国", "中国"))
-
-    # 读取替换规则数据框
-
-    # 应用替换规则
-    species_data <- left_join(species_data, name_mapping, by = "Country..Name.")
-    species_data<-species_data[,-2]
-    colnames(species_data)[8]<-"Country..Name."
-    ylab="百万吨"
-    xlab="年"
-    xlab2="捕捞产量占比"
-    legendtext="国家"
-    Othernei="未分类的国家"
-    Other="其余国家"
-  }
+  # 国家名按 lang 翻译（地图已用英文名画完）
+  species_data$Country..Name. <- fao_translate(species_data$Country..Name., "country", lang)
 
 
   species_country_total <- species_data %>%
@@ -248,16 +161,7 @@ if(ZH){
     mutate(Country..Name. = replace(Country..Name., Country..Name. == Othernei, Other))
   # 计算每年每个物种的总量和占比，并识别每年的前10名物种
   species_data <- species_data %>%
-    dplyr::mutate(Decade = dplyr::case_when(
-      Year %in% 1950:1959 ~ "1950s",
-      Year %in% 1960:1969 ~ "1960s",
-      Year %in% 1970:1979 ~ "1970s",
-      Year %in% 1980:1989 ~ "1980s",
-      Year %in% 1990:1999 ~ "1990s",
-      Year %in% 2000:2009 ~ "2000s",
-      Year %in% 2010:2019 ~ "2010s",
-      TRUE               ~ as.character(Year)
-    ))
+    dplyr::mutate(Decade = fao_pie_period(Year, last_year))
 
   species_pie <- species_data %>%
     dplyr::group_by(Decade, `Country..Name.`) %>%
@@ -288,8 +192,7 @@ if(ZH){
     ungroup()
 
   # 筛选特定的年份，你可以根据需要更改
-  selected_decades <- c("1950s", "1960s", "1970s", "1980s", "1990s", "2000s", "2010s",
-                        "2017", "2018", "2019", "2020", "2021")
+  selected_decades <- unique(species_pie$Decade)
 
   species_pie_selected <- species_pie %>%
     dplyr::filter(Decade %in% selected_decades)
@@ -354,7 +257,7 @@ if(ZH){
 
   # 应用改进的函数
   unique_country <- unique(species_country_ranked[species_country_ranked$Tonnes > 0,]$Country..Name.)
-  results <- lapply(unique_country, get_bp_coefs, data = species_country_ranked[species_country_ranked$Tonnes > 0, ], h_value = 0.15)
+  results <- lapply(unique_country, get_bp_coefs, data = species_country_ranked[species_country_ranked$Tonnes > 0, ], h_value = h_value)
 
   # 汇总并显示所有的状态信息
   status_messages <- lapply(results, function(x) x$status_message)
@@ -372,24 +275,6 @@ if(ZH){
 
   if(plot){
 
-    if (!dir.exists("figures")) {
-      dir.create("figures")
-    }
-
-    if (!dir.exists("figures/png")) {
-      dir.create("figures/png")
-    }
-
-    if (!dir.exists("figures/pptx")) {
-      dir.create("figures/pptx")
-    }
-    if (!dir.exists("figures/png/species")) {
-      dir.create("figures/png/species")
-    }
-
-    if (!dir.exists("figures/pptx/species")) {
-      dir.create("figures/pptx/species")
-    }
 
   p1<-ggplot2::ggplot() +
     ggplot2::geom_bar(data = species_country_ranked_total,mapping=ggplot2::aes(y=forcats::fct_reorder(Country..Name., country_production), x=country_production/1e6, fill=Country..Name.), stat="identity") +
@@ -398,9 +283,9 @@ if(ZH){
                           x=country_production/1e6,
                           label=sprintf("%.2f%%",percentage_country)),
               hjust=-0.1,size=4.5) +
-    ggplot2::theme_bw()+
+    fao_base_theme()+
     ggplot2::labs(x=ylab,y=legendtext)+
-    ggsci::scale_fill_npg()+
+    fao_scale_discrete("fill")+
     ggplot2:: scale_x_continuous(expand = c(0,0), limits = c(0, max_value))+
     ggplot2:: theme(
       panel.grid.minor.x = ggplot2::element_blank(),
@@ -413,13 +298,10 @@ if(ZH){
       legend.text= ggplot2::element_text(size=12),
       legend.position = "none",
       legend.box = "horizontal",
-      text = ggplot2::element_text(family = "Songti SC")) # 使用中文字体
+      text = ggplot2::element_text(family = fao_font())) # 使用中文字体
 
     # 更改文件名以匹配排名数据
-  filename <- paste0("figures/pptx/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_total.pptx")
-  eoffice::topptx(figure=p1, filename = filename, width=12, height=8)
-  filename <- paste0("figures/png/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_total.png")
-  ggsave(plot=p1,filename = filename,dpi=600, width=12, height=8)
+  fao_save_plot(p1, paste0("species/", fao_file_name(species_name), "_country_ranked_total"), width = 12, height = 8, pptx = pptx)
 
 
 
@@ -427,10 +309,10 @@ if(ZH){
     p2<-ggplot2::ggplot(species_country_ranked[species_country_ranked$Tonnes>0,], ggplot2::aes(x = Year, y = Tonnes/1e6, color = Country..Name., group = Country..Name.)) +
       ggplot2::geom_point(alpha=0.7,shape=1,size=1.8)+
       ggplot2::geom_line(linewidth=1.5,alpha=0.7) +
-      ggplot2::theme_bw() +
-      ggsci::scale_color_npg()+
+      fao_base_theme() +
+      fao_scale_discrete("colour")+
       ggplot2::labs( x = xlab, y = ylab,color=legendtext) +
-      ggplot2::scale_x_continuous(breaks = seq(1950,2021,5),expand = c(0,0))+
+      ggplot2::scale_x_continuous(breaks = year_breaks,expand = c(0,0))+
       ggplot2::scale_y_continuous(expand = c(0,0))+
       ggplot2::theme(
         panel.grid.minor.x =ggplot2:: element_blank(),
@@ -443,13 +325,10 @@ if(ZH){
         legend.text=ggplot2::element_text(size=12),
         legend.position = "bottom",
         legend.box = "horizontal",
-        text = ggplot2::element_text(family = "Songti SC"))+ # 使用中文字体
+        text = ggplot2::element_text(family = fao_font()))+ # 使用中文字体
       ggplot2::guides(color = ggplot2::guide_legend(nrow = 2))
 
-    filename <- paste0("figures/pptx/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked.pptx")
-    eoffice::topptx(figure=p2, filename = filename, width=12, height=8)
-    filename <- paste0("figures/png/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked.png")
-    ggsave(plot=p2,filename = filename,dpi=600, width=12, height=8)
+    fao_save_plot(p2, paste0("species/", fao_file_name(species_name), "_country_ranked"), width = 12, height = 8, pptx = pptx)
 
 
 
@@ -468,11 +347,11 @@ if(ZH){
                               ggplot2::aes(x = start_year, xend = end_year, y = intercept/1e6, yend = intercept/1e6),
                               color = "black",linetype="solid",size=1.5,alpha=0.5) +
         ggplot2::geom_vline(data = coefs_data, ggplot2::aes(xintercept = start_year, group = Country..Name.), linetype = "dashed", color = "black",linewidth=1) +
-        ggplot2::theme_bw() +
-        ggsci::scale_color_npg()+
+        fao_base_theme() +
+        fao_scale_discrete("colour")+
         ggplot2::facet_wrap(~Country..Name.,ncol=2,scales = "free_y")+
         ggplot2::labs(x = xlab, y = ylab, color=legendtext) +
-        ggplot2::scale_x_continuous(breaks = seq(1950,2021,5),expand = c(0,0))+
+        ggplot2::scale_x_continuous(breaks = year_breaks,expand = c(0,0))+
         ggplot2::scale_y_continuous()+
         ggplot2::theme(
           #panel.grid.major.x = element_blank()
@@ -484,13 +363,9 @@ if(ZH){
           legend.position = "bottom",
           legend.box = "horizontal",
           axis.text.x = ggplot2::element_text(angle = 60, hjust = 1),
-          text = ggplot2::element_text(family = "Songti SC"))+
+          text = ggplot2::element_text(family = fao_font()))+
         guides(color = ggplot2::guide_legend(nrow = 2))
-      #ggplot2::ggsave(filename = "figures/area_country_wrap.png", plot = p2, dpi = 600)
-      filename <- paste0("figures/pptx/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_wrap.pptx")
-      eoffice::topptx(figure=p3,filename = filename, width = 12, height = 8)
-      filename <- paste0("figures/png/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_wrap.png")
-      ggsave(plot=p3,filename = filename,dpi=600, width=12, height=8)
+      fao_save_plot(p3, paste0("species/", fao_file_name(species_name), "_country_ranked_wrap"), width = 12, height = 8, pptx = pptx)
     }
     else{
     p3<-ggplot2::ggplot() +
@@ -501,10 +376,10 @@ if(ZH){
                            dplyr::mutate(Country..Name. = factor(Country..Name., levels = unique(Country..Name.[order(-country_production)]))),
                   ggplot2::aes(x = 1957, y = 0, label = paste0( round(percentage_country, 2), "%")),
                 hjust = 0.9, vjust = -4, size = 4.5, color = "black") +
-      ggplot2::theme_bw() +
-      ggsci::scale_color_npg()+
+      fao_base_theme() +
+      fao_scale_discrete("colour")+
       ggplot2::labs( x = xlab, y = ylab,color=legendtext) +
-      ggplot2::scale_x_continuous(breaks = seq(1950,2021,5),expand = c(0,0))+
+      ggplot2::scale_x_continuous(breaks = year_breaks,expand = c(0,0))+
       ggplot2::scale_y_continuous()+
       ggplot2::facet_wrap(~Country..Name.,ncol=2,scale="free_y")+
       ggplot2::theme(
@@ -517,15 +392,9 @@ if(ZH){
         legend.position = "bottom",
         legend.box = "horizontal",
         axis.text.x = ggplot2::element_text(size=12,angle = 60, hjust = 1),
-        text = ggplot2::element_text(family = "Songti SC"))+
+        text = ggplot2::element_text(family = fao_font()))+
       ggplot2::guides(color = ggplot2::guide_legend(nrow = 2))
-    filename <- paste0("figures/pptx/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_wrap.pptx")
-
-    eoffice::topptx(figure=p3, filename = filename, width=12, height=8)
-
-    filename <- paste0("figures/png/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_wrap.png")
-
-    ggsave(plot=p3,filename = filename,dpi=600, width=12, height=8)
+    fao_save_plot(p3, paste0("species/", fao_file_name(species_name), "_country_ranked_wrap"), width = 12, height = 8, pptx = pptx)
 
 }
 
@@ -533,26 +402,24 @@ if(ZH){
       p4<-ggplot2::ggplot(species_pie_selected[species_pie_selected$Tonnes>0,],ggplot2:: aes(x = "", y = percentage, fill = `Country..Name.`)) +
       ggplot2::geom_bar(stat="identity", width=1,color="black") +
       ggplot2::coord_polar("y") +
+      fao_scale_discrete("fill") +
         ggplot2::geom_text(ggplot2::aes(label = sprintf("%.2f%%", percentage)), position = position_stack(vjust = 0.5), size=3, color = "white") + # 使用 position_stack 调整文本位置
         #scale_fill_manual(values = color_palette) + # 使用自定义调色板
       ggplot2::facet_wrap(~Decade) +
-      ggplot2::theme_minimal() +
+      fao_minimal_theme() +
       ggplot2::theme(axis.text.x  = ggplot2::element_blank(),
             panel.grid = ggplot2::element_blank(),
             strip.text = ggplot2::element_text(face = 'bold',size=14),
             axis.title.x = ggplot2::element_text(size=14,face = 'bold'),
             axis.title.y = ggplot2::element_text(size=14,face = 'bold'),
             legend.text=ggplot2::element_text(size=12),
-            text = ggplot2::element_text(family = "Songti SC")) +
+            text = ggplot2::element_text(family = fao_font())) +
       ggplot2::labs(
         y = xlab2,
         x = NULL,
         fill=legendtext
       )
-    filename <- paste0("figures/pptx/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_pie_selected.pptx")
-    eoffice::topptx(figure=p4, filename = filename, width=12, height=8)
-    filename <- paste0("figures/png/species/", gsub("[[:punct:][:space:]]", "_", species_name), "_country_pie_selected.png")
-    ggsave(plot=p4,filename = filename,dpi=600, width=12, height=8)
+    fao_save_plot(p4, paste0("species/", fao_file_name(species_name), "_country_pie_selected"), width = 12, height = 8, pptx = pptx)
 
 }
 
@@ -566,38 +433,29 @@ if(ZH){
     print(paste("The total number of country with non-zero catch over the years is:", unique_country_count))
 
     species_country_table <- species_data %>%
-      dplyr::mutate(Decade = dplyr::case_when(
-        Year >= 1950 & Year < 1960 ~ "1950s",
-        Year >= 1960 & Year < 1970 ~ "1960s",
-        Year >= 1970 & Year < 1980 ~ "1970s",
-        Year >= 1980 & Year < 1990 ~ "1980s",
-        Year >= 1990 & Year < 2000 ~ "1990s",
-        Year >= 2000 & Year < 2010 ~ "2000s",
-        Year >= 2010 & Year < 2020 ~ "2010s",
-        TRUE ~ "2020s"
-      ))
+      dplyr::mutate(Decade = fao_decade(Year))
 
     # 计算每个年代的平均产量
     decade_avg_production_country <- species_country_table %>%
       dplyr::group_by(Decade, Country..Name.) %>%
       dplyr::summarize(avg_production = mean(Production, na.rm = TRUE))
 
-    # 计算2017到2021年的产量
+    # 计算最近5年的产量
     recent_production_country <- species_country_table %>%
-      dplyr::filter(Year >= 2017 & Year <= 2021) %>%
+      dplyr::filter(Year > last_year - 5) %>%
       dplyr::group_by(Year, Country..Name.) %>%
       dplyr::summarize(yearly_production = sum(Production, na.rm = TRUE))
 
-    # 计算2021年每个品种的产量
+    # 计算最后一年每个国家的产量
     total_production_2021_country <- species_country_table %>%
-      dplyr::filter(Year == 2021) %>%
+      dplyr::filter(Year == last_year) %>%
       dplyr::group_by(Country..Name.) %>%
       dplyr::summarize(total_2021_production = sum(Production, na.rm = TRUE))
 
-    # 计算2021年的总产量
+    # 计算最后一年的总产量
     total_production_2021 <- sum(total_production_2021_country$total_2021_production, na.rm = TRUE)
 
-    # 计算每个品种在2021年的产量占总产量的百分比
+    # 计算每个国家在最后一年的产量占总产量的百分比
     percentage_of_total_country <- total_production_2021_country %>%
       dplyr::mutate(percentage_of_total = (total_2021_production / total_production_2021) * 100)
 
@@ -639,7 +497,8 @@ if(ZH){
 
     # 重命名 percentage_of_total_country_ranked 中的列以避免连接时的名称冲突
     percentage_of_total_country_ranked <- percentage_of_total_country_ranked %>%
-      dplyr::rename(percentage_of_total_2021 = percentage_of_total)
+      dplyr::rename(!!paste0("total_", last_year, "_production") := total_2021_production,
+                    !!paste0("percentage_of_total_", last_year) := percentage_of_total)
 
     # 将所有数据框连接到一起
     final_data <- decade_avg_wide %>%
@@ -650,7 +509,7 @@ if(ZH){
     print(final_data)
     if (table) {
       filename <- paste0(gsub("[[:punct:][:space:]]", "_", species_name), "_country_ranked_table.csv")
-      write.csv(final_data, file = paste0("tables/", filename), row.names = FALSE)
+      fao_write_csv(final_data, paste0("tables/", filename))
     }
 
 

@@ -1,0 +1,129 @@
+# Shared helpers of the summary analyses (species_group_composition(), stock_status(), ...).
+
+# Name used in output files: the fishing area (or country) of the data, unless given
+fao_summary_label <- function(data, label = NULL) {
+  if (!is.null(label)) return(label)
+  areas <- unique(data$FAO.major.fishing.area..Name.)
+  if (length(areas) == 1) return(areas)
+  countries <- unique(data$Country..Name.)
+  if (length(countries) == 1) return(countries)
+  "selected_data"
+}
+
+# Output path inside figures/png/summary/ (and figures/pptx/summary/) or tables/
+fao_summary_name <- function(label, analysis) {
+  paste0(fao_file_name(label), "_", analysis)
+}
+
+fao_save_table <- function(x, name) {
+  fao_ensure_dirs("tables")
+  fao_write_csv(x, file.path("tables", paste0(name, ".csv")))
+}
+
+# Common look of the summary charts
+fao_theme <- function(legend = "bottom") {
+  fao_base_theme() +
+    ggplot2::theme(
+      axis.title = ggplot2::element_text(face = "bold"),
+      panel.grid.minor = ggplot2::element_blank(),
+      strip.background = ggplot2::element_rect(fill = "white", colour = "black"),
+      strip.text = ggplot2::element_text(face = "bold"),
+      legend.position = legend
+    )
+}
+
+# Colours for categories from the chosen palette; the "other" category is grey
+fao_colors <- function(levels, other = NULL) {
+  main <- setdiff(levels, other)
+  colors <- stats::setNames(fao_palette(length(main)), main)
+  if (!is.null(other) && other %in% levels) colors[other] <- "grey70"
+  colors[levels]
+}
+
+# Keeps the `top_n` categories with the largest catch and combines the rest into `other`.
+# Returns the categories as a factor ordered by catch, with `other` last.
+fao_top_categories <- function(category, tonnes, top_n, other) {
+  totals <- sort(tapply(tonnes, category, sum, na.rm = TRUE), decreasing = TRUE)
+  keep <- names(totals)[seq_len(min(top_n, length(totals)))]
+  category <- ifelse(category %in% keep, category, other)
+  factor(category, levels = c(keep, other)[c(keep, other) %in% category])
+}
+
+# Yearly catch by category, with a row for every year and category (missing catch = 0)
+fao_yearly_by <- function(data, category) {
+  yearly <- stats::aggregate(list(Tonnes = data$Production),
+                             by = list(Year = data$Year, category = data[[category]]),
+                             FUN = sum, na.rm = TRUE)
+  yearly <- tidyr::complete(yearly, Year = seq(min(yearly$Year), max(yearly$Year)), category,
+                            fill = list(Tonnes = 0))
+  if (is.factor(data[[category]])) {
+    yearly$category <- factor(yearly$category, levels = levels(data[[category]]))
+  }
+  yearly
+}
+
+# Stacked area charts of the yearly catch by category: in tonnes and as a share of each year's total
+fao_stack_charts <- function(yearly, fill_label, name, lang, pptx, colors = NULL,
+                             charts = c("tonnes", "share")) {
+  yearly <- dplyr::mutate(dplyr::group_by(yearly, Year),
+                          share = if (sum(Tonnes) > 0) 100 * Tonnes / sum(Tonnes) else 0)
+  yearly <- dplyr::ungroup(yearly)
+  if (is.null(colors)) colors <- fao_colors(levels(yearly$category))
+
+  stack_chart <- function(value, y_label) {
+    ggplot2::ggplot(yearly, ggplot2::aes(x = Year, y = .data[[value]], fill = category)) +
+      ggplot2::geom_area(colour = "white", linewidth = 0.2) +
+      ggplot2::scale_fill_manual(values = colors) +
+      ggplot2::scale_x_continuous(breaks = fao_year_breaks(yearly$Year), expand = c(0, 0)) +
+      ggplot2::scale_y_continuous(expand = c(0, 0)) +
+      ggplot2::labs(x = fao_label("year", lang), y = y_label, fill = fill_label) +
+      fao_theme() +
+      ggplot2::guides(fill = ggplot2::guide_legend(ncol = 3))
+  }
+  plots <- list()
+  if ("tonnes" %in% charts) {
+    yearly$tonnes_m <- yearly$Tonnes / 1e6
+    plots$tonnes <- stack_chart("tonnes_m", fao_label("million_tonnes", lang))
+    fao_save_plot(plots$tonnes, name, width = 12, height = 7, pptx = pptx)
+  }
+  if ("share" %in% charts) {
+    plots$share <- stack_chart("share", fao_label("share_pct", lang))
+    fao_save_plot(plots$share, paste0(name, "_share"), width = 12, height = 7, pptx = pptx)
+  }
+  invisible(plots)
+}
+
+# Table of a yearly catch by category: average yearly catch per decade, catch in each of the
+# last five years and the share of each category in the last year
+fao_category_table <- function(yearly, category_label) {
+  last_year <- max(yearly$Year)
+  decades <- dplyr::summarise(dplyr::group_by(yearly, category, period = fao_decade(Year)),
+                              value = mean(Tonnes), .groups = "drop")
+  decades <- tidyr::pivot_wider(decades, names_from = period, values_from = value)
+  recent <- yearly[yearly$Year > last_year - 5, c("category", "Year", "Tonnes")]
+  recent <- tidyr::pivot_wider(recent, names_from = Year, values_from = Tonnes)
+  last <- yearly[yearly$Year == last_year, c("category", "Tonnes")]
+  last[[paste0("share_", last_year, "_pct")]] <- 100 * last$Tonnes / sum(last$Tonnes)
+  last$Tonnes <- NULL
+  out <- dplyr::left_join(dplyr::left_join(decades, recent, by = "category"), last, by = "category")
+  out <- out[order(out$category), ]
+  names(out)[1] <- category_label
+  out
+}
+
+# Common roxygen parameters of the summary analyses
+#' @param area_data FAO catch data: `fishing_area_data()$area_data`, or any subset of
+#'        `load_fao_data()` (e.g. one country, or several fishing areas).
+#' @param plot A logical value. If TRUE (default), charts are saved in `figures/png/summary/`.
+#' @param table A logical value. If TRUE (default), tables are saved in `tables/`.
+#' @param lang The language of the chart text and names: "en" (English), "zh" (Chinese) or
+#'        "both" (Chinese and English). Default is NULL, which uses the language set with
+#'        `fao_settings()` ("en" unless changed).
+#' @param pptx A logical value. If TRUE, charts are also saved as editable PowerPoint files in
+#'        `figures/pptx/summary/`. Default is FALSE, which can be changed for all functions with
+#'        `options(faofishingreport.pptx = TRUE)`.
+#' @param label The name used in the output file names. Default is the fishing area (or the
+#'        country) of the data.
+#' @name summary_params
+#' @keywords internal
+NULL

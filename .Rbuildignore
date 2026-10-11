@@ -1,2 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^\.claude$
+^data-raw$
+^Demo$
+^faofishingreport_.*\.tar\.gz$
