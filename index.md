@@ -218,6 +218,8 @@ PowerPoint in `figures/pptx/`), tables in `tables/`.
 The [website](https://linbojun99.github.io/faofishingreport/) has a
 guide for every part of the package: [🚀 Get
 started](https://linbojun99.github.io/faofishingreport/articles/get-started.html)
+· [🎓 Tutorial: FAO area 61 from zero to a
+report](https://linbojun99.github.io/faofishingreport/articles/tutorial-61.html)
 · [💾 FAO
 data](https://linbojun99.github.io/faofishingreport/articles/data.html)
 · [🌊 Fishing

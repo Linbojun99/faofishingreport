@@ -219,6 +219,8 @@ PowerPoint 到 `figures/pptx/`），表格保存在 `tables/`。
 
 - [🚀
   快速入门](https://linbojun99.github.io/faofishingreport/articles/zh/get-started.md)
+- [🎓 教程：西北太平洋（FAO
+  61区）从零到报告](https://linbojun99.github.io/faofishingreport/articles/zh/tutorial-61.md)
 - [💾 FAO
   数据：下载与自定义](https://linbojun99.github.io/faofishingreport/articles/zh/data.md)
 - [🌊

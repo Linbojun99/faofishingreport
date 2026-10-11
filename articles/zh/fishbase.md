@@ -5,14 +5,12 @@
 fao_settings(lang = "zh")   # 本文所有图表使用中文
 ```
 
-📦 **数据来源**：[FAO
-全球捕捞产量](https://www.fao.org/fishery/collection/capture/en)（Global
-Capture Production）**2026.1.0** 版（FAO 于 2026-03-30 发布，1950–2024
-年），下载地址
-[Capture_2026.1.0.zip](https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip)，许可证
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)。用
-[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
-查看你使用的版本和引用格式。
+📦
+**数据来源**：[FAO全球捕捞产量](https://www.fao.org/fishery/collection/capture/en)（Global
+Capture
+Production）**2026.1.0**版（FAO于2026-03-30发布，1950–2024年），下载地址[Capture_2026.1.0.zip](https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip)，许可证[CC
+BY
+4.0](https://creativecommons.org/licenses/by/4.0/)。用[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)查看你使用的版本和引用格式。
 
 FAO捕捞统计给出每个物种条目的渔获量，以及它在ASFIS名录中的英文名和学名，但不包含任何生物学信息。这些特征可以从FishBase（鱼类）和SeaLifeBase（其他水生动物和植物）获得：营养级、偏好温度、栖息类型、最大体长、对捕捞的脆弱性、恢复力和先验r。本包在两处用到它们：[渔获平均温度](https://linbojun99.github.io/faofishingreport/articles/zh/sst-mtc.md)用偏好温度，[CMSY++先验](https://linbojun99.github.io/faofishingreport/articles/zh/cmsy.md)用恢复力和先验r。
 

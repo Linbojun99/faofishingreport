@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../../articles/data.html">💾 FAO data: download and customise</a></li>
+<li><a class="dropdown-item" href="../../articles/tutorial-61.html">🎓 Tutorial: FAO area 61 from zero to a report</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../../articles/data.html">💾 FAO data: download and customise</a></li>
     <li><a class="dropdown-item" href="../../articles/fishing-areas.html">🌊 Fishing area analysis</a></li>
     <li><a class="dropdown-item" href="../../articles/species-countries.html">🐟 Species and countries</a></li>
     <li><a class="dropdown-item" href="../../articles/status-trends.html">📈 Composition, stock status and trends</a></li>
@@ -92,12 +94,10 @@
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_settings.html">fao_settings</a></span><span class="op">(</span>lang <span class="op">=</span> <span class="st">"zh"</span><span class="op">)</span>   <span class="co"># 本文所有图表使用中文</span></span></code></pre></div>
 <div class="fao-data-source">
 📦
-<strong>数据来源</strong>：<a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">FAO
-全球捕捞产量</a>（Global Capture Production）<strong>2026.1.0</strong>
-版（FAO 于 2026-03-30 发布，1950–2024 年），下载地址
-<a href="https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip" class="external-link">Capture_2026.1.0.zip</a>，许可证
-<a href="https://creativecommons.org/licenses/by/4.0/" class="external-link">CC BY 4.0</a>。用
-<code><a href="../../reference/fao_data_info.html">fao_data_info()</a></code> 查看你使用的版本和引用格式。
+<strong>数据来源</strong>：<a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">FAO全球捕捞产量</a>（Global
+Capture
+Production）<strong>2026.1.0</strong>版（FAO于2026-03-30发布，1950–2024年），下载地址<a href="https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip" class="external-link">Capture_2026.1.0.zip</a>，许可证<a href="https://creativecommons.org/licenses/by/4.0/" class="external-link">CC
+BY 4.0</a>。用<code><a href="../../reference/fao_data_info.html">fao_data_info()</a></code>查看你使用的版本和引用格式。
 </div>
 <p>与<a href="status-trends.html">📈
 类群结构、资源状态与趋势</a>中的分析一样，这些函数适用于任何产量数据：可以是<code><a href="../../reference/fishing_area_data.html">fishing_area_data()</a></code>得到的某个渔区，也可以是<code><a href="../../reference/load_fao_data.html">load_fao_data()</a></code>的任意子集。图表保存在<code>figures/png/summary/</code>，表格保存在<code>tables/</code>，文件名以渔区名称（或<code>label</code>的值）开头；函数以不可见的方式返回结果。</p>

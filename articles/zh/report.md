@@ -5,14 +5,12 @@
 fao_settings(lang = "zh")   # 本文所有图表使用中文
 ```
 
-📦 **数据来源**：[FAO
-全球捕捞产量](https://www.fao.org/fishery/collection/capture/en)（Global
-Capture Production）**2026.1.0** 版（FAO 于 2026-03-30 发布，1950–2024
-年），下载地址
-[Capture_2026.1.0.zip](https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip)，许可证
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)。用
-[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
-查看你使用的版本和引用格式。
+📦
+**数据来源**：[FAO全球捕捞产量](https://www.fao.org/fishery/collection/capture/en)（Global
+Capture
+Production）**2026.1.0**版（FAO于2026-03-30发布，1950–2024年），下载地址[Capture_2026.1.0.zip](https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip)，许可证[CC
+BY
+4.0](https://creativecommons.org/licenses/by/4.0/)。用[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)查看你使用的版本和引用格式。
 
 [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)一次调用即可为一个FAO主要渔区生成中文或英文的Word评估报告。它对该渔区运行本包的各项分析，把结果填入文字模板，插入带编号题注的图表，并列出正文引用的参考文献。
 
@@ -32,7 +30,7 @@ be completed”）。使用前请核对自动生成的文字。
 
 report <- fao_report(34, file = "FAO34_report_zh.docx", lang = "zh")
 report
-#> FAO report: /tmp/RtmpR5DG5Q/faofishingreport_site_1b7886c187f41/FAO34_report_zh.docx
+#> FAO report: /tmp/Rtmprkl2xQ/faofishingreport_site_1bf3818daf3bc/FAO34_report_zh.docx
 #> Sections: total, species, countries, groups, status, quality, diversity, fleets
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -212,7 +210,7 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 | \[8\] Shannon C E. A mathematical theory of communication\[J\]. Bell System Technical Journal, 1948, 27(3): 379-423. DOI: 10.1002/j.1538-7305.1948.tb01338.x. |
 | \[9\] Rhoades S A. The Herfindahl-Hirschman index\[J\]. Federal Reserve Bulletin, 1993, 79(3): 188-189. |
 | \[10\] R Core Team. R: A language and environment for statistical computing\[CP/OL\]. Vienna: R Foundation for Statistical Computing, 2026\[2026-10-11\]. <https://www.R-project.org/>. |
-| \[11\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.4.0\[CP/OL\]. 2026\[2026-10-11\]. <https://linbojun99.github.io/faofishingreport/>. |
+| \[11\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.5.0\[CP/OL\]. 2026\[2026-10-11\]. <https://linbojun99.github.io/faofishingreport/>. |
 
 ## 🧾 参数
 
@@ -288,7 +286,7 @@ CMSY++资源评估](https://linbojun99.github.io/faofishingreport/articles/zh/cm
 short <- fao_report(34, file = "FAO34_short.docx", lang = "zh", quality = FALSE, diversity = FALSE,
                     fleets = FALSE, pelagic = TRUE, status_smooth = TRUE)
 short
-#> FAO report: /tmp/RtmpR5DG5Q/faofishingreport_site_1b7886c187f41/FAO34_short.docx
+#> FAO report: /tmp/Rtmprkl2xQ/faofishingreport_site_1bf3818daf3bc/FAO34_short.docx
 #> Sections: total, species, countries, groups, status, pelagic
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -331,7 +329,7 @@ show_table(data.frame(reference = short_word$text[short_word$style_name == "FAO 
 | \[8\] Caddy J F. Toward a comparative evaluation of human impacts on fishery ecosystems of enclosed and semi‐enclosed seas\[J\]. Reviews in Fisheries Science, 1993, 1(1): 57-95. DOI: 10.1080/10641269309388535. |
 | \[9\] de Leiva Moreno J I, Agostini V N, Caddy J F, et al. Is the pelagic-demersal ratio from fishery landings a useful proxy for nutrient availability? A preliminary data exploration for the semi-enclosed seas around Europe\[J\]. ICES Journal of Marine Science, 2000, 57(4): 1091-1102. DOI: 10.1006/jmsc.2000.0705. |
 | \[10\] R Core Team. R: A language and environment for statistical computing\[CP/OL\]. Vienna: R Foundation for Statistical Computing, 2026\[2026-10-11\]. <https://www.R-project.org/>. |
-| \[11\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.4.0\[CP/OL\]. 2026\[2026-10-11\]. <https://linbojun99.github.io/faofishingreport/>. |
+| \[11\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.5.0\[CP/OL\]. 2026\[2026-10-11\]. <https://linbojun99.github.io/faofishingreport/>. |
 | \[12\] Hondorp D W, Breitburg D L, Davias L A. Eutrophication and Fisheries: Separating the Effects of Nitrogen Loads and Hypoxia on the Pelagic-to-Demersal Ratio and other Measures of Landings Composition\[J\]. Marine and Coastal Fisheries, 2010, 2(1): 339-361. DOI: 10.1577/C09-020.1. |
 
 分析方法段落描述的是各项分析的默认设置，例如资源开发状态图的纳入标准和突变点检测中15%的最小分段长度。修改这类设置（`status_smooth = TRUE`、`status_min_catch = 10000`、`species_h_value = 0.2`等）后，结果会随之改变，但需要自己在1.2
@@ -679,7 +677,7 @@ Fisheries* 14(3): 293–311.
 [doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
 
 Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture
-Production statistics. R package version 0.4.0.
+Production statistics. R package version 0.5.0.
 <https://linbojun99.github.io/faofishingreport/>
 
 Mann, H.B. (1945). Nonparametric tests against trend. *Econometrica*

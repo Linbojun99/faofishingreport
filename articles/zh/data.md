@@ -5,14 +5,12 @@
 fao_settings(lang = "zh")   # 本文所有图表使用中文
 ```
 
-📦 **数据来源**：[FAO
-全球捕捞产量](https://www.fao.org/fishery/collection/capture/en)（Global
-Capture Production）**2026.1.0** 版（FAO 于 2026-03-30 发布，1950–2024
-年），下载地址
-[Capture_2026.1.0.zip](https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip)，许可证
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)。用
-[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
-查看你使用的版本和引用格式。
+📦
+**数据来源**：[FAO全球捕捞产量](https://www.fao.org/fishery/collection/capture/en)（Global
+Capture
+Production）**2026.1.0**版（FAO于2026-03-30发布，1950–2024年），下载地址[Capture_2026.1.0.zip](https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip)，许可证[CC
+BY
+4.0](https://creativecommons.org/licenses/by/4.0/)。用[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)查看你使用的版本和引用格式。
 
 ## 📚 数据简介
 

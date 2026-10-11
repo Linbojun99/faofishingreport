@@ -9,6 +9,14 @@
   charts for the Eastern Central Atlantic (FAO area 34) and write a Word
   report in one call.
 
+- [🎓 Tutorial: the Northwest Pacific (FAO area 61) from zero to a
+  report](https://linbojun99.github.io/faofishingreport/articles/tutorial-61.md):
+
+  A complete worked example: get the FAO data, analyse FAO major fishing
+  area 61 step by step with every function of the package, read and
+  interpret each chart, find the files the package saves, and export the
+  assessment report as Word, LaTeX and PDF.
+
 - [💾 FAO data: download and
   customise](https://linbojun99.github.io/faofishingreport/articles/data.md):
 
@@ -107,6 +115,12 @@
 
   安装faofishingreport，更新FAO数据，为中东大西洋（FAO
   34渔区）绘制第一批图表，并一键生成Word报告。
+
+- [🎓 教程：西北太平洋（FAO
+  61区）从零到报告](https://linbojun99.github.io/faofishingreport/articles/zh/tutorial-61.md):
+
+  一个完整的实例：获取FAO数据，用本包的几乎全部函数一步步分析FAO
+  61渔区，看懂并解读每张图，找到本包保存的文件，并把评估报告导出为Word、LaTeX和PDF。
 
 - [💾
   FAO数据：下载与自定义](https://linbojun99.github.io/faofishingreport/articles/zh/data.md):

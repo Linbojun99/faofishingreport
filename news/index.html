@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,7 +19,9 @@
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/data.html">💾 FAO data: download and customise</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/tutorial-61.html">🎓 Tutorial: FAO area 61 from zero to a report</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/data.html">💾 FAO data: download and customise</a></li>
     <li><a class="dropdown-item" href="../articles/fishing-areas.html">🌊 Fishing area analysis</a></li>
     <li><a class="dropdown-item" href="../articles/species-countries.html">🐟 Species and countries</a></li>
     <li><a class="dropdown-item" href="../articles/status-trends.html">📈 Composition, stock status and trends</a></li>
@@ -50,6 +52,21 @@
       <small>Source: <a href="https://github.com/Linbojun99/faofishingreport/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.0" id="faofishingreport-050">faofishingreport 0.5.0<a class="anchor" aria-label="anchor" href="#faofishingreport-050"></a></h2>
+<div class="section level3">
+<h3 id="documentation-0-5-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-5-0"></a></h3>
+<ul><li>A new tutorial, in English and Chinese, takes a complete assessment of the Northwest Pacific (FAO area 61) from an empty R session to a finished report: getting the data and knowing its release, every analysis of the package step by step, how to read each chart and what it shows for the area (with the numbers computed when the page is built), the files the package saves and how to read them back, and the report as Word, LaTeX and PDF. Its CMSY++ charts are made by <code>data-raw/tutorial61_figures.R</code>.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="changes-0-5-0">Changes<a class="anchor" aria-label="anchor" href="#changes-0-5-0"></a></h3>
+<ul><li>
+<code><a href="../reference/fishing_area_data.html">fishing_area_data()</a></code>, <code><a href="../reference/fishing_area_species.html">fishing_area_species()</a></code>, <code><a href="../reference/fishing_area_country.html">fishing_area_country()</a></code>, <code><a href="../reference/species_country.html">species_country()</a></code>, <code><a href="../reference/country_species.html">country_species()</a></code> and <code><a href="../reference/country_analysis.html">country_analysis()</a></code> no longer print their intermediate tables in the console (they are returned and saved in <code>tables/</code>); <code>options(faofishingreport.verbose = TRUE)</code> prints them again.</li>
+<li>The colour bars of the maps are wider, so their labels no longer overlap.</li>
+<li>The trend segments of the older charts use <code>linewidth</code>, so ggplot2 no longer warns that <code>size</code> is deprecated for lines.</li>
+<li>The Chinese data-source box at the top of the website articles has no spaces between Chinese and Latin text.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.0" id="faofishingreport-040">faofishingreport 0.4.0<a class="anchor" aria-label="anchor" href="#faofishingreport-040"></a></h2>
 <div class="section level3">

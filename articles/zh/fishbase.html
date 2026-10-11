@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../../articles/data.html">💾 FAO data: download and customise</a></li>
+<li><a class="dropdown-item" href="../../articles/tutorial-61.html">🎓 Tutorial: FAO area 61 from zero to a report</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../../articles/data.html">💾 FAO data: download and customise</a></li>
     <li><a class="dropdown-item" href="../../articles/fishing-areas.html">🌊 Fishing area analysis</a></li>
     <li><a class="dropdown-item" href="../../articles/species-countries.html">🐟 Species and countries</a></li>
     <li><a class="dropdown-item" href="../../articles/status-trends.html">📈 Composition, stock status and trends</a></li>
@@ -92,12 +94,10 @@
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_settings.html">fao_settings</a></span><span class="op">(</span>lang <span class="op">=</span> <span class="st">"zh"</span><span class="op">)</span>   <span class="co"># 本文所有图表使用中文</span></span></code></pre></div>
 <div class="fao-data-source">
 📦
-<strong>数据来源</strong>：<a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">FAO
-全球捕捞产量</a>（Global Capture Production）<strong>2026.1.0</strong>
-版（FAO 于 2026-03-30 发布，1950–2024 年），下载地址
-<a href="https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip" class="external-link">Capture_2026.1.0.zip</a>，许可证
-<a href="https://creativecommons.org/licenses/by/4.0/" class="external-link">CC BY 4.0</a>。用
-<code><a href="../../reference/fao_data_info.html">fao_data_info()</a></code> 查看你使用的版本和引用格式。
+<strong>数据来源</strong>：<a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">FAO全球捕捞产量</a>（Global
+Capture
+Production）<strong>2026.1.0</strong>版（FAO于2026-03-30发布，1950–2024年），下载地址<a href="https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip" class="external-link">Capture_2026.1.0.zip</a>，许可证<a href="https://creativecommons.org/licenses/by/4.0/" class="external-link">CC
+BY 4.0</a>。用<code><a href="../../reference/fao_data_info.html">fao_data_info()</a></code>查看你使用的版本和引用格式。
 </div>
 <p>FAO捕捞统计给出每个物种条目的渔获量，以及它在ASFIS名录中的英文名和学名，但不包含任何生物学信息。这些特征可以从FishBase（鱼类）和SeaLifeBase（其他水生动物和植物）获得：营养级、偏好温度、栖息类型、最大体长、对捕捞的脆弱性、恢复力和先验r。本包在两处用到它们：<a href="sst-mtc.html">渔获平均温度</a>用偏好温度，<a href="cmsy.html">CMSY++先验</a>用恢复力和先验r。</p>
 <p>数据来自FishBase和SeaLifeBase数据表的固定副本（版本），由rOpenSci的rfishbase项目以parquet文件发布（Boettiger等2012；源代码：<a href="https://github.com/ropensci/rfishbase" class="external-link uri">https://github.com/ropensci/rfishbase</a>，数据文件：<a href="https://data.source.coop/cboettig/fishbase/" class="external-link uri">https://data.source.coop/cboettig/fishbase/</a>）。本包只按已发表的规则把它们与FAO物种条目匹配，每个匹配结果都附有核对所需的链接。</p>

@@ -5,14 +5,12 @@
 fao_settings(lang = "zh")   # 本文所有图表使用中文
 ```
 
-📦 **数据来源**：[FAO
-全球捕捞产量](https://www.fao.org/fishery/collection/capture/en)（Global
-Capture Production）**2026.1.0** 版（FAO 于 2026-03-30 发布，1950–2024
-年），下载地址
-[Capture_2026.1.0.zip](https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip)，许可证
-[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)。用
-[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
-查看你使用的版本和引用格式。
+📦
+**数据来源**：[FAO全球捕捞产量](https://www.fao.org/fishery/collection/capture/en)（Global
+Capture
+Production）**2026.1.0**版（FAO于2026-03-30发布，1950–2024年），下载地址[Capture_2026.1.0.zip](https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip)，许可证[CC
+BY
+4.0](https://creativecommons.org/licenses/by/4.0/)。用[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)查看你使用的版本和引用格式。
 
 与[📈
 类群结构、资源状态与趋势](https://linbojun99.github.io/faofishingreport/articles/zh/status-trends.md)中的分析一样，这些函数适用于任何产量数据：可以是[`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md)得到的某个渔区，也可以是[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)的任意子集。图表保存在`figures/png/summary/`，表格保存在`tables/`，文件名以渔区名称（或`label`的值）开头；函数以不可见的方式返回结果。

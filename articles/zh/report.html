@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,9 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../../articles/data.html">💾 FAO data: download and customise</a></li>
+<li><a class="dropdown-item" href="../../articles/tutorial-61.html">🎓 Tutorial: FAO area 61 from zero to a report</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../../articles/data.html">💾 FAO data: download and customise</a></li>
     <li><a class="dropdown-item" href="../../articles/fishing-areas.html">🌊 Fishing area analysis</a></li>
     <li><a class="dropdown-item" href="../../articles/species-countries.html">🐟 Species and countries</a></li>
     <li><a class="dropdown-item" href="../../articles/status-trends.html">📈 Composition, stock status and trends</a></li>
@@ -92,12 +94,10 @@
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_settings.html">fao_settings</a></span><span class="op">(</span>lang <span class="op">=</span> <span class="st">"zh"</span><span class="op">)</span>   <span class="co"># 本文所有图表使用中文</span></span></code></pre></div>
 <div class="fao-data-source">
 📦
-<strong>数据来源</strong>：<a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">FAO
-全球捕捞产量</a>（Global Capture Production）<strong>2026.1.0</strong>
-版（FAO 于 2026-03-30 发布，1950–2024 年），下载地址
-<a href="https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip" class="external-link">Capture_2026.1.0.zip</a>，许可证
-<a href="https://creativecommons.org/licenses/by/4.0/" class="external-link">CC BY 4.0</a>。用
-<code><a href="../../reference/fao_data_info.html">fao_data_info()</a></code> 查看你使用的版本和引用格式。
+<strong>数据来源</strong>：<a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">FAO全球捕捞产量</a>（Global
+Capture
+Production）<strong>2026.1.0</strong>版（FAO于2026-03-30发布，1950–2024年），下载地址<a href="https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip" class="external-link">Capture_2026.1.0.zip</a>，许可证<a href="https://creativecommons.org/licenses/by/4.0/" class="external-link">CC
+BY 4.0</a>。用<code><a href="../../reference/fao_data_info.html">fao_data_info()</a></code>查看你使用的版本和引用格式。
 </div>
 <p><code><a href="../../reference/fao_report.html">fao_report()</a></code>一次调用即可为一个FAO主要渔区生成中文或英文的Word评估报告。它对该渔区运行本包的各项分析，把结果填入文字模板，插入带编号题注的图表，并列出正文引用的参考文献。</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
@@ -114,7 +114,7 @@ be completed”）。使用前请核对自动生成的文字。</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_report_zh.docx"</span>, lang <span class="op">=</span> <span class="st">"zh"</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmpR5DG5Q/faofishingreport_site_1b7886c187f41/FAO34_report_zh.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/Rtmprkl2xQ/faofishingreport_site_1bf3818daf3bc/FAO34_report_zh.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, quality, diversity, fleets</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -537,7 +537,7 @@ Computing, 2026[2026-10-11]. <a href="https://www.R-project.org/" class="externa
 </tr>
 <tr class="odd">
 <td align="left">[11] Lin H. faofishingreport: Analyse and report FAO
-Global Capture Production statistics. R package version 0.4.0[CP/OL].
+Global Capture Production statistics. R package version 0.5.0[CP/OL].
 2026[2026-10-11]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>.</td>
 </tr>
 </tbody>
@@ -854,7 +854,7 @@ v5数据时的Huang等（2017）、Pyper和Peterman（1998）、Alajmi等（2024
 <code class="sourceCode R"><span><span class="va">short</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_short.docx"</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, quality <span class="op">=</span> <span class="cn">FALSE</span>, diversity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                    fleets <span class="op">=</span> <span class="cn">FALSE</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span>, status_smooth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">short</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmpR5DG5Q/faofishingreport_site_1b7886c187f41/FAO34_short.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/Rtmprkl2xQ/faofishingreport_site_1bf3818daf3bc/FAO34_short.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, pelagic</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -938,7 +938,7 @@ Computing, 2026[2026-10-11]. <a href="https://www.R-project.org/" class="externa
 </tr>
 <tr class="odd">
 <td align="left">[11] Lin H. faofishingreport: Analyse and report FAO
-Global Capture Production statistics. R package version 0.4.0[CP/OL].
+Global Capture Production statistics. R package version 0.5.0[CP/OL].
 2026[2026-10-11]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>.</td>
 </tr>
 <tr class="even">
@@ -1806,7 +1806,7 @@ London: Charles Griffin.</p>
 global catch data for inferences on the world’s marine fisheries.
 <em>Fish and Fisheries</em> 14(3): 293–311. <a href="https://doi.org/10.1111/j.1467-2979.2012.00469.x" class="external-link">doi:10.1111/j.1467-2979.2012.00469.x</a></p>
 <p>Lin, H. (2026). faofishingreport: Analyse and report FAO Global
-Capture Production statistics. R package version 0.4.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
+Capture Production statistics. R package version 0.5.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
 <p>Mann, H.B. (1945). Nonparametric tests against trend.
 <em>Econometrica</em> 13(3): 245–259. <a href="https://doi.org/10.2307/1907187" class="external-link">doi:10.2307/1907187</a></p>
 <p>R Core Team (2026). R: A language and environment for statistical

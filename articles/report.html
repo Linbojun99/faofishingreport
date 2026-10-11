@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,9 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/data.html">💾 FAO data: download and customise</a></li>
+<li><a class="dropdown-item" href="../articles/tutorial-61.html">🎓 Tutorial: FAO area 61 from zero to a report</a></li>
+    <li><hr class="dropdown-divider"></li>
+    <li><a class="dropdown-item" href="../articles/data.html">💾 FAO data: download and customise</a></li>
     <li><a class="dropdown-item" href="../articles/fishing-areas.html">🌊 Fishing area analysis</a></li>
     <li><a class="dropdown-item" href="../articles/species-countries.html">🐟 Species and countries</a></li>
     <li><a class="dropdown-item" href="../articles/status-trends.html">📈 Composition, stock status and trends</a></li>
@@ -120,7 +122,7 @@ Chinese reports). Check the generated text before you use it.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_report_en.docx"</span>, lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmpY2pYAp/faofishingreport_site_1b53056353401/FAO34_report_en.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmpgRZd8i/faofishingreport_site_1bcd1c9c5875/FAO34_report_en.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, quality, diversity, fleets</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -584,7 +586,7 @@ fisheries. Fish and Fisheries, 14(3), 293–311. <a href="https://doi.org/10.111
 </tr>
 <tr class="even">
 <td align="left">Lin, H. (2026). faofishingreport: Analyse and report
-FAO Global Capture Production statistics. R package version 0.4.0
+FAO Global Capture Production statistics. R package version 0.5.0
 [Computer software]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>
 </td>
 </tr>
@@ -977,7 +979,7 @@ on, and stock status plots with smoothed catches:</p>
 <code class="sourceCode R"><span><span class="va">short</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_short.docx"</span>, lang <span class="op">=</span> <span class="st">"en"</span>, quality <span class="op">=</span> <span class="cn">FALSE</span>, diversity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                    fleets <span class="op">=</span> <span class="cn">FALSE</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span>, status_smooth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">short</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmpY2pYAp/faofishingreport_site_1b53056353401/FAO34_short.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmpgRZd8i/faofishingreport_site_1bcd1c9c5875/FAO34_short.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, pelagic</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -1058,7 +1060,7 @@ fisheries. Fish and Fisheries, 14(3), 293–311. <a href="https://doi.org/10.111
 </tr>
 <tr class="odd">
 <td align="left">Lin, H. (2026). faofishingreport: Analyse and report
-FAO Global Capture Production statistics. R package version 0.4.0
+FAO Global Capture Production statistics. R package version 0.5.0
 [Computer software]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>
 </td>
 </tr>
@@ -2097,7 +2099,7 @@ London: Charles Griffin.</p>
 global catch data for inferences on the world’s marine fisheries.
 <em>Fish and Fisheries</em> 14(3): 293–311. <a href="https://doi.org/10.1111/j.1467-2979.2012.00469.x" class="external-link">doi:10.1111/j.1467-2979.2012.00469.x</a></p>
 <p>Lin, H. (2026). faofishingreport: Analyse and report FAO Global
-Capture Production statistics. R package version 0.4.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
+Capture Production statistics. R package version 0.5.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
 <p>Mann, H.B. (1945). Nonparametric tests against trend.
 <em>Econometrica</em> 13(3): 245–259. <a href="https://doi.org/10.2307/1907187" class="external-link">doi:10.2307/1907187</a></p>
 <p>R Core Team (2026). R: A language and environment for statistical
