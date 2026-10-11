@@ -1,1 +1,5 @@
-2026.1.0
+Version: 2026.1.0
+Released: 2026-03-30
+Years: 1950-2024
+URL: https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip
+Downloaded: 2026-10-10

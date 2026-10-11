@@ -13,6 +13,10 @@ FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = 
 fao_settings(lang = "zh")   # 本文所有图表使用中文
 ```
 
+```{r data-source, echo = FALSE, results = "asis"}
+data_source("zh")
+```
+
 汇总分析适用于任何产量数据：可以是 `fishing_area_data()` 得到的某个渔区，也可以是 `load_fao_data()` 的任意子集（见 [💾 FAO 数据](data.html)）。图表保存在 `figures/png/summary/`，表格保存在 `tables/`，文件名以渔区名称（或 `label` 的值）开头。
 
 ```{r, eval = FALSE}

@@ -15,22 +15,22 @@ diversity_concentration(
 )
 }
 \arguments{
-\item{area_data}{FAO catch data: `fishing_area_data()$area_data`, or any subset of
-`load_fao_data()` (e.g. one country, or several fishing areas).}
+\item{area_data}{FAO catch data: \code{fishing_area_data()$area_data}, or any subset of
+\code{load_fao_data()} (e.g. one country, or several fishing areas).}
 
 \item{top_n}{The number of largest species and countries for the top share. Default is 5.}
 
-\item{plot}{A logical value. If TRUE (default), charts are saved in `figures/png/summary/`.}
+\item{plot}{A logical value. If TRUE (default), charts are saved in \verb{figures/png/summary/}.}
 
-\item{table}{A logical value. If TRUE (default), tables are saved in `tables/`.}
+\item{table}{A logical value. If TRUE (default), tables are saved in \verb{tables/}.}
 
 \item{lang}{The language of the chart text and names: "en" (English), "zh" (Chinese) or
 "both" (Chinese and English). Default is NULL, which uses the language set with
-`fao_settings()` ("en" unless changed).}
+\code{fao_settings()} ("en" unless changed).}
 
 \item{pptx}{A logical value. If TRUE, charts are also saved as editable PowerPoint files in
-`figures/pptx/summary/`. Default is FALSE, which can be changed for all functions with
-`fao_settings(pptx = TRUE)`.}
+\verb{figures/pptx/summary/}. Default is FALSE, which can be changed for all functions with
+\code{fao_settings(pptx = TRUE)}.}
 
 \item{label}{The name used in the output file names. Default is the fishing area (or the
 country) of the data.}
@@ -41,13 +41,13 @@ Invisibly, a data frame with one row per year.
 \description{
 This function computes, for each year:
 \itemize{
-  \item the number of species reported (items identified to species with catch) and the
-        number of countries with catch;
-  \item the Shannon diversity index of the catch over FAO species items,
-        \eqn{H = -\sum p_i \ln p_i}, where \eqn{p_i} is the share of item \eqn{i};
-  \item the Herfindahl-Hirschman index (HHI) of species items and of countries, the sum of
-        squared percentage shares (0 to 10 000; above 2 500 is usually read as highly concentrated);
-  \item the share of the `top_n` largest species items and countries.
+\item the number of species reported (items identified to species with catch) and the
+number of countries with catch;
+\item the Shannon diversity index of the catch over FAO species items,
+\eqn{H = -\sum p_i \ln p_i}, where \eqn{p_i} is the share of item \eqn{i};
+\item the Herfindahl-Hirschman index (HHI) of species items and of countries, the sum of
+squared percentage shares (0 to 10 000; above 2 500 is usually read as highly concentrated);
+\item the share of the \code{top_n} largest species items and countries.
 }
 }
 \examples{
@@ -56,3 +56,15 @@ FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
 diversity_concentration(FAO34$area_data, lang = "zh")
 }
 }
+\seealso{
+Other summary analyses:
+\code{\link[=area_overview]{area_overview()}},
+\code{\link[=coastal_distant]{coastal_distant()}},
+\code{\link[=country_group_summary]{country_group_summary()}},
+\code{\link[=data_quality]{data_quality()}},
+\code{\link[=peak_trend]{peak_trend()}},
+\code{\link[=regime_shift]{regime_shift()}},
+\code{\link[=species_group_composition]{species_group_composition()}},
+\code{\link[=stock_status]{stock_status()}}
+}
+\concept{summary analyses}

@@ -11,13 +11,13 @@ load_fao_data(version = "latest", data_dir = fao_data_dir())
 newest of the downloaded releases and the bundled data. Use "bundled" for the
 data bundled with the package.}
 
-\item{data_dir}{The directory where downloaded releases are stored. Default is `fao_data_dir()`.}
+\item{data_dir}{The directory where downloaded releases are stored. Default is \code{fao_data_dir()}.}
 }
 \value{
-A data frame with the columns of `Global_Production_long`.
+A data frame with the columns of \code{Global_Production_long}.
 }
 \description{
-This function loads a release downloaded with `download_fao_data()`, or the
+This function loads a release downloaded with \code{download_fao_data()}, or the
 data bundled with the package.
 }
 \examples{
@@ -26,3 +26,11 @@ data <- load_fao_data()
 FAO34 <- subset(data, FAO.major.fishing.area..Name. == "Atlantic, Eastern Central")
 }
 }
+\seealso{
+Other FAO data:
+\code{\link[=check_fao_update]{check_fao_update()}},
+\code{\link[=download_fao_data]{download_fao_data()}},
+\code{\link[=fao_data_dir]{fao_data_dir()}},
+\code{\link[=fao_data_info]{fao_data_info()}}
+}
+\concept{FAO data}

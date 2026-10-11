@@ -76,8 +76,8 @@ fishing_area_data(
 
 \item{polygon_color}{The color of the borders of the polygons in the map plot. Default is "grey90".}
 
-\item{fill_scale}{The colour palette of the map. Default is NULL, which uses `map_palette` of
-`fao_settings()` ("deep-orange" unless changed); see `?fao_settings` for the choices.}
+\item{fill_scale}{The colour palette of the map. Default is NULL, which uses \code{map_palette} of
+\code{fao_settings()} ("deep-orange" unless changed); see \code{?fao_settings} for the choices.}
 
 \item{axis_title_size_map}{The size of the axis title text in the map plot. Default is 14.}
 
@@ -85,19 +85,19 @@ fishing_area_data(
 
 \item{legend_text_size_map}{The size of the legend text in the map plot. Default is 12.}
 
-\item{ZH}{A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the same as `lang = "zh"`.}
+\item{ZH}{A logical value to Chinese. Default is "FALSE". \code{ZH = TRUE} is the same as \code{lang = "zh"}.}
 
 \item{lang}{The language of the chart text: "en" (English), "zh" (Chinese) or "both"
-(Chinese and English). Default is NULL, which uses "zh" if `ZH = TRUE`, and otherwise the language
-set with `fao_settings()` ("en" unless changed).}
+(Chinese and English). Default is NULL, which uses "zh" if \code{ZH = TRUE}, and otherwise the language
+set with \code{fao_settings()} ("en" unless changed).}
 
 \item{data_version}{The FAO data release to use: "latest" (default) uses the newest of the
-releases downloaded with `download_fao_data()` and the data bundled with the package;
+releases downloaded with \code{download_fao_data()} and the data bundled with the package;
 "bundled" uses the data bundled with the package; or a release such as "2026.1.0".}
 
-\item{pptx}{A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are
-also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
-changed for all functions with `fao_settings(pptx = TRUE)`.}
+\item{pptx}{A logical value. Charts are always saved as PNG in \verb{figures/png/}; if TRUE they are
+also saved as editable PowerPoint files in \verb{figures/pptx/}. Default is FALSE, which can be
+changed for all functions with \code{fao_settings(pptx = TRUE)}.}
 }
 \value{
 A data frame containing data for the specified fishing area.
@@ -112,3 +112,9 @@ If the plot parameter is TRUE, it will also generate and save plots to the figur
 FAO34 <- fishing_area_data(area_name="Atlantic, Eastern Central", plot = TRUE, timeseries_analysis=TRUE)
 }
 }
+\seealso{
+Other fishing area analyses:
+\code{\link[=fishing_area_country]{fishing_area_country()}},
+\code{\link[=fishing_area_species]{fishing_area_species()}}
+}
+\concept{fishing area analyses}

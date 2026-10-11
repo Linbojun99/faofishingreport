@@ -11,6 +11,7 @@
 #'        Default is 10; use `Inf` for all.
 #' @param recent_years The number of most recent years used for the trend. Default is 10.
 #' @return Invisibly, a data frame with one row per series (the first row is the total).
+#' @family summary analyses
 #' @export
 #' @examples
 #' \dontrun{
@@ -98,6 +99,7 @@ peak_trend <- function(area_data, by = c("species", "country", "area"), top_n = 
 #' @param recent_years The number of most recent years used for the trend. Default is 10.
 #' @param data_version The FAO data release to use; see `fishing_area_data()`.
 #' @return Invisibly, a data frame with one row per area (the first row is the total).
+#' @family summary analyses
 #' @export
 #' @examples
 #' \dontrun{

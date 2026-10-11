@@ -10,6 +10,10 @@ source("_setup.R")
 FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
 ```
 
+```{r data-source, echo = FALSE, results = "asis"}
+data_source()
+```
+
 The summary analyses take any catch data: a fishing area from `fishing_area_data()`, or any subset
 of `load_fao_data()` (see [💾 FAO data](data.html)). Their charts are saved in
 `figures/png/summary/` and their tables in `tables/`, with the name of the area at the start of the

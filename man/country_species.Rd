@@ -35,18 +35,18 @@ country_species(
 the percentage labels are placed in the faceted time series plot. Default is 10.}
 
 \item{h_value}{The minimum segment size, which must be greater than the
-number of regressors. For the model `ts_data ~ 1`, this means `h_value`
+number of regressors. For the model \code{ts_data ~ 1}, this means \code{h_value}
 should be greater than 1. The default value is 0.15.}
 
-\item{ZH}{A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the same as `lang = "zh"`.}
+\item{ZH}{A logical value to Chinese. Default is "FALSE". \code{ZH = TRUE} is the same as \code{lang = "zh"}.}
 
 \item{lang}{The language of the chart text and names: "en" (English), "zh" (Chinese) or "both"
-(Chinese and English). Default is NULL, which uses "zh" if `ZH = TRUE`, and otherwise the language
-set with `fao_settings()` ("en" unless changed).}
+(Chinese and English). Default is NULL, which uses "zh" if \code{ZH = TRUE}, and otherwise the language
+set with \code{fao_settings()} ("en" unless changed).}
 
-\item{pptx}{A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are
-also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
-changed for all functions with `fao_settings(pptx = TRUE)`.}
+\item{pptx}{A logical value. Charts are always saved as PNG in \verb{figures/png/}; if TRUE they are
+also saved as editable PowerPoint files in \verb{figures/pptx/}. Default is FALSE, which can be
+changed for all functions with \code{fao_settings(pptx = TRUE)}.}
 }
 \description{
 This function takes the fishing area data and a country name,
@@ -58,3 +58,9 @@ based on production within the specified rank range.
 country_species(FAO34[["area_data"]], country_name = "Morocco",c(1, 10), plot=TRUE,table=TRUE) #area_data=Fao34
 }
 }
+\seealso{
+Other species and country analyses:
+\code{\link[=country_analysis]{country_analysis()}},
+\code{\link[=species_country]{species_country()}}
+}
+\concept{species and country analyses}

@@ -36,6 +36,7 @@
 #' Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global catch data for
 #' inferences on the world's marine fisheries. Fish and Fisheries 14: 293-311.
 #' \doi{10.1111/j.1467-2979.2012.00469.x}
+#' @family summary analyses
 #' @export
 #' @examples
 #' \dontrun{

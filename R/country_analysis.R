@@ -26,6 +26,7 @@
 #'        "bundled" uses the data bundled with the package; or a release such as "2026.1.0".
 #' @param fill_scale The colour palette of the map. Default is NULL, which uses `map_palette` of
 #'        `fao_settings()` ("deep-orange" unless changed); see `?fao_settings` for the choices.
+#' @family species and country analyses
 #' @export
 #'
 #' @examples

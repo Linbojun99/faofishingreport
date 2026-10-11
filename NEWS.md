@@ -4,6 +4,8 @@
 
 * A package website (<https://linbojun99.github.io/faofishingreport/>) with a guide for every part of the package, illustrated with FAO area 34, in English with a Chinese version (switch with the button at the top right).
 * New logo.
+* `fao_data_info()` shows which FAO release the analyses use, when FAO published it, the years it covers, the file it was downloaded from, its licence and a citation for reports. Every page of the website shows the release used and its download link.
+* Function reference pages of the website link to the previous and next function and list the other functions of their group; help pages link to related functions ("See also").
 * `fao_settings(data_dir = ...)` keeps downloaded FAO data in a chosen folder, e.g. one shared by a team; `fao_data_dir()` returns it.
 * `fao_settings()` sets, for the session, the default language, chart theme, font size, category palette, map palette, map centre (longitudes -180 to 180 or 0 to 360), map projection (longitude-latitude, Robinson, Mollweide, Equal Earth, Winkel Tripel, Mercator, or any PROJ string or EPSG code), map colours, grid lines, PNG resolution and PowerPoint output.
 * Maps are drawn with sf: countries come from Natural Earth and are matched on ISO3 codes instead of a hand-made name list, FAO area boundaries are simplified for world maps, and maps centred on the Pacific join the parts that the data split at the dateline. Fishing area maps show land without country borders.

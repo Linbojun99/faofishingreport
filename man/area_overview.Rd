@@ -16,29 +16,41 @@ area_overview(
 \arguments{
 \item{recent_years}{The number of most recent years used for the trend. Default is 10.}
 
-\item{plot}{A logical value. If TRUE (default), charts are saved in `figures/png/summary/`.}
+\item{plot}{A logical value. If TRUE (default), charts are saved in \verb{figures/png/summary/}.}
 
-\item{table}{A logical value. If TRUE (default), tables are saved in `tables/`.}
+\item{table}{A logical value. If TRUE (default), tables are saved in \verb{tables/}.}
 
 \item{lang}{The language of the chart text and names: "en" (English), "zh" (Chinese) or
 "both" (Chinese and English). Default is NULL, which uses the language set with
-`fao_settings()` ("en" unless changed).}
+\code{fao_settings()} ("en" unless changed).}
 
 \item{pptx}{A logical value. If TRUE, charts are also saved as editable PowerPoint files in
-`figures/pptx/summary/`. Default is FALSE, which can be changed for all functions with
-`fao_settings(pptx = TRUE)`.}
+\verb{figures/pptx/summary/}. Default is FALSE, which can be changed for all functions with
+\code{fao_settings(pptx = TRUE)}.}
 
-\item{data_version}{The FAO data release to use; see `fishing_area_data()`.}
+\item{data_version}{The FAO data release to use; see \code{fishing_area_data()}.}
 }
 \value{
 Invisibly, a data frame with one row per area (the first row is the total).
 }
 \description{
 This function compares the FAO major marine fishing areas: their catch over time, peak year,
-catch in the last year as a percentage of the peak, and recent trend (see `peak_trend()`).
+catch in the last year as a percentage of the peak, and recent trend (see \code{peak_trend()}).
 }
 \examples{
 \dontrun{
 area_overview(lang = "zh")
 }
 }
+\seealso{
+Other summary analyses:
+\code{\link[=coastal_distant]{coastal_distant()}},
+\code{\link[=country_group_summary]{country_group_summary()}},
+\code{\link[=data_quality]{data_quality()}},
+\code{\link[=diversity_concentration]{diversity_concentration()}},
+\code{\link[=peak_trend]{peak_trend()}},
+\code{\link[=regime_shift]{regime_shift()}},
+\code{\link[=species_group_composition]{species_group_composition()}},
+\code{\link[=stock_status]{stock_status()}}
+}
+\concept{summary analyses}

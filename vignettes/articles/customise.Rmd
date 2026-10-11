@@ -10,6 +10,10 @@ source("_setup.R")
 FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
 ```
 
+```{r data-source, echo = FALSE, results = "asis"}
+data_source()
+```
+
 All charts and maps follow a few settings, set once per R session with `fao_settings()`. Run it
 without arguments to see the current settings:
 

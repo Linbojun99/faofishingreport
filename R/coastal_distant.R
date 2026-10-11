@@ -13,6 +13,7 @@
 #' @param top_n The number of distant-water countries shown separately. Default is 8.
 #' @return Invisibly, a list with `yearly` (catch by coastal and distant-water countries),
 #'         `distant` (catch by distant-water country) and `table`.
+#' @family summary analyses
 #' @export
 #' @examples
 #' \dontrun{

@@ -19,8 +19,8 @@ stock_status(
 )
 }
 \arguments{
-\item{area_data}{FAO catch data: `fishing_area_data()$area_data`, or any subset of
-`load_fao_data()` (e.g. one country, or several fishing areas).}
+\item{area_data}{FAO catch data: \code{fishing_area_data()$area_data}, or any subset of
+\code{load_fao_data()} (e.g. one country, or several fishing areas).}
 
 \item{taxon_levels}{Taxonomic levels of the items to include: any of "species", "genus",
 "family" and "higher". Default is species, genus and family.}
@@ -34,24 +34,24 @@ stock_status(
 \item{smooth}{A logical value. If TRUE, catches are smoothed with a 3-year running mean before
 they are classified. Default is FALSE.}
 
-\item{plot}{A logical value. If TRUE (default), charts are saved in `figures/png/summary/`.}
+\item{plot}{A logical value. If TRUE (default), charts are saved in \verb{figures/png/summary/}.}
 
-\item{table}{A logical value. If TRUE (default), tables are saved in `tables/`.}
+\item{table}{A logical value. If TRUE (default), tables are saved in \verb{tables/}.}
 
 \item{lang}{The language of the chart text and names: "en" (English), "zh" (Chinese) or
 "both" (Chinese and English). Default is NULL, which uses the language set with
-`fao_settings()` ("en" unless changed).}
+\code{fao_settings()} ("en" unless changed).}
 
 \item{pptx}{A logical value. If TRUE, charts are also saved as editable PowerPoint files in
-`figures/pptx/summary/`. Default is FALSE, which can be changed for all functions with
-`fao_settings(pptx = TRUE)`.}
+\verb{figures/pptx/summary/}. Default is FALSE, which can be changed for all functions with
+\code{fao_settings(pptx = TRUE)}.}
 
 \item{label}{The name used in the output file names. Default is the fishing area (or the
 country) of the data.}
 }
 \value{
-Invisibly, a list with `yearly` (number of stocks and catch by status and year),
-        `stocks` (one row per stock) and `status` (the status of each stock in each year).
+Invisibly, a list with \code{yearly} (number of stocks and catch by status and year),
+\code{stocks} (one row per stock) and \code{status} (the status of each stock in each year).
 }
 \description{
 This function classifies the catch series of each species, every year, by its catch relative
@@ -62,16 +62,16 @@ share of catch in each status over time.
 A "stock" is the yearly catch of one FAO species item, summed over all countries in the data
 (usually one fishing area). Each year of a stock is classified as:
 \itemize{
-  \item Developing: before the year of peak catch, with catch at most 50\% of the peak;
-  \item Exploited: catch above 50\% of the peak;
-  \item Over-exploited: after the peak, catch between 10\% and 50\% of the peak;
-  \item Collapsed: after the peak, catch below 10\% of the peak;
-  \item Rebuilding: after the peak and after a collapse, catch back between 10\% and 50\% of the peak.
+\item Developing: before the year of peak catch, with catch at most 50\\% of the peak;
+\item Exploited: catch above 50\\% of the peak;
+\item Over-exploited: after the peak, catch between 10\\% and 50\\% of the peak;
+\item Collapsed: after the peak, catch below 10\\% of the peak;
+\item Rebuilding: after the peak and after a collapse, catch back between 10\\% and 50\\% of the peak.
 }
 Only series that meet the inclusion criteria are classified: items identified to species,
-genus or family (pooled groups such as "Marine fishes nei" are excluded), at least `min_years`
-years from the first to the last year with catch, at least `min_consecutive` consecutive years
-with catch, and a total catch of at least `min_catch` tonnes. Years after the last reported
+genus or family (pooled groups such as "Marine fishes nei" are excluded), at least \code{min_years}
+years from the first to the last year with catch, at least \code{min_consecutive} consecutive years
+with catch, and a total catch of at least \code{min_catch} tonnes. Years after the last reported
 catch count as zero catch.
 
 The method uses catch data only. A falling catch can also come from changes in management,
@@ -88,3 +88,15 @@ Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global catch da
 inferences on the world's marine fisheries. Fish and Fisheries 14: 293-311.
 \doi{10.1111/j.1467-2979.2012.00469.x}
 }
+\seealso{
+Other summary analyses:
+\code{\link[=area_overview]{area_overview()}},
+\code{\link[=coastal_distant]{coastal_distant()}},
+\code{\link[=country_group_summary]{country_group_summary()}},
+\code{\link[=data_quality]{data_quality()}},
+\code{\link[=diversity_concentration]{diversity_concentration()}},
+\code{\link[=peak_trend]{peak_trend()}},
+\code{\link[=regime_shift]{regime_shift()}},
+\code{\link[=species_group_composition]{species_group_composition()}}
+}
+\concept{summary analyses}

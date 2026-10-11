@@ -13,6 +13,10 @@ source("../_setup.R")
 fao_settings(lang = "zh")   # 本文所有图表使用中文
 ```
 
+```{r data-source, echo = FALSE, results = "asis"}
+data_source("zh")
+```
+
 ## 📚 数据简介
 
 faofishingreport 使用的是 **FAO 全球捕捞产量**（Global Capture Production）统计：1950 年以来每个国家按物种条目和 FAO 主要渔区统计的年产量。数据只包括捕捞渔业（不含水产养殖），单位为活重吨。
@@ -112,6 +116,19 @@ FAO34 <- fishing_area_data("Atlantic, Eastern Central", data_version = "2023.1.1
 ```{r, eval = FALSE}
 data <- load_fao_data()                  # 最新数据
 data <- load_fao_data("2023.1.1")        # 已下载的某个版本
+```
+
+### 📝 版本信息与引用
+
+`fao_data_info()` 显示分析使用的是哪个版本、FAO 的发布日期、包含的年份、下载的文件、许可证，以及写报告用的引用格式。它的 `version` 参数和 `load_fao_data()` 相同：
+
+```{r}
+fao_data_info()
+```
+
+```{r, eval = FALSE}
+fao_data_info()$citation           # 只看引用格式
+fao_data_info("2025.1.0")          # 某个已下载的版本
 ```
 
 ## 📋 数据格式

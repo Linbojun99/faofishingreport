@@ -85,18 +85,18 @@ fishing_area_country(
 \item{facet_ncol}{A numeric value specifying the number of columns to be used in facet_wrap. Default is 2.}
 
 \item{h_value}{The minimum segment size, which must be greater than the
-number of regressors. For the model `ts_data ~ 1`, this means `h_value`
+number of regressors. For the model \code{ts_data ~ 1}, this means \code{h_value}
 should be greater than 1. The default value is 0.15.}
 
-\item{ZH}{A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the same as `lang = "zh"`.}
+\item{ZH}{A logical value to Chinese. Default is "FALSE". \code{ZH = TRUE} is the same as \code{lang = "zh"}.}
 
 \item{lang}{The language of the chart text and names: "en" (English), "zh" (Chinese) or "both"
-(Chinese and English). Default is NULL, which uses "zh" if `ZH = TRUE`, and otherwise the language
-set with `fao_settings()` ("en" unless changed).}
+(Chinese and English). Default is NULL, which uses "zh" if \code{ZH = TRUE}, and otherwise the language
+set with \code{fao_settings()} ("en" unless changed).}
 
-\item{pptx}{A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are
-also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
-changed for all functions with `fao_settings(pptx = TRUE)`.}
+\item{pptx}{A logical value. Charts are always saved as PNG in \verb{figures/png/}; if TRUE they are
+also saved as editable PowerPoint files in \verb{figures/pptx/}. Default is FALSE, which can be
+changed for all functions with \code{fao_settings(pptx = TRUE)}.}
 }
 \value{
 NULL. The function saves the generated plots to the specified directory if plot = TRUE.
@@ -109,3 +109,9 @@ This function analyzes the fishing area data and generates plots for specified c
 fishing_area_country(FAO34[["area_data"]], c(1, 10), plot=TRUE,table=TRUE,h_value=0.15) #area_data=Fao34
 }
 }
+\seealso{
+Other fishing area analyses:
+\code{\link[=fishing_area_data]{fishing_area_data()}},
+\code{\link[=fishing_area_species]{fishing_area_species()}}
+}
+\concept{fishing area analyses}

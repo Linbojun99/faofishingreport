@@ -7,39 +7,39 @@
 fao_settings(..., reset = FALSE)
 }
 \arguments{
-\item{...}{Settings to change, as `name = value`:
+\item{...}{Settings to change, as \code{name = value}:
 \describe{
-  \item{lang}{Default language of charts: "en" (default), "zh" or "both". The `lang`
-    argument of a function still takes precedence.}
-  \item{theme}{Chart theme: "bw" (default), "classic", "minimal", "light", "linedraw",
-    "gray" or "dark", or a ggplot2 theme object such as `ggplot2::theme_bw(base_size = 14)`.
-    Maps and pie charts keep a minimal theme.}
-  \item{base_size}{Base font size of the chart theme. Default is 12.}
-  \item{font}{Font family for chart text; see `fao_font()`.}
-  \item{palette}{Colours of categories (countries, species, groups): a palette of the
-    ggsci package ("npg" (default), "lancet", "nejm", "jama", "aaas", "jco", "d3", ...),
-    of RColorBrewer ("Set1", "Set2", "Dark2", "Paired", ...), of base R
-    (`grDevices::palette.pals()`, e.g. "Okabe-Ito" or "Tableau 10"; or `grDevices::hcl.pals()`,
-    e.g. "viridis" or "Dark 3"), or a vector of colours.}
-  \item{map_palette}{Colours of map values: a Material Design palette of ggsci
-    ("deep-orange" (default), "blue", "teal", "red", ...), an RColorBrewer palette ("YlOrRd",
-    "Blues", ...), a viridis option ("viridis", "magma", "plasma", "inferno", "cividis",
-    "mako", "rocket", "turbo"), a `grDevices::hcl.pals()` name, or a vector of colours.}
-  \item{map_center}{Central longitude of maps: 0 (default) for longitudes -180 to 180
-    (Atlantic in the centre), or 180 for longitudes 0 to 360 (Pacific in the centre). The
-    strings "-180-180" and "0-360" are also accepted.}
-  \item{map_projection}{Map projection: "longlat" (default, plain longitude-latitude),
-    "robinson", "mollweide", "equal_earth", "winkel_tripel" or "mercator", or any PROJ string
-    or EPSG code (e.g. "EPSG:3857"; then `map_center` is not applied).}
-  \item{map_land}{Fill colour of countries without data on maps. Default is "grey90".}
-  \item{map_ocean}{Fill colour of the ocean on maps. Default is NA (no fill).}
-  \item{grid}{Whether charts have background grid lines (and maps graticules). Default is FALSE.}
-  \item{dpi}{Resolution of the PNG files. Default is 600.}
-  \item{pptx}{Whether charts are also saved as editable PowerPoint files (needs the eoffice
-    package). Default is FALSE.}
-  \item{data_dir}{Folder where `download_fao_data()` saves FAO releases and where all
-    functions look for them, e.g. a folder shared by a team. Default is NULL, the user data
-    folder of R; see `fao_data_dir()`.}
+\item{lang}{Default language of charts: "en" (default), "zh" or "both". The \code{lang}
+argument of a function still takes precedence.}
+\item{theme}{Chart theme: "bw" (default), "classic", "minimal", "light", "linedraw",
+"gray" or "dark", or a ggplot2 theme object such as \code{ggplot2::theme_bw(base_size = 14)}.
+Maps and pie charts keep a minimal theme.}
+\item{base_size}{Base font size of the chart theme. Default is 12.}
+\item{font}{Font family for chart text; see \code{fao_font()}.}
+\item{palette}{Colours of categories (countries, species, groups): a palette of the
+ggsci package ("npg" (default), "lancet", "nejm", "jama", "aaas", "jco", "d3", ...),
+of RColorBrewer ("Set1", "Set2", "Dark2", "Paired", ...), of base R
+(\code{grDevices::palette.pals()}, e.g. "Okabe-Ito" or "Tableau 10"; or \code{grDevices::hcl.pals()},
+e.g. "viridis" or "Dark 3"), or a vector of colours.}
+\item{map_palette}{Colours of map values: a Material Design palette of ggsci
+("deep-orange" (default), "blue", "teal", "red", ...), an RColorBrewer palette ("YlOrRd",
+"Blues", ...), a viridis option ("viridis", "magma", "plasma", "inferno", "cividis",
+"mako", "rocket", "turbo"), a \code{grDevices::hcl.pals()} name, or a vector of colours.}
+\item{map_center}{Central longitude of maps: 0 (default) for longitudes -180 to 180
+(Atlantic in the centre), or 180 for longitudes 0 to 360 (Pacific in the centre). The
+strings "-180-180" and "0-360" are also accepted.}
+\item{map_projection}{Map projection: "longlat" (default, plain longitude-latitude),
+"robinson", "mollweide", "equal_earth", "winkel_tripel" or "mercator", or any PROJ string
+or EPSG code (e.g. "EPSG:3857"; then \code{map_center} is not applied).}
+\item{map_land}{Fill colour of countries without data on maps. Default is "grey90".}
+\item{map_ocean}{Fill colour of the ocean on maps. Default is NA (no fill).}
+\item{grid}{Whether charts have background grid lines (and maps graticules). Default is FALSE.}
+\item{dpi}{Resolution of the PNG files. Default is 600.}
+\item{pptx}{Whether charts are also saved as editable PowerPoint files (needs the eoffice
+package). Default is FALSE.}
+\item{data_dir}{Folder where \code{download_fao_data()} saves FAO releases and where all
+functions look for them, e.g. a folder shared by a team. Default is NULL, the user data
+folder of R; see \code{fao_data_dir()}.}
 }}
 
 \item{reset}{A logical value. If TRUE, all settings go back to their defaults first.}
@@ -50,8 +50,8 @@ Invisibly, a list of the current settings.
 \description{
 This function sets, for the rest of the R session, how all functions of the package draw
 and save charts and maps. Call it without arguments to see the current settings, or with
-`reset = TRUE` to go back to the defaults. Each setting is stored as the R option
-`faofishingreport.<name>`, so it can also be set with `options()`.
+\code{reset = TRUE} to go back to the defaults. Each setting is stored as the R option
+\verb{faofishingreport.<name>}, so it can also be set with \code{options()}.
 }
 \examples{
 \dontrun{
@@ -61,3 +61,9 @@ fao_settings(map_center = 180, map_projection = "robinson", map_palette = "YlOrR
 fao_settings(reset = TRUE)                       # back to the defaults
 }
 }
+\seealso{
+Other settings and language:
+\code{\link[=fao_font]{fao_font()}},
+\code{\link[=fao_translate]{fao_translate()}}
+}
+\concept{settings and language}

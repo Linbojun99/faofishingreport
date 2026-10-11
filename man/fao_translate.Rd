@@ -29,3 +29,9 @@ in English.
 fao_translate(c("Morocco", "Spain"), "country", "both")
 }
 }
+\seealso{
+Other settings and language:
+\code{\link[=fao_font]{fao_font()}},
+\code{\link[=fao_settings]{fao_settings()}}
+}
+\concept{settings and language}

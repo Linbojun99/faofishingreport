@@ -13,6 +13,10 @@ FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = 
 fao_settings(lang = "zh")   # 本文所有图表使用中文
 ```
 
+```{r data-source, echo = FALSE, results = "asis"}
+data_source("zh")
+```
+
 这些函数以 `fishing_area_data()` 返回的渔区数据（这里是 34 渔区）为输入，聚焦于单个物种或单个国家。`country_analysis()` 则分析一个国家在全部 FAO 渔区的捕捞情况。
 
 ```{r, eval = FALSE}
