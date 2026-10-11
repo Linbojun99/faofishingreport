@@ -24,3 +24,17 @@ test_that("names are translated with official FAO names", {
   expect_equal(fao_translate(c("Morocco", NA), "country", "zh")[2], NA_character_)
   expect_equal(fao_translate("Atlantic, Eastern Central", "area", "zh"), "中东大西洋")
 })
+
+test_that("species without an FAO Chinese name get their FishBase name", {
+  expect_equal(fao_translate("Pacific cod", "species", "zh"), "太平洋鳕")
+  expect_equal(fao_translate("Pacific cod", "species", "both"), "太平洋鳕 Pacific cod")
+  expect_equal(fao_translate("Pacific ocean perch", "species", "zh"), "Pacific ocean perch")
+  fishbase <- fao_fishbase_names_zh()
+  expect_equal(anyDuplicated(fishbase$name_en), 0)
+  expect_true(all(grepl("^[一-鿿]+$", fishbase$name_zh)))
+  # the names of the FAO lists come first
+  official <- fao_name_table()
+  official <- official[official$type == "species" & !official$name_en %in% fishbase$name_en, ]
+  expect_equal(anyDuplicated(fao_name_table()[c("type", "name_en")]), 0)
+  expect_gt(nrow(official), 0)
+})

@@ -265,6 +265,14 @@ fao_translate("Atlantic, Eastern Central", "area", "zh")
 
 函数按原顺序返回名称。几个英文名对应同一个中文名时（例如两个物种条目的中文名相同），会同时保留英文名，以便在图表和表格中区分。
 
+FAO名录中有许多物种条目没有中文名。对于只对应一个物种的条目，本包使用该物种在[FishBase](https://www.fishbase.se)或[SeaLifeBase](https://www.sealifebase.se)中的中文俗名：即其中给中国、用简体字书写的名称，优先使用FishBase标为首选的名称（Froese和Pauly，2026；Palomares和Pauly，2026）。FAO的名称始终优先。这张名称表连同每个物种的其他名称和来源，保存在`inst/extdata/species_names_zh_fishbase.csv`中，由`data-raw/build_species_names_zh.R`根据[rfishbase](https://github.com/ropensci/rfishbase)包读取的FishBase数据表生成：
+
+```{r}
+fao_translate(c("Pacific cod", "Yellowfin sole", "Pacific ocean perch"), "species", "zh")
+```
+
+Pacific ocean perch保留英文名：FishBase中没有给中国的简体中文名。
+
 FAO没有为ISSCAAP物种类群、大类和收入分组提供中文名称；本包的译名保存在`inst/extdata/group_names_zh.csv`，所有图表标签保存在`inst/extdata/chart_labels.csv`。如需修改措辞，可在包的源代码中编辑这些文件，然后重新安装。
 
 ## 🧩 扩展：按分区的渔获
@@ -339,9 +347,15 @@ FAO. *Global Capture Production*. Fisheries and Aquaculture Division, Rome.
 FAO. *Terms of use of FAO statistical databases*.
 <https://www.fao.org/contact-us/terms/db-terms-of-use/en>
 
+Froese, R. and Pauly, D. (Eds.) (2026). FishBase. World Wide Web electronic publication, version
+06/2026. <https://www.fishbase.se>
+
 Garibaldi, L. (2012). The FAO global capture production database: a six-decade effort to catch
 the trend. *Marine Policy* 36(3): 760–768.
 [doi:10.1016/j.marpol.2011.10.024](https://doi.org/10.1016/j.marpol.2011.10.024)
+
+Palomares, M. L. D. and Pauly, D. (Eds.) (2026). SeaLifeBase. World Wide Web electronic
+publication, version 06/2026. <https://www.sealifebase.se>
 
 Zeller, D. and Pauly, D. (2018). The 'presentist bias' in time-series data: implications for
 fisheries science and policy. *Marine Policy* 90: 14–19.

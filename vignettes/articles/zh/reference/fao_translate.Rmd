@@ -69,6 +69,30 @@ A character vector of translated names.
 
 </details>
 
+## 详细说明
+
+FAO名录中有许多物种条目没有中文名。对于只对应一个物种的条目，使用该物种在FishBase或SeaLifeBase中的中文俗名（Froese和Pauly，2026；Palomares和Pauly，2026）：即其中给中国、以普通话记录、用简体字书写的名称；优先使用FishBase标为首选的名称，不使用用于同物异名的名称，也不使用有多个同等常用名称的物种。这张名称表，连同其他名称和每个名称的来源，保存在`inst/extdata/species_names_zh_fishbase.csv`中，由`data-raw/build_species_names_zh.R`生成。FAO的名称始终优先。
+
+<details class="fao-en"><summary>English</summary>
+
+Many FAO species items have no Chinese name in the FAO lists. For those identified to one
+species, the Chinese common name of the species in FishBase or SeaLifeBase is used (Froese and
+Pauly 2026; Palomares and Pauly 2026): the name given for China in Mandarin Chinese, in
+simplified characters, preferring the name FishBase marks as preferred and leaving out names
+applied to synonyms and species with several equally used names. The table, with the other
+names and the source of each, is `inst/extdata/species_names_zh_fishbase.csv`, made by
+`data-raw/build_species_names_zh.R`. FAO names always come first.
+
+</details>
+
+## 参考文献
+
+Froese, R. and Pauly, D. (Eds.) (2026). FishBase. World Wide Web electronic publication, version
+06/2026. <https://www.fishbase.se>
+
+Palomares, M.L.D. and Pauly, D. (Eds.) (2026). SeaLifeBase. World Wide Web electronic
+publication, version 06/2026. <https://www.sealifebase.se>
+
 ## 另请参阅
 
 Other settings and language:

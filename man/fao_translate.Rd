@@ -24,10 +24,26 @@ the FAO data, and the ASFIS species list). Names without an official Chinese
 name are filled from the tables bundled with the package, and otherwise kept
 in English.
 }
+\details{
+Many FAO species items have no Chinese name in the FAO lists. For those identified to one
+species, the Chinese common name of the species in FishBase or SeaLifeBase is used (Froese and
+Pauly 2026; Palomares and Pauly 2026): the name given for China in Mandarin Chinese, in
+simplified characters, preferring the name FishBase marks as preferred and leaving out names
+applied to synonyms and species with several equally used names. The table, with the other
+names and the source of each, is \code{inst/extdata/species_names_zh_fishbase.csv}, made by
+\code{data-raw/build_species_names_zh.R}. FAO names always come first.
+}
 \examples{
 \dontrun{
 fao_translate(c("Morocco", "Spain"), "country", "both")
 }
+}
+\references{
+Froese, R. and Pauly, D. (Eds.) (2026). FishBase. World Wide Web electronic publication, version
+06/2026. \url{https://www.fishbase.se}
+
+Palomares, M.L.D. and Pauly, D. (Eds.) (2026). SeaLifeBase. World Wide Web electronic
+publication, version 06/2026. \url{https://www.sealifebase.se}
 }
 \seealso{
 Other settings and language:

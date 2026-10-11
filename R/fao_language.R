@@ -7,10 +7,24 @@
 #' name are filled from the tables bundled with the package, and otherwise kept
 #' in English.
 #'
+#' Many FAO species items have no Chinese name in the FAO lists. For those identified to one
+#' species, the Chinese common name of the species in FishBase or SeaLifeBase is used (Froese and
+#' Pauly 2026; Palomares and Pauly 2026): the name given for China in Mandarin Chinese, in
+#' simplified characters, preferring the name FishBase marks as preferred and leaving out names
+#' applied to synonyms and species with several equally used names. The table, with the other
+#' names and the source of each, is `inst/extdata/species_names_zh_fishbase.csv`, made by
+#' `data-raw/build_species_names_zh.R`. FAO names always come first.
+#'
 #' @param x A character vector of English names.
 #' @param type The kind of name: "country", "species" or "area".
 #' @param lang The output language: "en" (English), "zh" (Chinese) or "both" (Chinese and English).
 #' @return A character vector of translated names.
+#' @references
+#' Froese, R. and Pauly, D. (Eds.) (2026). FishBase. World Wide Web electronic publication, version
+#' 06/2026. \url{https://www.fishbase.se}
+#'
+#' Palomares, M.L.D. and Pauly, D. (Eds.) (2026). SeaLifeBase. World Wide Web electronic
+#' publication, version 06/2026. \url{https://www.sealifebase.se}
 #' @family settings and language
 #' @export
 #' @examples
@@ -163,7 +177,20 @@ fao_name_table <- function(data_dir = fao_data_dir()) {
       }
     }
   }
+  # Species items without an FAO Chinese name: the Chinese common name of the species in FishBase
+  # or SeaLifeBase (records for China, simplified characters; data-raw/build_species_names_zh.R)
+  names_table <- rbind(names_table, fao_fishbase_names_zh())
   names_table[!duplicated(names_table[c("type", "name_en")]), ]
+}
+
+fao_fishbase_names_zh <- function() {
+  if (is.null(.fao_cache$fishbase_names_zh)) {
+    x <- utils::read.csv(system.file("extdata", "species_names_zh_fishbase.csv", package = "faofishingreport"),
+                         fileEncoding = "UTF-8-BOM", stringsAsFactors = FALSE)
+    .fao_cache$fishbase_names_zh <- data.frame(type = "species", name_en = x$name_en, name_zh = x$name_zh,
+                                              stringsAsFactors = FALSE)
+  }
+  .fao_cache$fishbase_names_zh
 }
 
 # Builds the English -> Chinese name table from the code lists of a Capture release.
