@@ -477,7 +477,7 @@ show_table(top30[, c("rank", "Stock", "species", "scientific_name", "first_year"
 | 16 | MAC_34 | 大西洋鲭 | Scomber scombrus | 2010 | 0.78 | 0.95 | 0.07 | overfished |
 | 17 | GAL_34 | 黑斑十指马鲅 | Galeoides decadactylus | 1984 | 0.78 | 1.20 | 0.08 | overfished |
 | 18 | SOP_34 | 南方粉对虾 | Penaeus notialis | 1991 | 1.18 | 0.90 | 0.61 | maximally sustainably fished |
-| 19 | BON_34 | Atlantic bonito | Sarda sarda | 1950 | 0.75 | 1.74 | 0.03 | overfished |
+| 19 | BON_34 | 狐鲣 | Sarda sarda | 1950 | 0.75 | 1.74 | 0.03 | overfished |
 | 20 | ILI_34 | 西非鰳 | Ilisha africana | 1976 | 0.83 | 1.24 | 0.12 | maximally sustainably fished |
 | 21 | BSH_34 | 大青鲨 | Prionace glauca | 2009 | 0.74 | 0.94 | 0.05 | overfished |
 | 22 | HOM_34 | 大西洋竹筴鱼 | Trachurus trachurus | 1969 | 0.97 | 1.26 | 0.20 | maximally sustainably fished |
@@ -485,9 +485,9 @@ show_table(top30[, c("rank", "Stock", "species", "scientific_name", "first_year"
 | 24 | LTA_34 | 小鮪 | Euthynnus alletteratus | 1978 | 0.65 | 1.57 | 0.00 | overfished |
 | 25 | HMY_34 | False scad | Caranx rhonchus | 1971 | 0.72 | 1.35 | 0.05 | overfished |
 | 26 | HKM_34 | 塞内加尔无须鳕 | Merluccius senegalensis | 1972 | 0.23 | 0.52 | 0.00 | overfished |
-| 27 | PAR_34 | Red pandora | Pagellus bellottii | 1977 | 0.88 | 1.23 | 0.17 | maximally sustainably fished |
-| 28 | GPW_34 | White grouper | Epinephelus aeneus | 2013 | 0.93 | 1.13 | 0.26 | maximally sustainably fished |
-| 29 | MAW_34 | West African Spanish mackerel | Scomberomorus tritor | 1978 | 0.88 | 1.11 | 0.22 | maximally sustainably fished |
+| 27 | PAR_34 | 贝氏小鲷 | Pagellus bellottii | 1977 | 0.88 | 1.23 | 0.17 | maximally sustainably fished |
+| 28 | GPW_34 | 青铜石斑鱼 | Epinephelus aeneus | 2013 | 0.93 | 1.13 | 0.26 | maximally sustainably fished |
+| 29 | MAW_34 | 西非马鲛 | Scomberomorus tritor | 1978 | 0.88 | 1.11 | 0.22 | maximally sustainably fished |
 | 30 | CVJ_34 | Crevalle jack | Caranx hippos | 1969 | 0.55 | 1.14 | 0.00 | overfished |
 
 其中大眼裸颌鲈（bigeye grunt，*Brachydeuterus

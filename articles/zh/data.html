@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../../articles/tutorial-61.html">🎓 Tutorial: FAO area 61 from zero to a report</a></li>
+<li><a class="dropdown-item" href="../../articles/tutorial-67.html">🎓 Tutorial: FAO area 67 from zero to a report</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../../articles/data.html">💾 FAO data: download and customise</a></li>
     <li><a class="dropdown-item" href="../../articles/fishing-areas.html">🌊 Fishing area analysis</a></li>
@@ -722,6 +722,11 @@ ASFIS物种名录；没有官方中文名的条目由本包自带的对照表补
 </tbody>
 </table>
 <p>函数按原顺序返回名称。几个英文名对应同一个中文名时（例如两个物种条目的中文名相同），会同时保留英文名，以便在图表和表格中区分。</p>
+<p>FAO名录中有许多物种条目没有中文名。对于只对应一个物种的条目，本包使用该物种在<a href="https://www.fishbase.se" class="external-link">FishBase</a>或<a href="https://www.sealifebase.se" class="external-link">SeaLifeBase</a>中的中文俗名：即其中给中国、用简体字书写的名称，优先使用FishBase标为首选的名称（Froese和Pauly，2026；Palomares和Pauly，2026）。FAO的名称始终优先。这张名称表连同每个物种的其他名称和来源，保存在<code>inst/extdata/species_names_zh_fishbase.csv</code>中，由<code>data-raw/build_species_names_zh.R</code>根据<a href="https://github.com/ropensci/rfishbase" class="external-link">rfishbase</a>包读取的FishBase数据表生成：</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_translate.html">fao_translate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Pacific cod"</span>, <span class="st">"Yellowfin sole"</span>, <span class="st">"Pacific ocean perch"</span><span class="op">)</span>, <span class="st">"species"</span>, <span class="st">"zh"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "太平洋鳕"            "糙鲽"                "Pacific ocean perch"</span></span></code></pre></div>
+<p>Pacific ocean perch保留英文名：FishBase中没有给中国的简体中文名。</p>
 <p>FAO没有为ISSCAAP物种类群、大类和收入分组提供中文名称；本包的译名保存在<code>inst/extdata/group_names_zh.csv</code>，所有图表标签保存在<code>inst/extdata/chart_labels.csv</code>。如需修改措辞，可在包的源代码中编辑这些文件，然后重新安装。</p>
 </div>
 <div class="section level2">
@@ -730,7 +735,7 @@ ASFIS物种名录；没有官方中文名的条目由本包自带的对照表补
 <p>本节和下一节使用全球捕捞产量以外的FAO数据集，属于本包的扩展功能，不纳入Word报告。</p>
 <p>FAO还为四个区域发布了按<strong>分区</strong>（区域渔业组织使用的FAO渔区下一级单元）统计的渔获：GFCM（37区，如37.1.1巴利阿里、37.2.1亚得里亚海、37.4.2黑海）、CECAF（34区）、东南大西洋（47区）和RECOFI（海湾、阿曼海和阿拉伯海西南部，属于51区的一部分）。<code><a href="../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>第一次使用时下载最新版本（约5
 MB），保存在数据文件夹中，并按上面的格式返回，另外多三列：<code>Division</code>、<code>Division..Name.</code>和<code>Region</code>。</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">med</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/load_fao_divisions.html">load_fao_divisions</a></span><span class="op">(</span><span class="st">"GFCM"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../../reference/pelagic_demersal.html">pelagic_demersal</a></span><span class="op">(</span><span class="va">med</span>, by <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span>          <span class="co"># 每个分区一条 P/D 序列</span></span>
 <span><span class="fu"><a href="../../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">med</span>, by <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span>    <span class="co"># 每个分区的渔获平均温度和海表温度</span></span></code></pre></div>
@@ -751,7 +756,7 @@ MB；</li>
 MB。</li>
 </ul>
 <p>两个函数和<code><a href="../../reference/load_fao_divisions.html">load_fao_divisions()</a></code>一样，第一次运行时下载数据并保存在数据文件夹。贸易数量是产品重量，不是活重；就业是人数，不是全时当量。把它们和渔获数据对接的分析（<code><a href="../../reference/catch_trade.html">catch_trade()</a></code>、<code><a href="../../reference/employment_summary.html">employment_summary()</a></code>、<code><a href="../../reference/catch_per_fisher.html">catch_per_fisher()</a></code>）见<a href="trade-employment.html">🚢 贸易与就业</a>。</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trade</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/load_fao_trade.html">load_fao_trade</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">employment</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/load_fao_employment.html">load_fao_employment</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -781,7 +786,7 @@ nei”。在某些渔区，这部分产量占比很大。</li>
 <h2 id="维护者须知更新包自带数据">🔄 维护者须知：更新包自带数据<a class="anchor" aria-label="anchor" href="#%E7%BB%B4%E6%8A%A4%E8%80%85%E9%A1%BB%E7%9F%A5%E6%9B%B4%E6%96%B0%E5%8C%85%E8%87%AA%E5%B8%A6%E6%95%B0%E6%8D%AE"></a>
 </h2>
 <p>包自带数据、中文名称和分组可以用以下命令根据FAO最新版本重新生成：</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="ex">Rscript</span> data-raw/update_bundled_data.R</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="ex">Rscript</span> data-raw/update_bundled_data.R</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="参考文献">📖 参考文献<a class="anchor" aria-label="anchor" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"></a>
@@ -800,9 +805,13 @@ Rome: FAO. <a href="https://www.fao.org/fishery/collection/asfis/en" class="exte
 <p>FAO. <em>Global Capture Production</em>. Fisheries and Aquaculture
 Division, Rome. <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link uri">https://www.fao.org/fishery/collection/capture/en</a></p>
 <p>FAO. <em>Terms of use of FAO statistical databases</em>. <a href="https://www.fao.org/contact-us/terms/db-terms-of-use/en" class="external-link uri">https://www.fao.org/contact-us/terms/db-terms-of-use/en</a></p>
+<p>Froese, R. and Pauly, D. (Eds.) (2026). FishBase. World Wide Web
+electronic publication, version 06/2026. <a href="https://www.fishbase.se" class="external-link uri">https://www.fishbase.se</a></p>
 <p>Garibaldi, L. (2012). The FAO global capture production database: a
 six-decade effort to catch the trend. <em>Marine Policy</em> 36(3):
 760–768. <a href="https://doi.org/10.1016/j.marpol.2011.10.024" class="external-link">doi:10.1016/j.marpol.2011.10.024</a></p>
+<p>Palomares, M. L. D. and Pauly, D. (Eds.) (2026). SeaLifeBase. World
+Wide Web electronic publication, version 06/2026. <a href="https://www.sealifebase.se" class="external-link uri">https://www.sealifebase.se</a></p>
 <p>Zeller, D. and Pauly, D. (2018). The ‘presentist bias’ in time-series
 data: implications for fisheries science and policy. <em>Marine
 Policy</em> 90: 14–19. <a href="https://doi.org/10.1016/j.marpol.2018.01.015" class="external-link">doi:10.1016/j.marpol.2018.01.015</a></p>

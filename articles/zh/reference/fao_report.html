@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../../../articles/tutorial-61.html">🎓 Tutorial: FAO area 61 from zero to a report</a></li>
+<li><a class="dropdown-item" href="../../../articles/tutorial-67.html">🎓 Tutorial: FAO area 67 from zero to a report</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../../../articles/data.html">💾 FAO data: download and customise</a></li>
     <li><a class="dropdown-item" href="../../../articles/fishing-areas.html">🌊 Fishing area analysis</a></li>
@@ -215,7 +215,7 @@ working directory. The other formats get the same name with
 </dd>
 <dt><code>format</code></dt>
 <dd>
-要输出的格式，可以是”docx”（默认，Word）、“latex”（<code>.tex</code>文件，其图片保存在旁边的<code>&lt;name&gt;_figures/</code>文件夹中，用XeLaTeX编译；中文报告使用ctexart文档类）和”pdf”（用XeLaTeX把LaTeX文件编译为PDF；安装了tinytex包时通过它编译，并自动安装缺少的LaTeX宏包）中的一个或多个。各项分析只运行一次，各种格式的文字、图表、表格和参考文献完全相同。字体取自本机已安装的字体：中文在Windows上为仿宋、黑体和楷体（FangSong、SimHei、KaiTi），在macOS上为STFangsong、Heiti
+要输出的格式，可以是”docx”（默认，Word）、“latex”（<code>.tex</code>文件，其图片保存在旁边的<code>&lt;name&gt;_figures/</code>文件夹中，用XeLaTeX编译；中文报告使用ctexart文档类）和”pdf”（用XeLaTeX把LaTeX文件编译为PDF；安装了tinytex包时通过它编译，并自动安装缺少的LaTeX宏包）中的一个或多个。TinyTeX只需安装一次：<code>install.packages("tinytex")</code>，然后<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::install_tinytex()</a></code>；较旧的TinyTeX用<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::reinstall_tinytex()</a></code>更新。各项分析只运行一次，各种格式的文字、图表、表格和参考文献完全相同。字体取自本机已安装的字体：中文在Windows上为仿宋、黑体和楷体（FangSong、SimHei、KaiTi），在macOS上为STFangsong、Heiti
 SC和Kaiti SC，其他系统使用TeX Live自带的Fandol字体。
 <details class="fao-en"><summary>
 English
@@ -225,11 +225,14 @@ The formats to write, one or more of “docx” (default: Word), “latex” (a
 <code>&lt;name&gt;_figures/</code> next to it, compiled with XeLaTeX;
 Chinese reports use the ctexart class) and “pdf” (the LaTeX file
 compiled to PDF with XeLaTeX, through the tinytex package when it is
-installed, which also installs missing LaTeX packages). The analyses run
-once for all formats, and the formats have the same text, figures,
-tables and references. Fonts are taken from those of the computer: for
-Chinese, FangSong, SimHei and KaiTi on Windows, STFangsong, Heiti SC and
-Kaiti SC on macOS, else the Fandol fonts of TeX Live.
+installed, which also installs missing LaTeX packages). Install TinyTeX
+once with <code>install.packages("tinytex")</code> and
+<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::install_tinytex()</a></code>; an old TinyTeX is updated with
+<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::reinstall_tinytex()</a></code>. The analyses run once for all
+formats, and the formats have the same text, figures, tables and
+references. Fonts are taken from those of the computer: for Chinese,
+FangSong, SimHei and KaiTi on Windows, STFangsong, Heiti SC and Kaiti SC
+on macOS, else the Fandol fonts of TeX Live.
 </details>
 </dd>
 <dt><code>lang</code></dt>

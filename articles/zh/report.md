@@ -30,7 +30,7 @@ be completed”）。使用前请核对自动生成的文字。
 
 report <- fao_report(34, file = "FAO34_report_zh.docx", lang = "zh")
 report
-#> FAO report: /tmp/Rtmprkl2xQ/faofishingreport_site_1bf3818daf3bc/FAO34_report_zh.docx
+#> FAO report: /tmp/Rtmp6y5rpK/faofishingreport_site_1bdc641b0492b/FAO34_report_zh.docx
 #> Sections: total, species, countries, groups, status, quality, diversity, fleets
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -210,7 +210,7 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 | \[8\] Shannon C E. A mathematical theory of communication\[J\]. Bell System Technical Journal, 1948, 27(3): 379-423. DOI: 10.1002/j.1538-7305.1948.tb01338.x. |
 | \[9\] Rhoades S A. The Herfindahl-Hirschman index\[J\]. Federal Reserve Bulletin, 1993, 79(3): 188-189. |
 | \[10\] R Core Team. R: A language and environment for statistical computing\[CP/OL\]. Vienna: R Foundation for Statistical Computing, 2026\[2026-10-11\]. <https://www.R-project.org/>. |
-| \[11\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.5.0\[CP/OL\]. 2026\[2026-10-11\]. <https://linbojun99.github.io/faofishingreport/>. |
+| \[11\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.6.0\[CP/OL\]. 2026\[2026-10-11\]. <https://linbojun99.github.io/faofishingreport/>. |
 
 ## 🧾 参数
 
@@ -286,7 +286,7 @@ CMSY++资源评估](https://linbojun99.github.io/faofishingreport/articles/zh/cm
 short <- fao_report(34, file = "FAO34_short.docx", lang = "zh", quality = FALSE, diversity = FALSE,
                     fleets = FALSE, pelagic = TRUE, status_smooth = TRUE)
 short
-#> FAO report: /tmp/Rtmprkl2xQ/faofishingreport_site_1bf3818daf3bc/FAO34_short.docx
+#> FAO report: /tmp/Rtmp6y5rpK/faofishingreport_site_1bdc641b0492b/FAO34_short.docx
 #> Sections: total, species, countries, groups, status, pelagic
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -329,7 +329,7 @@ show_table(data.frame(reference = short_word$text[short_word$style_name == "FAO 
 | \[8\] Caddy J F. Toward a comparative evaluation of human impacts on fishery ecosystems of enclosed and semi‐enclosed seas\[J\]. Reviews in Fisheries Science, 1993, 1(1): 57-95. DOI: 10.1080/10641269309388535. |
 | \[9\] de Leiva Moreno J I, Agostini V N, Caddy J F, et al. Is the pelagic-demersal ratio from fishery landings a useful proxy for nutrient availability? A preliminary data exploration for the semi-enclosed seas around Europe\[J\]. ICES Journal of Marine Science, 2000, 57(4): 1091-1102. DOI: 10.1006/jmsc.2000.0705. |
 | \[10\] R Core Team. R: A language and environment for statistical computing\[CP/OL\]. Vienna: R Foundation for Statistical Computing, 2026\[2026-10-11\]. <https://www.R-project.org/>. |
-| \[11\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.5.0\[CP/OL\]. 2026\[2026-10-11\]. <https://linbojun99.github.io/faofishingreport/>. |
+| \[11\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.6.0\[CP/OL\]. 2026\[2026-10-11\]. <https://linbojun99.github.io/faofishingreport/>. |
 | \[12\] Hondorp D W, Breitburg D L, Davias L A. Eutrophication and Fisheries: Separating the Effects of Nitrogen Loads and Hypoxia on the Pelagic-to-Demersal Ratio and other Measures of Landings Composition\[J\]. Marine and Coastal Fisheries, 2010, 2(1): 339-361. DOI: 10.1577/C09-020.1. |
 
 分析方法段落描述的是各项分析的默认设置，例如资源开发状态图的纳入标准和突变点检测中15%的最小分段长度。修改这类设置（`status_smooth = TRUE`、`status_min_catch = 10000`、`species_h_value = 0.2`等）后，结果会随之改变，但需要自己在1.2
@@ -430,11 +430,35 @@ LaTeX版本沿用Word文件的格式（见[📐
 
 中文字体没有粗体字形：与Word一样，加粗的中文（如标题）通过加粗笔画实现。
 
-**编译。**安装了tinytex包（`install.packages("tinytex")`；如果本机没有LaTeX，再运行[`tinytex::install_tinytex()`](https://rdrr.io/pkg/tinytex/man/install_tinytex.html)）时，用`tinytex::latexmk(engine = "xelatex")`生成PDF，第一次运行时会自动安装缺少的LaTeX宏包（ctex、xeCJK、booktabs、longtable、needspace、xurl等）；没有tinytex时，系统路径中须有`xelatex`。要修改LaTeX版本的文字，编辑`.tex`文件后重新编译即可，例如`tinytex::xelatex("reports/FAO34_report_zh.tex")`。
+### 安装TinyTeX（只需一次）
 
-如果tinytex因为本机的TeX Live比在线仓库旧而无法安装宏包（提示”Local TeX
-Live (2024) is older than remote repository”），可以更新TeX
-Live（[`tinytex::reinstall_tinytex()`](https://rdrr.io/pkg/tinytex/man/install_tinytex.html)），或从对应年份的存档安装宏包：`tlmgr --repository https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final install ctex`。
+PDF用XeLaTeX编译。最简单的办法是安装**TinyTeX**：一个可以在R中安装和更新的精简版TeX
+Live（Xie 2019）。只需运行一次：
+
+``` r
+
+install.packages("tinytex")
+tinytex::install_tinytex()     # 下载TinyTeX（约100 MB），安装到用户文件夹
+tinytex::is_tinytex()          # TRUE：R能找到它
+tinytex::tinytex_root()        # 安装位置
+```
+
+TinyTeX在macOS上安装到`~/Library/TinyTeX`，在Windows上安装到`%APPDATA%/TinyTeX`，在Linux上安装到`~/.TinyTeX`，不需要管理员权限。安装后请重启R。不需要手动安装任何LaTeX宏包：第一次生成PDF报告时会自动安装所需的宏包（中文用的ctex和xeCJK，以及booktabs、longtable、needspace、xurl等），只在第一次需要几分钟。
+
+``` r
+
+fao_report(34, lang = "zh", format = "pdf")   # 第一次运行时还会安装LaTeX宏包
+```
+
+| 情况 | 怎么做 |
+|----|----|
+| 电脑上没有LaTeX | `install.packages("tinytex")`，然后[`tinytex::install_tinytex()`](https://rdrr.io/pkg/tinytex/man/install_tinytex.html) |
+| TinyTeX安装时间较早，宏包装不上，或提示”Local TeX Live (2024) is older than remote repository” | [`tinytex::reinstall_tinytex()`](https://rdrr.io/pkg/tinytex/man/install_tinytex.html)：重新安装最新版TinyTeX，并装回原有的宏包 |
+| 使用其他TeX发行版（MacTeX、TeX Live、MiKTeX） | 只要`xelatex`在系统路径中即可使用；缺少的宏包用其自带的管理工具安装（如`tlmgr install ctex`） |
+| 修改了`.tex`文件 | 重新编译：`tinytex::xelatex("reports/FAO34_report_zh.tex")` |
+| 只需要LaTeX源文件 | `format = "latex"`不需要安装LaTeX |
+
+没有安装tinytex包时，本包调用系统路径中的`xelatex`（为生成书签编译两次）。
 
 ## 🔖 引文与参考文献
 
@@ -625,6 +649,14 @@ show_table(refs[, c("key", "type", "author", "year", "title")], n = 5)
 
 ## 📖 参考文献
 
+**Software for the LaTeX and PDF report**
+
+Xie, Y. (2019). TinyTeX: A lightweight, cross-platform, and
+easy-to-maintain LaTeX distribution based on TeX Live. *TUGboat*, 40(1),
+30–32. <https://tug.org/TUGboat/tb40-1/tb124xie-tinytex.pdf>; R package
+tinytex: <https://CRAN.R-project.org/package=tinytex>,
+<https://yihui.org/tinytex/>
+
 **标准与引文格式**
 
 中华人民共和国国家质量监督检验检疫总局，中国国家标准化管理委员会.
@@ -677,7 +709,7 @@ Fisheries* 14(3): 293–311.
 [doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
 
 Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture
-Production statistics. R package version 0.5.0.
+Production statistics. R package version 0.6.0.
 <https://linbojun99.github.io/faofishingreport/>
 
 Mann, H.B. (1945). Nonparametric tests against trend. *Econometrica*

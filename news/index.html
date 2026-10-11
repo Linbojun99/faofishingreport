@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,7 +19,7 @@
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/tutorial-61.html">🎓 Tutorial: FAO area 61 from zero to a report</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/tutorial-67.html">🎓 Tutorial: FAO area 67 from zero to a report</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/data.html">💾 FAO data: download and customise</a></li>
     <li><a class="dropdown-item" href="../articles/fishing-areas.html">🌊 Fishing area analysis</a></li>
@@ -53,10 +53,29 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.6.0" id="faofishingreport-060">faofishingreport 0.6.0<a class="anchor" aria-label="anchor" href="#faofishingreport-060"></a></h2>
+<div class="section level3">
+<h3 id="documentation-0-6-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-6-0"></a></h3>
+<ul><li>The tutorial now takes the Northeast Pacific (FAO area 67: the eastern Bering Sea, the Gulf of Alaska and the coasts of Canada and the United States) from an empty R session to a finished report, in English and Chinese. It replaces the tutorial on area 61, and the old pages redirect to it. Area 67 shows clearly how fleets and management shape catch statistics: the distant-water fleets of Japan and the USSR, the 200-mile fishery zones of 1977 and the growth of the US fleets. Its CMSY++ charts are made by <code>data-raw/tutorial67_figures.R</code>.</li>
+<li>How to install TinyTeX, which compiles the PDF report, is explained in the report article (new section “Install TinyTeX (once)”), in the tutorial and in the help of <code><a href="../reference/fao_report.html">fao_report()</a></code>, with what to do when TinyTeX is old or another LaTeX distribution is used.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="changes-0-6-0">Changes<a class="anchor" aria-label="anchor" href="#changes-0-6-0"></a></h3>
+<ul><li>
+<code><a href="../reference/fao_translate.html">fao_translate()</a></code> and the Chinese charts give Chinese names to 1,144 species items that have none in the FAO lists, taken from the Chinese common names of FishBase and SeaLifeBase (the names given for China, in simplified characters; FAO names always come first). The table is <code>inst/extdata/species_names_zh_fishbase.csv</code>, made by <code>data-raw/build_species_names_zh.R</code>.</li>
+<li>
+<code><a href="../reference/species_country.html">species_country()</a></code> reports breaks in a country’s series as messages instead of printing them.</li>
+<li>
+<code><a href="../reference/species_country.html">species_country()</a></code>, <code><a href="../reference/country_species.html">country_species()</a></code> and <code><a href="../reference/country_analysis.html">country_analysis()</a></code> no longer print the structure of an intermediate table in the console.</li>
+<li>
+<code><a href="../reference/fishing_area_species.html">fishing_area_species()</a></code>, <code><a href="../reference/fishing_area_country.html">fishing_area_country()</a></code>, <code><a href="../reference/species_country.html">species_country()</a></code>, <code><a href="../reference/country_species.html">country_species()</a></code> and <code><a href="../reference/country_analysis.html">country_analysis()</a></code> create the <code>tables/</code> folder only when they write tables (<code>table = TRUE</code>).</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0" id="faofishingreport-050">faofishingreport 0.5.0<a class="anchor" aria-label="anchor" href="#faofishingreport-050"></a></h2>
 <div class="section level3">
 <h3 id="documentation-0-5-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-5-0"></a></h3>
-<ul><li>A new tutorial, in English and Chinese, takes a complete assessment of the Northwest Pacific (FAO area 61) from an empty R session to a finished report: getting the data and knowing its release, every analysis of the package step by step, how to read each chart and what it shows for the area (with the numbers computed when the page is built), the files the package saves and how to read them back, and the report as Word, LaTeX and PDF. Its CMSY++ charts are made by <code>data-raw/tutorial61_figures.R</code>.</li>
+<ul><li>A new tutorial, in English and Chinese, takes a complete assessment of the Northwest Pacific (FAO area 61) from an empty R session to a finished report (replaced by the tutorial on area 67 in 0.6.0): getting the data and knowing its release, every analysis of the package step by step, how to read each chart and what it shows for the area (with the numbers computed when the page is built), the files the package saves and how to read them back, and the report as Word, LaTeX and PDF. Its CMSY++ charts are made by <code>data-raw/tutorial61_figures.R</code>.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="changes-0-5-0">Changes<a class="anchor" aria-label="anchor" href="#changes-0-5-0"></a></h3>

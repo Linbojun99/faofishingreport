@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/tutorial-61.html">🎓 Tutorial: FAO area 61 from zero to a report</a></li>
+<li><a class="dropdown-item" href="../articles/tutorial-67.html">🎓 Tutorial: FAO area 67 from zero to a report</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/data.html">💾 FAO data: download and customise</a></li>
     <li><a class="dropdown-item" href="../articles/fishing-areas.html">🌊 Fishing area analysis</a></li>
@@ -122,7 +122,7 @@ Chinese reports). Check the generated text before you use it.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_report_en.docx"</span>, lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmpgRZd8i/faofishingreport_site_1bcd1c9c5875/FAO34_report_en.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmplhORJj/faofishingreport_site_1bb6333d4f500/FAO34_report_en.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, quality, diversity, fleets</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -586,7 +586,7 @@ fisheries. Fish and Fisheries, 14(3), 293–311. <a href="https://doi.org/10.111
 </tr>
 <tr class="even">
 <td align="left">Lin, H. (2026). faofishingreport: Analyse and report
-FAO Global Capture Production statistics. R package version 0.5.0
+FAO Global Capture Production statistics. R package version 0.6.0
 [Computer software]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>
 </td>
 </tr>
@@ -979,7 +979,7 @@ on, and stock status plots with smoothed catches:</p>
 <code class="sourceCode R"><span><span class="va">short</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_short.docx"</span>, lang <span class="op">=</span> <span class="st">"en"</span>, quality <span class="op">=</span> <span class="cn">FALSE</span>, diversity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                    fleets <span class="op">=</span> <span class="cn">FALSE</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span>, status_smooth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">short</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmpgRZd8i/faofishingreport_site_1bcd1c9c5875/FAO34_short.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmplhORJj/faofishingreport_site_1bb6333d4f500/FAO34_short.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, pelagic</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -1060,7 +1060,7 @@ fisheries. Fish and Fisheries, 14(3), 293–311. <a href="https://doi.org/10.111
 </tr>
 <tr class="odd">
 <td align="left">Lin, H. (2026). faofishingreport: Analyse and report
-FAO Global Capture Production statistics. R package version 0.5.0
+FAO Global Capture Production statistics. R package version 0.6.0
 [Computer software]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>
 </td>
 </tr>
@@ -1418,22 +1418,70 @@ English reports (else Liberation Serif or Sans, else Latin Modern)</td>
 </table>
 <p>Chinese fonts have no bold face: as in Word, bold Chinese text (the
 titles) is made by thickening the strokes.</p>
-<p><strong>Compiling.</strong> With the tinytex package
-(<code>install.packages("tinytex")</code>, then
-<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::install_tinytex()</a></code> if you have no LaTeX), the PDF
-is made with <code>tinytex::latexmk(engine = "xelatex")</code>, which
-installs missing LaTeX packages (ctex, xeCJK, booktabs, longtable,
-needspace, xurl, …) on the first run. Without tinytex,
-<code>xelatex</code> must be on the system path. To change the text of
-the LaTeX version, edit the <code>.tex</code> file and compile it again,
-e.g. <code>tinytex::xelatex("reports/FAO34_report_zh.tex")</code>.</p>
-<div class="callout-tip">
-<p>If tinytex cannot install a package because your TeX Live is older
-than the online repository (“Local TeX Live (2024) is older than remote
-repository”), update TeX Live
-(<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::reinstall_tinytex()</a></code>), or install the packages
-from the archive of your TeX Live year:
-<code>tlmgr --repository https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final install ctex</code>.</p>
+<div class="section level3">
+<h3 id="tinytex">Install TinyTeX (once)<a class="anchor" aria-label="anchor" href="#tinytex"></a>
+</h3>
+<p>The PDF is compiled with XeLaTeX. The easiest way to get it is
+<strong>TinyTeX</strong>, a small TeX Live distribution installed and
+kept up to date from R (Xie 2019). Run once:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"tinytex"</span><span class="op">)</span></span>
+<span><span class="fu">tinytex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">install_tinytex</a></span><span class="op">(</span><span class="op">)</span>     <span class="co"># downloads TinyTeX (about 100 MB) into your user folder</span></span>
+<span><span class="fu">tinytex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tinytex/man/is_tinytex.html" class="external-link">is_tinytex</a></span><span class="op">(</span><span class="op">)</span>          <span class="co"># TRUE: R finds it</span></span>
+<span><span class="fu">tinytex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex_root</a></span><span class="op">(</span><span class="op">)</span>        <span class="co"># where it is installed</span></span></code></pre></div>
+<p>TinyTeX goes into <code>~/Library/TinyTeX</code> on macOS,
+<code>%APPDATA%/TinyTeX</code> on Windows and <code>~/.TinyTeX</code> on
+Linux, and needs no administrator rights. Restart R after installing it.
+You do not need to install any LaTeX package by hand: the first PDF
+report installs the ones it uses (ctex and xeCJK for Chinese, booktabs,
+longtable, needspace, xurl, …), which takes a few minutes once.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, format <span class="op">=</span> <span class="st">"pdf"</span><span class="op">)</span>   <span class="co"># the first run also installs the LaTeX packages</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>Situation</th>
+<th>What to do</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>No LaTeX on the computer</td>
+<td>
+<code>install.packages("tinytex")</code>, then
+<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::install_tinytex()</a></code>
+</td>
+</tr>
+<tr class="even">
+<td>TinyTeX installed long ago; packages fail to install, or the message
+“Local TeX Live (2024) is older than remote repository”</td>
+<td>
+<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::reinstall_tinytex()</a></code> reinstalls the newest
+TinyTeX with the packages you had</td>
+</tr>
+<tr class="odd">
+<td>Another TeX distribution (MacTeX, TeX Live, MiKTeX)</td>
+<td>It is used if <code>xelatex</code> is on the system path; install
+missing packages with its own manager
+(e.g. <code>tlmgr install ctex</code>)</td>
+</tr>
+<tr class="even">
+<td>You changed the <code>.tex</code> file</td>
+<td>Compile it again:
+<code>tinytex::xelatex("reports/FAO34_report_zh.tex")</code>
+</td>
+</tr>
+<tr class="odd">
+<td>Only the LaTeX source is wanted</td>
+<td>
+<code>format = "latex"</code> needs no LaTeX installation</td>
+</tr>
+</tbody>
+</table>
+<p>Without tinytex, the package calls <code>xelatex</code> from the
+system path (twice, for the bookmarks).</p>
 </div>
 </div>
 <div class="section level2">
@@ -1540,7 +1588,7 @@ years, or <code>cmsy_top</code> of them. CMSY++ needs JAGS, installed
 once with <code><a href="../reference/cmsy_setup.html">cmsy_setup()</a></code>; without it,
 <code><a href="../reference/fao_report.html">fao_report()</a></code> stops with a message. The assessment takes a
 few minutes.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cmsy_setup.html">cmsy_setup</a></span><span class="op">(</span><span class="op">)</span>                          <span class="co"># once: JAGS and the R packages of CMSY++</span></span>
 <span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"en"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
@@ -1600,7 +1648,7 @@ sections or after editing the templates, give that result to
 <code>cmsy</code> instead of <code>TRUE</code>; CMSY++ does not run
 again and the <code>cmsy_</code> settings are not used. The result of
 <code><a href="../reference/cmsy_area.html">cmsy_area()</a></code> can be given in the same way:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cmsy34</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"reports"</span>, <span class="st">"cmsy"</span>, <span class="st">"Atlantic__Eastern_Central"</span>, <span class="st">"cmsy_result.rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"en"</span>, cmsy <span class="op">=</span> <span class="va">cmsy34</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
@@ -1679,7 +1727,7 @@ guide and the FAO data</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">report</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "file"           "sections"       "main_species"   "main_countries"</span></span>
 <span><span class="co">#&gt; [5] "analyses"</span></span>
@@ -1796,7 +1844,7 @@ guide and the FAO data</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">analyses</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "total"     "species"   "countries" "groups"    "status"    "quality"  </span></span>
 <span><span class="co">#&gt; [7] "diversity" "fleets"</span></span>
@@ -1864,7 +1912,7 @@ guide and the FAO data</td>
 <code>inst/extdata/report_text.csv</code>, one row per piece of text
 with the columns <code>key</code>, <code>en</code> and
 <code>zh</code>:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">texts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"report_text.csv"</span>, package <span class="op">=</span> <span class="st">"faofishingreport"</span><span class="op">)</span>,</span>
 <span>                  fileEncoding <span class="op">=</span> <span class="st">"UTF-8"</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">texts</span><span class="op">)</span></span>
@@ -1922,7 +1970,7 @@ e.g. <code>HHI = ∑(100*p*~i~)^2^</code>.</li>
 </ul>
 <p>The references are in
 <code>inst/extdata/report_references.csv</code>:</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">refs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"report_references.csv"</span>, package <span class="op">=</span> <span class="st">"faofishingreport"</span><span class="op">)</span>,</span>
 <span>                 fileEncoding <span class="op">=</span> <span class="st">"UTF-8"</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span></span>
 <span><span class="fu">show_table</span><span class="op">(</span><span class="va">refs</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"key"</span>, <span class="st">"type"</span>, <span class="st">"author"</span>, <span class="st">"year"</span>, <span class="st">"title"</span><span class="op">)</span><span class="op">]</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
@@ -2060,6 +2108,11 @@ R: the files are read once per session.</p>
 <div class="section level2">
 <h2 id="references">📖 References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
+<p><strong>Software for the LaTeX and PDF report</strong></p>
+<p>Xie, Y. (2019). TinyTeX: A lightweight, cross-platform, and
+easy-to-maintain LaTeX distribution based on TeX Live. <em>TUGboat</em>,
+40(1), 30–32. <a href="https://tug.org/TUGboat/tb40-1/tb124xie-tinytex.pdf" class="external-link uri">https://tug.org/TUGboat/tb40-1/tb124xie-tinytex.pdf</a>; R
+package tinytex: <a href="https://CRAN.R-project.org/package=tinytex" class="external-link uri">https://CRAN.R-project.org/package=tinytex</a>, <a href="https://yihui.org/tinytex/" class="external-link uri">https://yihui.org/tinytex/</a></p>
 <p><strong>Standards and citation styles</strong></p>
 <p>American Psychological Association (2020). <em>Publication manual of
 the American Psychological Association</em>. 7th edition. Washington,
@@ -2099,7 +2152,7 @@ London: Charles Griffin.</p>
 global catch data for inferences on the world’s marine fisheries.
 <em>Fish and Fisheries</em> 14(3): 293–311. <a href="https://doi.org/10.1111/j.1467-2979.2012.00469.x" class="external-link">doi:10.1111/j.1467-2979.2012.00469.x</a></p>
 <p>Lin, H. (2026). faofishingreport: Analyse and report FAO Global
-Capture Production statistics. R package version 0.5.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
+Capture Production statistics. R package version 0.6.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
 <p>Mann, H.B. (1945). Nonparametric tests against trend.
 <em>Econometrica</em> 13(3): 245–259. <a href="https://doi.org/10.2307/1907187" class="external-link">doi:10.2307/1907187</a></p>
 <p>R Core Team (2026). R: A language and environment for statistical

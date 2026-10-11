@@ -34,7 +34,7 @@ Chinese reports). Check the generated text before you use it.
 
 report <- fao_report(34, file = "FAO34_report_en.docx", lang = "en")
 report
-#> FAO report: /tmp/RtmpgRZd8i/faofishingreport_site_1bcd1c9c5875/FAO34_report_en.docx
+#> FAO report: /tmp/RtmplhORJj/faofishingreport_site_1bb6333d4f500/FAO34_report_en.docx
 #> Sections: total, species, countries, groups, status, quality, diversity, fleets
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -244,7 +244,7 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 | FAO. (2026b). FishStat: Global capture production 1950–2024 (Release 2026.1.0) \[Data set\]. <https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip> |
 | Kendall, M. G. (1975). Rank correlation methods (4th ed.). Charles Griffin. |
 | Kleisner, K., Zeller, D., Froese, R., & Pauly, D. (2013). Using global catch data for inferences on the world’s marine fisheries. Fish and Fisheries, 14(3), 293–311. <https://doi.org/10.1111/j.1467-2979.2012.00469.x> |
-| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.5.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
+| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.6.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
 | Mann, H. B. (1945). Nonparametric tests against trend. Econometrica, 13(3), 245–259. <https://doi.org/10.2307/1907187> |
 | R Core Team. (2026). R: A language and environment for statistical computing \[Computer software\]. R Foundation for Statistical Computing. <https://www.R-project.org/> |
 | Rhoades, S. A. (1993). The Herfindahl-Hirschman index. Federal Reserve Bulletin, 79(3), 188–189. |
@@ -340,7 +340,7 @@ and stock status plots with smoothed catches:
 short <- fao_report(34, file = "FAO34_short.docx", lang = "en", quality = FALSE, diversity = FALSE,
                     fleets = FALSE, pelagic = TRUE, status_smooth = TRUE)
 short
-#> FAO report: /tmp/RtmpgRZd8i/faofishingreport_site_1bcd1c9c5875/FAO34_short.docx
+#> FAO report: /tmp/RtmplhORJj/faofishingreport_site_1bb6333d4f500/FAO34_short.docx
 #> Sections: total, species, countries, groups, status, pelagic
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -382,7 +382,7 @@ show_table(data.frame(reference = short_word$text[short_word$style_name == "FAO 
 | Hondorp, D. W., Breitburg, D. L., & Davias, L. A. (2010). Eutrophication and Fisheries: Separating the Effects of Nitrogen Loads and Hypoxia on the Pelagic-to-Demersal Ratio and other Measures of Landings Composition. Marine and Coastal Fisheries, 2(1), 339–361. <https://doi.org/10.1577/C09-020.1> |
 | Kendall, M. G. (1975). Rank correlation methods (4th ed.). Charles Griffin. |
 | Kleisner, K., Zeller, D., Froese, R., & Pauly, D. (2013). Using global catch data for inferences on the world’s marine fisheries. Fish and Fisheries, 14(3), 293–311. <https://doi.org/10.1111/j.1467-2979.2012.00469.x> |
-| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.5.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
+| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.6.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
 | Mann, H. B. (1945). Nonparametric tests against trend. Econometrica, 13(3), 245–259. <https://doi.org/10.2307/1907187> |
 | R Core Team. (2026). R: A language and environment for statistical computing \[Computer software\]. R Foundation for Statistical Computing. <https://www.R-project.org/> |
 | Zeileis, A., Kleiber, C., Krämer, W., & Hornik, K. (2003). Testing and dating of structural changes in practice. Computational Statistics & Data Analysis, 44(1-2), 109–123. <https://doi.org/10.1016/S0167-9473(03)00030-6> |
@@ -518,22 +518,42 @@ numbered captions, the cover without page number and pages numbered from
 Chinese fonts have no bold face: as in Word, bold Chinese text (the
 titles) is made by thickening the strokes.
 
-**Compiling.** With the tinytex package (`install.packages("tinytex")`,
-then
-[`tinytex::install_tinytex()`](https://rdrr.io/pkg/tinytex/man/install_tinytex.html)
-if you have no LaTeX), the PDF is made with
-`tinytex::latexmk(engine = "xelatex")`, which installs missing LaTeX
-packages (ctex, xeCJK, booktabs, longtable, needspace, xurl, …) on the
-first run. Without tinytex, `xelatex` must be on the system path. To
-change the text of the LaTeX version, edit the `.tex` file and compile
-it again, e.g. `tinytex::xelatex("reports/FAO34_report_zh.tex")`.
+### Install TinyTeX (once)
 
-If tinytex cannot install a package because your TeX Live is older than
-the online repository (“Local TeX Live (2024) is older than remote
-repository”), update TeX Live
-([`tinytex::reinstall_tinytex()`](https://rdrr.io/pkg/tinytex/man/install_tinytex.html)),
-or install the packages from the archive of your TeX Live year:
-`tlmgr --repository https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final install ctex`.
+The PDF is compiled with XeLaTeX. The easiest way to get it is
+**TinyTeX**, a small TeX Live distribution installed and kept up to date
+from R (Xie 2019). Run once:
+
+``` r
+
+install.packages("tinytex")
+tinytex::install_tinytex()     # downloads TinyTeX (about 100 MB) into your user folder
+tinytex::is_tinytex()          # TRUE: R finds it
+tinytex::tinytex_root()        # where it is installed
+```
+
+TinyTeX goes into `~/Library/TinyTeX` on macOS, `%APPDATA%/TinyTeX` on
+Windows and `~/.TinyTeX` on Linux, and needs no administrator rights.
+Restart R after installing it. You do not need to install any LaTeX
+package by hand: the first PDF report installs the ones it uses (ctex
+and xeCJK for Chinese, booktabs, longtable, needspace, xurl, …), which
+takes a few minutes once.
+
+``` r
+
+fao_report(34, lang = "zh", format = "pdf")   # the first run also installs the LaTeX packages
+```
+
+| Situation | What to do |
+|----|----|
+| No LaTeX on the computer | `install.packages("tinytex")`, then [`tinytex::install_tinytex()`](https://rdrr.io/pkg/tinytex/man/install_tinytex.html) |
+| TinyTeX installed long ago; packages fail to install, or the message “Local TeX Live (2024) is older than remote repository” | [`tinytex::reinstall_tinytex()`](https://rdrr.io/pkg/tinytex/man/install_tinytex.html) reinstalls the newest TinyTeX with the packages you had |
+| Another TeX distribution (MacTeX, TeX Live, MiKTeX) | It is used if `xelatex` is on the system path; install missing packages with its own manager (e.g. `tlmgr install ctex`) |
+| You changed the `.tex` file | Compile it again: `tinytex::xelatex("reports/FAO34_report_zh.tex")` |
+| Only the LaTeX source is wanted | `format = "latex"` needs no LaTeX installation |
+
+Without tinytex, the package calls `xelatex` from the system path
+(twice, for the bookmarks).
 
 ## 🔖 Citations and references
 
@@ -775,6 +795,14 @@ folder), then restart R: the files are read once per session.
 
 ## 📖 References
 
+**Software for the LaTeX and PDF report**
+
+Xie, Y. (2019). TinyTeX: A lightweight, cross-platform, and
+easy-to-maintain LaTeX distribution based on TeX Live. *TUGboat*, 40(1),
+30–32. <https://tug.org/TUGboat/tb40-1/tb124xie-tinytex.pdf>; R package
+tinytex: <https://CRAN.R-project.org/package=tinytex>,
+<https://yihui.org/tinytex/>
+
 **Standards and citation styles**
 
 American Psychological Association (2020). *Publication manual of the
@@ -828,7 +856,7 @@ Fisheries* 14(3): 293–311.
 [doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
 
 Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture
-Production statistics. R package version 0.5.0.
+Production statistics. R package version 0.6.0.
 <https://linbojun99.github.io/faofishingreport/>
 
 Mann, H.B. (1945). Nonparametric tests against trend. *Econometrica*

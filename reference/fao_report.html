@@ -15,7 +15,7 @@ marked in grey, such as other data sources, the discussion and other references.
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,7 +27,7 @@ marked in grey, such as other data sources, the discussion and other references.
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/tutorial-61.html">🎓 Tutorial: FAO area 61 from zero to a report</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/tutorial-67.html">🎓 Tutorial: FAO area 67 from zero to a report</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/data.html">💾 FAO data: download and customise</a></li>
     <li><a class="dropdown-item" href="../articles/fishing-areas.html">🌊 Fishing area analysis</a></li>
@@ -146,7 +146,9 @@ working directory. The other formats get the same name with <code>.tex</code> an
 file with its figures in the folder <code>&lt;name&gt;_figures/</code> next to it, compiled with XeLaTeX;
 Chinese reports use the ctexart class) and "pdf" (the LaTeX file compiled to PDF with
 XeLaTeX, through the tinytex package when it is installed, which also installs missing
-LaTeX packages). The analyses run once for all formats, and the formats have the same
+LaTeX packages). Install TinyTeX once with <code>install.packages("tinytex")</code> and
+<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::install_tinytex()</a></code>; an old TinyTeX is updated with
+<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::reinstall_tinytex()</a></code>. The analyses run once for all formats, and the formats have the same
 text, figures, tables and references. Fonts are taken from those of the computer: for
 Chinese, FangSong, SimHei and KaiTi on Windows, STFangsong, Heiti SC and Kaiti SC on macOS,
 else the Fandol fonts of TeX Live.</p></dd>

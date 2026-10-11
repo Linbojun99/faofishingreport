@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@
 <li class="active nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../articles/tutorial-61.html">🎓 Tutorial: FAO area 61 from zero to a report</a></li>
+<li><a class="dropdown-item" href="../articles/tutorial-67.html">🎓 Tutorial: FAO area 67 from zero to a report</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/data.html">💾 FAO data: download and customise</a></li>
     <li><a class="dropdown-item" href="../articles/fishing-areas.html">🌊 Fishing area analysis</a></li>
@@ -807,6 +807,22 @@ English) or <code>"en"</code> (unchanged)</td>
 share one Chinese name keep their English name as well (e.g. two species
 items with the same Chinese name), so they stay apart in charts and
 tables.</p>
+<p>Many species items have no Chinese name in the FAO lists. For the
+items that are one species, the package uses the Chinese common name of
+the species in <a href="https://www.fishbase.se" class="external-link">FishBase</a> or <a href="https://www.sealifebase.se" class="external-link">SeaLifeBase</a>: the name given for
+China, in simplified characters, preferring the name FishBase marks as
+preferred (Froese and Pauly 2026; Palomares and Pauly 2026). FAO names
+always come first. The table, with the other names of each species and
+their source, is
+<code>inst/extdata/species_names_zh_fishbase.csv</code>, made by
+<code>data-raw/build_species_names_zh.R</code> from the FishBase tables
+that the <a href="https://github.com/ropensci/rfishbase" class="external-link">rfishbase</a>
+package reads:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_translate.html">fao_translate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Pacific cod"</span>, <span class="st">"Yellowfin sole"</span>, <span class="st">"Pacific ocean perch"</span><span class="op">)</span>, <span class="st">"species"</span>, <span class="st">"zh"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "太平洋鳕"            "糙鲽"                "Pacific ocean perch"</span></span></code></pre></div>
+<p>The Pacific ocean perch keeps its English name: FishBase has no
+simplified Chinese name for China for it.</p>
 <p>FAO gives no Chinese names for ISSCAAP species groups, major groups
 and income groups; the package’s translations are in
 <code>inst/extdata/group_names_zh.csv</code>, and all chart labels in
@@ -829,7 +845,7 @@ release the first time (about 5 MB), keeps it in the data folder, and
 returns it in the format above with three more columns:
 <code>Division</code>, <code>Division..Name.</code> and
 <code>Region</code>.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">med</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_fao_divisions.html">load_fao_divisions</a></span><span class="op">(</span><span class="st">"GFCM"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/pelagic_demersal.html">pelagic_demersal</a></span><span class="op">(</span><span class="va">med</span>, by <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span>          <span class="co"># one P/D series per division</span></span>
 <span><span class="fu"><a href="../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">med</span>, by <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span>    <span class="co"># MTC and SST of each division</span></span></code></pre></div>
@@ -853,7 +869,7 @@ equivalents. See <a href="trade-employment.html">🚢 Trade and
 employment</a> for the analyses that join them to the catch:
 <code><a href="../reference/catch_trade.html">catch_trade()</a></code>, <code><a href="../reference/employment_summary.html">employment_summary()</a></code> and
 <code><a href="../reference/catch_per_fisher.html">catch_per_fisher()</a></code>.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">trade</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_fao_trade.html">load_fao_trade</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">employment</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/load_fao_employment.html">load_fao_employment</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -892,7 +908,7 @@ databases; cite the release you use.</li>
 </h2>
 <p>The bundled data, Chinese names and groups are rebuilt from the
 latest FAO release with:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="ex">Rscript</span> data-raw/update_bundled_data.R</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="ex">Rscript</span> data-raw/update_bundled_data.R</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="references">📖 References<a class="anchor" aria-label="anchor" href="#references"></a>
@@ -911,9 +927,13 @@ Rome: FAO. <a href="https://www.fao.org/fishery/collection/asfis/en" class="exte
 <p>FAO. <em>Global Capture Production</em>. Fisheries and Aquaculture
 Division, Rome. <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link uri">https://www.fao.org/fishery/collection/capture/en</a></p>
 <p>FAO. <em>Terms of use of FAO statistical databases</em>. <a href="https://www.fao.org/contact-us/terms/db-terms-of-use/en" class="external-link uri">https://www.fao.org/contact-us/terms/db-terms-of-use/en</a></p>
+<p>Froese, R. and Pauly, D. (Eds.) (2026). FishBase. World Wide Web
+electronic publication, version 06/2026. <a href="https://www.fishbase.se" class="external-link uri">https://www.fishbase.se</a></p>
 <p>Garibaldi, L. (2012). The FAO global capture production database: a
 six-decade effort to catch the trend. <em>Marine Policy</em> 36(3):
 760–768. <a href="https://doi.org/10.1016/j.marpol.2011.10.024" class="external-link">doi:10.1016/j.marpol.2011.10.024</a></p>
+<p>Palomares, M. L. D. and Pauly, D. (Eds.) (2026). SeaLifeBase. World
+Wide Web electronic publication, version 06/2026. <a href="https://www.sealifebase.se" class="external-link uri">https://www.sealifebase.se</a></p>
 <p>Zeller, D. and Pauly, D. (2018). The ‘presentist bias’ in time-series
 data: implications for fisheries science and policy. <em>Marine
 Policy</em> 90: 14–19. <a href="https://doi.org/10.1016/j.marpol.2018.01.015" class="external-link">doi:10.1016/j.marpol.2018.01.015</a></p>

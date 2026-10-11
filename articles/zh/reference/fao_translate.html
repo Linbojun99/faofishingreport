@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../../../articles/tutorial-61.html">🎓 Tutorial: FAO area 61 from zero to a report</a></li>
+<li><a class="dropdown-item" href="../../../articles/tutorial-67.html">🎓 Tutorial: FAO area 67 from zero to a report</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../../../articles/data.html">💾 FAO data: download and customise</a></li>
     <li><a class="dropdown-item" href="../../../articles/fishing-areas.html">🌊 Fishing area analysis</a></li>
@@ -157,6 +157,32 @@ and English).
 English
 </summary><p>A character vector of translated names.</p>
 </details>
+</div>
+<div class="section level2">
+<h2 id="详细说明">详细说明<a class="anchor" aria-label="anchor" href="#%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E"></a>
+</h2>
+<p>FAO名录中有许多物种条目没有中文名。对于只对应一个物种的条目，使用该物种在FishBase或SeaLifeBase中的中文俗名（Froese和Pauly，2026；Palomares和Pauly，2026）：即其中给中国、以普通话记录、用简体字书写的名称；优先使用FishBase标为首选的名称，不使用用于同物异名的名称，也不使用有多个同等常用名称的物种。这张名称表，连同其他名称和每个名称的来源，保存在<code>inst/extdata/species_names_zh_fishbase.csv</code>中，由<code>data-raw/build_species_names_zh.R</code>生成。FAO的名称始终优先。</p>
+<details class="fao-en"><summary>
+English
+</summary><p>Many FAO species items have no Chinese name in the FAO lists. For
+those identified to one species, the Chinese common name of the species
+in FishBase or SeaLifeBase is used (Froese and Pauly 2026; Palomares and
+Pauly 2026): the name given for China in Mandarin Chinese, in simplified
+characters, preferring the name FishBase marks as preferred and leaving
+out names applied to synonyms and species with several equally used
+names. The table, with the other names and the source of each, is
+<code>inst/extdata/species_names_zh_fishbase.csv</code>, made by
+<code>data-raw/build_species_names_zh.R</code>. FAO names always come
+first.</p>
+</details>
+</div>
+<div class="section level2">
+<h2 id="参考文献">参考文献<a class="anchor" aria-label="anchor" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"></a>
+</h2>
+<p>Froese, R. and Pauly, D. (Eds.) (2026). FishBase. World Wide Web
+electronic publication, version 06/2026. <a href="https://www.fishbase.se" class="external-link uri">https://www.fishbase.se</a></p>
+<p>Palomares, M.L.D. and Pauly, D. (Eds.) (2026). SeaLifeBase. World
+Wide Web electronic publication, version 06/2026. <a href="https://www.sealifebase.se" class="external-link uri">https://www.sealifebase.se</a></p>
 </div>
 <div class="section level2">
 <h2 id="另请参阅">另请参阅<a class="anchor" aria-label="anchor" href="#%E5%8F%A6%E8%AF%B7%E5%8F%82%E9%98%85"></a>

@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
-<li><a class="dropdown-item" href="../../articles/tutorial-61.html">🎓 Tutorial: FAO area 61 from zero to a report</a></li>
+<li><a class="dropdown-item" href="../../articles/tutorial-67.html">🎓 Tutorial: FAO area 67 from zero to a report</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../../articles/data.html">💾 FAO data: download and customise</a></li>
     <li><a class="dropdown-item" href="../../articles/fishing-areas.html">🌊 Fishing area analysis</a></li>
@@ -114,7 +114,7 @@ be completed”）。使用前请核对自动生成的文字。</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_report_zh.docx"</span>, lang <span class="op">=</span> <span class="st">"zh"</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/Rtmprkl2xQ/faofishingreport_site_1bf3818daf3bc/FAO34_report_zh.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/Rtmp6y5rpK/faofishingreport_site_1bdc641b0492b/FAO34_report_zh.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, quality, diversity, fleets</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -537,7 +537,7 @@ Computing, 2026[2026-10-11]. <a href="https://www.R-project.org/" class="externa
 </tr>
 <tr class="odd">
 <td align="left">[11] Lin H. faofishingreport: Analyse and report FAO
-Global Capture Production statistics. R package version 0.5.0[CP/OL].
+Global Capture Production statistics. R package version 0.6.0[CP/OL].
 2026[2026-10-11]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>.</td>
 </tr>
 </tbody>
@@ -854,7 +854,7 @@ v5数据时的Huang等（2017）、Pyper和Peterman（1998）、Alajmi等（2024
 <code class="sourceCode R"><span><span class="va">short</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_short.docx"</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, quality <span class="op">=</span> <span class="cn">FALSE</span>, diversity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                    fleets <span class="op">=</span> <span class="cn">FALSE</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span>, status_smooth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">short</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/Rtmprkl2xQ/faofishingreport_site_1bf3818daf3bc/FAO34_short.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/Rtmp6y5rpK/faofishingreport_site_1bdc641b0492b/FAO34_short.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, pelagic</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -938,7 +938,7 @@ Computing, 2026[2026-10-11]. <a href="https://www.R-project.org/" class="externa
 </tr>
 <tr class="odd">
 <td align="left">[11] Lin H. faofishingreport: Analyse and report FAO
-Global Capture Production statistics. R package version 0.5.0[CP/OL].
+Global Capture Production statistics. R package version 0.6.0[CP/OL].
 2026[2026-10-11]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>.</td>
 </tr>
 <tr class="even">
@@ -1223,11 +1223,58 @@ Modern）</td>
 </tbody>
 </table>
 <p>中文字体没有粗体字形：与Word一样，加粗的中文（如标题）通过加粗笔画实现。</p>
-<p><strong>编译。</strong>安装了tinytex包（<code>install.packages("tinytex")</code>；如果本机没有LaTeX，再运行<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::install_tinytex()</a></code>）时，用<code>tinytex::latexmk(engine = "xelatex")</code>生成PDF，第一次运行时会自动安装缺少的LaTeX宏包（ctex、xeCJK、booktabs、longtable、needspace、xurl等）；没有tinytex时，系统路径中须有<code>xelatex</code>。要修改LaTeX版本的文字，编辑<code>.tex</code>文件后重新编译即可，例如<code>tinytex::xelatex("reports/FAO34_report_zh.tex")</code>。</p>
-<div class="callout-tip">
-<p>如果tinytex因为本机的TeX Live比在线仓库旧而无法安装宏包（提示”Local
-TeX Live (2024) is older than remote repository”），可以更新TeX
-Live（<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::reinstall_tinytex()</a></code>），或从对应年份的存档安装宏包：<code>tlmgr --repository https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final install ctex</code>。</p>
+<div class="section level3">
+<h3 id="tinytex">安装TinyTeX（只需一次）<a class="anchor" aria-label="anchor" href="#tinytex"></a>
+</h3>
+<p>PDF用XeLaTeX编译。最简单的办法是安装<strong>TinyTeX</strong>：一个可以在R中安装和更新的精简版TeX
+Live（Xie 2019）。只需运行一次：</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"tinytex"</span><span class="op">)</span></span>
+<span><span class="fu">tinytex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">install_tinytex</a></span><span class="op">(</span><span class="op">)</span>     <span class="co"># 下载TinyTeX（约100 MB），安装到用户文件夹</span></span>
+<span><span class="fu">tinytex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tinytex/man/is_tinytex.html" class="external-link">is_tinytex</a></span><span class="op">(</span><span class="op">)</span>          <span class="co"># TRUE：R能找到它</span></span>
+<span><span class="fu">tinytex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex_root</a></span><span class="op">(</span><span class="op">)</span>        <span class="co"># 安装位置</span></span></code></pre></div>
+<p>TinyTeX在macOS上安装到<code>~/Library/TinyTeX</code>，在Windows上安装到<code>%APPDATA%/TinyTeX</code>，在Linux上安装到<code>~/.TinyTeX</code>，不需要管理员权限。安装后请重启R。不需要手动安装任何LaTeX宏包：第一次生成PDF报告时会自动安装所需的宏包（中文用的ctex和xeCJK，以及booktabs、longtable、needspace、xurl等），只在第一次需要几分钟。</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, format <span class="op">=</span> <span class="st">"pdf"</span><span class="op">)</span>   <span class="co"># 第一次运行时还会安装LaTeX宏包</span></span></code></pre></div>
+<table class="table">
+<colgroup>
+<col width="50%">
+<col width="50%">
+</colgroup>
+<thead><tr class="header">
+<th>情况</th>
+<th>怎么做</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>电脑上没有LaTeX</td>
+<td>
+<code>install.packages("tinytex")</code>，然后<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::install_tinytex()</a></code>
+</td>
+</tr>
+<tr class="even">
+<td>TinyTeX安装时间较早，宏包装不上，或提示”Local TeX Live (2024) is
+older than remote repository”</td>
+<td>
+<code><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex::reinstall_tinytex()</a></code>：重新安装最新版TinyTeX，并装回原有的宏包</td>
+</tr>
+<tr class="odd">
+<td>使用其他TeX发行版（MacTeX、TeX Live、MiKTeX）</td>
+<td>只要<code>xelatex</code>在系统路径中即可使用；缺少的宏包用其自带的管理工具安装（如<code>tlmgr install ctex</code>）</td>
+</tr>
+<tr class="even">
+<td>修改了<code>.tex</code>文件</td>
+<td>重新编译：<code>tinytex::xelatex("reports/FAO34_report_zh.tex")</code>
+</td>
+</tr>
+<tr class="odd">
+<td>只需要LaTeX源文件</td>
+<td>
+<code>format = "latex"</code>不需要安装LaTeX</td>
+</tr>
+</tbody>
+</table>
+<p>没有安装tinytex包时，本包调用系统路径中的<code>xelatex</code>（为生成书签编译两次）。</p>
 </div>
 </div>
 <div class="section level2">
@@ -1319,7 +1366,7 @@ al.”。FAO格式参照FAO出版物（如FAO
 <h2 id="cmsy">📉 CMSY++资源评估<a class="anchor" aria-label="anchor" href="#cmsy"></a>
 </h2>
 <p><code>cmsy = TRUE</code>时，主要种类还会用CMSY++（<code><a href="../../reference/cmsy_area.html">cmsy_area()</a></code>）进行资源评估：评估对象为近10年渔获量最高的<code>top_n</code>个鉴定到种的物种条目，或指定的<code>cmsy_top</code>个。CMSY++需要JAGS，用<code><a href="../../reference/cmsy_setup.html">cmsy_setup()</a></code>安装一次即可；未安装时<code><a href="../../reference/fao_report.html">fao_report()</a></code>会报错并给出提示。评估需要几分钟。</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/cmsy_setup.html">cmsy_setup</a></span><span class="op">(</span><span class="op">)</span>                          <span class="co"># 只需运行一次：安装JAGS和CMSY++所需的R包</span></span>
 <span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
@@ -1354,7 +1401,7 @@ al.”。FAO格式参照FAO出版物（如FAO
 <strong>小结</strong>；附件中还有<strong>附表3</strong>生物学参考点（r、k、MSY、Fmsy、Bmsy、B/Bmsy、F/Fmsy）及其95%置信区间，<strong>附表4</strong>先验参数（恢复力、r和k的范围、首年、中间年份和末年的B/k先验），<strong>附表5</strong>先验参数的来源（r先验来源、B/k先验来源、物种在FishBase或SeaLifeBase中的页面），其后列出FishBase数据、CMSY++代码与用户指南以及FAO数据的链接。</li>
 </ul>
 <p>CMSY++的全部结果（输入文件、运行结果、图和表）保存在报告旁边的<code>cmsy/</code>文件夹中，如<code>reports/cmsy/Atlantic__Eastern_Central/</code>，其中有<code>cmsy_result.rds</code>。如需重新生成报告（例如改变章节或修改模板之后），把这个结果传给<code>cmsy</code>即可，不必再运行CMSY++，此时<code>cmsy_</code>设置不再起作用。<code><a href="../../reference/cmsy_area.html">cmsy_area()</a></code>的结果也可以同样传入：</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cmsy34</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"reports"</span>, <span class="st">"cmsy"</span>, <span class="st">"Atlantic__Eastern_Central"</span>, <span class="st">"cmsy_result.rds"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="va">cmsy34</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
@@ -1416,7 +1463,7 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">report</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "file"           "sections"       "main_species"   "main_countries"</span></span>
 <span><span class="co">#&gt; [5] "analyses"</span></span>
@@ -1533,7 +1580,7 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">analyses</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "total"     "species"   "countries" "groups"    "status"    "quality"  </span></span>
 <span><span class="co">#&gt; [7] "diversity" "fleets"</span></span>
@@ -1591,7 +1638,7 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 <h2 id="修改报告措辞">✏️ 修改报告措辞<a class="anchor" aria-label="anchor" href="#%E4%BF%AE%E6%94%B9%E6%8A%A5%E5%91%8A%E6%8E%AA%E8%BE%9E"></a>
 </h2>
 <p>报告的全部文字都来自<code>inst/extdata/report_text.csv</code>，每段文字一行，列为<code>key</code>、<code>en</code>和<code>zh</code>：</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">texts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"report_text.csv"</span>, package <span class="op">=</span> <span class="st">"faofishingreport"</span><span class="op">)</span>,</span>
 <span>                  fileEncoding <span class="op">=</span> <span class="st">"UTF-8"</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">texts</span><span class="op">)</span></span>
@@ -1641,7 +1688,7 @@ et al., 2013)”。</li>
 <code>*...*</code>写为斜体（<code>*P*</code>、学名），<code>^...^</code>写为上标，<code>~...~</code>写为下标，例如<code>HHI = ∑(100*p*~i~)^2^</code>。</li>
 </ul>
 <p>参考文献在<code>inst/extdata/report_references.csv</code>中：</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">refs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"report_references.csv"</span>, package <span class="op">=</span> <span class="st">"faofishingreport"</span><span class="op">)</span>,</span>
 <span>                 fileEncoding <span class="op">=</span> <span class="st">"UTF-8"</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span></span>
 <span><span class="fu">show_table</span><span class="op">(</span><span class="va">refs</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"key"</span>, <span class="st">"type"</span>, <span class="st">"author"</span>, <span class="st">"year"</span>, <span class="st">"title"</span><span class="op">)</span><span class="op">]</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code></pre></div>
@@ -1772,6 +1819,11 @@ I.”，多位作者用“;”分隔；机构作者直接写名称，如FAO</td>
 <div class="section level2">
 <h2 id="参考文献">📖 参考文献<a class="anchor" aria-label="anchor" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"></a>
 </h2>
+<p><strong>Software for the LaTeX and PDF report</strong></p>
+<p>Xie, Y. (2019). TinyTeX: A lightweight, cross-platform, and
+easy-to-maintain LaTeX distribution based on TeX Live. <em>TUGboat</em>,
+40(1), 30–32. <a href="https://tug.org/TUGboat/tb40-1/tb124xie-tinytex.pdf" class="external-link uri">https://tug.org/TUGboat/tb40-1/tb124xie-tinytex.pdf</a>; R
+package tinytex: <a href="https://CRAN.R-project.org/package=tinytex" class="external-link uri">https://CRAN.R-project.org/package=tinytex</a>, <a href="https://yihui.org/tinytex/" class="external-link uri">https://yihui.org/tinytex/</a></p>
 <p><strong>标准与引文格式</strong></p>
 <p>中华人民共和国国家质量监督检验检疫总局，中国国家标准化管理委员会.
 信息与文献　参考文献著录规则：GB/T 7714—2015[S].
@@ -1806,7 +1858,7 @@ London: Charles Griffin.</p>
 global catch data for inferences on the world’s marine fisheries.
 <em>Fish and Fisheries</em> 14(3): 293–311. <a href="https://doi.org/10.1111/j.1467-2979.2012.00469.x" class="external-link">doi:10.1111/j.1467-2979.2012.00469.x</a></p>
 <p>Lin, H. (2026). faofishingreport: Analyse and report FAO Global
-Capture Production statistics. R package version 0.5.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
+Capture Production statistics. R package version 0.6.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
 <p>Mann, H.B. (1945). Nonparametric tests against trend.
 <em>Econometrica</em> 13(3): 245–259. <a href="https://doi.org/10.2307/1907187" class="external-link">doi:10.2307/1907187</a></p>
 <p>R Core Team (2026). R: A language and environment for statistical

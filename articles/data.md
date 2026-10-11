@@ -377,6 +377,26 @@ share one Chinese name keep their English name as well (e.g. two species
 items with the same Chinese name), so they stay apart in charts and
 tables.
 
+Many species items have no Chinese name in the FAO lists. For the items
+that are one species, the package uses the Chinese common name of the
+species in [FishBase](https://www.fishbase.se) or
+[SeaLifeBase](https://www.sealifebase.se): the name given for China, in
+simplified characters, preferring the name FishBase marks as preferred
+(Froese and Pauly 2026; Palomares and Pauly 2026). FAO names always come
+first. The table, with the other names of each species and their source,
+is `inst/extdata/species_names_zh_fishbase.csv`, made by
+`data-raw/build_species_names_zh.R` from the FishBase tables that the
+[rfishbase](https://github.com/ropensci/rfishbase) package reads:
+
+``` r
+
+fao_translate(c("Pacific cod", "Yellowfin sole", "Pacific ocean perch"), "species", "zh")
+#> [1] "太平洋鳕"            "糙鲽"                "Pacific ocean perch"
+```
+
+The Pacific ocean perch keeps its English name: FishBase has no
+simplified Chinese name for China for it.
+
 FAO gives no Chinese names for ISSCAAP species groups, major groups and
 income groups; the package’s translations are in
 `inst/extdata/group_names_zh.csv`, and all chart labels in
@@ -498,9 +518,16 @@ Rome. <https://www.fao.org/fishery/collection/capture/en>
 FAO. *Terms of use of FAO statistical databases*.
 <https://www.fao.org/contact-us/terms/db-terms-of-use/en>
 
+Froese, R. and Pauly, D. (Eds.) (2026). FishBase. World Wide Web
+electronic publication, version 06/2026. <https://www.fishbase.se>
+
 Garibaldi, L. (2012). The FAO global capture production database: a
 six-decade effort to catch the trend. *Marine Policy* 36(3): 760–768.
 [doi:10.1016/j.marpol.2011.10.024](https://doi.org/10.1016/j.marpol.2011.10.024)
+
+Palomares, M. L. D. and Pauly, D. (Eds.) (2026). SeaLifeBase. World Wide
+Web electronic publication, version 06/2026.
+<https://www.sealifebase.se>
 
 Zeller, D. and Pauly, D. (2018). The ‘presentist bias’ in time-series
 data: implications for fisheries science and policy. *Marine Policy* 90:

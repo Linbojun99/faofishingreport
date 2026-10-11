@@ -17,7 +17,7 @@ in English.'><meta property="og:image" content="https://linbojun99.github.io/fao
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,7 +29,7 @@ in English.'><meta property="og:image" content="https://linbojun99.github.io/fao
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/tutorial-61.html">🎓 Tutorial: FAO area 61 from zero to a report</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/tutorial-67.html">🎓 Tutorial: FAO area 67 from zero to a report</a></li>
     <li><hr class="dropdown-divider"></li>
     <li><a class="dropdown-item" href="../articles/data.html">💾 FAO data: download and customise</a></li>
     <li><a class="dropdown-item" href="../articles/fishing-areas.html">🌊 Fishing area analysis</a></li>
@@ -96,6 +96,23 @@ in English.</p>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A character vector of translated names.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Many FAO species items have no Chinese name in the FAO lists. For those identified to one
+species, the Chinese common name of the species in FishBase or SeaLifeBase is used (Froese and
+Pauly 2026; Palomares and Pauly 2026): the name given for China in Mandarin Chinese, in
+simplified characters, preferring the name FishBase marks as preferred and leaving out names
+applied to synonyms and species with several equally used names. The table, with the other
+names and the source of each, is <code>inst/extdata/species_names_zh_fishbase.csv</code>, made by
+<code>data-raw/build_species_names_zh.R</code>. FAO names always come first.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Froese, R. and Pauly, D. (Eds.) (2026). FishBase. World Wide Web electronic publication, version
+06/2026. <a href="https://www.fishbase.se" class="external-link">https://www.fishbase.se</a></p>
+<p>Palomares, M.L.D. and Pauly, D. (Eds.) (2026). SeaLifeBase. World Wide Web electronic
+publication, version 06/2026. <a href="https://www.sealifebase.se" class="external-link">https://www.sealifebase.se</a></p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
