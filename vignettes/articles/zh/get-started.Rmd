@@ -76,7 +76,7 @@ download_fao_data()   # 只有在有更新版本时才需要运行
 | 文件夹 | 内容 |
 |---|---|
 | `figures/png/` | PNG 格式的图表（始终输出） |
-| `figures/pptx/` | 可编辑的 PowerPoint 图表（设置 `pptx = TRUE` 时输出） |
+| `figures/pptx/` | 可编辑的 PowerPoint 图表（设置 `pptx = TRUE` 时输出，需要 eoffice 包） |
 | `tables/` | CSV 格式的表格，用 Excel 打开时中文名称也能正常显示 |
 
 所以先为报告选定一个文件夹：

@@ -13,7 +13,7 @@
 
 > 📘 **中文文档**：[faofishingreport 中文网站](https://linbojun99.github.io/faofishingreport/articles/zh/index.html)（网站右上角也可以随时切换中文）
 
-**faofishingreport** turns the [FAO Global Capture Production](https://www.fao.org/fishery/en/collection/capture)
+**faofishingreport** turns the [FAO Global Capture Production](https://www.fao.org/fishery/collection/capture/en)
 statistics into charts, maps and tables for reports, by fishing area, country and species,
 in English, Chinese or both.
 
@@ -39,6 +39,9 @@ faofishingreport needs R 4.2 or later. Install it from GitHub:
 install.packages("remotes")
 remotes::install_github("Linbojun99/faofishingreport")
 ```
+
+For editable PowerPoint charts, also install eoffice: `install.packages("eoffice")` (on macOS it
+also needs [XQuartz](https://www.xquartz.org)).
 
 ## 🚀 Quick start
 

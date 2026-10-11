@@ -18,7 +18,7 @@ remDr$open()
 
 
 # 导航到目标页面
-remDr$navigate("https://www.fao.org/fishery/zh/countries")
+remDr$navigate("https://www.fao.org/fishery/countries/zh")
 
 # 可能需要一些时间等待页面加载
 Sys.sleep(5)  # 这里的延迟根据网页的实际加载速度进行调整
@@ -37,7 +37,7 @@ print(table_zh[[1]])
 table_zh<-table_zh[[1]]
 
 
-remDr$navigate("https://www.fao.org/fishery/en/countries")
+remDr$navigate("https://www.fao.org/fishery/countries/en")
 # 可能需要一些时间等待页面加载
 Sys.sleep(5)  # 这里的延迟根据网页的实际加载速度进行调整
 
