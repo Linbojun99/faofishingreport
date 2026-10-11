@@ -1,8 +1,22 @@
+# faofishingreport 0.6.0
+
+## Documentation
+
+* The tutorial now takes the Northeast Pacific (FAO area 67: the eastern Bering Sea, the Gulf of Alaska and the coasts of Canada and the United States) from an empty R session to a finished report, in English and Chinese. It replaces the tutorial on area 61, and the old pages redirect to it. Area 67 shows clearly how fleets and management shape catch statistics: the distant-water fleets of Japan and the USSR, the 200-mile fishery zones of 1977 and the growth of the US fleets. Its CMSY++ charts are made by `data-raw/tutorial67_figures.R`.
+* How to install TinyTeX, which compiles the PDF report, is explained in the report article (new section "Install TinyTeX (once)"), in the tutorial and in the help of `fao_report()`, with what to do when TinyTeX is old or another LaTeX distribution is used.
+
+## Changes
+
+* `fao_translate()` and the Chinese charts give Chinese names to 1,144 species items that have none in the FAO lists, taken from the Chinese common names of FishBase and SeaLifeBase (the names given for China, in simplified characters; FAO names always come first). The table is `inst/extdata/species_names_zh_fishbase.csv`, made by `data-raw/build_species_names_zh.R`.
+* `species_country()` reports breaks in a country's series as messages instead of printing them.
+* `species_country()`, `country_species()` and `country_analysis()` no longer print the structure of an intermediate table in the console.
+* `fishing_area_species()`, `fishing_area_country()`, `species_country()`, `country_species()` and `country_analysis()` create the `tables/` folder only when they write tables (`table = TRUE`).
+
 # faofishingreport 0.5.0
 
 ## Documentation
 
-* A new tutorial, in English and Chinese, takes a complete assessment of the Northwest Pacific (FAO area 61) from an empty R session to a finished report: getting the data and knowing its release, every analysis of the package step by step, how to read each chart and what it shows for the area (with the numbers computed when the page is built), the files the package saves and how to read them back, and the report as Word, LaTeX and PDF. Its CMSY++ charts are made by `data-raw/tutorial61_figures.R`.
+* A new tutorial, in English and Chinese, takes a complete assessment of the Northwest Pacific (FAO area 61) from an empty R session to a finished report (replaced by the tutorial on area 67 in 0.6.0): getting the data and knowing its release, every analysis of the package step by step, how to read each chart and what it shows for the area (with the numbers computed when the page is built), the files the package saves and how to read them back, and the report as Word, LaTeX and PDF. Its CMSY++ charts are made by `data-raw/tutorial61_figures.R`.
 
 ## Changes
 
