@@ -2,7 +2,8 @@
 #   inst/extdata/Global_Production_long.rda  catch data in the package's long format
 #   inst/extdata/fao_names.rda               English -> Chinese names used when lang = "zh" or "both"
 #   inst/extdata/fao_groups.rda              species, country and area groups (ISSCAAP, income, ...)
-#   inst/extdata/bundled_release.txt         the FAO release these files come from
+#   inst/extdata/bundled_release.txt         the FAO release these files come from (version, publication
+#                                            date, years, URL, download date), shown by fao_data_info()
 #
 # Chinese names come, in order of priority, from:
 #   1. FAO code lists published with the release
@@ -51,7 +52,10 @@ save(fao_names, file = "inst/extdata/fao_names.rda", compress = "xz")
 fao_groups <- fao_build_group_table(capture, lookup)
 save(fao_groups, file = "inst/extdata/fao_groups.rda", compress = "xz")
 
-writeLines(release$version, "inst/extdata/bundled_release.txt")
+write.dcf(data.frame(Version = release$version, Released = release$date,
+                     Years = paste(range(Global_Production_long$Year), collapse = "-"),
+                     URL = release$url, Downloaded = as.character(Sys.Date())),
+          "inst/extdata/bundled_release.txt")
 
 message("Bundled data updated to Capture ", release$version, ": ", nrow(Global_Production_long), " rows, ",
         min(Global_Production_long$Year), "-", max(Global_Production_long$Year), ". Names from ",

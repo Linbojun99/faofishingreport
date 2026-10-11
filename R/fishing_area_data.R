@@ -39,6 +39,7 @@
 #'        releases downloaded with `download_fao_data()` and the data bundled with the package;
 #'        "bundled" uses the data bundled with the package; or a release such as "2026.1.0".
 #' @return A data frame containing data for the specified fishing area.
+#' @family fishing area analyses
 #' @export
 #' @examples
 #' \dontrun{

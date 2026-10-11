@@ -16,42 +16,42 @@ regime_shift(
 )
 }
 \arguments{
-\item{area_data}{FAO catch data: `fishing_area_data()$area_data`, or any subset of
-`load_fao_data()` (e.g. one country, or several fishing areas).}
+\item{area_data}{FAO catch data: \code{fishing_area_data()$area_data}, or any subset of
+\code{load_fao_data()} (e.g. one country, or several fishing areas).}
 
 \item{top_n}{The number of species with the largest total catch to analyse. Default is 20.}
 
-\item{h_value}{The minimum segment size passed to `strucchange::breakpoints()`: a fraction of
+\item{h_value}{The minimum segment size passed to \code{strucchange::breakpoints()}: a fraction of
 the series length (default 0.15) or a number of years.}
 
-\item{plot}{A logical value. If TRUE (default), charts are saved in `figures/png/summary/`.}
+\item{plot}{A logical value. If TRUE (default), charts are saved in \verb{figures/png/summary/}.}
 
-\item{table}{A logical value. If TRUE (default), tables are saved in `tables/`.}
+\item{table}{A logical value. If TRUE (default), tables are saved in \verb{tables/}.}
 
 \item{lang}{The language of the chart text and names: "en" (English), "zh" (Chinese) or
 "both" (Chinese and English). Default is NULL, which uses the language set with
-`fao_settings()` ("en" unless changed).}
+\code{fao_settings()} ("en" unless changed).}
 
 \item{pptx}{A logical value. If TRUE, charts are also saved as editable PowerPoint files in
-`figures/pptx/summary/`. Default is FALSE, which can be changed for all functions with
-`fao_settings(pptx = TRUE)`.}
+\verb{figures/pptx/summary/}. Default is FALSE, which can be changed for all functions with
+\code{fao_settings(pptx = TRUE)}.}
 
 \item{label}{The name used in the output file names. Default is the fishing area (or the
 country) of the data.}
 }
 \value{
-Invisibly, a list with `breakpoints` (one row per species) and `yearly` (number of
-        species with a breakpoint in each year).
+Invisibly, a list with \code{breakpoints} (one row per species) and \code{yearly} (number of
+species with a breakpoint in each year).
 }
 \description{
-This function runs a breakpoint analysis (changes in the mean catch, `strucchange::breakpoints`)
-on the catch series of the `top_n` species with the largest catch, and counts how many species
+This function runs a breakpoint analysis (changes in the mean catch, \code{strucchange::breakpoints})
+on the catch series of the \code{top_n} species with the largest catch, and counts how many species
 change in each year. Years in which many species change together may point to an ecosystem-wide
 regime shift, or to changes in fisheries management or reporting.
 }
 \details{
 The year of a breakpoint is the first year of the new segment. Species whose series is too
-short for `h_value` are skipped with a message.
+short for \code{h_value} are skipped with a message.
 }
 \examples{
 \dontrun{
@@ -59,3 +59,15 @@ FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
 regime_shift(FAO34$area_data, lang = "zh")
 }
 }
+\seealso{
+Other summary analyses:
+\code{\link[=area_overview]{area_overview()}},
+\code{\link[=coastal_distant]{coastal_distant()}},
+\code{\link[=country_group_summary]{country_group_summary()}},
+\code{\link[=data_quality]{data_quality()}},
+\code{\link[=diversity_concentration]{diversity_concentration()}},
+\code{\link[=peak_trend]{peak_trend()}},
+\code{\link[=species_group_composition]{species_group_composition()}},
+\code{\link[=stock_status]{stock_status()}}
+}
+\concept{summary analyses}

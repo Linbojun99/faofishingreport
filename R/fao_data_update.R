@@ -10,6 +10,7 @@
 #'   (version bundled with the package), `local` (newest downloaded version, or NA
 #'   if none), `update_available` (logical) and `releases` (a data frame of all
 #'   online releases).
+#' @family FAO data
 #' @export
 #' @examples
 #' \dontrun{
@@ -63,6 +64,7 @@ check_fao_update <- function(data_dir = fao_data_dir(), quiet = FALSE) {
 #'   downloaded is read from disk instead of being downloaded again.
 #' @param quiet A logical value. If TRUE, progress messages are not printed. Default is FALSE.
 #' @return Invisibly, a data frame with the columns of `Global_Production_long`.
+#' @family FAO data
 #' @export
 #' @examples
 #' \dontrun{
@@ -102,6 +104,7 @@ download_fao_data <- function(version = "latest", data_dir = fao_data_dir(),
   lookup <- fao_lookup_tables()
   data <- fao_convert_capture(capture, lookup)
   attr(data, "fao_version") <- version
+  attr(data, "release_date") <- release$date
   attr(data, "source_url") <- release$url
   attr(data, "download_date") <- Sys.Date()
 
@@ -130,6 +133,7 @@ download_fao_data <- function(version = "latest", data_dir = fao_data_dir(),
 #'   data bundled with the package.
 #' @param data_dir The directory where downloaded releases are stored. Default is `fao_data_dir()`.
 #' @return A data frame with the columns of `Global_Production_long`.
+#' @family FAO data
 #' @export
 #' @examples
 #' \dontrun{
@@ -137,18 +141,8 @@ download_fao_data <- function(version = "latest", data_dir = fao_data_dir(),
 #' FAO34 <- subset(data, FAO.major.fishing.area..Name. == "Atlantic, Eastern Central")
 #' }
 load_fao_data <- function(version = "latest", data_dir = fao_data_dir()) {
-  local_versions <- fao_local_versions(data_dir)
+  version <- fao_resolve_version(version, data_dir)
   bundled_release <- fao_bundled_release()
-
-  if (identical(version, "latest")) {
-    newest_local <- local_versions[length(local_versions)]
-    use_local <- length(local_versions) > 0 &&
-      numeric_version(newest_local) > numeric_version(bundled_release)
-    version <- if (use_local) newest_local else "bundled"
-  }
-  if (identical(version, bundled_release) && !version %in% local_versions) {
-    version <- "bundled"
-  }
 
   if (identical(version, "bundled")) {
     bundled <- new.env()
@@ -160,14 +154,83 @@ load_fao_data <- function(version = "latest", data_dir = fao_data_dir()) {
     return(data)
   }
 
-  if (!version %in% local_versions) {
-    stop("Release ", version, " has not been downloaded. Downloaded releases: ",
-         paste(local_versions, collapse = ", "), call. = FALSE)
-  }
   data <- readRDS(fao_data_file(version, data_dir))
   message("Using FAO Global Capture Production release ", version,
           " (", min(data$Year), "-", max(data$Year), ")")
   data
+}
+
+
+#' Information on the FAO Data Used
+#'
+#' Shows which FAO Global Capture Production release the analyses use (the release that
+#' `load_fao_data()` loads), when FAO published it, the years it covers, where it was
+#' downloaded from, its licence and a citation, e.g. for the data section of a report.
+#'
+#' @inheritParams load_fao_data
+#' @return A list of class `fao_data_info` with `release`, `release_date` (publication date
+#'   on the FAO website), `years`, `source` ("bundled" with the package or "downloaded"), `url`,
+#'   `download_date`, `licence`, `terms` and `citation`. Printing it shows a summary.
+#' @family FAO data
+#' @export
+#' @examples
+#' \dontrun{
+#' fao_data_info()
+#' fao_data_info()$citation
+#' }
+fao_data_info <- function(version = "latest", data_dir = fao_data_dir()) {
+  version <- fao_resolve_version(version, data_dir)
+  if (identical(version, "bundled")) {
+    meta <- fao_bundled_meta()
+    info <- list(release = meta[["Version"]], release_date = meta[["Released"]],
+                 years = as.integer(strsplit(meta[["Years"]], "-")[[1]]), source = "bundled",
+                 url = meta[["URL"]], download_date = meta[["Downloaded"]])
+  } else {
+    data <- readRDS(fao_data_file(version, data_dir))
+    attribute <- function(name, default = NA_character_) {
+      value <- attr(data, name)
+      if (is.null(value)) default else as.character(value)
+    }
+    info <- list(release = version, release_date = attribute("release_date"),
+                 years = range(data$Year), source = "downloaded",
+                 url = attribute("source_url", paste0(fao_base_url, "Capture_", version, ".zip")),
+                 download_date = attribute("download_date"))
+  }
+  info$licence <- "CC BY 4.0"
+  info$terms <- "https://www.fao.org/contact-us/terms/db-terms-of-use/en"
+  info$citation <- fao_data_citation(info)
+  structure(info, class = "fao_data_info")
+}
+
+#' @export
+print.fao_data_info <- function(x, ...) {
+  released <- if (is.na(x$release_date)) "" else paste0(" (published by FAO on ", x$release_date, ")")
+  obtained <- if (x$source == "bundled") "bundled with faofishingreport" else "with download_fao_data()"
+  if (!is.na(x$download_date)) obtained <- paste0(obtained, ", downloaded from FAO on ", x$download_date)
+  cat("FAO Global Capture Production\n",
+      "  Release:   ", x$release, released, "\n",
+      "  Years:     ", x$years[1], "-", x$years[2], "\n",
+      "  File:      ", x$url, "\n",
+      "  Obtained:  ", obtained, "\n",
+      "  Licence:   ", x$licence, " (", x$terms, ")\n",
+      "  Citation:  ", x$citation, "\n", sep = "")
+  invisible(x)
+}
+
+# Citation of a release, following the FAO "Cite this content as" format of the Global
+# Capture Production page, with the years, the release and the date the data was obtained
+fao_data_citation <- function(info) {
+  year <- if (!is.na(info$release_date)) substr(info$release_date, 1, 4) else sub("[.].*", "", info$release)
+  cited <- ""
+  if (!is.na(info$download_date)) {
+    date <- as.Date(info$download_date)
+    # English month names whatever the locale of R
+    cited <- paste0(" [Cited ", as.integer(format(date, "%d")), " ",
+                    month.name[as.integer(format(date, "%m"))], " ", format(date, "%Y"), "].")
+  }
+  paste0("FAO. ", year, ". Global Capture Production ", info$years[1], "-", info$years[2],
+         ", release ", info$release, ". In: Fisheries and Aquaculture [online]. Rome.", cited,
+         " https://www.fao.org/fishery/collection/capture/en. Licence: CC BY 4.0.")
 }
 
 
@@ -178,6 +241,7 @@ load_fao_data <- function(version = "latest", data_dir = fao_data_dir()) {
 #' folder of R (`tools::R_user_dir("faofishingreport", "data")`).
 #'
 #' @return A character string with the directory path.
+#' @family FAO data
 #' @export
 #' @examples
 #' \dontrun{
@@ -204,9 +268,36 @@ fao_groups_file <- function(version, data_dir) {
   file.path(data_dir, paste0("fao_groups_", version, ".rds"))
 }
 
-# The FAO release of the data bundled with the package (written by data-raw/update_bundled_data.R)
+# The FAO release of the data bundled with the package, its publication date, years, source and
+# download date (written by data-raw/update_bundled_data.R)
+fao_bundled_meta <- function() {
+  read.dcf(system.file("extdata", "bundled_release.txt", package = "faofishingreport"))[1, ]
+}
+
 fao_bundled_release <- function() {
-  readLines(system.file("extdata", "bundled_release.txt", package = "faofishingreport"), warn = FALSE)[1]
+  fao_bundled_meta()[["Version"]]
+}
+
+# The release used for version = "latest" (the newest of the downloaded releases and the
+# bundled data), "bundled" or a release number; "bundled" when the bundled release is asked for
+fao_resolve_version <- function(version, data_dir) {
+  local_versions <- fao_local_versions(data_dir)
+  bundled_release <- fao_bundled_release()
+  if (identical(version, "latest")) {
+    newest_local <- local_versions[length(local_versions)]
+    use_local <- length(local_versions) > 0 &&
+      numeric_version(newest_local) > numeric_version(bundled_release)
+    version <- if (use_local) newest_local else "bundled"
+  }
+  if (identical(version, bundled_release) && !version %in% local_versions) {
+    version <- "bundled"
+  }
+  if (!identical(version, "bundled") && !version %in% local_versions) {
+    stop("Release ", version, " has not been downloaded. Downloaded releases: ",
+         if (length(local_versions) > 0) paste(local_versions, collapse = ", ") else "none",
+         call. = FALSE)
+  }
+  version
 }
 
 fao_local_versions <- function(data_dir) {

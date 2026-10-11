@@ -14,6 +14,7 @@
 #' @inheritParams summary_params
 #' @param top_n The number of largest species and countries for the top share. Default is 5.
 #' @return Invisibly, a data frame with one row per year.
+#' @family summary analyses
 #' @export
 #' @examples
 #' \dontrun{

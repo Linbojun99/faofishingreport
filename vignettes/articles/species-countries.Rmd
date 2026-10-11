@@ -10,6 +10,10 @@ source("_setup.R")
 FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
 ```
 
+```{r data-source, echo = FALSE, results = "asis"}
+data_source()
+```
+
 These functions take the fishing area data of `fishing_area_data()` (here area 34) and look at
 one species or one country. `country_analysis()` looks at a country in all FAO areas.
 

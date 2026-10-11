@@ -15,37 +15,37 @@ data_quality(
 )
 }
 \arguments{
-\item{area_data}{FAO catch data: `fishing_area_data()$area_data`, or any subset of
-`load_fao_data()` (e.g. one country, or several fishing areas).}
+\item{area_data}{FAO catch data: \code{fishing_area_data()$area_data}, or any subset of
+\code{load_fao_data()} (e.g. one country, or several fishing areas).}
 
 \item{top_n}{The number of countries in the country table. Default is 10.}
 
-\item{plot}{A logical value. If TRUE (default), charts are saved in `figures/png/summary/`.}
+\item{plot}{A logical value. If TRUE (default), charts are saved in \verb{figures/png/summary/}.}
 
-\item{table}{A logical value. If TRUE (default), tables are saved in `tables/`.}
+\item{table}{A logical value. If TRUE (default), tables are saved in \verb{tables/}.}
 
 \item{lang}{The language of the chart text and names: "en" (English), "zh" (Chinese) or
 "both" (Chinese and English). Default is NULL, which uses the language set with
-`fao_settings()` ("en" unless changed).}
+\code{fao_settings()} ("en" unless changed).}
 
 \item{pptx}{A logical value. If TRUE, charts are also saved as editable PowerPoint files in
-`figures/pptx/summary/`. Default is FALSE, which can be changed for all functions with
-`fao_settings(pptx = TRUE)`.}
+\verb{figures/pptx/summary/}. Default is FALSE, which can be changed for all functions with
+\code{fao_settings(pptx = TRUE)}.}
 
 \item{label}{The name used in the output file names. Default is the fishing area (or the
 country) of the data.}
 }
 \value{
-Invisibly, a list with `data_status` and `taxon_level` (yearly catch by category)
-        and `countries` (country table).
+Invisibly, a list with \code{data_status} and \code{taxon_level} (yearly catch by category)
+and \code{countries} (country table).
 }
 \description{
 This function shows two aspects of data quality over time:
 \itemize{
-  \item the share of the catch reported officially, and the share estimated (by the reporting
-        country or imputed by FAO), from the FAO status flags;
-  \item the share of the catch identified to species, genus, family, or only to a higher
-        group (e.g. "Marine fishes nei"), from the FAO taxonomic codes.
+\item the share of the catch reported officially, and the share estimated (by the reporting
+country or imputed by FAO), from the FAO status flags;
+\item the share of the catch identified to species, genus, family, or only to a higher
+group (e.g. "Marine fishes nei"), from the FAO taxonomic codes.
 }
 It also lists, for the countries with the largest catch in the last five years, how much of
 their catch in those years was estimated or identified to species.
@@ -60,3 +60,15 @@ FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
 data_quality(FAO34$area_data, lang = "zh")
 }
 }
+\seealso{
+Other summary analyses:
+\code{\link[=area_overview]{area_overview()}},
+\code{\link[=coastal_distant]{coastal_distant()}},
+\code{\link[=country_group_summary]{country_group_summary()}},
+\code{\link[=diversity_concentration]{diversity_concentration()}},
+\code{\link[=peak_trend]{peak_trend()}},
+\code{\link[=regime_shift]{regime_shift()}},
+\code{\link[=species_group_composition]{species_group_composition()}},
+\code{\link[=stock_status]{stock_status()}}
+}
+\concept{summary analyses}

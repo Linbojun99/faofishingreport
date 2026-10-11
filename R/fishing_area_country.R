@@ -37,6 +37,7 @@
 #'        also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
 #'        changed for all functions with `fao_settings(pptx = TRUE)`.
 #' @return NULL. The function saves the generated plots to the specified directory if plot = TRUE.
+#' @family fishing area analyses
 #' @export
 #'
 #' @examples

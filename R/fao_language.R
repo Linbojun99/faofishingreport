@@ -11,6 +11,7 @@
 #' @param type The kind of name: "country", "species" or "area".
 #' @param lang The output language: "en" (English), "zh" (Chinese) or "both" (Chinese and English).
 #' @return A character vector of translated names.
+#' @family settings and language
 #' @export
 #' @examples
 #' \dontrun{
@@ -48,6 +49,7 @@ fao_translate <- function(x, type = c("country", "species", "area"), lang = "zh"
 #' @param family Optional font family to use from now on, e.g. "Microsoft YaHei".
 #'   The choice can also be set with `options(faofishingreport.font = "...")`.
 #' @return The font family name.
+#' @family settings and language
 #' @export
 #' @examples
 #' \dontrun{

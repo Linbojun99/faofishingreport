@@ -17,6 +17,7 @@
 #' @param top_n The number of countries in the country table. Default is 10.
 #' @return Invisibly, a list with `data_status` and `taxon_level` (yearly catch by category)
 #'         and `countries` (country table).
+#' @family summary analyses
 #' @export
 #' @examples
 #' \dontrun{

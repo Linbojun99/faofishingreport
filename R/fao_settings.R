@@ -41,6 +41,7 @@
 #' }
 #' @param reset A logical value. If TRUE, all settings go back to their defaults first.
 #' @return Invisibly, a list of the current settings.
+#' @family settings and language
 #' @export
 #' @examples
 #' \dontrun{
