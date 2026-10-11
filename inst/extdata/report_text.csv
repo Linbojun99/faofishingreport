@@ -11,19 +11,18 @@ cover_author,Author: {value},作　　者：{value}
 cover_affiliation,Affiliation: {value},单　　位：{value}
 cover_date,Date: {value},日　　期：{value}
 abstract_heading,Abstract,摘　要
-abstract,"{area} is one of the important marine fishing areas of the world. Using the FAO Global Capture Production statistics for {first_year}–{last_year} (release {release}), this report analyses the catch trends, the main species items and fishing countries, the status of the stocks and the quality of the data, with breakpoint analysis, stock status plots, Mann-Kendall trend tests and diversity and concentration indices. In {last_year}, the catch in the area was {total_last}, {share_last}% of the world's marine capture production. The catch peaked in {peak_year} at {peak_catch}, and the catch of {last_year} was {pct_peak}% of the peak. Breakpoints divide the catch series into {n_stages} stages ({stage_years}). In the last five years, {top1_species_plain} was the main species item, with {top1_species_share}% of the catch, and {top1_country} the main fishing country, with {top1_country_share}%. In {last_year}, {oc_pct}% of the stocks were over-exploited or collapsed.{abstract_cmsy} Monitoring and assessment of the main stocks, and the reporting of catch at species level, should be strengthened.",{area}是全球重要的海洋捕捞海域之一。本报告根据联合国粮食及农业组织（FAO）全球捕捞产量统计 {first_year}–{last_year} 年数据（{release} 版），采用突变点检测、资源开发状态图、Mann-Kendall 趋势检验以及多样性和集中度指数，分析了该海域渔获量的变化、主要渔获种类和捕捞国家（地区）、资源开发状态及数据质量。结果表明，{last_year} 年该海域渔获量为 {total_last}，占全球海洋捕捞产量的 {share_last}%；历史最高渔获量出现在 {peak_year} 年（{peak_catch}），{last_year} 年渔获量为峰值的 {pct_peak}%。渔获量变化可划分为 {n_stages} 个阶段（{stage_years}）。近 5 年{top1_species_plain}是最主要的渔获种类，占总渔获量的 {top1_species_share}%；{top1_country}是最主要的捕捞国家（地区），占 {top1_country_share}%。{last_year} 年处于过度开发或崩溃状态的资源占 {oc_pct}%。{abstract_cmsy}建议加强主要渔获种类的资源监测与评估，提高渔获统计的物种分辨率。
 h_data_methods,1 Data and methods,1 数据来源与分析方法
 h_data,1.1 Data sources,1.1 数据来源
 h_methods,1.2 Methods,1.2 分析方法
 h_results,2 Results and conclusions,2 结果与结论
-h_total,2.1 Catch trends and stages,2.1 渔获量变化与阶段划分
-h_species,2.2 Main species,2.2 主要渔获种类
-h_countries,2.3 Main fishing countries,2.3 主要捕捞国家（地区）
-h_groups,2.4 Composition by species group,2.4 渔获类群组成
-h_status,2.5 Stock status,2.5 资源开发状态
-h_quality,2.6 Data quality and diversity,2.6 数据质量与渔获多样性
-h_fleets,2.7 Coastal and distant-water fleets,2.7 沿岸国与远洋捕捞
-h_conclusions,2.8 Conclusions,2.8 结论
+h_total,Catch trends and stages,渔获量变化与阶段划分
+h_species,Main species,主要渔获种类
+h_countries,Main fishing countries,主要捕捞国家（地区）
+h_groups,Composition by species group,渔获类群组成
+h_status,Stock status,资源开发状态
+h_quality,Data quality,数据质量
+h_fleets,Coastal and distant-water fleets,沿岸国与远洋捕捞
+h_conclusions,Conclusions,结论
 h_references,References,参考文献
 h_appendix,Appendix,附件
 data_p1,"Following the FAO division of the oceans into major fishing areas, the catch data of {area} were analysed. The catch data are the FAO Global Capture Production statistics, release {release} {cite:fao_capture}, published by FAO on {release_date} and downloaded on {download_date} from {url}. They cover {first_year}–{last_year}, in tonnes live weight, and give the yearly catch of {n_countries} countries and territories and {n_species} species items in the area; aquaculture production is not included.",根据 FAO 对全球主要渔区的划分，选取{area}的渔获数据进行分析。渔获量数据来自 FAO 全球捕捞产量统计（Global Capture Production）{release} 版{cite:fao_capture}，该版本由 FAO 于 {release_date} 发布，本报告于 {download_date} 从 {url} 下载。数据时间范围为 {first_year}–{last_year} 年，单位为活重吨（t），包括 {n_countries} 个国家和地区、{n_species} 个物种条目在该海域的年渔获量，不包括水产养殖产量。
@@ -69,12 +68,6 @@ conc_high,highly concentrated,高度集中
 fleets_p1,"In {last_year}, coastal countries took {coastal_pct}% of the catch and distant-water fleets {distant_pct}% ({fig_fleets}). The distant-water share was highest in {distant_peak_year}, at {distant_peak_pct}%, and has since {distant_change}. In the last five years, the main distant-water countries were {top_distant}.",{last_year} 年，沿岸国渔获量占该海域总渔获量的 {coastal_pct}%，远洋捕捞国家和地区占 {distant_pct}%（{fig_fleets}）。远洋渔获量占比在 {distant_peak_year} 年最高，为 {distant_peak_pct}%，此后总体{distant_change}。近 5 年远洋渔获量最高的国家和地区为{top_distant}。
 distant_down,decreased,下降
 distant_same,changed little,变化不大
-concl_1,"(1) The catch in the area {overall} over {first_year}–{last_year}. In {last_year} it was {total_last}, {pct_peak}% of the peak of {peak_year}, and the series falls into {n_stages} stages.",（1）{first_year}–{last_year} 年该海域渔获量总体呈{overall}趋势，{last_year} 年为 {total_last}，为历史峰值（{peak_year} 年）的 {pct_peak}%，渔获量变化可划分为 {n_stages} 个阶段。
-concl_2,"(2) The catch is dominated by {g1}; {top1_species_plain} is the main species item and {top1_country} the main fishing country, and coastal countries take {coastal_pct}% of the catch.",（2）渔获以{g1}为主，{top1_species_plain}是最主要的渔获种类；{top1_country}是最主要的捕捞国家（地区），沿岸国渔获量占 {coastal_pct}%。
-concl_3,"(3) In {last_year}, {oc_pct}% of the stocks were over-exploited or collapsed; {status_note}",（3）{last_year} 年处于过度开发和崩溃状态的资源占 {oc_pct}%；{status_note}
-concl_3_down,"the catch of {list} decreased significantly over the last ten years, and their monitoring and assessment should be strengthened.",{list}等种类近 10 年渔获量显著下降，需加强资源监测与评估。
-concl_3_none,"the catch of the main species items has not decreased significantly over the last ten years, but they should still be monitored.",主要种类近 10 年渔获量未见显著下降，但仍需持续监测。
-concl_4,"(4) In {last_year}, {est_pct}% of the catch was estimated and {nonspecies_pct}% was not identified to species; the quality of the catch statistics should be improved.",（4）{last_year} 年 {est_pct}% 的渔获量为估算值，{nonspecies_pct}% 的渔获量未鉴定到种，渔获统计数据的质量有待提高。
 concl_note,"[To be completed: these conclusions were generated automatically from the FAO statistics; complete them with the stock assessments of regional fisheries management organisations, the literature and management measures.]",【待补充：以上结论根据 FAO 统计数据自动生成，请结合区域渔业管理组织的资源评估结果、相关文献和渔业管理措施进一步分析和完善。】
 fig_prefix,Figure {no},图{no}
 tab_prefix,Table {no},表{no}
@@ -112,12 +105,12 @@ trend_none,no trend,无显著变化
 ref_note_numeric,"[To be completed: add the other references in the order they are cited, e.g.: Journal article: [No.] Authors. Title[J]. Journal, Year, Volume(Issue): Pages. Book: [No.] Authors. Title[M]. Edition. Place: Publisher, Year: Pages. Proceedings: [No.] Authors. Title: Proceedings[C]. Place: Publisher, Year, Pages. Thesis: [No.] Author. Title[D]. Place: University, Year. List all authors up to three; for more, list the first three followed by ""et al."".]",【待补充：其他参考文献按正文中引用的先后顺序排列，格式如下。期刊：[序号] 作者. 题目[J]. 刊名，出版年份，卷号(期号)：起止页码. 专著：[序号] 作者. 书名[M]，版本（第一版不标注）. 出版地：出版社，出版年：起止页码. 论文集：[序号] 作者，题名：论文集名[C]. 出版地：出版社，出版年，起止页码. 学位论文：[序号] 作者. 题名[D]. 保存地点：保存单位，年份. 作者不超过三位时全部列出，超过三位时只列前三位，其后加“等”或“et al.”；作者姓名之间用逗号分开，姓在前、名在后。】
 ref_note_apa,"[To be completed: add the other references in alphabetical order of the first author, in APA style, e.g.: Author, A. A., Author, B. B., & Author, C. C. (Year). Title of the article. Journal Name, Volume(Issue), Pages. https://doi.org/xx.xxx]","【待补充：其他参考文献按第一作者姓氏的字母顺序排列（APA 格式），例如：Author, A. A., Author, B. B., & Author, C. C. (Year). Title of the article. Journal Name, Volume(Issue), Pages. https://doi.org/xx.xxx】"
 ref_note_fao,"[To be completed: add the other references in alphabetical order of the first author, in the style of FAO publications, e.g.: Author, A.A., Author, B.B. & Author, C.C. Year. Title of the article. Journal Name, Volume(Issue): Pages. https://doi.org/xx.xxx]","【待补充：其他参考文献按第一作者姓氏的字母顺序排列（FAO 出版物格式），例如：Author, A.A., Author, B.B. & Author, C.C. Year. Title of the article. Journal Name, Volume(Issue): Pages. https://doi.org/xx.xxx】"
-abstract_cmsy, CMSY++ assessments of {n_ok} main species found {n_overfished} of them overfished (B/Bmsy < 0.8) in their last year.,CMSY++ 评估的 {n_ok} 个主要物种中，{n_overfished} 个处于过度捕捞状态（B/Bmsy<0.8）。
+abstract_cmsy,CMSY++ assessments of {n_ok} main species found {n_overfished} of them overfished (B/Bmsy < 0.8) in their last year.,CMSY++ 评估的 {n_ok} 个主要物种中，{n_overfished} 个处于过度捕捞状态（B/Bmsy<0.8）。
 methods_cmsy,"The {cmsy_top} species with the largest catch over the last ten years (items identified to species) were assessed with CMSY++ {cite:froese2023,froese2017}. From the catch series, a prior range of the intrinsic rate of increase r based on the resilience of the species in FishBase {cite:fishbase}, and priors of relative biomass from a neural network, CMSY++ fits a Bayesian Schaefer surplus production model, sampled with JAGS {cite:plummer2003}, and estimates r, the carrying capacity k, the maximum sustainable yield (MSY), and the relative biomass B/Bmsy and fishing mortality F/Fmsy of every year. Following the FAO classification {cite:fao_sofia2026}, stocks with B/Bmsy ≥ 0.8 are maximally sustainably fished and stocks with B/Bmsy < 0.8 overfished. FAO data have catches only and no abundance index, so the results are indicative.","采用 CMSY++ 方法{cite:froese2023,froese2017}对近 10 年渔获量最高的 {cmsy_top} 个物种（鉴定到种的物种条目）进行资源评估。CMSY++ 根据渔获量时间序列、基于 FishBase 物种恢复力确定的内禀增长率 r 先验{cite:fishbase}以及由神经网络估计的相对生物量先验，拟合贝叶斯 Schaefer 剩余产量模型（采用 JAGS 抽样{cite:plummer2003}），估算内禀增长率 r、环境容纳量 k、最大可持续产量（MSY）以及各年的相对生物量 B/Bmsy 和相对捕捞死亡率 F/Fmsy。参照 FAO 的划分{cite:fao_sofia2026}，B/Bmsy≥0.8 的种群为最大可持续捕捞，B/Bmsy<0.8 为过度捕捞。FAO 数据仅有渔获量而无资源丰度指数，评估结果仅供参考。"
-h_cmsy,3 Stock assessment of the main species (CMSY++),3 主要渔获种类资源评估（CMSY++）
-h_cmsy_overview,3.1 Overview,3.1 评估概况
-h_cmsy_species,3.{no} {species},3.{no} {species}
-h_cmsy_summary,3.{no} Summary,3.{no} 小结
+h_cmsy,Stock assessment of the main species (CMSY++),主要渔获种类资源评估（CMSY++）
+h_cmsy_overview,Overview,评估概况
+h_cmsy_species,{species},{species}
+h_cmsy_summary,Summary,小结
 cmsy_p1,"Of the {cmsy_top} species with the largest catch over the last ten years ({y10}–{last_year}), {n_ok} were assessed with CMSY++{not_assessed} ({tab_cmsy}). In their last year, {n_msf} stocks were maximally sustainably fished (B/Bmsy ≥ 0.8) and {n_overfished} overfished (B/Bmsy < 0.8); {n_green} stocks were in the green quadrant of the Kobe plot (B/Bmsy ≥ 1 and F/Fmsy ≤ 1) and {n_red} in the red quadrant (B/Bmsy < 1 and F/Fmsy > 1) ({fig_cmsy}).",近 10 年（{y10}–{last_year} 年）渔获量最高的 {cmsy_top} 个物种中，{n_ok} 个完成了 CMSY++ 评估{not_assessed}（{tab_cmsy}）。在各种群数据的最后一年，{n_msf} 个种群处于最大可持续捕捞状态（B/Bmsy≥0.8），{n_overfished} 个处于过度捕捞状态（B/Bmsy<0.8）；{n_green} 个种群位于 Kobe 图的绿区（B/Bmsy≥1 且 F/Fmsy≤1），{n_red} 个位于红区（B/Bmsy<1 且 F/Fmsy>1）（{fig_cmsy}）。
 cmsy_not_assessed,; {list} could not be assessed,，{list}未能完成评估
 cmsy_species_p1,"The assessment of {species} used the catch of {first_year}–{last_year}. The estimated intrinsic rate of increase r was {r} (95% confidence limits {r_lcl}–{r_ucl}), the carrying capacity k {k} ({k_range}) and the maximum sustainable yield MSY {msy} ({msy_range}). In {last_year}, the relative biomass B/Bmsy was {bbmsy} ({bbmsy_lcl}–{bbmsy_ucl}) and the relative fishing mortality F/Fmsy {ffmsy} ({ffmsy_lcl}–{ffmsy_ucl}); the catch was {catch_last}, {catch_msy}% of MSY, and the stock was {status}. The probabilities that the stock was in the green, orange, yellow and red quadrants of the Kobe plot were {p_green}%, {p_orange}%, {p_yellow}% and {p_red}% ({fig}).",{species}的评估使用了 {first_year}–{last_year} 年的渔获量数据。估算的内禀增长率 r 为 {r}（95% 置信区间 {r_lcl}–{r_ucl}），环境容纳量 k 为 {k}（{k_range}），最大可持续产量 MSY 为 {msy}（{msy_range}）。{last_year} 年，相对生物量 B/Bmsy 为 {bbmsy}（{bbmsy_lcl}–{bbmsy_ucl}），相对捕捞死亡率 F/Fmsy 为 {ffmsy}（{ffmsy_lcl}–{ffmsy_ucl}）；渔获量为 {catch_last}，为 MSY 的 {catch_msy}%，资源状态为{status}。该种群位于 Kobe 图绿区、橙区、黄区和红区的概率分别为 {p_green}%、{p_orange}%、{p_yellow}% 和 {p_red}%（{fig}）。
@@ -157,3 +150,38 @@ resilience_Low,Low,低
 resilience_Very low,Very low,极低
 source_network,CMSY++ neural network,CMSY++ 神经网络
 source_user,user,用户设定
+h_diversity,Diversity and concentration of the catch,渔获多样性与集中度
+abstract_intro,"{area} is one of the important marine fishing areas of the world. Using the FAO Global Capture Production statistics for {first_year}–{last_year} (release {release}), this report analyses {topics}{methods_part}.",{area}是全球重要的海洋捕捞海域之一。本报告根据联合国粮食及农业组织（FAO）全球捕捞产量统计 {first_year}–{last_year} 年数据（{release} 版）{methods_part}，分析了该海域{topics}。
+abstract_methods,", with {methods}",，采用{methods}
+abstract_results,,结果表明，
+abstract_total,"In {last_year}, the catch in the area was {total_last}, {share_last}% of the world's marine capture production. The catch peaked in {peak_year} at {peak_catch}, and the catch of {last_year} was {pct_peak}% of the peak. Breakpoints divide the catch series into {n_stages} stages ({stage_years}).",{last_year} 年该海域渔获量为 {total_last}，占全球海洋捕捞产量的 {share_last}%；历史最高渔获量出现在 {peak_year} 年（{peak_catch}），{last_year} 年渔获量为峰值的 {pct_peak}%。渔获量变化可划分为 {n_stages} 个阶段（{stage_years}）。
+abstract_species,"In the last five years, {top1_species_plain} was the main species item, with {top1_species_share}% of the catch.",近 5 年{top1_species_plain}是最主要的渔获种类，占总渔获量的 {top1_species_share}%。
+abstract_countries,"{top1_country} was the main fishing country, with {top1_country_share}% of the catch of the last five years.",{top1_country}是最主要的捕捞国家（地区），占近 5 年渔获量的 {top1_country_share}%。
+abstract_status,"In {last_year}, {oc_pct}% of the stocks were over-exploited or collapsed.",{last_year} 年处于过度开发或崩溃状态的资源占 {oc_pct}%。
+abstract_end,"Monitoring and assessment of the main stocks, and the reporting of catch at species level, should be strengthened.",建议加强主要渔获种类的资源监测与评估，提高渔获统计的物种分辨率。
+topic_total,the catch trends,渔获量的变化
+topic_species,the main species,主要渔获种类
+topic_countries,the main fishing countries,主要捕捞国家（地区）
+topic_groups,the composition of the catch,渔获类群组成
+topic_status,the status of the stocks,资源开发状态
+topic_quality,the quality of the data,数据质量
+topic_diversity,the diversity of the catch,渔获多样性
+topic_fleets,the catch of coastal and distant-water fleets,沿岸国与远洋捕捞
+topic_cmsy,the state of the main stocks,主要物种的资源状况
+method_breakpoints,breakpoint analysis,突变点检测
+method_trend,Mann-Kendall trend tests,Mann-Kendall 趋势检验
+method_status,stock status plots,资源开发状态图
+method_diversity,diversity and concentration indices,多样性和集中度指数
+method_cmsy,CMSY++ stock assessments,CMSY++ 资源评估
+concl_total,"The catch in the area {overall} over {first_year}–{last_year}. In {last_year} it was {total_last}, {pct_peak}% of the peak of {peak_year}, and the series falls into {n_stages} stages.",{first_year}–{last_year} 年该海域渔获量总体呈{overall}趋势，{last_year} 年为 {total_last}，为历史峰值（{peak_year} 年）的 {pct_peak}%，渔获量变化可划分为 {n_stages} 个阶段。
+concl_species,{top1_species_plain} is the main species item; {species_note},{top1_species_plain}是最主要的渔获种类；{species_note}
+concl_species_down,"the catch of {list} decreased significantly over the last ten years, and their monitoring and assessment should be strengthened.",{list}等种类近 10 年渔获量显著下降，需加强资源监测与评估。
+concl_species_none,"the catch of the main species items has not decreased significantly over the last ten years, but they should still be monitored.",主要种类近 10 年渔获量未见显著下降，但仍需持续监测。
+concl_countries,{top1_country} is the main fishing country; the five main countries take {top5_countries_share}% of the catch.,{top1_country}是最主要的捕捞国家（地区），前 5 位国家（地区）合计占 {top5_countries_share}%。
+concl_groups,The catch is dominated by {g1} ({g1_share}% in {last_year}).,渔获以{g1}为主（{last_year} 年占 {g1_share}%）。
+concl_status,"In {last_year}, {oc_pct}% of the stocks were over-exploited or collapsed.",{last_year} 年处于过度开发和崩溃状态的资源占 {oc_pct}%。
+concl_quality,"In {last_year}, {est_pct}% of the catch was estimated and {nonspecies_pct}% was not identified to species; the quality of the catch statistics should be improved.",{last_year} 年 {est_pct}% 的渔获量为估算值，{nonspecies_pct}% 的渔获量未鉴定到种，渔获统计数据的质量有待提高。
+concl_diversity,"In {last_year}, the catch was {conc_species} by species (Shannon index {h_last}).",{last_year} 年渔获种类组成{conc_species}（Shannon 多样性指数为 {h_last}）。
+concl_fleets,Coastal countries take {coastal_pct}% of the catch and distant-water fleets {distant_pct}%.,沿岸国渔获量占 {coastal_pct}%，远洋捕捞国家和地区占 {distant_pct}%。
+concl_cmsy,"Of the {n_ok} main species assessed with CMSY++, {n_overfished} were overfished in their last year.",CMSY++ 评估的 {n_ok} 个主要物种中，{n_overfished} 个在最后评估年份处于过度捕捞状态。
+concl_number,({n}) ,（{n}）

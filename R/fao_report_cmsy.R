@@ -1,19 +1,23 @@
 # The CMSY++ part of fao_report(): running cmsy_area(), the text values, the appendix tables
 # and the section on the assessment of the main species.
 
-# Runs CMSY++ on the main species of the area, keeping its results in `out_dir`
-fao_report_cmsy_run <- function(area_data, top, lang, out_dir) {
+# Runs CMSY++ on the main species of the area, keeping its results in `out_dir`. `args` are the
+# settings of cmsy_area() given to fao_report() with the prefix cmsy_ (they win over the defaults)
+fao_report_cmsy_run <- function(area_data, args, lang, out_dir) {
   system <- cmsy_system(silent = TRUE)
   if (is.na(system$jags) || !all(system$packages$ok)) {
     stop("CMSY++ needs JAGS and the R packages ", paste(system$packages$package[!system$packages$ok], collapse = ", "),
          ": run cmsy_setup() once, or use cmsy = FALSE.", call. = FALSE)
   }
-  message("  CMSY++ for the ", top, " main species (a few minutes)")
+  args <- utils::modifyList(list(area = area_data, lang = lang, out_dir = out_dir, forecast = FALSE,
+                                 charts = c("management", "kobe_all", "b_bmsy_all"), silent = TRUE), args)
+  # the charts of the report are always drawn
+  args$charts <- union(args$charts, c("management", "kobe_all", "b_bmsy_all"))
+  message("  CMSY++ for the ", if (is.null(args$species)) paste(args$top, "main species") else "chosen species",
+          " (a few minutes)")
   old_options <- options(faofishingreport.dpi = 300, faofishingreport.pptx = FALSE)
   on.exit(options(old_options), add = TRUE)
-  result <- suppressWarnings(suppressMessages(cmsy_area(
-    area_data, top = top, lang = lang, out_dir = out_dir, forecast = FALSE,
-    charts = c("management", "kobe_all", "b_bmsy_all"), silent = TRUE)))
+  result <- suppressWarnings(suppressMessages(do.call(cmsy_area, args)))
   # Saved to write the report again without running CMSY++: cmsy = readRDS(<file>)
   saved <- file.path(result$dir, "cmsy_result.rds")
   saveRDS(result, saved)
@@ -22,8 +26,7 @@ fao_report_cmsy_run <- function(area_data, top, lang, out_dir) {
 }
 
 # Values of the CMSY++ text: counts of the stocks, and the text of every species
-fao_report_cmsy_values <- function(result, lang, values) {
-  if (is.null(result)) return(list(abstract_cmsy = "", has_cmsy = FALSE))
+fao_report_cmsy_values <- function(result, lang) {
   text <- function(.key, ...) fao_report_text(.key, lang, list(...))
   list_text <- function(x) fao_report_list(x, lang)
   s <- result$summary
@@ -72,7 +75,6 @@ fao_report_cmsy_values <- function(result, lang, values) {
     has_cmsy = TRUE, cmsy_top = nrow(s) + nrow(result$input$excluded),
     not_assessed = if (length(missing) > 0) text("cmsy_not_assessed", list = list_text(missing)) else "",
     overfished_list = if (any(overfished)) text("cmsy_overfished_list", list = list_text(names$plain[overfished])) else "",
-    abstract_cmsy = do.call(text, c(list("abstract_cmsy"), counts)),
     cmsy_species = species, cmsy_table = table,
     cmsy_charts = list(
       kobe = file.path(result$dir, "figures", "summary", "kobe_all.png"),
@@ -170,11 +172,11 @@ fao_report_cmsy_source <- function(x, lang) {
 
 # The CMSY++ section: overview with the results table and the charts of all stocks, then one
 # subsection per species and a summary
-fao_report_cmsy_section <- function(x, values, text) {
+fao_report_cmsy_section <- function(x, values, text, part = 3) {
   charts <- values$cmsy_charts
   fig <- function(...) fao_report_ref(x, "figures", c(...))
-  x <- fao_report_par(x, text("h_cmsy"), "FAOHeading1")
-  x <- fao_report_par(x, text("h_cmsy_overview"), "FAOHeading2")
+  x <- fao_report_par(x, paste(part, text("h_cmsy")), "FAOHeading1")
+  x <- fao_report_par(x, paste0(part, ".1 ", text("h_cmsy_overview")), "FAOHeading2")
   x <- fao_report_par(x, text("cmsy_p1", tab_cmsy = fao_report_ref(x, "tables", "cmsy"),
                               fig_cmsy = fig("cmsy_kobe", "cmsy_bbmsy")))
   x <- fao_report_table(x, "cmsy", values$cmsy_table, text("tab_cmsy"))
@@ -182,7 +184,7 @@ fao_report_cmsy_section <- function(x, values, text) {
   x <- fao_report_figure(x, "cmsy_bbmsy", charts$bbmsy, text("fig_cmsy_bbmsy"))
   for (i in seq_along(values$cmsy_species)) {
     stock <- values$cmsy_species[[i]]
-    x <- fao_report_par(x, text("h_cmsy_species", no = i + 1, species = stock$values$species), "FAOHeading2")
+    x <- fao_report_par(x, paste0(part, ".", i + 1, " ", text("h_cmsy_species", species = stock$values$species)), "FAOHeading2")
     if (!stock$ok) {
       x <- fao_report_par(x, do.call(text, c(list("cmsy_species_failed"), stock$values)))
       next
@@ -192,6 +194,6 @@ fao_report_cmsy_section <- function(x, values, text) {
     x <- fao_report_figure(x, id, charts$species[i], text("fig_cmsy_species", species = stock$values$species))
     x <- fao_report_par(x, text("cmsy_species_note"), "FAONote")
   }
-  x <- fao_report_par(x, text("h_cmsy_summary", no = length(values$cmsy_species) + 2), "FAOHeading2")
+  x <- fao_report_par(x, paste0(part, ".", length(values$cmsy_species) + 2, " ", text("h_cmsy_summary")), "FAOHeading2")
   fao_report_par(x, text("cmsy_summary"))
 }

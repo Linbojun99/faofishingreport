@@ -6,6 +6,7 @@
 \usage{
 fao_report(
   area,
+  ...,
   file = NULL,
   lang = NULL,
   title = NULL,
@@ -19,13 +20,30 @@ fao_report(
   citation = c("apa", "fao"),
   top_n = 10,
   data_version = "latest",
-  cmsy = FALSE,
-  cmsy_top = top_n
+  total = TRUE,
+  species = TRUE,
+  countries = TRUE,
+  groups = TRUE,
+  status = TRUE,
+  quality = TRUE,
+  diversity = TRUE,
+  fleets = TRUE,
+  cmsy = FALSE
 )
 }
 \arguments{
 \item{area}{The FAO major fishing area: its name, e.g. "Atlantic, Eastern Central", or its
 code, e.g. 34.}
+
+\item{...}{Settings of the analyses, named with the section as prefix: \code{total_} for
+\code{\link[=fishing_area_data]{fishing_area_data()}}, \code{species_} for \code{\link[=fishing_area_species]{fishing_area_species()}}, \code{countries_} for
+\code{\link[=fishing_area_country]{fishing_area_country()}}, \code{groups_} for \code{\link[=species_group_composition]{species_group_composition()}}, \code{status_} for
+\code{\link[=stock_status]{stock_status()}}, \code{quality_} for \code{\link[=data_quality]{data_quality()}}, \code{diversity_} for
+\code{\link[=diversity_concentration]{diversity_concentration()}}, \code{fleets_} for \code{\link[=coastal_distant]{coastal_distant()}} and \code{cmsy_} for
+\code{\link[=cmsy_area]{cmsy_area()}} (and \code{\link[=cmsy_input]{cmsy_input()}}). For example \code{species_h_value = 0.2},
+\code{countries_line_linewidth = 1}, \code{status_smooth = TRUE}, \code{cmsy_top = 5} or
+\code{cmsy_settings = list(n.iter = 100000)}. A name that is not an argument of the
+function gives an error listing its arguments.}
 
 \item{file}{The Word file to write. Default is \verb{reports/FAO<code>_report_<lang>.docx} in the
 working directory.}
@@ -53,18 +71,24 @@ reports and "Arial" in English reports.}
 \item{citation}{The citation style of English reports: "apa" (default) or "fao" (the style
 of FAO publications). Chinese reports use numbered citations (GB/T 7714).}
 
-\item{top_n}{The number of main species and countries in the charts and tables. Default is 10.}
+\item{top_n}{The number of main species and countries in the charts and tables, and of
+species assessed with CMSY++ (unless \code{cmsy_top} is given). Default is 10.}
 
 \item{data_version}{The FAO release to use, as in \code{load_fao_data()}. Default is "latest".}
 
-\item{cmsy}{A logical value. If TRUE, the main species are also assessed with CMSY++
-(\code{\link[=cmsy_area]{cmsy_area()}}), and the report ends with a section on the assessment, with the results
-of every species. Default is FALSE. The result of an earlier \code{\link[=cmsy_area]{cmsy_area()}} run can also
-be given, to write the report without running CMSY++ again. CMSY++ needs JAGS: see
-\code{\link[=cmsy_setup]{cmsy_setup()}}.}
+\item{total, species, countries, groups, status, quality, diversity, fleets}{Logical values: whether
+the report has the section on the total catch and its stages (\code{\link[=fishing_area_data]{fishing_area_data()}}),
+the main species (\code{\link[=fishing_area_species]{fishing_area_species()}}), the main fishing countries
+(\code{\link[=fishing_area_country]{fishing_area_country()}}), the ISSCAAP groups (\code{\link[=species_group_composition]{species_group_composition()}}), the
+stock status plots (\code{\link[=stock_status]{stock_status()}}), the data quality (\code{\link[=data_quality]{data_quality()}}), the
+diversity and concentration of the catch (\code{\link[=diversity_concentration]{diversity_concentration()}}) and the
+coastal and distant-water fleets (\code{\link[=coastal_distant]{coastal_distant()}}). All TRUE by default.}
 
-\item{cmsy_top}{The number of species with the largest catch of the last ten years assessed
-with CMSY++. Default is \code{top_n}, the number of main species of the report.}
+\item{cmsy}{A logical value. If TRUE, the main species are also assessed with CMSY++
+(\code{\link[=cmsy_area]{cmsy_area()}}), and the report has a part on the assessment, with the results of
+every species and appendix tables of the reference points, priors and their sources.
+Default is FALSE. The result of an earlier \code{\link[=cmsy_area]{cmsy_area()}} run can also be given, to
+write the report without running CMSY++ again. CMSY++ needs JAGS: see \code{\link[=cmsy_setup]{cmsy_setup()}}.}
 }
 \value{
 Invisibly, a list of class \code{fao_report} with the path of the Word file (\code{file}) and
@@ -86,6 +110,12 @@ from templates filled in with the results, as a first draft: check it, and compl
 marked in grey, such as other data sources, the discussion and other references.
 }
 \details{
+Every analysis is a section that can be switched on or off (\code{total}, \code{species}, ...,
+\code{cmsy}). The settings of the function of a section are given with the section name as
+prefix, e.g. \code{species_h_value = 0.2} is \code{h_value = 0.2} of \code{\link[=fishing_area_species]{fishing_area_species()}} and
+\code{cmsy_top = 5} is \code{top = 5} of \code{\link[=cmsy_area]{cmsy_area()}}. The abstract, the methods, the conclusions and
+the references follow the sections that are switched on.
+
 Chinese reports follow the format of project reports: A4 pages; body text in FangSong and
 Times New Roman, size 12 (xiao si), 1.5 line spacing and a first-line indent of two
 characters; title in bold FangSong, size 18; "abstract" in SimHei, size 15; section headings
@@ -94,6 +124,7 @@ report (figure 1-1, table 1-1), below figures and above tables; three-line table
 in FangSong, size 10.5; numbered references in superscript square brackets, in the order of
 citation (GB/T 7714). English reports have the same structure, in one font (Arial by
 default), with author-date citations in APA style or in the style of FAO publications.
+Scientific names of species and genera are in italics.
 
 The text templates are in \code{inst/extdata/report_text.csv} and the references in
 \code{inst/extdata/report_references.csv} of the package source: edit them to change the wording.
@@ -104,6 +135,10 @@ fao_report(34)                                  # Chinese or English, from fao_s
 fao_report("Atlantic, Eastern Central", lang = "zh", author = "Hongyu Lin")
 fao_report(34, lang = "en", font = "Times New Roman", citation = "fao")
 
+# Only some sections, with settings of their functions
+fao_report(34, lang = "zh", quality = FALSE, diversity = FALSE,
+           species_h_value = 0.2, status_smooth = TRUE)
+
 # With a CMSY++ assessment of the 10 main species (a few minutes)
 report <- fao_report(34, lang = "zh", cmsy = TRUE)
 report                                         # the tables it returns
@@ -112,8 +147,8 @@ View(report$cmsy_priors)                       # priors, sources and links
 fao_report(34, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5)
 
 # Reuse CMSY++ results to rewrite the report
-area34 <- cmsy_area("Atlantic, Eastern Central", top = 10, lang = "zh")
-fao_report(34, lang = "zh", cmsy = area34)
+fao_report(34, lang = "zh", cmsy = readRDS(file.path("reports", "cmsy", "Atlantic__Eastern_Central",
+                                                      "cmsy_result.rds")))
 }
 }
 \concept{report}
