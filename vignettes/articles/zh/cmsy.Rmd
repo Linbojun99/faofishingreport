@@ -1,7 +1,7 @@
 ---
-title: "📉 CMSY++ 仅渔获量资源评估"
+title: "📉 CMSY++仅渔获量资源评估"
 description: >
-  cmsy_area()、cmsy_system()、cmsy_setup()、cmsy_priors()、cmsy_input()、cmsy_run()、cmsy_plot()、cmsy_forecast()、cmsy_compare() 和 cmsy_tables()：用包内置的 CMSY++ 代码、FishBase 先验和 JAGS，对 FAO 渔获序列做仅渔获量评估。
+  cmsy_area()、cmsy_system()、cmsy_setup()、cmsy_install_jags()、cmsy_download_jags()、cmsy_jags_versions()、cmsy_sources()、cmsy_priors()、cmsy_input()、cmsy_defaults()、cmsy_run()、cmsy_plot()、cmsy_forecast()、cmsy_compare()和cmsy_tables()：用包内置的CMSY++代码、FishBase先验和JAGS，对FAO渔获序列做仅渔获量评估。
 ---
 
 ```{r setup, include = FALSE}
@@ -16,107 +16,189 @@ show_png <- function(file) {
 ```
 
 ```{r}
-fao_settings(lang = "zh")
+fao_settings(lang = "zh")   # 本文所有图表使用中文
 ```
 
-CMSY++（Froese 等 2023）根据渔获量序列、内禀增长率 r 的先验和相对生物量 B/k 的先验，估计 MSY、Bmsy、Fmsy，以及每年的相对生物量 B/Bmsy 和相对捕捞强度 F/Fmsy。本包内置了 CMSY++ 的官方代码（`CMSY++16.R`，2021 年 1 月版）、神经网络文件和用户手册，由几个函数完成从环境安装到出图的全部步骤。
+CMSY++（Froese et al. 2023）是CMSY（Froese et al. 2017）的后续版本，它根据渔获量序列、内禀增长率r的先验和相对生物量B/k的先验，估计MSY、Bmsy、Fmsy，以及每年的相对生物量B/Bmsy和相对捕捞强度F/Fmsy。本包内置了CMSY++的官方代码（`CMSY++16.R`，2021年1月版）、神经网络文件和用户手册（Froese et al. 2021），由几个函数完成从安装JAGS（Plummer 2003）到出图的全部步骤。本文展示的CMSY++结果是事先运行得到的，生成本文时不会运行CMSY++。
 
 ::: {.alert .alert-warning}
-**FishStat 只有渔获量，没有 CPUE。** FAO 捕捞产量数据不含 CPUE、调查生物量等丰度指数，所以每个种群都只能走 CMSY++ 的仅渔获量路线（CMSY，`btype = "None"`），不会运行贝叶斯 Schaefer 模型（BSM）。这时结果主要取决于 B/k 先验。独立检验发现，在默认先验下，仅渔获量方法对种群状态的判断精度有限（Free 等 2020；Ovando 等 2021；Kell 等 2022）。因此结果只是**指示性的**，不能替代正式的种群评估。按照 FAO（2026）的做法，状态只分两类：**最大可持续捕捞**（最后一年 B/Bmsy ≥ 0.8）和**过度捕捞**（B/Bmsy < 0.8），不使用仅渔获量结果判定"低度捕捞"。
+**FishStat只有渔获量，没有CPUE。**FAO捕捞产量数据不含CPUE、调查生物量等丰度指数，所以每个种群都只能走CMSY++的仅渔获量路线（CMSY，`btype = "None"`），不会运行贝叶斯Schaefer模型（BSM）。这时结果主要取决于B/k先验。独立检验发现，在默认先验下，仅渔获量方法对种群状态的判断精度有限（Free et al. 2020；Ovando et al. 2021；Kell et al. 2022）。因此结果只是**指示性的**，不能替代正式的种群评估。按照FAO（2026）的做法，状态只分两类：**最大可持续捕捞**（最后一年B/Bmsy ≥ 0.8）和**过度捕捞**（B/Bmsy < 0.8），不使用仅渔获量结果判定“低度捕捞”。
 :::
+
+## ⚙️ 通用参数 {#common-arguments}
+
+下面这些参数在所有带有它们的CMSY函数中含义相同；后面各函数的参数表只列出其他参数。
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `stocks` | 要使用的种群：种群代码（如`"GRB_34"`），或物种的英文名、中文名、学名或FAO三字母代码（该物种的所有种群） | `NULL`：全部种群 |
+| `table` | 是否保存表格（在`tables/cmsy/`） | `TRUE` |
+| `lang` | 图中文字、名称和表格列名的语言：`"en"`、`"zh"`或`"both"` | `NULL`：使用`fao_settings()`设定的语言（未修改时为`"en"`） |
+| `pptx` | 是否同时把图保存为可编辑的PowerPoint文件（在`figures/pptx/cmsy/`） | `FALSE`；`fao_settings(pptx = TRUE)`可对所有函数生效 |
+| `annotations` | 在坐标轴标题和刻度之外加入的文字：`FALSE`不加，`TRUE`全部加入，或`"title"`、`"subtitle"`、`"caption"`、`"legend"`和`"labels"`（图内文字）中的任意几项 | `FALSE`；`options(faofishingreport.cmsy_annotations = TRUE)`可改变本次会话的默认值 |
+| `silent` | 是否不显示进度条和提示信息 | `FALSE`；`fao_settings(silent = TRUE)`可改变本次会话的默认值 |
+| `data_dir` | 存放下载文件的文件夹 | `fao_data_dir()` |
 
 ## 🚀 一步完成：cmsy_area()
 
 ```{r, eval = FALSE}
-cmsy_setup()                                                     # 第一次使用前：安装 JAGS 和 R 包
-area34 <- cmsy_area("Atlantic, Eastern Central", top = 10, lang = "zh")
+cmsy_setup()                                                     # 第一次使用前：安装JAGS和R包
+area34 <- cmsy_area("Atlantic, Eastern Central", top = 10)
 ```
 
-`cmsy_area()` 把下文第一步到第九步合成一步：选出某个渔区近 `recent_years` 年（默认 10 年）渔获量最大的 `top` 个物种（也可以用 `species` 直接指定），依次准备输入、运行 CMSY++、画全部图表、做情景预测、写表格，每一步都有进度条。`area` 可以是多个渔区，每个渔区的结果保存在 `out_dir`（默认 `cmsy_areas`）下各自的文件夹中，并分类存放：
+`cmsy_area()`把下文第四步到第七步以及第九步合成一步：选出某个渔区近`recent_years`年渔获量最大的`top`个物种（也可以用`species`直接指定），依次准备输入、运行CMSY++、画全部图表、做情景预测、写表格，每一步都有进度条。无法评估的主要物种（如没有r先验）会列出原因。`area`可以是多个渔区，每个渔区的结果保存在`out_dir`下各自的文件夹中，并分类存放：
 
 ```
 cmsy_areas/Atlantic__Eastern_Central/
-├── input/      CMSY++ 渔获文件和 ID 文件、所评估的种群，以及未能评估的主要物种及原因
-├── runs/       每个种群的 CMSY++ 原始输出（JPEG 图、cmsy_output.csv、log.txt）、修改后的代码和修改清单
-├── figures/    每个种群一个文件夹，另有 summary/ 汇总图（pptx = TRUE 时还有 figures_pptx/）
-└── tables/     results.csv、series.csv、先验表、结果表、预测结果和 sources.csv（全部来源）
+├── input/      CMSY++渔获文件和ID文件（catch.csv、id.csv）、所评估的种群（stocks.csv），
+│               以及未能评估的主要物种及原因（excluded.csv）
+├── runs/       每个种群的CMSY++原始输出（JPEG图、cmsy_output.csv、log.txt）、修改后的代码
+│               和修改清单（code_changes.csv）
+├── figures/    每个种群一个文件夹，另有summary/汇总图（pptx = TRUE时还有figures_pptx/）
+└── tables/     results.csv、series.csv、priors_table.csv、results_table.csv、forecast.csv、
+                forecast_share.csv、settings_used.csv和sources.csv
 ```
 
-在 Apple 芯片的 Mac 上，34 区前 6 个物种从输入到表格共用时约 1 分钟。
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `area` | FAO主要渔区名称（可以是多个），写法与`fishing_area_data()`相同（如`"Atlantic, Eastern Central"`），也可以是`fishing_area_data()$area_data`这样的FAO产量数据 | 必填 |
+| `top` | 评估渔获量最大的几个物种 | `10` |
+| `species` | 改为评估指定的物种：英文名、中文名、学名或FAO三字母代码 | `NULL` |
+| `recent_years` | 按数据最后`recent_years`年的平均渔获量给物种排序 | `10` |
+| `out_dir` | 在其中为每个渔区建一个文件夹 | `"cmsy_areas"` |
+| `auto_start` | 起始生物量难以判断时，是否从CMSY++建议的年份开始（见第五步） | `TRUE`（`cmsy_run()`中为`FALSE`） |
+| `seed` | 随机数种子，使结果可以重复 | `1` |
+| `parallel` | 同时运行的种群数；每个种群的两条MCMC链还会另外占用两个进程 | `NULL`：处理器核数的一半 |
+| `settings` | 替换CMSY++默认值的设置（见[CMSY++自带的设置](#cmsy-settings)） | `list()`：不修改 |
+| `charts` | 要画的图（见第六步） | 全部 |
+| `classes` | 状态分级：`"fao"`（两级）或`"palomares"`（五级） | `"fao"` |
+| `forecast` | 是否按`cmsy_forecast()`的默认情景做预测 | `TRUE` |
+| `annotations`、`lang`、`pptx`、`silent` | 见[通用参数](#common-arguments) | |
+| `...` | 传给`cmsy_input()`的其他参数，如`priors`、`default_resilience`或`min_years` | |
+
+`cmsy_area()`运行CMSY++时不做回顾性分析，所以不画回顾性分析图（见第五步）。函数返回`cmsy_run()`的结果，另加`input`、`forecast`、`tables`和`dir`（该渔区的文件夹）；多个渔区时返回以渔区命名的列表。在Apple芯片的Mac上，34区前6个物种从输入到表格共用时约1分钟。
 
 ## 💻 第一步：检查电脑并自动调整设置
 
-CMSY++ 的代码是在 Windows 上写的。用户手册第 12 步要求 Mac 用户把所有 `windows()` 改成 `quartz()`，把 `antialias = "cleartype"` 改成 `"default"`。代码用 `grepl("win", sysname)` 判断是不是 Windows，而 macOS 的系统名 "Darwin" 中也含有 "win"，所以在 Mac 上会调用 `windows()` 并报错。`cmsy_system()` 检测当前系统、R 版本、处理器、JAGS 和所需的 R 包，并列出 `cmsy_run()` 将在这个系统上使用的设置：
+CMSY++的代码是在Windows上写的。用户手册第12步要求Mac用户把所有`windows()`改成`quartz()`，把`antialias = "cleartype"`改成`"default"`。代码用`grepl("win", sysname)`判断是不是Windows，而macOS的系统名"Darwin"中也含有"win"，所以在Mac上会调用`windows()`并报错。`cmsy_system()`检测当前系统、R版本、处理器、JAGS和所需的R包，并列出`cmsy_run()`将在这个系统上使用的设置：
 
 ```{r}
 sys <- cmsy_system()
-```
-
-```{r}
 show_table(sys$changes)
 ```
 
-这些修改只作用于每次运行时写入运行目录的代码副本（`CMSY++16_faofishingreport.R`，修改清单见同目录下的 `code_changes.csv`），包内的原始文件始终不变。默认使用离屏绘图设备，在任何系统上都能直接保存 JPEG 图，不会弹出窗口；`device = "screen"` 则改用系统自己的绘图窗口（Windows 上是 `windows()`，macOS 上是 `quartz()`，Linux 上是 `x11()`）。如果自动检测有误，可以手动指定系统：
+这些修改只作用于每次运行时写入运行目录的代码副本（`CMSY++16_faofishingreport.R`，修改清单见同目录下的`code_changes.csv`），包内的原始文件始终不变。默认使用离屏绘图设备，在任何系统上都能直接保存JPEG图，不会弹出窗口；`device = "screen"`则改用系统自己的绘图窗口（Windows上是`windows()`，macOS上是`quartz()`，Linux上是`x11()`）。如果自动检测有误，可以手动指定系统：
 
 ```{r, eval = FALSE}
-cmsy_system(os = "windows")                         # 查看 Windows 下的设置
-options(faofishingreport.cmsy_os = "macos")         # 本次会话内都按 macOS 设置
+cmsy_system(os = "windows")                       # 查看Windows下的设置
+options(faofishingreport.cmsy_os = "macos")       # 本次会话内都按macOS设置
 ```
 
-## 🧰 第二步：安装 JAGS 和 R 包
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `os` | 按哪个操作系统设置：`"auto"`（自动检测）、`"windows"`、`"macos"`或`"linux"` | `"auto"` |
+| `device` | CMSY++保存JPEG图之前在哪里绘图：`"file"`（离屏设备，任何系统和批处理都可用）或`"screen"`（系统自己的窗口） | `"file"` |
+| `jags` | 推荐的JAGS版本：`"recommended"`（适用于当前R版本的最新JAGS 4，可配合CRAN上的rjags）、`"latest"`（JAGS 5.0.0，需要SourceForge上的rjags 5）或版本号，如`"4.3.2"` | `"recommended"` |
+| `silent` | 见[通用参数](#common-arguments) | |
+
+函数返回系统信息（`os`、`os_detected`、`arch`、`r_version`）、已安装的`jags`和`rjags`版本、`packages`表、推荐的`jags_installer`和`rjags_source`、绘图设置`device`和`antialias`，以及对CMSY++代码所做的修改`changes`。
+
+## 🧰 第二步：安装JAGS和R包
 
 ```{r, eval = FALSE}
 cmsy_setup()
 ```
 
-`cmsy_setup()` 依次完成以下工作，每一步安装前都会先询问：
+`cmsy_setup()`在安装任何东西之前都会先询问，然后依次：
 
-1. 从 CRAN 安装缺少的 R 包：R2jags、rjags、coda、gplots、mvtnorm、neuralnet、conicfit。原代码依赖的 snpar 已于 2022-05-10 从 CRAN 下架，本包用一段相同的近似游程检验代码代替了它。
-2. 按当前系统和 R 版本，从固定链接下载 JAGS 安装程序，核对文件大小和 MD5 后打开安装程序：Windows 上是 `.exe`，macOS 上是 `.pkg`；Linux 上下载源码，并显示安装命令。JAGS 是独立程序，安装完成后需要重启 R，再运行一次 `cmsy_setup()` 检查。
-3. 核对包内 CMSY++ 文件的校验值。
+1. 从CRAN安装缺少的R包：R2jags、rjags、coda、gplots、mvtnorm、neuralnet、conicfit。原代码依赖的snpar已于2022-05-10从CRAN下架，本包用一段相同的近似游程检验代码代替了它；
+2. 按当前系统和R版本，从固定链接下载JAGS安装程序，核对文件大小和MD5后打开安装程序：Windows上是`.exe`，macOS上是`.pkg`；Linux上下载源码，并显示安装命令。JAGS是独立程序，安装完成后需要重启R，再运行一次`cmsy_setup()`检查；
+3. 核对包内CMSY++文件。
 
-默认安装 JAGS 4.3.2（Windows 上 R 低于 4.5、或 macOS 上 R 低于 4.3 时安装 4.3.1），因为 CRAN 上的 rjags 4-17 只支持 JAGS 4。最新的 JAGS 5.0.0 需要使用 SourceForge 上的 rjags 5-3，可以这样安装：`cmsy_setup(jags = "latest")`。如果把安装程序放进源码包的 `inst/jags/` 文件夹，安装时会直接使用这些文件，不再联网下载。
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `jags` | JAGS版本：`"recommended"`、`"latest"`或版本号（与`cmsy_system()`相同） | `"recommended"` |
+| `os` | 操作系统：`"auto"`、`"windows"`、`"macos"`或`"linux"` | `"auto"` |
+| `ask` | 安装前是否询问；`ask`为`TRUE`时，非交互会话中不会安装任何东西 | `TRUE` |
+| `data_dir`、`silent` | 见[通用参数](#common-arguments) | |
 
-每个组件的版本、下载链接、文件大小、MD5、SHA-256、许可证和引用文献，都可以用 `cmsy_sources()` 查看：
+函数返回安装后的`cmsy_system()`结果。默认安装JAGS 4.3.2（较早的R版本安装4.3.1），因为CRAN上的rjags（4-17）只支持JAGS 4。最新的JAGS 5.0.0需要使用SourceForge上的rjags 5-3，可以这样安装：`cmsy_setup(jags = "latest")`。如果把安装程序放进源码包的`inst/jags/`文件夹，安装时会直接使用这些文件，不再联网下载。每个组件的版本、下载链接、文件大小、校验值、许可证和引用文献，都可以用`cmsy_sources()`查看：
 
 ```{r}
 src <- cmsy_sources()
 show_table(src[, c("component", "version", "platform", "file", "license", "url")], n = 30)
 ```
 
-### R 版本与 JAGS 版本必须匹配
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `component` | 只保留名称含有这段文字的组件，如`"JAGS"`或`"CMSY"` | `NULL`：全部 |
 
-JAGS 是独立的程序，rjags 包通过它运行 MCMC。Windows 和 macOS 上的 JAGS 安装程序都是针对一定范围的 R 版本编译的，装错版本时 rjags 会加载失败，CMSY++ 也就无法运行。另外，CRAN 上的 rjags（4-17）只支持 JAGS 4。对应关系如下（默认使用 JAGS 4）：
+表中还有每个组件的`page`、`size`、`md5`、`sha256`、`released`、`requires`和`citation`（引用文献）。
 
-| 系统 | R 版本 | JAGS 安装文件 | rjags |
+### R版本与JAGS版本必须匹配
+
+JAGS是独立的程序，rjags包通过它运行MCMC。Windows和macOS上的JAGS安装程序都是针对一定范围的R版本编译的，装错版本时rjags会加载失败，CMSY++也就无法运行。另外，CRAN上的rjags（4-17）只支持JAGS 4。对应关系如下（默认使用JAGS 4）：
+
+| 系统 | R版本 | JAGS安装文件 | rjags |
 |---|---|---|---|
 | Windows | 4.5、4.6 | `JAGS-4.3.2.exe` | 4-17（CRAN） |
 | Windows | 4.2–4.4 | `JAGS-4.3.1.exe` | 4-17（CRAN） |
-| macOS | 4.3 及以后 | `JAGS-4.3.2.pkg` | 4-17（CRAN） |
-| macOS | 4.2 | `JAGS-4.3.1.pkg` | 4-15 或以后（CRAN 上 R 4.2 的二进制包停在 4-15） |
-| Linux | 任意 | 系统软件包（如 `sudo apt-get install jags`）或 `JAGS-4.3.2.tar.gz` 源码 | 4-17（CRAN，从源码编译） |
-| Windows | 4.5、4.6 | `JAGS-5.0.0.exe`（可选，最新版） | 5-3（SourceForge，尚未上 CRAN） |
-| macOS | 4.3 及以后 | `JAGS-5.0.0-universal.pkg`（可选） | 5-3（SourceForge：R 4.6 有二进制包，其他版本需从源码编译） |
+| macOS | 4.3及以后 | `JAGS-4.3.2.pkg` | 4-17（CRAN） |
+| macOS | 4.2 | `JAGS-4.3.1.pkg` | 4-15或以后（CRAN上R 4.2的二进制包停在4-15） |
+| Linux | 任意 | 系统软件包（如`sudo apt-get install jags`）或`JAGS-4.3.2.tar.gz`源码 | 4-17（CRAN，从源码编译） |
+| Windows | 4.5、4.6 | `JAGS-5.0.0.exe`（可选，最新版） | 5-3（SourceForge，尚未上CRAN） |
+| macOS | 4.3及以后 | `JAGS-5.0.0-universal.pkg`（可选） | 5-3（SourceForge：R 4.6有二进制包，其他版本需从源码编译） |
 
-依据是 JAGS 下载页面的官方说明，例如 Windows 版 JAGS 4.3.2 用 Rtools45 编译，适用于 R 4.5；macOS 版 `JAGS-4.3.2.pkg` 适用于 R 4.3.0 及以后，`JAGS-4.3.1.pkg` 适用于 R 4.0–4.2。此外，本包在 GitHub Actions 上对表中每一种组合都实际安装并运行了 CMSY++。`cmsy_jags_versions()` 给出这张表，标出本机对应的那一行，并附上每条规则的依据和官方说明页面链接：
+依据是JAGS下载页面的官方说明，例如Windows版JAGS 4.3.2用Rtools45编译，适用于R 4.5；macOS版`JAGS-4.3.2.pkg`适用于R 4.3.0及以后，`JAGS-4.3.1.pkg`适用于R 4.0–4.2。此外，本包在GitHub Actions上对表中每一种组合都实际安装并运行了CMSY++。`cmsy_jags_versions()`给出这张表，标出本机对应的那一行，并附上每条规则的依据和官方说明页面链接：
 
 ```{r}
 jv <- cmsy_jags_versions()
 show_table(jv[, c("system", "r_versions", "jags", "installer", "rjags", "default", "this_computer")], n = 10)
 ```
 
-不需要自己查表：`cmsy_download_jags()` 根据本机的系统、R 版本和芯片自动挑出匹配的安装文件，下载后核对文件大小、MD5 和 SHA-256；选 JAGS 5 时会同时下载配套的 rjags 5-3。也可以替其他系统或其他 R 版本下载，例如给实验室的离线电脑准备安装包：
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `os` | `"all"`（全部），或某一个系统：`"auto"`（本机）、`"windows"`、`"macos"`或`"linux"` | `"all"` |
+| `r_version` | 标为`this_computer`的R版本 | `getRversion()`：当前运行的R |
+| `silent` | 是否不显示本机的匹配结果 | 见[通用参数](#common-arguments) |
+
+不需要自己查表：`cmsy_download_jags()`根据本机的系统、R版本和芯片自动挑出匹配的安装文件，下载后核对文件大小、MD5和SHA-256；选JAGS 5时会同时下载配套的rjags 5-3。文件保存在`fao_data_dir()/cmsy/downloads`，只需下载一次。也可以替其他系统或其他R版本下载，例如给实验室的离线电脑准备安装包。`cmsy_install_jags()`则下载并打开安装程序：
 
 ```{r, eval = FALSE}
-cmsy_download_jags()                                        # 本机对应的 JAGS
-cmsy_download_jags(version = "latest")                      # JAGS 5.0.0 和 rjags 5-3
+cmsy_download_jags()                                        # 本机对应的JAGS
+cmsy_download_jags(version = "latest")                      # JAGS 5.0.0和rjags 5-3
 cmsy_download_jags(os = "all", r_version = "4.4.1", dest = "jags_installers")   # 三个系统、R 4.4
 cmsy_install_jags()                                         # 下载并打开安装程序
 ```
 
-## 🐟 第三步：r 先验（FishBase 和 SeaLifeBase）
+`cmsy_download_jags()`：
 
-包里内置了一张表，收录 FAO 捕捞统计中所有种一级的物种（3,155 个）在 FishBase 或 SeaLifeBase（26.06 版）中的恢复力（resilience）和先验 r，可以离线搜索。搜索支持英文名、中文名、学名或 FAO 三字母代码，每一行都附有来源页面的链接：
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `version` | `"recommended"`（适用于当前R版本的JAGS 4）、`"latest"`（JAGS 5.0.0和rjags 5-3）或JAGS版本号，如`"4.3.1"` | `"recommended"` |
+| `os` | `"auto"`（本机）、`"windows"`、`"macos"`、`"linux"`或`"all"`（三个系统中适用于`r_version`的安装文件） | `"auto"` |
+| `r_version` | 安装文件对应的R版本 | `getRversion()`：当前运行的R |
+| `arch` | 处理器，用于选择macOS上的rjags 5二进制包：`"auto"`、`"arm64"`（Apple芯片）或`"x86_64"`（Intel） | `"auto"` |
+| `dest` | 把文件复制到哪个文件夹 | `NULL`：不复制 |
+| `rjags` | 是否同时下载JAGS 5所需的rjags包（JAGS 4所用的rjags 4-17由`cmsy_setup()`从CRAN安装） | `TRUE` |
+| `data_dir`、`silent` | 见[通用参数](#common-arguments) | |
+
+函数返回一张表，每个文件一行：系统、R版本、组件、版本、文件、本地路径、链接、SHA-256以及校验是否通过。
+
+`cmsy_install_jags()`：
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `version` | `"recommended"`、`"latest"`或版本号 | `"recommended"` |
+| `os` | `"auto"`、`"windows"`、`"macos"`或`"linux"` | `"auto"` |
+| `open` | 是否打开安装程序（Windows上是`.exe`，macOS上是`.pkg`；Linux上显示安装JAGS的命令） | `TRUE` |
+| `data_dir`、`silent` | 见[通用参数](#common-arguments) | |
+
+函数返回下载的安装程序路径；源码包`inst/jags/`中放有安装程序时，直接使用该文件，不再下载。
+
+## 🐟 第三步：r先验（FishBase和SeaLifeBase）
+
+包里内置了一张表，收录FAO捕捞统计中所有种一级的物种（3,155个）在FishBase或SeaLifeBase（26.06版）中的恢复力（resilience）和先验r，可以离线搜索。搜索支持英文名、中文名、学名或FAO三字母代码，每一行都附有来源页面的链接（`open = TRUE`会在浏览器中打开这些页面）。FishBase和SeaLifeBase数据怎样获取、怎样与FAO名称匹配，见[🐠 FishBase与SeaLifeBase物种特征](fishbase.html)。
 
 ```{r}
 cod <- cmsy_priors("Gadus morhua")
@@ -124,26 +206,15 @@ show_table(cod[, c("species_name", "scientific_name", "SpecCode", "resilience", 
                    "r_low", "r_high", "r_source", "url")])
 ```
 
-`open = TRUE` 会在浏览器中打开对应的 FishBase 页面，方便核对数值：`cmsy_priors("沙丁鱼", open = TRUE)`。
+r的先验范围按照CMSY++用户手册确定：
 
-物种可以用英文名、中文名、中英文名（即 `lang = "both"` 时图中显示的形式）、学名或 FAO 三字母代码给出。`cmsy_priors()`、`cmsy_input(species = )`、`cmsy_run(stocks = )` 和 `cmsy_plot(stocks = )` 都使用同一套规则：先按完整名称匹配（不区分大小写），没有完全匹配时再按名称的一部分匹配；如果匹配到多个物种，会列出候选项，请从中选择更具体的名称或代码。结果用哪种语言显示由 `lang` 决定（`"en"`、`"zh"` 或 `"both"`），`species_en` 和 `species_zh` 两列则始终同时给出英文名和中文名。
-
-```{r}
-p <- cmsy_priors(c("COD", "Sardina pilchardus", "沙丁鱼"), lang = "both")
-show_table(p[, c("species_name", "scientific_name", "alpha3", "r_low", "r_high", "url", "data_url", "rule_url")])
-```
-
-每一行都附有三个来源链接：`url` 是 FishBase 或 SeaLifeBase 的物种页面，可以在页面上核对恢复力和先验 r；`data_url` 是读取这个数值所用的 FishBase 或 SeaLifeBase 数据表（先验 r 来自 `estimate` 表，恢复力来自 `stocks` 表）；`rule_url` 是 CMSY++ 用户手册，根据手册表 1、表 2 把这些数值换算成 r 的范围。`cmsy_input()` 和 `cmsy_run()` 的结果还多一列 `fao_data_url`，即所用 FAO 数据版本的下载链接。
-
-r 的先验范围按照 CMSY++ 用户手册确定：
-
-| 情况 | r 范围 | 依据 |
+| 情况 | r范围 | 依据 |
 |---|---|---|
-| 物种在 FishBase / SeaLifeBase 有先验 r（"Estimates based on models"） | 先验 r 的 95% 置信限 | 用户手册表 1（"更好的做法"） |
-| 只有恢复力 | 高 0.6–1.5；中 0.2–0.8；低 0.05–0.5；很低 0.015–0.1 | 用户手册表 2 |
-| 两者都没有 | 无默认值，需要由用户提供（如 r ≈ 2M 或 r ≈ 2Fmsy） | 用户手册表 1 |
+| 物种在FishBase或SeaLifeBase有先验r（"Estimates based on models"） | 先验r的95%置信限 | 用户手册表1（“更好的做法”） |
+| 只有恢复力 | 高0.6–1.5；中0.2–0.8；低0.05–0.5；很低0.015–0.1 | 用户手册表2 |
+| 两者都没有 | 无默认值，需要由用户提供（如r ≈ 2M或r ≈ 2Fmsy） | 用户手册表1 |
 
-FAO 学名先按有效种名匹配，再按数据库自己的同物异名表匹配。有歧义的异名，以及属、科一级的条目，都不赋值。
+FAO学名先按有效种名匹配，再按数据库自己的同物异名表匹配。有歧义的异名，以及属、科一级的条目，都不赋值。FishBase对同一物种列出恢复力不同的几个种群时，采用全种的值，其他值写在`resilience_note`中。
 
 ```{r}
 priors <- cmsy_priors()
@@ -151,18 +222,33 @@ table(priors$match_type)
 table(!is.na(priors$r_source))
 ```
 
-## 🧾 第四步：把 FAO 数据转成 CMSY++ 输入文件
+物种可以用英文名、中文名、中英文名（即`lang = "both"`时显示的形式）、学名或FAO三字母代码给出。`cmsy_priors()`、`cmsy_input(species = )`、`cmsy_run(stocks = )`和`cmsy_plot(stocks = )`都使用同一套规则：先按完整名称匹配（不区分大小写），没有完全匹配时再按名称的一部分匹配；如果匹配到多个物种，会列出候选项，请从中选择更具体的名称或代码。结果用哪种语言显示由`lang`决定，`species_en`和`species_zh`两列则始终同时给出英文名和中文名。
+
+```{r}
+p <- cmsy_priors(c("COD", "Sardina pilchardus", "European pilchard", "沙丁鱼"), lang = "both")
+show_table(p[, c("species_name", "scientific_name", "alpha3", "r_low", "r_high", "url", "data_url", "rule_url")])
+```
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `species` | 要搜索的名称：英文名、中文名、学名、FAO三字母代码，或其中的一部分（如`"Atlantic cod"`、`"Gadus morhua"`、`"COD"`、`"cod"`） | `NULL`：全部 |
+| `open` | 是否在浏览器中打开找到的物种（最多10个）的FishBase或SeaLifeBase页面 | `FALSE` |
+| `lang` | `species_name`列的语言：`"en"`、`"zh"`或`"both"` | `NULL`：使用`fao_settings()`设定的语言 |
+
+每一行都附有三个来源链接：`url`是FishBase或SeaLifeBase的物种页面，可以在页面上核对恢复力和先验r；`data_url`是读取这个数值所用的FishBase或SeaLifeBase数据表（先验r来自`estimate`表，恢复力来自`stocks`表）；`rule_url`是CMSY++用户手册，根据手册表1、表2把这些数值换算成r的范围。`cmsy_input()`和`cmsy_run()`的结果还多一列`fao_data_url`，即所用FAO数据版本的下载链接。
+
+## 🧾 第四步：把FAO数据转成CMSY++输入文件
 
 ```{r}
 input <- cmsy_input(FAO34$area_data)
 input
 ```
 
-`cmsy_input()` 生成 CMSY++ 需要的两个文件：渔获文件（`Stock`、`yr`、`ct`、`bt`）和 ID 文件（每个种群一行，包含先验和设置）。同时把这两个文件和种群表、被排除种群表保存在 `tables/cmsy/`。处理规则如下：
+`cmsy_input()`生成CMSY++需要的两张输入表：渔获文件（`Stock`、`yr`、`ct`、`bt`）和ID文件（每个种群一行，包含先验和设置）。它同时返回种群表（`stocks`）和被排除种群及原因（`excluded`）；`table = TRUE`时把这四张表保存在`tables/cmsy/`（`<渔区>_cmsy_catch.csv`、`..._id.csv`、`..._stocks.csv`和`..._excluded.csv`）。处理规则按照用户手册：
 
-- **种群**：默认为某个物种在某个渔区内所有国家渔获的合计（`by = "area"`）；`by = "country"` 则按国家分开。只使用鉴定到种、以吨计的条目。
-- **年份**：用户手册要求年份连续、不能有缺口。序列从第一个有渔获的年份开始，到最后一个有渔获的年份结束；中间缺报或为零的年份用相邻年份线性插值补齐，并记录补齐的年数。
-- **排除**：少于 `min_years` 年（默认 10 年，因为 CMSY++ 的默认先验要用到序列前 10 年和后 10 年）、总渔获低于 `min_catch` 吨、补齐年份超过 `max_filled`（默认 20%），或没有任何 r 先验的种群。
+- **种群**：默认为某个物种在某个渔区内所有国家渔获的合计（`by = "area"`）；`by = "country"`则按国家分开。只使用鉴定到种、以吨计的条目。
+- **年份**：年份必须连续。序列从第一个有渔获的年份开始，到最后一个有渔获的年份结束；中间缺报或为零的年份用插值补齐，并记录补齐的年数（`filled_years`）。
+- **排除**：少于`min_years`年（CMSY++的默认先验要用到序列前10年和后10年）、总渔获低于`min_catch`吨、补齐年份超过`max_filled`，或没有任何r先验的种群。
 
 ```{r}
 show_table(input$stocks[, c("Stock", "species_name", "first_year", "last_year", "filled_years",
@@ -170,7 +256,7 @@ show_table(input$stocks[, c("Stock", "species_name", "first_year", "last_year", 
 table(input$excluded$reason)
 ```
 
-如果有专家判断，可以用 `priors` 替换默认值。例如按用户手册表 3 设置最后一年的 B/k 先验，或给没有 FishBase 值的种群指定恢复力：
+如果有专家判断，可以用`priors`替换默认值。例如按用户手册表3设置最后一年的B/k先验，或给没有FishBase值的种群指定恢复力：
 
 ```{r, eval = FALSE}
 input <- cmsy_input(FAO34$area_data, priors = data.frame(
@@ -178,10 +264,23 @@ input <- cmsy_input(FAO34$area_data, priors = data.frame(
   endb.low = c(0.2, 0.01),
   endb.hi  = c(0.6, 0.4)
 ))
-input <- cmsy_input(FAO34$area_data, default_resilience = "Medium")  # 没有 FishBase 值的种群统一用"中"
+input <- cmsy_input(FAO34$area_data, default_resilience = "Medium")  # 没有FishBase值的种群统一用"中"
 ```
 
-## ▶️ 第五步：运行 CMSY++
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `area_data` | FAO产量数据：`fishing_area_data()$area_data`，或`load_fao_data()`的任意子集 | 必填 |
+| `species` | 只保留这些物种：英文名、中文名、中英文名、学名或FAO三字母代码 | `NULL`：全部物种 |
+| `by` | `"area"`：每个物种条目和渔区一个种群，各国合计；`"country"`：每个物种条目、渔区和国家一个种群 | `"area"` |
+| `priors` | 替换默认值的先验和设置，数据框，每个种群或物种一行，用`Stock`、`alpha3`、`species_en`或`species`列识别，可包含ID文件的`Resilience`、`r.low`、`r.hi`、`stb.low`、`stb.hi`、`int.yr`、`intb.low`、`intb.hi`、`endb.low`、`endb.hi`、`StartYear`、`EndYear`和`Comment`列（来源记为"user"） | `NULL` |
+| `default_resilience` | 物种在FishBase和SeaLifeBase中既无恢复力也无先验r时使用的恢复力（`"High"`、`"Medium"`、`"Low"`或`"Very low"`） | `NULL`：排除这些种群，因为用户手册没有给出默认值 |
+| `min_years` | 从首次到最后一次有渔获的最少年数 | `10` |
+| `min_catch` | 种群的最低总渔获量（吨） | `1000` |
+| `max_filled` | 插值补齐的年份占全部年份的最高比例 | `0.2` |
+| `label` | 表格文件名开头的名称 | `NULL`：数据所属的渔区（或国家） |
+| `table`、`lang`、`silent` | 见[通用参数](#common-arguments) | |
+
+## ▶️ 第五步：运行CMSY++
 
 ```{r, eval = FALSE}
 result <- cmsy_run(input, stocks = "Brachydeuterus auritus", auto_start = TRUE, seed = 1,
@@ -189,54 +288,76 @@ result <- cmsy_run(input, stocks = "Brachydeuterus auritus", auto_start = TRUE, 
 result$summary
 ```
 
-`stocks` 可以写种群代码（如 `"GRB_34"`），也可以写物种的英文名、中文名、学名或三字母代码，同一物种的所有种群都会运行。每个种群在 `cmsy/<渔区>/<种群>/` 下有独立的文件夹，并在单独的 R 进程中运行。文件夹里保留了 CMSY++ 的全部原始输出：分析图 `_AN.jpg`、管理图 `_MAN.jpg`、Kobe 图 `_KOBE.jpg`、`cmsy_output.csv` 和运行日志 `log.txt`。`parallel` 控制同时运行几个种群；运行时有进度条，显示已完成的种群数、百分比、已用时间和预计剩余时间（见下文"进度条与 silent"）。
+每个种群在`cmsy/<渔区>_cmsy/<种群>/`（如`cmsy/Atlantic__Eastern_Central_cmsy/GRB_34/`）下有独立的文件夹，并在单独的R进程中运行。文件夹里保留了CMSY++的全部原始输出：分析图`_AN.jpg`、管理图`_MAN.jpg`、Kobe图`_KOBE.jpg`、`cmsy_output.csv`和运行日志`log.txt`；运行目录中还有修改后的代码、`code_changes.csv`、`settings_used.csv`和`sources.csv`。`parallel`控制同时运行几个种群；运行时有进度条，显示已完成的种群数、已用时间和预计剩余时间（见下文“进度条与silent”）。
 
-很多 FAO 序列从 1950 年开始，那时的渔获量很低。对此 CMSY++ 会提示：起始生物量可能偏低，也可能尚未开发，难以判断。它建议改用渔获量首次达到最大值 40% 的年份作为起始年。`auto_start = TRUE` 就是采用这个建议的起始年（CMSY++ 自带的 `auto.start` 选项在 `CMSY++16.R` 中会报错，本包按同一规则在运行前改写起始年；如果改写后不足 10 年，则保留原起始年）。用户手册更推荐由用户自己设定 `StartYear` 或首年 B/k 先验（`stb.low`、`stb.hi`）。
+很多FAO序列从1950年开始，那时的渔获量很低。对此CMSY++会提示：起始生物量可能偏低，也可能尚未开发，难以判断。它建议改用渔获量首次达到最大值40%的年份作为起始年。`auto_start = TRUE`就是采用这个建议的起始年（CMSY++自带的`auto.start`选项在`CMSY++16.R`中会报错，本包按同一规则在运行前改写起始年；如果改写后不足10年，则保留原起始年）。用户手册更推荐由用户在`cmsy_input(priors = )`中自己设定`StartYear`或首年B/k先验（`stb.low`、`stb.hi`）。
 
-本文以中东大西洋（FAO 34 区）近 10 年渔获量最大的 30 个种群为例。按 CMSY++ 建议的起始年运行后，结果如下（`p_green` 为最后一年处在 Kobe 图绿区，即 B ≥ Bmsy 且 F ≤ Fmsy 的概率）：
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `input` | `cmsy_input()`的结果 | 必填 |
+| `stocks` | 要运行的种群（见[通用参数](#common-arguments)） | `NULL`：`input`中的全部种群 |
+| `out_dir` | 存放CMSY++输出的文件夹 | 工作目录下的`"cmsy"` |
+| `parallel` | 同时运行的种群数；每个种群的两条MCMC链还会另外占用两个进程 | `NULL`：处理器核数的一半 |
+| `plots` | 保存为JPEG的CMSY++图：`"analysis"`、`"management"`、`"kobe"`、`"prior_posterior"`和`"retrospective"`中的任意几项（第六步中的同名图需要后两项） | `c("analysis", "management", "kobe")` |
+| `os`、`device` | 操作系统和绘图设备（与`cmsy_system()`相同） | `"auto"`、`"file"` |
+| `seed` | 随机数种子，使结果可以重复 | `NULL` |
+| `auto_start` | 起始生物量难以判断时，是否从CMSY++建议的年份开始 | `FALSE`，与CMSY++相同 |
+| `settings` | 替换CMSY++默认值的设置（见[CMSY++自带的设置](#cmsy-settings)） | `list()`：不修改 |
+| `timeout` | 单个种群的最长运行时间（秒），超时的种群记为失败 | `3600` |
+| `table`、`lang`、`silent` | 见[通用参数](#common-arguments)；表格为`tables/cmsy/<渔区>_cmsy_results.csv`、`..._series.csv`和`..._sources.csv` | |
+
+本文以中东大西洋（FAO 34区）2015–2024年渔获量最大的30个种群为例。按CMSY++建议的起始年运行后，结果如下（`p_green`为最后一年处在Kobe图绿区，即B ≥ Bmsy且F ≤ Fmsy的概率）：
 
 ```{r}
 top30 <- read.csv(file.path(fig_dir, "..", "top30_area34.csv"), check.names = FALSE)
-top30$species <- fao_translate(top30$species_en, "species", "zh")
+top30$species <- fao_translate(top30$species_en, "species", getOption("faofishingreport.lang", "en"))
 show_table(top30[, c("rank", "Stock", "species", "scientific_name", "first_year", "B_Bmsy", "F_Fmsy", "p_green", "status")],
            n = 30, digits = 2)
 ```
 
-其中大眼裸颌鲈（bigeye grunt，*Brachydeuterus auritus*，`GRB_34`，渔获量排第 9）状态最清楚：最后一年 B/Bmsy 为 1.42（95% 置信区间 1.08–1.65），F/Fmsy 为 0.64，处在绿区的概率为 93%。下文都以它为例。它的先验和结果表由 `cmsy_tables()` 生成（见第九步）：
+其中大眼裸颌鲈（bigeye grunt，*Brachydeuterus auritus*，`GRB_34`，渔获量排第9）状态最清楚：最后一年B/Bmsy为1.42（95%置信区间1.08–1.65），F/Fmsy为0.64，处在绿区的概率为93%。下文都以它为例。它的先验表和结果表由`cmsy_tables()`生成（见第九步）：
 
 ```{r}
 show_table(read.csv(file.path(fig_dir, "priors_table.csv"), check.names = FALSE))
 show_table(read.csv(file.path(fig_dir, "results_table.csv"), check.names = FALSE))
 ```
 
-`result$summary` 每个种群一行，包括 MSY、Bmsy、Fmsy、r、k 及其 95% 置信限，最后一年的 B/Bmsy、F/Fmsy、生物量及其置信限，Kobe 四个象限的概率，B/Bmsy < 0.8 的概率（`p_overfished`），两种状态分级（FAO 两级的 `status` 和 Palomares 等 2018 五级的 `status_palomares`），所用的全部先验及其来源（`*_prior_*`、`r_source`、`url`），以及 CMSY++ 自己的提示（如建议的起始年 `suggested_start_year`）。`result$series` 是逐年结果，包括渔获量、预测渔获量、B/k、生物量、B/Bmsy、F 和 F/Fmsy 及其 95% 置信限。`result$details` 保存 r、k 和 B/k 的后验抽样与先验参数。`result$sources` 记录本次运行所用的 CMSY++、JAGS、R、各 R 包、FAO 数据和 FishBase 的版本与链接，可以直接写进报告。
+`result$summary`每个种群一行，包括MSY、Bmsy、Fmsy、r、k及其95%置信限，最后一年的B/Bmsy、F/Fmsy、生物量及其置信限，Kobe四个象限的概率，B/Bmsy < 0.8的概率（`p_overfished`），两种状态分级（FAO两级的`status`和Palomares et al. 2018五级的`status_palomares`），所用的全部先验及其来源，以及CMSY++自己的提示（如建议的起始年`suggested_start_year`）。`result$series`是逐年结果，包括渔获量、预测渔获量、B/k、生物量、B/Bmsy、F和F/Fmsy及其95%置信限；`result$kobe`是最后一年的后验抽样；`result$details`保存r、k和B/k的后验抽样、先验参数和回顾性分析结果；`result$settings`是所用的CMSY++设置；`result$changes`是对代码的修改；`result$sources`记录本次运行所用的CMSY++、JAGS、R、各R包、FAO数据和FishBase的版本与链接，可以直接写进报告。
 
 ## 📊 第六步：图表
 
 ```{r, eval = FALSE}
-cmsy_plot(result, lang = "zh")
+cmsy_plot(result)
 ```
 
-根据对 54 篇 CMSY 应用文献所用图表的统计，`cmsy_plot()` 为每个种群画出 CMSY++ 用户手册中的全部图表，并为多个种群画出常见的汇总图。图表保存在 `figures/png/cmsy/<种群>/` 和 `figures/png/cmsy/summary/` 下，`pptx = TRUE` 时同时导出可编辑的 PowerPoint 文件。
+根据对54篇CMSY应用文献所用图表的统计，`cmsy_plot()`为每个种群画出CMSY++用户手册中的全部图表，并为多个种群画出常见的汇总图。图表保存在`figures/png/cmsy/<种群>/`和`figures/png/cmsy/summary/`下，`pptx = TRUE`时同时导出可编辑的PowerPoint文件。函数返回这些ggplot对象。
 
-**默认只保留坐标轴标题和刻度文字**，方便在报告中另配图注。标题、副标题、图注（方法、数据和先验来源）、图例和图内文字（象限概率、PPVR、Mohn's rho）都可以用 `annotations` 打开：`annotations = TRUE` 全部打开，`annotations = c("title", "legend")` 只打开其中几项。`options(faofishingreport.cmsy_annotations = TRUE)` 可以改变本次会话的默认值。
+**默认只保留坐标轴标题和刻度文字**，方便在报告中另配图注。标题、副标题、图注（方法、数据和先验来源）、图例和图内文字（象限概率、PPVR、Mohn's rho）都可以用`annotations`打开：`annotations = TRUE`全部打开，`annotations = c("title", "legend")`只打开其中几项。`options(faofishingreport.cmsy_annotations = TRUE)`可以改变本次会话的默认值。
 
 | 图表 | 内容 |
 |---|---|
-| `analysis` | CMSY++ 分析图六联（手册图 1）：渔获量与 MSY、探索的 r-k 组合与先验框、可行的 r-k 组合、B/k 与三段先验、F/Fmsy、平衡曲线 |
-| `catch`、`rk`、`biomass`、`b_bmsy`、`exploitation`、`equilibrium` | 上述各图的单图版本，以及 B/Bmsy（参考线 Bmsy、0.8 Bmsy、0.5 Bmsy） |
-| `management` | 管理图四联（手册图 2）：渔获量与 MSY、B/Bmsy、F/Fmsy、Kobe 图 |
-| `kobe` | Kobe 图（手册图 3）：首年（方块）、中间年（圆点）到末年（三角）的轨迹，末年后验的 50/80/95% 概率区，各象限概率 |
-| `prior_posterior` | r、k、MSY 和三个年份 B/k 的先验与后验分布，以及 PPVR（手册图 4） |
-| `retrospective` | 去掉最后 1–3 年后的 B/Bmsy、F/Fmsy 及 Mohn's rho（手册图 5，需 `cmsy_run(plots = "retrospective")`） |
-| `overview`、`kobe_all` | 各种群末年 B/Bmsy 及置信区间；全部种群的 Kobe 图（点的大小为末年渔获量） |
-| `status`、`status_time`、`histogram` | 各状态的种群数占比和渔获量占比（末年及历年），末年 B/Bmsy 的分布 |
-| `b_bmsy_all`、`trend`、`aggregate` | 各种群 B/Bmsy 小多图；B/Bmsy 中位数和低于 0.8 Bmsy 的种群比例；总渔获量/总 MSY 和总生物量/总 Bmsy |
-| `map` | 各 FAO 渔区种群末年 B/Bmsy 中位数的地图 |
+| `analysis` | CMSY++分析图六联（手册图1）：渔获量与MSY、探索的r-k组合与先验框、可行的r-k组合、B/k与三段先验、F/Fmsy、平衡曲线 |
+| `catch`、`rk`、`biomass`、`b_bmsy`、`exploitation`、`equilibrium` | 上述各图的单图版本，以及B/Bmsy（参考线Bmsy、0.8 Bmsy、0.5 Bmsy） |
+| `management` | 管理图四联（手册图2）：渔获量与MSY、B/Bmsy、F/Fmsy、Kobe图 |
+| `kobe` | Kobe图（手册图3）：首年（方块）、中间年（圆点）到末年（三角）的轨迹，末年后验的50/80/95%概率区，各象限概率 |
+| `prior_posterior` | r、k、MSY和三个年份B/k的先验与后验分布，以及PPVR（手册图4） |
+| `retrospective` | 去掉最后1–3年后的B/Bmsy、F/Fmsy及Mohn's rho（Mohn 1999；手册图5，需`cmsy_run(plots = "retrospective")`） |
+| `overview`、`kobe_all` | 各种群末年B/Bmsy及置信区间；全部种群的Kobe图（点的大小为末年渔获量） |
+| `status`、`status_time`、`histogram` | 各状态的种群数占比和渔获量占比（末年及历年），末年B/Bmsy的分布 |
+| `b_bmsy_all`、`trend`、`aggregate` | 各种群B/Bmsy小多图；B/Bmsy中位数和低于0.8 Bmsy的种群比例；总渔获量/总MSY和总生物量/总Bmsy |
+| `map` | 各FAO渔区种群末年B/Bmsy中位数的地图 |
 
-状态默认按 FAO（2026）对第 3 层（数据有限）评估的规定分为两级：B/Bmsy ≥ 0.8 为"最大可持续捕捞"，< 0.8 为"过度捕捞"。`classes = "palomares"` 改用很多 CMSY 研究采用的 Palomares 等（2018）五级：健康（≥ 1）、轻度过度捕捞（0.8–1）、过度捕捞（0.5–0.8）、严重过度捕捞（0.2–0.5）、崩溃（< 0.2）。
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `result` | `cmsy_run()`的结果 | 必填 |
+| `stocks` | 要画的种群（见[通用参数](#common-arguments)） | `NULL`：已运行的全部种群 |
+| `charts` | 要画的图（见上表） | 全部 |
+| `classes` | 状态分级：`"fao"`（两级）或`"palomares"`（五级） | `"fao"` |
+| `annotations`、`lang`、`pptx`、`silent` | 见[通用参数](#common-arguments) | |
 
-大眼裸颌鲈的 CMSY++ 分析图（默认不加注释）：
+状态默认按FAO（2026）对第3层（数据有限）评估的规定分为两级：B/Bmsy ≥ 0.8为“最大可持续捕捞”，< 0.8为“过度捕捞”。`classes = "palomares"`改用很多CMSY研究采用的Palomares et al. (2018)五级：健康（≥ 1）、轻度过度捕捞（0.8–1）、过度捕捞（0.5–0.8）、严重过度捕捞（0.2–0.5）、崩溃（< 0.2）。
+
+大眼裸颌鲈的CMSY++分析图（默认不加注释）：
 
 ```{r, echo = FALSE}
 show_png("grunt_analysis.png")
@@ -248,13 +369,13 @@ show_png("grunt_analysis.png")
 show_png("grunt_management.png")
 ```
 
-Kobe 图（`annotations = TRUE`，打开了全部注释）：
+Kobe图（`annotations = TRUE`，打开了全部注释）：
 
 ```{r, echo = FALSE}
 show_png("grunt_kobe.png")
 ```
 
-先验与后验分布。PPVR 越小，说明数据给先验带来的信息越多：
+先验与后验分布。PPVR越小，说明数据给先验带来的信息越多：
 
 ```{r, echo = FALSE}
 show_png("grunt_prior_posterior.png")
@@ -266,7 +387,7 @@ show_png("grunt_prior_posterior.png")
 show_png("grunt_retrospective.png")
 ```
 
-34 区前 30 个种群的汇总图（`annotations = "legend"`）：
+34区前30个种群的汇总图（`annotations = "legend"`）：
 
 ```{r, echo = FALSE}
 show_png("area34_overview.png")
@@ -278,10 +399,26 @@ show_png("area34_map.png")
 ## 🔮 第七步：捕捞情景预测
 
 ```{r, eval = FALSE}
-projection <- cmsy_forecast(result, catch = 100000, lang = "zh")
+projection <- cmsy_forecast(result, catch = 100000)
 ```
 
-`CMSY++16.R` 本身没有预测功能。`cmsy_forecast()` 用 CMSY++ 自身的模型做预测：Schaefer 剩余产量模型，生物量低于 0.25 k 时生产力线性下降。预测从同一组 MCMC 迭代的 r、k 和末年 B/k 后验抽样出发，加入对数正态过程误差（`sigma`，默认 0.1，与 CMSY++ 的 `sigmaR` 相同）。默认情景是 0.5、0.6、0.8、0.95 倍 Fmsy（与 Froese 等 2018 相同），以及维持末年捕捞死亡率；也可以设定固定渔获量（`catch`）。结果给出各情景下逐年的 B/Bmsy、F/Fmsy 和渔获量及其 95% 区间、B ≥ Bmsy 的概率，种群不止一个时还给出达到 Bmsy 的种群比例。
+`CMSY++16.R`本身没有预测功能。`cmsy_forecast()`用CMSY++自身的模型做预测：Schaefer剩余产量模型，生物量低于0.25 k时生产力线性下降。预测从同一组MCMC迭代的r、k和末年B/k后验抽样出发，加入对数正态过程误差（`sigma`，默认0.1，与CMSY++的`sigmaR`相同）。在F情景下，生物量低于Bmsy的一半时Fmsy线性降低，与CMSY++的管理结果一致。默认情景是0.5、0.6、0.8、0.95倍Fmsy（与Froese et al. 2018相同），以及维持末年捕捞死亡率；也可以设定固定渔获量（`catch`）。
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `result` | `cmsy_run()`的结果 | 必填 |
+| `stocks` | 要预测的种群（见[通用参数](#common-arguments)） | `NULL`：已运行的全部种群 |
+| `years` | 预测年数 | `10` |
+| `f` | 捕捞死亡率情景，Fmsy的倍数 | `c(0.5, 0.6, 0.8, 0.95)` |
+| `status_quo` | 是否同时预测维持末年捕捞死亡率的情景 | `TRUE` |
+| `catch` | 固定渔获量情景（吨/年） | `NULL` |
+| `sigma` | 对数正态过程误差的标准差 | `0.1` |
+| `seed` | 随机数种子 | `NULL` |
+| `plot` | 是否保存图`figures/png/cmsy/<种群>/forecast.png`和`figures/png/cmsy/summary/forecast_share.png` | `TRUE` |
+| `table` | 是否保存`tables/cmsy/forecast.csv`和`forecast_share.csv` | `TRUE` |
+| `lang`、`annotations`、`pptx`、`silent` | 见[通用参数](#common-arguments) | |
+
+函数返回`projection`（各种群、情景和年份的B/Bmsy、F/Fmsy和渔获量中位数及95%区间，以及B ≥ Bmsy的概率）和`share`（各情景逐年达到或高于Bmsy的种群比例及95%区间）。
 
 ```{r, echo = FALSE}
 show_png("grunt_forecast.png")
@@ -290,36 +427,51 @@ show_png("grunt_forecast.png")
 ## 🔍 第八步：比较不同运行或其他评估
 
 ```{r, eval = FALSE}
-result_1950 <- cmsy_run(input, stocks = "GRB_34", seed = 1)        # 从 1950 年开始
+result_1950 <- cmsy_run(input, stocks = "GRB_34", seed = 1)        # 从1950年开始
 cmsy_compare(`1950` = result_1950, `CMSY++` = result, stocks = "GRB_34")
 ```
 
-`cmsy_compare()` 把几次运行（例如不同的起始年或先验，即敏感性分析）以及其他评估的结果（`external`，如 ICES、JABBA 或文献中的 B/Bmsy）画在同一张图上，并给出各自最后一年的值。下图中，大眼裸颌鲈从 1950 年开始运行时，最后一年 B/Bmsy 为 1.14；按 CMSY++ 建议从 1978 年开始时为 1.42，两者都在 Bmsy 以上：
+`cmsy_compare()`把几次运行（例如不同的起始年或先验，即敏感性分析）以及其他评估的结果（`external`，如ICES、JABBA或文献中的B/Bmsy）画在同一张图上，并给出各自最后一年的值。下图中，大眼裸颌鲈从1950年开始运行时，最后一年B/Bmsy为1.14；按CMSY++建议从1978年开始时为1.42，两者都在Bmsy以上：
 
 ```{r, echo = FALSE}
 show_png("grunt_compare.png")
 ```
 
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `...` | `cmsy_run()`的结果，可以命名，也可以不命名（如`default = run1, start_1980 = run2`） | |
+| `stocks` | 要画的种群（见[通用参数](#common-arguments)） | `NULL`：已运行的全部种群 |
+| `external` | 其他评估结果的数据框，包括`Stock`、`Year`、`B_Bmsy`（可另加`F_Fmsy`）和`source`（图例中显示的名称）列 | `NULL` |
+| `lang`、`annotations`、`pptx`、`silent` | 见[通用参数](#common-arguments) | |
+
+图保存为`figures/png/cmsy/compare/<种群>.png`；函数返回`last_year`（每个种群每次运行一行）和`plots`。
+
 ## 📋 第九步：报告用的表格
 
 ```{r, eval = FALSE}
-tables <- cmsy_tables(result, lang = "zh")
+tables <- cmsy_tables(result)
 ```
 
-`cmsy_tables()` 生成 CMSY 文献中常见的两张表，即上文第五步中的先验表和结果表。数值已取整，范围写成"下限-上限"，列名使用所选语言，并保存在 `tables/cmsy/`。
+`cmsy_tables()`生成CMSY文献中常见的两张表，即上文第五步中的先验表和结果表。数值已取整，范围写成“下限-上限”，列名使用所选语言，保存为`tables/cmsy/cmsy_priors_table.csv`和`cmsy_results_table.csv`。结果表同时给出FAO（2026）两级和Palomares et al. (2018)五级的状态。
 
-## ⚙️ CMSY++ 自带的设置
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `result` | `cmsy_run()`的结果 | 必填 |
+| `stocks` | 表中的种群（见[通用参数](#common-arguments)） | `NULL`：已运行的全部种群 |
+| `table`、`lang`、`silent` | 见[通用参数](#common-arguments) | |
 
-CMSY++ 代码里有一组"一般设置"，例如渔获量观测误差 `CV.C`、过程误差 `sigmaR`、MCMC 链数和迭代次数。`cmsy_run()` 默认完全沿用 CMSY++ 原来的数值，`cmsy_defaults()` 列出每一项的原默认值、本次实际使用的值和含义：
+## ⚙️ CMSY++自带的设置 {#cmsy-settings}
+
+CMSY++代码里有一组“一般设置”，例如渔获量观测误差`CV.C`、过程误差`sigmaR`、MCMC链数和迭代次数。`cmsy_run()`默认完全沿用CMSY++原来的数值，`cmsy_defaults()`列出每一项的原默认值、实际使用的值和含义：
 
 ```{r}
-show_table(cmsy_defaults(lang = "zh")[, c("setting", "cmsy_default", "applies_to", "description")], n = 30)
+show_table(cmsy_defaults()[, c("setting", "cmsy_default", "applies_to", "description")], n = 30)
 ```
 
-`applies_to` 为 "BSM" 的设置只在有丰度数据（CPUE 或生物量）时才起作用。FAO 数据只有渔获量，所以真正影响结果的是标为 "all" 的设置。需要改时，用 `settings` 只写要改的几项，其余保持原值；每一项都会先检查（名称、取值范围、迭代次数是否足够）：
+`applies_to`为"BSM"的设置只在有丰度数据（CPUE或生物量）时才起作用。FAO数据只有渔获量，所以真正影响结果的是标为"all"的设置。需要改时，用`settings`只写要改的几项，其余保持原值；每一项都会先检查（名称、取值范围、迭代次数是否足够）：
 
 ```{r}
-cmsy_defaults(list(sigmaR = 0.15, n.iter = 100000, n.burnin = 50000), lang = "zh")[c(3, 17, 18), c("setting", "cmsy_default", "used", "changed")]
+cmsy_defaults(list(sigmaR = 0.15, n.iter = 100000, n.burnin = 50000))[c(3, 17, 18), c("setting", "cmsy_default", "used", "changed")]
 ```
 
 ```{r, eval = FALSE}
@@ -328,13 +480,18 @@ result <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE,
 result$settings[result$settings$changed, ]          # 改动的设置
 ```
 
-实际使用的设置保存在运行目录的 `settings_used.csv`，也记录在 `result$sources` 中。绘图和输出开关（`mgraphs`、`kobe.plot`、`retros` 等）由 `cmsy_run()` 的 `plots` 参数控制，不在 `settings` 里设置。
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `settings` | 要修改的设置，命名列表，如`list(sigmaR = 0.2)`；与默认值并列显示并检查 | `list()` |
+| `lang` | `description`列的语言：`"en"`、`"zh"`或`"both"` | `NULL`：使用`fao_settings()`设定的语言 |
 
-## 🖥️ Windows、macOS 和 Linux
+实际使用的设置保存在运行目录的`settings_used.csv`，也记录在`result$settings`和`result$sources`中。绘图和输出开关（`mgraphs`、`kobe.plot`、`retros`等）由`cmsy_run()`的`plots`参数控制，不在`settings`里设置。
 
-同一段代码在三个系统上都能直接运行。`cmsy_system()` 自动识别系统，并做相应修改，例如 macOS 上不调用 `windows()`、不使用 `antialias = "cleartype"`，修改清单见第一步。JAGS 安装程序会按系统和 R 版本自动选择。每次修改 CMSY 代码，GitHub Actions 上的 "CMSY-cross-platform" 检验都会在三个系统上用 `cmsy_download_jags()` 下载并安装匹配的 JAGS、真实运行 CMSY++、运行全部 CMSY 测试，并保存各系统的输出，方便核对。
+## 🖥️ Windows、macOS和Linux
 
-2026 年 10 月的检验结果（每种组合 170 项测试全部通过；种子相同，`cmsy_area()` 运行 34 区的大眼石鲈 GRB_34 和沙丁鱼 PIL_34）：
+同一段代码在三个系统上都能直接运行。`cmsy_system()`自动识别系统，并做相应修改，例如macOS上不调用`windows()`、不使用`antialias = "cleartype"`，修改清单见第一步。JAGS安装程序会按系统和R版本自动选择。每次修改CMSY代码，GitHub Actions上的"CMSY-cross-platform"检验都会在三个系统上用`cmsy_download_jags()`下载并安装匹配的JAGS、真实运行CMSY++、运行全部CMSY测试，并保存各系统的输出，方便核对。
+
+2026年10月的检验结果（每种组合170项测试全部通过；种子相同，`cmsy_area()`运行34区的大眼裸颌鲈GRB_34和沙丁鱼PIL_34）：
 
 | 系统 | R | JAGS | rjags | GRB_34 B/Bmsy | GRB_34 F/Fmsy | PIL_34 B/Bmsy | PIL_34 F/Fmsy |
 |---|---|---|---|---|---|---|---|
@@ -342,33 +499,109 @@ result$settings[result$settings$changed, ]          # 改动的设置
 | Windows | 4.4.3 | 4.3.1 | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
 | Windows | 4.3.3 | 4.3.1 | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
 | Windows | 4.2.3 | 4.3.1 | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
-| macOS（Apple 芯片） | 4.6.1 | 4.3.2 | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
+| macOS（Apple芯片） | 4.6.1 | 4.3.2 | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
 | Ubuntu | 4.6.1 | 4.3.2（apt） | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
-| macOS（Apple 芯片） | 4.2.3 | 4.3.1 | 4-15 | 1.366 | 0.663 | 0.745 | 1.306 |
+| macOS（Apple芯片） | 4.2.3 | 4.3.1 | 4-15 | 1.366 | 0.663 | 0.745 | 1.306 |
 | Windows | 4.6.1 | 5.0.0 | 5-3 | 1.392 | 0.672 | 0.740 | 1.317 |
-| macOS（Apple 芯片） | 4.6.1 | 5.0.0 | 5-3 | 1.392 | 0.672 | 0.740 | 1.317 |
+| macOS（Apple芯片） | 4.6.1 | 5.0.0 | 5-3 | 1.392 | 0.672 | 0.740 | 1.317 |
 
-JAGS 4.3.x 和 rjags 4-17 相同时，三个系统的结果逐位相同。换成 JAGS 5 或较旧的 rjags 后，MCMC 抽样不同，数值略有差别（GRB_34 的 B/Bmsy 在 1.37–1.42 之间，都在 95% 置信区间 1.08–1.65 内），但两个种群的状态判定都不变：GRB_34 为最大可持续捕捞，PIL_34 为过度捕捞。要完全重现某次结果，需要使用相同版本的 JAGS 和 rjags；所用版本记录在 `result$sources` 和 `tables/sources.csv` 中。
+JAGS 4.3.x和rjags 4-17相同时，三个系统的结果逐位相同。换成JAGS 5或较旧的rjags后，MCMC抽样不同，数值略有差别（GRB_34的B/Bmsy在1.37–1.42之间，都在95%置信区间1.08–1.65内），但两个种群的状态判定都不变：GRB_34为最大可持续捕捞，PIL_34为过度捕捞。要完全重现某次结果，需要使用相同版本的JAGS和rjags；所用版本记录在`result$sources`和`tables/sources.csv`中。
 
-## ⏱️ 进度条与 silent
+## ⏱️ 进度条与silent
 
-`cmsy_run()`、`cmsy_plot()`、`cmsy_forecast()` 和 `cmsy_area()` 运行时会显示进度条，例如：
+`cmsy_run()`、`cmsy_plot()`、`cmsy_forecast()`和`cmsy_area()`运行时会显示进度条，例如：
 
 ```
 CMSY++ [==================            ] 18/30 ( 60%) 00:51 elapsed, 00:34 left GAL_34
 ```
 
-所有 CMSY 函数都有 `silent` 参数：`silent = TRUE` 时不显示进度条和提示信息（`cmsy_setup()` 需要确认时仍会询问）。`fao_settings(silent = TRUE)` 可以设定本次会话的默认值。
+所有会输出信息的CMSY函数都有`silent`参数：`silent = TRUE`时不显示进度条和提示信息（`cmsy_setup()`需要确认时仍会询问）。`fao_settings(silent = TRUE)`可以设定本次会话的默认值。
 
-## 📚 参考文献
+## 📝 写入Word报告
 
-- Froese R, Winker H, Coro G, Palomares MLD, Tsikliras AC, Dimarchopoulou D, Touloumis K, Demirel N, Vianna GMS, Scarcella G, Schijns R, Liang C, Pauly D (2023). New developments in the analysis of catch time series as the basis for fish stock assessments: the CMSY++ method. *Acta Ichthyologica et Piscatoria* 53: 173–189. <https://doi.org/10.3897/aiep.53.105910>
-- Froese R, Demirel N, Coro G, Winker H (2021). *User Guide for CMSY++*. GEOMAR, 17 pp. <https://oceanrep.geomar.de/id/eprint/52147/>（包内副本：`system.file("cmsy", "CMSYUserGuideMarch2021.pdf", package = "faofishingreport")`）
-- Free CM, Jensen OP, Anderson SC, et al. (2020). Blood from a stone: performance of catch-only methods in estimating stock biomass status. *Fisheries Research* 223: 105452. <https://doi.org/10.1016/j.fishres.2019.105452>
-- Ovando D, Hilborn R, Monnahan C, et al. (2021). Improving estimates of the state of global fisheries depends on better data. *Fish and Fisheries* 22(6): 1377–1391. <https://doi.org/10.1111/faf.12593>
-- Kell LT, Sharma R, Winker H (2022). Artefact and artifice: evaluation of the skill of catch-only methods for classifying stock status. *Frontiers in Marine Science* 9: 762203. <https://doi.org/10.3389/fmars.2022.762203>
-- FAO (2026). *The State of World Fisheries and Aquaculture 2026*，专栏 1.3（评估分级与状态分类）。
-- Froese R, Winker H, Coro G, Demirel N, Tsikliras AC, Dimarchopoulou D, Scarcella G, Quaas M, Matz-Lück N (2018). Status and rebuilding of European fisheries. *Marine Policy* 93: 159–170. <https://doi.org/10.1016/j.marpol.2018.04.018>
-- Palomares MLD, Froese R, Derrick B, Nöel S-L, Tsui G, Woroniak J, Pauly D (2018). *A preliminary global assessment of the status of exploited marine fish and invertebrate populations*. Sea Around Us 为 OCEANA 撰写的报告。<https://www.fishbase.de/rfroese/OceanaFinalReport_V7a.pdf>
-- Mohn R (1999). The retrospective problem in sequential population analysis. *ICES Journal of Marine Science* 56: 473–488. <https://doi.org/10.1006/jmsc.1999.0481>
-- Plummer M (2003). JAGS: a program for analysis of Bayesian graphical models using Gibbs sampling. DSC 2003. <https://mcmc-jags.sourceforge.io/>
+`cmsy = TRUE`时，`fao_report()`会用CMSY++评估该渔区的主要物种（见[📝 一键生成Word评估报告](report.html)），并在报告中加入资源评估部分，给出每个物种的结果，以及参考点、先验及其来源的附表。它对报告的`top_n`个主要物种（默认10个）运行`cmsy_area()`，不做情景预测。`cmsy_area()`和`cmsy_input()`的设置以`cmsy_`为前缀传入，例如`cmsy_top = 5`、`cmsy_default_resilience = "Medium"`或`cmsy_settings = list(n.iter = 100000)`。CMSY++的全部结果（运行、图表和表格）保存在报告旁边的`cmsy/`文件夹中，其中的`cmsy_result.rds`可以用来重写报告而不必重新运行CMSY++：`cmsy = readRDS("cmsy/<渔区>/cmsy_result.rds")`，路径从工作目录算起（默认是`reports/cmsy/<渔区>/cmsy_result.rds`）。以前用`cmsy_area()`得到的结果也可以这样传入。
+
+```{r, eval = FALSE}
+report <- fao_report(34, cmsy = TRUE, cmsy_top = 5)
+report$cmsy_reference_points                  # r、k、MSY、B/Bmsy等及其95%置信限
+fao_report(34, cmsy = readRDS("reports/cmsy/Atlantic__Eastern_Central/cmsy_result.rds"))
+```
+
+## 📖 参考文献
+
+```{r references-release, include = FALSE}
+release_info <- fao_data_info()
+```
+
+Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase: exploring, manipulating and
+visualizing FishBase data from R. *Journal of Fish Biology* 81: 2030–2039.
+[doi:10.1111/j.1095-8649.2012.03464.x](https://doi.org/10.1111/j.1095-8649.2012.03464.x)
+
+FAO (`r sub("[.].*", "", release_info$release)`). *Global Capture Production
+`r release_info$years[1]`–`r release_info$years[2]`*, release `r release_info$release`. In:
+Fisheries and Aquaculture. Rome: FAO. <https://www.fao.org/fishery/collection/capture/en>.
+Licence: CC BY 4.0. Release file: <`r release_info$url`>
+
+FAO (2026). *The State of World Fisheries and Aquaculture 2026 – Blue Transformation: turning
+vision into impact*. Rome: FAO. [doi:10.4060/cd8357en](https://doi.org/10.4060/cd8357en).
+Section "The status of fishery resources", Box 1.3 (assessment tiers and status classes):
+<https://openknowledge.fao.org/server/api/core/bitstreams/09d03e2f-7097-4d59-bf94-db65e95f44fd/content/sofia-2026/the-status-fishery-resources.html>
+
+Free, C.M., Jensen, O.P., Anderson, S.C., Gutierrez, N.L., Kleisner, K.M., Longo, C., Minto, C.,
+Osio, G.C. and Walsh, J.C. (2020). Blood from a stone: performance of catch-only methods in
+estimating stock biomass status. *Fisheries Research* 223: 105452.
+[doi:10.1016/j.fishres.2019.105452](https://doi.org/10.1016/j.fishres.2019.105452)
+
+Froese, R., Demirel, N., Coro, G., Kleisner, K.M. and Winker, H. (2017). Estimating fisheries
+reference points from catch and resilience. *Fish and Fisheries* 18: 506–526.
+[doi:10.1111/faf.12190](https://doi.org/10.1111/faf.12190)
+
+Froese, R., Demirel, N., Coro, G. and Winker, H. (2021). *User Guide for CMSY++*. GEOMAR,
+Germany, 17 pp. <https://oceanrep.geomar.de/id/eprint/52147/> (bundled with the package:
+`system.file("cmsy", "CMSYUserGuideMarch2021.pdf", package = "faofishingreport")`)
+
+Froese, R. and Pauly, D. (Eds.) (2026). FishBase. World Wide Web electronic publication. Version
+(06/2026). <https://www.fishbase.se>
+
+Froese, R., Winker, H., Coro, G., Demirel, N., Tsikliras, A.C., Dimarchopoulou, D., Scarcella,
+G., Quaas, M. and Matz-Lück, N. (2018). Status and rebuilding of European fisheries. *Marine
+Policy* 93: 159–170.
+[doi:10.1016/j.marpol.2018.04.018](https://doi.org/10.1016/j.marpol.2018.04.018)
+
+Froese, R., Winker, H., Coro, G., Palomares, M.L.D., Tsikliras, A.C., Dimarchopoulou, D.,
+Touloumis, K., Demirel, N., Vianna, G.M.S., Scarcella, G., Schijns, R., Liang, C. and Pauly, D.
+(2023). New developments in the analysis of catch time series as the basis for fish stock
+assessments: the CMSY++ method. *Acta Ichthyologica et Piscatoria* 53: 173–189.
+[doi:10.3897/aiep.53.105910](https://doi.org/10.3897/aiep.53.105910)
+
+Kell, L.T., Sharma, R. and Winker, H. (2022). Artefact and artifice: evaluation of the skill of
+catch-only methods for classifying stock status. *Frontiers in Marine Science* 9: 762203.
+[doi:10.3389/fmars.2022.762203](https://doi.org/10.3389/fmars.2022.762203)
+
+Mohn, R. (1999). The retrospective problem in sequential population analysis: an investigation
+using cod fishery and simulated data. *ICES Journal of Marine Science* 56: 473–488.
+[doi:10.1006/jmsc.1999.0481](https://doi.org/10.1006/jmsc.1999.0481)
+
+Ovando, D., Hilborn, R., Monnahan, C., Rudd, M., Sharma, R., Thorson, J.T., Rousseau, Y. and Ye,
+Y. (2021). Improving estimates of the state of global fisheries depends on better data. *Fish and
+Fisheries* 22: 1377–1391. [doi:10.1111/faf.12593](https://doi.org/10.1111/faf.12593)
+
+Palomares, M.L.D., Froese, R., Derrick, B., Nöel, S.-L., Tsui, G., Woroniak, J. and Pauly, D.
+(2018). *A preliminary global assessment of the status of exploited marine fish and invertebrate
+populations*. A report prepared by the Sea Around Us for OCEANA. University of British Columbia
+and GEOMAR. <https://www.fishbase.de/rfroese/OceanaFinalReport_V7a.pdf>
+
+Palomares, M.L.D. and Pauly, D. (Eds.) (2026). SeaLifeBase. World Wide Web electronic
+publication. Version (06/2026). <https://www.sealifebase.se>
+
+Plummer, M. (2003). JAGS: a program for analysis of Bayesian graphical models using Gibbs
+sampling. In: *Proceedings of the 3rd International Workshop on Distributed Statistical
+Computing (DSC 2003)*, Vienna, 1–10.
+<https://www.r-project.org/conferences/DSC-2003/Proceedings/Plummer.pdf>; JAGS:
+<https://mcmc-jags.sourceforge.io/>
+
+Plummer, M. (2025). rjags: Bayesian Graphical Models using MCMC. R package version 4-17.
+[doi:10.32614/CRAN.package.rjags](https://doi.org/10.32614/CRAN.package.rjags)
+
+Su, Y. and Yajima, M. (2024). R2jags: Using R to Run 'JAGS'. R package version 0.8-9.
+[doi:10.32614/CRAN.package.R2jags](https://doi.org/10.32614/CRAN.package.R2jags)

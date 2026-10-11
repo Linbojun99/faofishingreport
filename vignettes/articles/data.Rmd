@@ -17,7 +17,9 @@ data_source()
 
 faofishingreport uses the **FAO Global Capture Production** statistics: the yearly catch of
 every country, by species item and FAO major fishing area, since 1950. Only capture
-fisheries are included (no aquaculture), in tonnes live weight.
+fisheries are included (no aquaculture), in tonnes live weight. FAO compiles them from the
+reports of national offices and estimates the catch of countries that did not report
+(FAO 2026; Garibaldi 2012).
 
 ```{r}
 data <- load_fao_data()
@@ -27,9 +29,21 @@ c(rows = nrow(data), first_year = min(data$Year), last_year = max(data$Year),
   areas = length(unique(data$FAO.major.fishing.area..Name.)))
 ```
 
-FAO publishes a new release about once a year (usually in March), adding one more year and
-revising earlier years. The package comes with a recent release, and can download newer ones
-directly from the [FAO statistics server](https://www.fao.org/fishery/static/Data/).
+FAO publishes a new release about once a year, adding one more year and revising earlier
+years. The package comes with a recent release, and can download newer ones directly from the
+[FAO statistics server](https://www.fao.org/fishery/static/Data/), where each release is a file
+`Capture_<version>.zip`.
+
+The functions of this page:
+
+| Function | What it does |
+|---|---|
+| `check_fao_update()` | Lists the releases on the FAO server and compares the newest with the data on your computer |
+| `download_fao_data()` | Downloads a release and converts it to the package format |
+| `load_fao_data()` | Loads a downloaded release or the bundled data |
+| `fao_data_info()` | The release used, its download link, licence and citation |
+| `fao_data_dir()` | The folder where downloaded releases are kept |
+| `fao_translate()` | Chinese and bilingual names of countries, species and areas |
 
 ## 🔎 Check for a new release
 
@@ -45,15 +59,28 @@ check_fao_update()
 #>   Your data is up to date.
 ```
 
-It also returns, invisibly, a list with the versions and a table of all releases:
+| Argument | Meaning | Default |
+|---|---|---|
+| `data_dir` | Folder where downloaded releases are stored | `fao_data_dir()` |
+| `quiet` | `TRUE` prints nothing, e.g. in scripts | `FALSE` |
+
+It also returns, invisibly, a list:
+
+| Element | Content |
+|---|---|
+| `latest` | Newest release online |
+| `bundled` | Release bundled with the package |
+| `local` | Newest downloaded release (`NA` if none) |
+| `update_available` | `TRUE` if the newest online release is newer than the bundled and downloaded data |
+| `releases` | All releases online: `version`, publication `date`, `size` and download `url` |
 
 ```{r, eval = FALSE}
 releases <- check_fao_update(quiet = TRUE)
 releases$update_available
 #> [1] FALSE
 tail(releases$releases, 3)
-#>    version       date size                                                          url
-#> 9 2024.1.0 2024-04-04 4.5M https://www.fao.org/fishery/static/Data/Capture_2024.1.0.zip
+#>     version       date size                                                          url
+#> 9  2024.1.0 2024-04-04 4.5M https://www.fao.org/fishery/static/Data/Capture_2024.1.0.zip
 #> 10 2025.1.0 2025-09-04 5.0M https://www.fao.org/fishery/static/Data/Capture_2025.1.0.zip
 #> 11 2026.1.0 2026-03-30 5.5M https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip
 ```
@@ -71,11 +98,15 @@ download_fao_data(overwrite = TRUE)       # download again
 
 | Argument | Meaning | Default |
 |---|---|---|
-| `version` | Release to download, e.g. `"2026.1.0"`, or `"latest"` | `"latest"` |
+| `version` | Release to download, e.g. `"2026.1.0"`, or `"latest"` for the newest release online. A release that is not on the FAO server gives an error listing the available ones | `"latest"` |
 | `data_dir` | Folder where the release is saved | `fao_data_dir()` |
-| `overwrite` | Download again even if the release was already saved | `FALSE` |
-| `quiet` | Hide progress messages | `FALSE` |
+| `overwrite` | `FALSE` reads a release that was already downloaded from disk; `TRUE` downloads it again | `FALSE` |
+| `quiet` | Hide the progress messages | `FALSE` |
 
+It returns the data invisibly. The conversion keeps the quantities in tonnes live weight, matches
+countries and species through their FAO codes to the names used by the package, and records the
+release, its publication date, the download link and the download date (`attr(data, "fao_version")`,
+`attr(data, "release_date")`, `attr(data, "source_url")`, `attr(data, "download_date")`).
 Each release is saved as three files:
 
 | File | Content |
@@ -86,12 +117,20 @@ Each release is saved as three files:
 
 ### 📂 Choose the data folder
 
-By default the files go to the user data folder of R:
+`fao_data_dir()` has no arguments; it returns the folder where `download_fao_data()` (and
+`download_fishbase_data()`) save data and where all functions look for them. It is the first of:
+
+| Order | Source | Set with |
+|---|---|---|
+| 1 | The `data_dir` setting | `fao_settings(data_dir = "D:/shared/fao_data")` (this R session) |
+| 2 | The environment variable `FAOFISHINGREPORT_DATA_DIR` | A line `FAOFISHINGREPORT_DATA_DIR=<folder>` in the `.Renviron` file of your home folder (every R session) |
+| 3 | The user data folder of R, `tools::R_user_dir("faofishingreport", "data")` | Default |
 
 ```{r, eval = FALSE}
 fao_data_dir()
-#> [1] "C:/Users/<you>/AppData/Local/R/data/R/faofishingreport"            # Windows
+#> [1] "C:/Users/<you>/AppData/Roaming/R/data/R/faofishingreport"          # Windows
 #> [1] "~/Library/Application Support/org.R-project.R/R/faofishingreport"  # macOS
+#> [1] "~/.local/share/R/faofishingreport"                                 # Linux
 ```
 
 To keep the data elsewhere, for example in a folder shared by your team, set `data_dir` once.
@@ -105,8 +144,8 @@ download_fao_data()
 ## 🧭 Which release is used
 
 All functions use the **newest** data available: the newest downloaded release, or the bundled
-data if it is newer. `fishing_area_data()` and `country_analysis()` can be told which release to
-use with `data_version`:
+data if it is newer. `fishing_area_data()`, `country_analysis()` and `fao_report()` can be told
+which release to use with `data_version`:
 
 ```{r, eval = FALSE}
 FAO34 <- fishing_area_data("Atlantic, Eastern Central")                            # newest
@@ -114,18 +153,27 @@ FAO34 <- fishing_area_data("Atlantic, Eastern Central", data_version = "bundled"
 FAO34 <- fishing_area_data("Atlantic, Eastern Central", data_version = "2023.1.1") # a download
 ```
 
-`load_fao_data()` returns the whole data set, with the same `version` choices:
+`load_fao_data()` returns the whole data set, with the same choices:
 
 ```{r, eval = FALSE}
 data <- load_fao_data()                  # newest
 data <- load_fao_data("2023.1.1")        # a downloaded release
 ```
 
+| Argument | Meaning | Default |
+|---|---|---|
+| `version` | `"latest"`: the newest of the downloaded releases and the bundled data; `"bundled"`: the data bundled with the package; or a release such as `"2025.1.0"` that was downloaded or is the bundled one (any other release gives an error listing the downloaded ones) | `"latest"` |
+| `data_dir` | Folder where downloaded releases are stored | `fao_data_dir()` |
+
+It returns a data frame with the eight columns described [below](#data-format), and prints which
+release it loaded.
+
 ### 📝 Release information and citation
 
 `fao_data_info()` tells which release the analyses use, when FAO published it, the years it
-covers, the file it was downloaded from, the licence and a citation for reports. It takes the
-same `version` as `load_fao_data()`:
+covers, the file it was downloaded from, the licence and a citation for reports. It has the
+same arguments as `load_fao_data()` (`version`, default `"latest"`, and `data_dir`, default
+`fao_data_dir()`):
 
 ```{r}
 fao_data_info()
@@ -136,7 +184,20 @@ fao_data_info()$citation           # the citation only
 fao_data_info("2025.1.0")          # a downloaded release
 ```
 
-## 📋 Data format
+It returns a list:
+
+| Element | Content |
+|---|---|
+| `release` | The release, e.g. `"2026.1.0"` |
+| `release_date` | Date of publication on the FAO server |
+| `years` | First and last year of the data |
+| `source` | `"bundled"` (with the package) or `"downloaded"` |
+| `url` | The release file on the FAO server |
+| `download_date` | Date the data was downloaded from FAO |
+| `licence`, `terms` | `"CC BY 4.0"` and the FAO terms of use of statistical databases |
+| `citation` | A citation of the release for reports |
+
+## 📋 Data format {#data-format}
 
 Every release is converted to the same eight columns, so all analyses work with any release:
 
@@ -152,7 +213,7 @@ show_table(data, n = 6)
 | `Unit..Name.`, `Unit` | Always tonnes live weight |
 | `Year` | Year |
 | `Production` | Catch in tonnes |
-| `Production.Type` | `actual` (official), `estimate` (estimated by the country or FAO), `neligible` (below 0.5 t), ... |
+| `Production.Type` | Status of the value, from the FAO status flag: `actual` (official), `estimate` (estimated by the country or FAO), `neligible` (below 0.5 t), `provisional`, `suppressed`, `international organization` |
 
 ## ✂️ Analyse your own subsets
 
@@ -171,7 +232,19 @@ unique(atlantic$FAO.major.fishing.area..Name.)
 species_group_composition(subset(atlantic, Year >= 2000), label = "Atlantic since 2000")
 ```
 
-The `label` argument names the output files; by default the name of the fishing area is used.
+The summary analyses, such as `species_group_composition()` and `peak_trend()`, share these
+arguments (their own arguments are described in
+[📈 Composition, stock status and trends](status-trends.html)):
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `area_data` | The catch data: `fishing_area_data()$area_data` or any subset of `load_fao_data()` | |
+| `plot` | Save the charts in `figures/png/summary/` | `TRUE` |
+| `table` | Save the tables in `tables/` | `TRUE` |
+| `lang` | `"en"`, `"zh"` or `"both"` | `NULL`: the language of `fao_settings()` |
+| `pptx` | Also save editable PowerPoint files in `figures/pptx/summary/` | `FALSE`, or `pptx` of `fao_settings()` |
+| `label` | Name used in the output file names | `NULL`: the fishing area (or country) of the data |
+
 More examples:
 
 ```{r, eval = FALSE}
@@ -207,6 +280,16 @@ fao_translate(c("European pilchard(=Sardine)", "Skipjack tuna"), "species", "bot
 fao_translate("Atlantic, Eastern Central", "area", "zh")
 ```
 
+| Argument | Meaning | Default |
+|---|---|---|
+| `x` | English names, as in the FAO data | |
+| `type` | Kind of name: `"country"`, `"species"` or `"area"` | `"country"` |
+| `lang` | `"zh"` (Chinese), `"both"` (Chinese and English) or `"en"` (unchanged) | `"zh"` |
+
+It returns the names in the same order. Different English names that share one Chinese name keep
+their English name as well (e.g. two species items with the same Chinese name), so they stay apart
+in charts and tables.
+
 FAO gives no Chinese names for ISSCAAP species groups, major groups and income groups; the
 package's translations are in `inst/extdata/group_names_zh.csv`, and all chart labels in
 `inst/extdata/chart_labels.csv`. Edit these files in the package source and reinstall to change
@@ -220,8 +303,12 @@ the wording.
 - **"nei" items** ("not elsewhere included") are catches not identified to species, e.g.
   "Marine fishes nei". They are a large share of the catch in some areas.
 - **Former countries** such as the USSR (until 1991) appear as separate countries.
-- **Releases differ**: FAO revises past years, so results from different releases can differ
-  slightly. Note the release used in reports (`attr(data, "fao_version")` for downloaded data).
+- **Releases differ**: FAO revises past years when countries send corrected or more complete data
+  (Garibaldi 2012; Zeller and Pauly 2018), so results from different releases can differ. Note
+  the release used in reports (`fao_data_info()`). `compare_releases()` lists the records revised
+  between two releases (see [🔬 Shocks, collapses, synchrony and fleets](literature-analyses.html)).
+- **Use of the data**: the FAO statistics are published under the CC BY 4.0 licence and the FAO
+  terms of use of statistical databases; cite the release you use.
 
 ## 🔄 For maintainers: update the bundled data
 
@@ -230,3 +317,39 @@ The bundled data, Chinese names and groups are rebuilt from the latest FAO relea
 ```bash
 Rscript data-raw/update_bundled_data.R
 ```
+
+## 📖 References
+
+```{r references-release, include = FALSE}
+release_info <- fao_data_info()
+```
+
+CWP (Coordinating Working Party on Fishery Statistics). *CWP Handbook of Fishery Statistics*.
+Rome: FAO. <https://www.fao.org/cwp-on-fishery-statistics/handbook/en/>
+
+FAO (`r sub("[.].*", "", release_info$release)`). FishStat: Global capture production
+`r release_info$years[1]`–`r release_info$years[2]` (release `r release_info$release`).
+In: FishStatJ. <https://www.fao.org/fishery/statistics/software/fishstatj/en>.
+Licence: CC-BY-4.0. Release file: <`r release_info$url`>; all releases:
+<https://www.fao.org/fishery/static/Data/>
+
+FAO (2026). *Fishery and Aquaculture Statistics – Yearbook 2024*. FAO Yearbook of Fishery and
+Aquaculture Statistics. Rome: FAO.
+[doi:10.4060/ce1217en](https://doi.org/10.4060/ce1217en)
+
+FAO. *ASFIS List of Species for Fishery Statistics Purposes*. Rome: FAO.
+<https://www.fao.org/fishery/collection/asfis/en>
+
+FAO. *Global Capture Production*. Fisheries and Aquaculture Division, Rome.
+<https://www.fao.org/fishery/collection/capture/en>
+
+FAO. *Terms of use of FAO statistical databases*.
+<https://www.fao.org/contact-us/terms/db-terms-of-use/en>
+
+Garibaldi, L. (2012). The FAO global capture production database: a six-decade effort to catch
+the trend. *Marine Policy* 36(3): 760–768.
+[doi:10.1016/j.marpol.2011.10.024](https://doi.org/10.1016/j.marpol.2011.10.024)
+
+Zeller, D. and Pauly, D. (2018). The 'presentist bias' in time-series data: implications for
+fisheries science and policy. *Marine Policy* 90: 14–19.
+[doi:10.1016/j.marpol.2018.01.015](https://doi.org/10.1016/j.marpol.2018.01.015)

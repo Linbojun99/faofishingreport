@@ -1,0 +1,425 @@
+---
+title: "🐠 FishBase 与 SeaLifeBase 物种特征"
+description: >
+  check_fishbase_update()、download_fishbase_data()、fishbase_table()、fishbase_match()和fishbase_sources()：FishBase与SeaLifeBase的物种特征，它们如何与FAO物种条目匹配，以及渔获平均温度和CMSY++先验如何使用这些特征。
+---
+
+```{r setup, include = FALSE}
+source("../_setup.R")
+FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+```
+
+```{r}
+fao_settings(lang = "zh")   # 本文所有图表使用中文
+```
+
+```{r data-source, echo = FALSE, results = "asis"}
+data_source("zh")
+```
+
+FAO捕捞统计给出每个物种条目的渔获量，以及它在ASFIS名录中的英文名和学名，但不包含任何生物学信息。这些特征可以从FishBase（鱼类）和SeaLifeBase（其他水生动物和植物）获得：营养级、偏好温度、栖息类型、最大体长、对捕捞的脆弱性、恢复力和先验r。本包在两处用到它们：[渔获平均温度](sst-mtc.html)用偏好温度，[CMSY++先验](cmsy.html)用恢复力和先验r。
+
+数据来自FishBase和SeaLifeBase数据表的固定副本（版本），由rfishbase项目以parquet文件发布（Boettiger等2012）。本包只按已发表的规则把它们与FAO物种条目匹配，每个匹配结果都附有核对所需的链接。
+
+| 函数 | 作用 | 是否联网 |
+|---|---|---|
+| `check_fishbase_update()` | 列出网上最新的版本和本机已下载的版本 | 是 |
+| `download_fishbase_data()` | 下载某个版本的数据表 | 是 |
+| `fishbase_table()` | 读取某个版本的一张数据表 | 仅在该表尚未下载时 |
+| `fishbase_match()` | 把FAO物种条目与FishBase和SeaLifeBase匹配 | 使用`version = "builtin"`或已下载的版本时不联网 |
+| `fishbase_sources()` | 列出数据来源、许可、数据表和匹配规则 | 否 |
+
+## 📦 版本、文件夹和内置表 {#releases}
+
+版本以年份和月份命名，例如`"26.06"`（2026年6月）。每个版本都是固定的快照，下载过一次的表与网上的完全相同。各版本发布在<https://data.source.coop/cboettig/fishbase/>，本包把下载的表保存在`fao_data_dir()`的`fishbase`文件夹中：
+
+| `fao_data_dir()`中的路径 | 内容 |
+|---|---|
+| `fishbase/fb/<版本>/<表名>.parquet` | FishBase的表，如`fishbase/fb/26.06/estimate.parquet` |
+| `fishbase/slb/<版本>/<表名>.parquet` | SeaLifeBase的表 |
+| `fishbase/fb/<版本>/files.csv`（`slb/`下同） | 每张表的网址、大小和下载日期 |
+| `fishbase/corrections.csv` | 你对匹配结果的更正（见[核对和更正匹配结果](#corrections)） |
+| `fishbase/worms_lookup.csv` | 在WoRMS中查询过的名称，离线时重复使用 |
+
+`fao_data_dir()`默认是R的用户数据文件夹，可以用`fao_settings(data_dir = ...)`改到别处，例如团队共用的文件夹。每个函数也都有`data_dir`参数。读取parquet文件需要nanoparquet包，它会随faofishingreport一起安装。
+
+`version`参数决定使用哪个版本：
+
+| `version` | 使用的版本 |
+|---|---|
+| `"latest"`（默认） | 联网时：网上最新的版本，所需的表在第一次用到时下载。离线时，或设置了`fao_settings(online = FALSE)`时：本机已下载的最新版本，并给出提示。离线且什么都没有下载时：`fishbase_match()`改用内置表，`fishbase_table()`报错停止 |
+| 某个版本，如`"26.06"` | 这个版本，需要时自动下载 |
+| `"builtin"` | 内置表，不联网（适用于`fishbase_match()`以及调用它的函数） |
+
+### 内置表
+
+包里带有`fishbase_match()`对本包内置FAO数据中全部物种条目的匹配结果，没有经过人工更正。它保存在`inst/extdata/fishbase_traits.rda`，由`data-raw/build_fishbase_traits.R`生成，其属性记录了所用的版本：
+
+```{r}
+load(system.file("extdata", "fishbase_traits.rda", package = "faofishingreport"))
+attr(fishbase_traits, "fishbase_version")   # FishBase 和 SeaLifeBase 的版本
+attr(fishbase_traits, "fao_release")        # 参与匹配的物种条目所属的 FAO 数据版本
+attr(fishbase_traits, "built")              # 生成日期
+nrow(fishbase_traits)
+table(fishbase_traits$match_type)
+```
+
+使用`version = "builtin"`时不下载任何数据，在每台电脑上的结果都相同。本文就使用内置表，这样构建网站时无需下载。不在内置表中的条目（如更新的FAO数据版本中新增的条目）标为“pending online check”（待联网核查）。`version = "latest"`给出网上最新版本的数值，FishBase发布新版本后，数值可能略有不同。
+
+::: callout-note
+**许可。**FishBase和SeaLifeBase的数据由FishBase.org团队以[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/)许可发布：可以使用，但须注明出处，且不得用于商业目的。引用时请注明FishBase（Froese和Pauly主编）和SeaLifeBase（Palomares和Pauly主编）以及所用的版本。内置表以及这些函数结果中的物种特征数值同样适用这一许可。来自WoRMS的有效名采用CC BY许可。`fishbase_sources()`列出了全部来源。
+:::
+
+## 🔄 检查新版本：check_fishbase_update()
+
+`check_fishbase_update()`列出网上发布的各个版本，并把最新版本与本机已下载的版本对比。它需要连接数据服务器，所以本文不运行。在还没有下载任何数据的电脑上，它会输出：
+
+```{r, eval = FALSE}
+check_fishbase_update()
+#> FishBase
+#>   Latest online release: 26.06 (222 tables)
+#>   Downloaded locally:    none
+#>   Run download_fishbase_data("fishbase") to download the latest release (or the tables of it that are missing).
+#> SeaLifeBase
+#>   Latest online release: 26.06 (202 tables)
+#>   Downloaded locally:    none
+#>   Run download_fishbase_data("sealifebase") to download the latest release (or the tables of it that are missing).
+```
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `server` | `"fishbase"`、`"sealifebase"`或两者 | 两者 |
+| `data_dir` | 存放已下载数据的文件夹 | `fao_data_dir()` |
+| `quiet` | 为`TRUE`时不输出任何信息 | `FALSE` |
+
+它以不可见方式返回一个数据框，每个数据库一行：
+
+| 列 | 含义 |
+|---|---|
+| `server` | `"fishbase"`或`"sealifebase"` |
+| `latest_online` | 网上最新的版本（离线时为`NA`） |
+| `newest_local` | 本机已下载的最新版本（没有时为`NA`） |
+| `tables_online` | 网上最新版本的数据表数量 |
+| `tables_local` | 本机最新版本已下载的数据表数量 |
+| `update_available` | 网上有更新的版本，或者最新版本已下载但其中的表没有全部下载时，为`TRUE` |
+
+由于第二个条件，按默认方式下载六张表之后（见下一节），`update_available`仍然是`TRUE`。要判断网上是否有更新的版本，请比较`latest_online`和`newest_local`。
+
+## ⬇️ 下载版本：download_fishbase_data()
+
+`download_fishbase_data()`把FishBase和/或SeaLifeBase某个版本的数据表下载到`data_dir`，供离线使用。提前下载不是必需的：在`version = "latest"`时，`fishbase_match()`和`mean_temperature_catch()`第一次运行会自动下载所需的四张表（26.06版两个数据库合计约23 MB）。如果以后要离线工作、要让整个项目固定使用同一个版本，或者需要全部数据表，可以提前下载。
+
+```{r, eval = FALSE}
+download_fishbase_data()                              # 本包用到的六张表，两个数据库
+download_fishbase_data(tables = "all")                # FishBase 和 SeaLifeBase 的全部表
+download_fishbase_data("fishbase", tables = c("species", "estimate"))
+download_fishbase_data(version = "25.04")             # 较早的版本
+```
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `server` | `"fishbase"`、`"sealifebase"`或两者 | 两者 |
+| `version` | 要下载的版本，如`"26.06"`。网上没有的版本会报错，并列出网上已有的版本 | `"latest"` |
+| `tables` | `"needed"`表示本包用到的六张表，`"all"`表示全部表，也可以给出表名，如`c("species", "estimate")` | `"needed"` |
+| `data_dir` | 保存数据表的文件夹 | `fao_data_dir()` |
+| `overwrite` | 为`TRUE`时重新下载已下载过的表 | `FALSE` |
+| `quiet` | 为`TRUE`时不输出进度信息 | `FALSE` |
+
+26.06版的大小：
+
+| 数据表 | FishBase | SeaLifeBase |
+|---|---|---|
+| `tables = "needed"`（6张表） | 15.8 MB | 13.2 MB |
+| `fishbase_match()`用到的4张表 | 12.6 MB | 10.3 MB |
+| `tables = "all"` | 222张表，约140 MB | 202张表，约108 MB |
+
+`tables = "needed"`包含的六张表：
+
+| 表 | 内容 | 使用者 |
+|---|---|---|
+| `species` | 属、种、科代码、栖息类型（`DemersPelag`）、最大体长（`Length`）、对捕捞的脆弱性（`Vulnerability`） | `fishbase_match()` |
+| `estimate` | 营养级（`Troph`、`seTroph`）、偏好温度（`TempPrefMean`）、先验r（`prior_r`、`lcl_r`、`ucl_r`） | `fishbase_match()`；内置的CMSY++先验表 |
+| `families` | 科、目、纲和门 | `fishbase_match()` |
+| `synonyms` | 每个物种的其他名称及其状态（accepted name有效名、synonym异名、misapplied name误用名、ambiguous synonym歧义异名） | `fishbase_match()` |
+| `stocks` | 恢复力（High、Medium、Low、Very low） | 内置的CMSY++先验表 |
+| `faoareas` | 各物种在FAO主要渔区的分布 | |
+
+下载之前，函数会列出要下载什么、从哪里下载、适用什么许可，以及保存到哪个文件夹。每张表先写成`.part`文件，下载完整后再改名。已下载（且大小与网上一致）的表会跳过，所以下载中断后重新运行即可接着下载；下载失败的表会给出警告。
+
+它以不可见方式返回一个数据框，每张表一行：`server`、`version`、`table`、`size`（字节）和`status`（`"downloaded"`已下载、`"already downloaded"`此前已下载或`"failed"`失败）。
+
+## 📋 读取数据表：fishbase_table()
+
+`fishbase_table()`以数据框的形式返回FishBase或SeaLifeBase的一张表，从本机的副本读取。联网时，它先查询网上最新的版本，本机还没有这张表就先下载。离线时，或设置了`fao_settings(online = FALSE)`时，它使用本机已下载、且含有这张表的最新版本，并给出提示。它需要已下载的数据表，所以本文不运行，下面给出的是26.06版的输出：
+
+```{r, eval = FALSE}
+estimate <- fishbase_table("estimate")
+#> Using FishBase release 26.06 (the latest online release).
+attr(estimate, "fishbase_version")
+#> [1] "26.06"
+# 沙丁鱼（Sardina pilchardus）在 FishBase 中的 SpecCode 是 1350
+estimate[estimate$SpecCode == 1350, c("SpecCode", "Troph", "seTroph", "TempPrefMean", "prior_r", "lcl_r", "ucl_r")]
+#>      SpecCode Troph seTroph TempPrefMean   prior_r     lcl_r     ucl_r
+#> 1243     1350  3.06     0.1         10.3 0.6281019 0.4145473 0.9421529
+
+slb_species <- fishbase_table("species", server = "sealifebase", version = "26.06")
+```
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `table` | 表名，如`"species"`、`"estimate"`、`"ecology"`、`"synonyms"`或`"families"` | （必须给出） |
+| `server` | `"fishbase"`或`"sealifebase"` | `"fishbase"` |
+| `version` | 版本，如`"26.06"` | `"latest"` |
+| `data_dir` | 存放已下载数据的文件夹 | `fao_data_dir()` |
+
+它返回整张表的全部列（FishBase 26.06版的`estimate`表有36,761行、70列），并带有三个属性：`fishbase_server`、`fishbase_version`和`source_url`（parquet文件的网址）。读取过的表在本次R会话中保留在内存里。`check_fishbase_update()`可以看到一个版本有多少张表，各表的内容见[rfishbase文档](https://docs.ropensci.org/rfishbase/)。
+
+## 🔗 匹配FAO物种条目：fishbase_match()
+
+`fishbase_match()`逐个处理数据中的FAO物种条目，按FAO物种名录中的学名在FishBase或SeaLifeBase中查找，返回匹配到的记录及其营养级、偏好温度、栖息类型、最大体长和对捕捞的脆弱性。每一行都给出所用的规则及其出处，并附有FishBase、SeaLifeBase或WoRMS页面的链接，便于核对。没有任何规则能匹配的条目不填数值，标为匹配失败，并附上在网上搜索该名称的链接。
+
+```{r, message = TRUE}
+fb34 <- fishbase_match(FAO34$area_data, version = "builtin", corrections = FALSE)
+```
+
+`corrections = FALSE`表示不使用本机保存的任何更正，这样示例在每台电脑上的结果都相同。条目按渔获量排序，前面几行就占了大部分渔获：
+
+```{r}
+main <- head(fb34, 15)
+main$page <- ifelse(is.na(main$url), "", paste0("[open](", main$url, ")"))
+show_table(main[, c("species_name", "fao_scientific_name", "catch_pct", "match_type", "database",
+                    "temp_pref_mean", "trophic_level", "page")], n = 15)
+```
+
+按FAO学名直接找到的物种（`exact`）有全部数值。种以上的条目，如“竹筴鱼属物种”（*Trachurus* spp），得到所属属或科的平均营养级，但没有偏好温度。“未分类的海洋鱼类”（Marine fishes nei）没有任何数值：它的FAO学名Actinopterygii在FishBase中找不到，FishBase把这些鱼归入Teleostei等纲，而WoRMS给出的有效名仍是这个名称。这类条目的数值可以写进更正文件，并注明出处。
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `area_data` | FAO渔获数据：`fishing_area_data()$area_data`，或`load_fao_data()`的任意子集 | `NULL`：`load_fao_data()`中的全部物种 |
+| `version` | FishBase和SeaLifeBase的版本（见[上文](#releases)）：`"latest"`、某个版本如`"26.06"`，或`"builtin"` | `"latest"` |
+| `corrections` | 更正文件的路径，`FALSE`表示不使用更正 | `NULL`：`data_dir`中`fishbase`文件夹里的`corrections.csv`，第一次运行时创建一个空模板 |
+| `table` | 为`TRUE`时把结果保存为`tables/<label>_fishbase_match.csv` | `TRUE` |
+| `lang` | `species_name`列的语言：`"en"`、`"zh"`或`"both"` | `NULL`：`fao_settings()`设置的语言 |
+| `label` | 文件名中使用的名称 | 数据所属的渔区（或国家） |
+| `data_dir` | 存放已下载数据、更正文件和WoRMS查询结果的文件夹 | `fao_data_dir()` |
+
+它以不可见方式返回一个数据框，每个FAO物种条目一行，按渔获量排序。属性`fishbase_version`记录所用的版本。各列含义：
+
+| 列 | 含义 |
+|---|---|
+| `species_name`、`species_en` | 所选语言的FAO名称，以及英文名 |
+| `alpha3`、`fao_scientific_name` | FAO三字母代码和学名 |
+| `taxon_level`、`major_group` | 条目的分类级别（species、genus、family、higher）和FAO大类（PISCES、CRUSTACEA等） |
+| `catch_tonnes`、`catch_pct`、`cumulative_pct` | 该条目在数据全部年份中的渔获量、占总渔获量的比例和累计比例（%） |
+| `status` | `"matched"`（已匹配）、`"failed"`（匹配失败）或`"pending online check"`（待联网核查） |
+| `match_type` | 匹配所依据的规则（见下一节） |
+| `database`、`matched_name`、`SpecCode` | 所用记录的数据库、名称和物种代码 |
+| `n_species` | 种以上条目所含的物种数 |
+| `trophic_level`、`trophic_level_se` | 营养级（`Troph`）及其标准误 |
+| `temp_pref_mean` | 偏好温度（`TempPrefMean`，°C） |
+| `habitat` | 栖息类型（`DemersPelag`，如pelagic-neritic、demersal、reef-associated） |
+| `max_length_cm` | 最大体长（cm） |
+| `vulnerability` | 对捕捞的脆弱性（FishBase指数，满分100） |
+| `url` | 所用记录在FishBase或SeaLifeBase中的页面（物种页、属的物种列表、科的页面或搜索页） |
+| `search_url`、`worms_url` | 在FishBase或SeaLifeBase中搜索该FAO名称的链接，以及它的WoRMS页面 |
+| `match_note`、`rule_source` | 条目匹配或未匹配的原因，以及规则的文献出处 |
+| `source` | 数据库和版本，使用内置表时附注“(built-in table)” |
+| `checked`、`note` | 空列，用于记录你的核对情况 |
+
+营养级是FishBase和SeaLifeBase的估计值（`estimate`表的`Troph`列），来自食性研究；没有食性研究时，根据近缘物种和体长估算（Froese和Pauly 2000，“The FOOD ITEMS table”，专栏25和26）。偏好温度（`TempPrefMean`）是各物种AquaMaps分布范围内的平均值（FishBase文献123201；Froese 2020）；Cheung等（2013）用的则是中位数。
+
+### 匹配规则
+
+鱼类（FAO大类PISCES）先在FishBase中查找，其他条目先在SeaLifeBase中查找，依据Branch等（2010，补充材料第1页）。`match_type`的值表明条目按哪条规则匹配：
+
+| `match_type` | 规则 | 给出的数值 | 出处 |
+|---|---|---|---|
+| `exact` | FAO学名是数据库中的有效种名 | 全部 | Branch等（2010） |
+| `synonym` | FAO名称在数据库的异名表中是某一个有效种的异名（状态为“synonym”）。误用名（misapplied name）一律不用，因为它们是错误鉴定，而不是该物种的别名；歧义异名，以及指向多个物种的名称，不予匹配 | 全部 | Froese和Pauly（2000），“The SYNONYMS table” |
+| `WoRMS valid name (...)` | 以上规则找不到的名称，联网到世界海洋物种名录（WoRMS）中查询；FAO的ASFIS名录在大多数类群上遵循WoRMS。只采用状态为“accepted”、或只对应一个有效名的WoRMS精确匹配记录；再用这个有效名重新匹配，括号中注明它所符合的规则，如`WoRMS valid name (exact)` | 与该规则相同 | FAO（2026），第1–3页；WoRMS Editorial Board |
+| `genus`、`family`、`order`、`class`、`phylum` | 种以上的条目（如“Sardinella spp”或“Sparidae”）取数据库中该分类单元所有物种营养级的未加权平均值 | 只有营养级 | Branch等（2010）；Liang和Pauly（2017） |
+| `plant (TL 1)` | 水生植物（FAO大类PLANTAE AQUATICAE） | 营养级为1 | Pauly等（1998） |
+| `manual` | 更正文件中的更正 | 给出的数值或记录 | 你的出处，写在`note`中 |
+| `not matched` | 找不到的物种（不借用其所属属的数值）、包含多个分类单元的条目（如“Sepiidae, Sepiolidae”）、WoRMS记录不确定或有多条 | 无（`status`为`"failed"`） | 这些情况没有已发表的规则 |
+
+种以上的条目不给偏好温度、栖息类型、体长和脆弱性，因为渔获平均温度的研究都不使用这类条目（Tsikliras和Stergiou 2014；Liang等2018）。WoRMS的查询结果保存在`worms_lookup.csv`中，离线时重复使用；此前没有查询过的名称，离线时标为`"pending online check"`。内置表是联网生成的，其中的条目都已查询过。
+
+### 渔获覆盖率
+
+能匹配到的渔获比例取决于渔获的上报方式。`catch_pct`是占数据全部年份总渔获量的比例：
+
+```{r}
+# 各匹配方式的渔获占比（%）
+round(sort(tapply(fb34$catch_pct, fb34$match_type, sum), decreasing = TRUE), 1)
+
+# 有偏好温度的种一级条目的渔获占比（%）
+species_level <- c("exact", "synonym", "WoRMS valid name (exact)", "WoRMS valid name (synonym)")
+round(sum(fb34$catch_pct[fb34$match_type %in% species_level & !is.na(fb34$temp_pref_mean)]), 1)
+```
+
+在34区，已匹配条目占渔获量的`r round(sum(fb34$catch_pct[fb34$status == "matched"]))`%，但其中很大一部分来自属和科一级的条目，它们只有营养级。有偏好温度的种一级条目占`r round(sum(fb34$catch_pct[fb34$match_type %in% species_level & !is.na(fb34$temp_pref_mean)]))`%，渔获平均温度能用到的就是这部分渔获。覆盖率每年也不相同，`mean_temperature_catch()`会给出逐年的覆盖率（见[下文](#mtc)）。
+
+### 核对和更正匹配结果 {#corrections}
+
+匹配是自动完成的，本包不做核对。不同数据库之间的名称并不总是一致：FAO的ASFIS名称更新缓慢，FishBase、SeaLifeBase和WoRMS采用不同的分类体系，异名和拼写错误也很常见（Grenié等2023）。使用这些数值之前：
+
+1. 打开保存在`tables/`中的表（这里是`tables/Atlantic__Eastern_Central_fishbase_match.csv`）。条目按渔获量排序，越靠前越重要。
+2. 对每个条目，打开`url`（所用的记录）、`search_url`和`worms_url`，并阅读`match_note`和`rule_source`。核对记录是否就是这个FAO条目，数值对该渔区的种群是否合理。
+3. 在`checked`列写上核对人或日期。错误或缺失的数值写进更正文件，并注明出处。
+
+更正文件是一个CSV文件，每个要更正的FAO条目一行：
+
+| 列 | 含义 |
+|---|---|
+| `alpha3` | 条目的FAO三字母代码（必填） |
+| `species_en` | FAO英文名（可选，方便阅读） |
+| `database`、`SpecCode` | `"FishBase"`或`"SeaLifeBase"`，以及要使用的记录的物种代码；其数值从已下载的表中读取 |
+| `trophic_level`、`temp_pref_mean`、`habitat`、`max_length_cm`、`vulnerability` | 直接使用的数值（会替换记录中的数值） |
+| `note` | 更正的出处 |
+
+`fishbase_match()`默认读取`data_dir`中`fishbase`文件夹里的`corrections.csv`，第一次运行时在那里创建一个空文件。每次运行都会应用这些更正，所以共用同一个`data_dir`的团队也共用这些更正。更正后的条目`status`为“matched”，`match_type`为“manual”，`rule_source`中写明更正文件和`note`的内容。
+
+举个例子：条目“Frigate and bullet tunas”（FRZ）包含两个物种（*Auxis thazard*和*A. rochei*），没有规则能匹配它。下面把其中第一个物种*Auxis thazard*的数值（取自条目“Frigate tuna”的匹配结果）赋给它。这样的数值是否适合这个条目，需要你自己判断；`note`写明了数值的来源：
+
+```{r, message = TRUE}
+fri <- fb34[fb34$alpha3 == "FRI", ]
+fix <- data.frame(alpha3 = "FRZ", species_en = "Frigate and bullet tunas",
+                  trophic_level = fri$trophic_level, temp_pref_mean = fri$temp_pref_mean,
+                  note = paste("Values of Auxis thazard,", fri$source, "SpecCode", fri$SpecCode))
+write.csv(fix, "my_corrections.csv", row.names = FALSE)
+
+fb34_fixed <- fishbase_match(FAO34$area_data, version = "builtin", corrections = "my_corrections.csv")
+show_table(fb34_fixed[fb34_fixed$alpha3 == "FRZ", c("species_name", "status", "match_type", "trophic_level",
+                                                    "temp_pref_mean", "rule_source")])
+```
+
+如果已经下载了数据表，更正也可以直接指定要使用的记录，其全部数值都从这条记录读取。内置表无法按`SpecCode`查找记录，所以使用`version = "builtin"`时，请直接给出数值：
+
+```{r, eval = FALSE}
+fix <- data.frame(alpha3 = "FRZ", database = "FishBase", SpecCode = 94,
+                  note = "Record of Auxis thazard; give your source here")
+write.csv(fix, "my_corrections.csv", row.names = FALSE)
+fishbase_match(FAO34$area_data, version = "26.06", corrections = "my_corrections.csv")
+```
+
+`mean_temperature_catch()`（以及通过它运行的`fao_report()`）调用`fishbase_match()`时使用默认的更正文件。因此，要用于它们的更正应写进`data_dir`中`fishbase`文件夹里的`corrections.csv`（可以用电子表格软件添加行），或者写进核对过的匹配表，再用`match =`传入（在`fao_report()`中为`mtc_match =`）。
+
+## 📜 来源与许可：fishbase_sources()
+
+`fishbase_sources()`列出FishBase、SeaLifeBase和WoRMS数据的来源、许可和引用方式，下载的各张表及其内容，以及`fishbase_match()`的匹配规则及其文献出处。`download_fishbase_data()`下载前会输出同样内容的摘要。
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `print` | 为`TRUE`时输出列表 | `TRUE` |
+
+它以不可见方式返回一个数据框，每个数据来源、数据表或规则一行，各列为`type`（`"data"`、`"table"`或`"rule"`）、`item`、`description`、`source`（引用或许可）和`link`。其中的数据来源：
+
+```{r}
+src <- fishbase_sources(print = FALSE)
+show_table(src[src$type == "data", c("item", "description", "source", "link")])
+```
+
+## 🌡️ 用于渔获平均温度 {#mtc}
+
+[`mean_temperature_catch()`](sst-mtc.html)计算渔获平均温度（MTC）：以渔获量为权重，求渔获物种偏好温度的平均值（Cheung等2013）。偏好温度取自`fishbase_match()`（它用自己的`version`和`data_dir`调用该函数，并应用更正文件），或者取自用`match =`传入的匹配表。只有`status`为“matched”、且`match_type`属于`use_match`的条目才参与计算，默认是`exact`、`synonym`、`WoRMS valid name (exact)`、`WoRMS valid name (synonym)`和`manual`。属和科一级的条目没有偏好温度，不参与计算。
+
+下面用`match =`传入上例更正后的表，所以条目“Frigate and bullet tunas”现在也参与计算：
+
+```{r, figures = TRUE}
+mtc <- mean_temperature_catch(FAO34$area_data, match = fb34_fixed)
+```
+
+```{r}
+show_table(mtc$species[mtc$species$used, c("species_name", "match_type", "temp_pref_mean", "catch_pct",
+                                           "weight_pct", "contribution_c")], n = 8)
+```
+
+`match =`可以是数据框，也可以是CSV文件的路径：`fishbase_match()`保存的表，或者此前运行`mean_temperature_catch()`得到的物种表，核对之后传入。在`checked`列有标记的条目算作已核对；在参与计算的条目全部核对之前，函数会提示已核对的渔获占比，图注也会写明这些数值是自动初配结果。不给`match =`时，默认的`version = "latest"`会在第一次运行时下载所需的表（约23 MB）：
+
+```{r, eval = FALSE}
+mtc <- mean_temperature_catch(FAO34$area_data)                         # FishBase 最新版本
+mtc <- mean_temperature_catch(FAO34$area_data, version = "builtin")    # 内置表，不下载
+mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern_Central_fishbase_match.csv")
+```
+
+海表温度数据、趋势分析以及偏好温度的局限性，见[🌡️ 海表温度与渔获平均温度](sst-mtc.html)。
+
+## 📉 用于CMSY++先验
+
+CMSY++需要每个种群内禀增长率r的先验范围。`cmsy_priors()`查询另一张内置表（`inst/extdata/cmsy_priors.csv`，由`data-raw/cmsy_priors.R`生成），表中是FAO捕捞统计中种一级条目在FishBase或SeaLifeBase 26.06版中的恢复力（`stocks`表）和先验r（`estimate`表）。它可以离线使用：
+
+```{r}
+p34 <- cmsy_priors(c("PIL", "SAA", "VMA", "BOA"))
+show_table(p34[, c("species_name", "matched_name", "match_type", "resilience", "prior_r",
+                   "r_low", "r_high", "r_source")], digits = 3)
+```
+
+r的范围按照CMSY++用户手册（Froese等2021）确定：物种在FishBase中有先验r时，取其95%置信限（手册表1）；否则取其恢复力对应的范围（手册表2：高0.6–1.5，中0.2–0.8，低0.05–0.5，很低0.015–0.1）；两者都没有时不给范围，需要由用户提供。这张表的匹配比`fishbase_match()`更严格：同样是鱼类先查FishBase、其他条目先查SeaLifeBase，先按有效种名、再通过数据库的异名表匹配，但不查询WoRMS，歧义异名和种以上的条目也没有数值（`match_type`为“ambiguous synonym”、“not a species”或“not found”）。`fishbase_match()`的更正文件不会改变这张表；自己的先验请用`cmsy_input()`的`priors =`参数给出。详见[CMSY++资源评估](cmsy.html)的第三步。
+
+## 📝 用于Word报告
+
+渔区的Word报告可以包含渔获平均温度一节（`fao_report(34, mtc = TRUE)`）。它默认使用内置的FishBase表（`mtc_version = "builtin"`），所以生成报告时不下载任何数据；要用其他版本，请设置`mtc_version`，如`mtc_version = "latest"`。参与计算的物种及其FishBase匹配结果以`report$mtc_species`返回，报告中也会引用所用的FishBase版本。详见[📝 Word报告](report.html)。
+
+```{r, eval = FALSE}
+report <- fao_report(34, mtc = TRUE)
+head(report$mtc_species[, c("species_name", "match_type", "temp_pref_mean", "used", "url")])
+fao_report(34, mtc = TRUE, mtc_version = "latest")    # FishBase 最新版本
+```
+
+## 📖 参考文献
+
+Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase: exploring, manipulating and
+visualizing FishBase data from R. *Journal of Fish Biology* 81: 2030–2039.
+[doi:10.1111/j.1095-8649.2012.03464.x](https://doi.org/10.1111/j.1095-8649.2012.03464.x)
+
+Branch, T.A., Watson, R., Fulton, E.A., Jennings, S., McGilliard, C.R., Pablico, G.T., Ricard, D.
+and Tracey, S.R. (2010). The trophic fingerprint of marine fisheries. *Nature* 468: 431–435.
+[doi:10.1038/nature09528](https://doi.org/10.1038/nature09528)
+
+Cheung, W.W.L., Watson, R. and Pauly, D. (2013). Signature of ocean warming in global fisheries
+catch. *Nature* 497: 365–368. [doi:10.1038/nature12156](https://doi.org/10.1038/nature12156)
+
+FAO (2026). *Nomenclature, revision, and references of the ASFIS list (version 2026)*. Rome: FAO.
+<https://www.fao.org/fishery/static/ASFIS/ASFIS_References_2026_EN.pdf>
+
+Froese, R. (2020). Personal communication: R code (PrefTempBatch_5.R) to estimate preferred
+temperature from AquaMaps (version 10/2019). FishBase reference 123201.
+<https://www.fishbase.se/references/FBRefSummary.php?ID=123201>
+
+Froese, R., Demirel, N., Coro, G. and Winker, H. (2021). *User Guide for CMSY++*. GEOMAR,
+Germany, 17 pp. <https://oceanrep.geomar.de/id/eprint/52147/>
+
+Froese, R. and Pauly, D. (Eds.) (2000). *FishBase 2000: concepts, design and data sources*.
+ICLARM, Los Baños, Philippines. Chapters "The SYNONYMS table"
+(<https://www.fishbase.se/manual/fishbasethe_synonyms_table.htm>) and "The FOOD ITEMS table",
+boxes 25 and 26 (<https://www.fishbase.se/manual/fishbasethe_food_items_table.htm>).
+
+Froese, R. and Pauly, D. (Eds.) (2026). FishBase. World Wide Web electronic publication. Version
+(06/2026). <https://www.fishbase.se>
+
+Grenié, M., Berti, E., Carvajal-Quintero, J., Dädlow, G.M.L., Sagouis, A. and Winter, M. (2023).
+Harmonizing taxon names in biodiversity data: a review of tools, databases and best practices.
+*Methods in Ecology and Evolution* 14: 12–25.
+[doi:10.1111/2041-210X.13802](https://doi.org/10.1111/2041-210X.13802)
+
+Liang, C. and Pauly, D. (2017). Fisheries impacts on China's coastal ecosystems: unmasking a
+pervasive 'fishing down' effect. *PLoS ONE* 12: e0173296.
+[doi:10.1371/journal.pone.0173296](https://doi.org/10.1371/journal.pone.0173296)
+
+Liang, C., Xian, W. and Pauly, D. (2018). Impacts of ocean warming on China's fisheries catches:
+an application of "mean temperature of the catch" concept. *Frontiers in Marine Science* 5: 26.
+[doi:10.3389/fmars.2018.00026](https://doi.org/10.3389/fmars.2018.00026)
+
+Palomares, M.L.D. and Pauly, D. (Eds.) (2026). SeaLifeBase. World Wide Web electronic
+publication. Version (06/2026). <https://www.sealifebase.se>
+
+Pauly, D., Christensen, V., Dalsgaard, J., Froese, R. and Torres, F. (1998). Fishing down marine
+food webs. *Science* 279: 860–863.
+[doi:10.1126/science.279.5352.860](https://doi.org/10.1126/science.279.5352.860)
+
+Tsikliras, A.C. and Stergiou, K.I. (2014). Mean temperature of the catch increases quickly in the
+Mediterranean Sea. *Marine Ecology Progress Series* 515: 281–284.
+[doi:10.3354/meps11005](https://doi.org/10.3354/meps11005)
+
+WoRMS Editorial Board. World Register of Marine Species. Flanders Marine Institute (VLIZ).
+<https://www.marinespecies.org>, [doi:10.14284/170](https://doi.org/10.14284/170)

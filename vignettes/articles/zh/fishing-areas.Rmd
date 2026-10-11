@@ -1,7 +1,7 @@
 ---
 title: "🌊 渔区分析"
 description: >
-  fishing_area_data()、fishing_area_species() 和 fishing_area_country()：某个 FAO 渔区的总产量、主要物种和主要捕捞国家，以及全部选项。
+  fishing_area_data()、fishing_area_species()和fishing_area_country()：某个FAO渔区的总产量、主要物种和主要捕捞国家，以及全部选项。
 ---
 
 ```{r setup, include = FALSE}
@@ -16,9 +16,11 @@ fao_settings(lang = "zh")   # 本文所有图表使用中文
 data_source("zh")
 ```
 
-三个渔区函数用于描述单个 FAO 主要渔区。示例使用**中东大西洋（34 区）**，最后一节将同样的分析应用于**西北太平洋（61 区）**。
+三个渔区函数用于描述单个FAO主要渔区。示例使用**中东大西洋（34区）**，最后一节将同样的分析应用于**西北太平洋（61区）**。
 
-## 🗺️ FAO 主要渔区
+## 🗺️ FAO主要渔区
+
+用于统计的FAO主要渔区由渔业统计协调工作组（CWP）划定，包括各海洋渔区和各大洲的内陆水域。各渔区最近一年的产量：
 
 ```{r}
 data <- load_fao_data()
@@ -27,7 +29,7 @@ names(areas) <- c("Fishing area", "Catch in the last year (t)")
 show_table(areas[order(-areas[[2]]), ], n = 30, digits = 0)
 ```
 
-在 `fishing_area_data()` 中使用表中的名称（如 `"Pacific, Northwest"`）。
+在`fishing_area_data()`中使用表中的名称（如`"Pacific, Northwest"`）。
 
 ## 1️⃣ `fishing_area_data()`：渔区产量
 
@@ -35,21 +37,21 @@ show_table(areas[order(-areas[[2]]), ], n = 30, digits = 0)
 FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 ```
 
-该函数保存三张图：
+该函数在`figures/png/`中保存三张图：
 
 | 文件 | 图表 |
 |---|---|
-| `fishing_trend.png` | 渔区总产量。设置 `timeseries_analysis = TRUE` 时，灰色柱表示相邻**突变点**（虚线）之间各时段的平均产量，突变点由 `strucchange::breakpoints()` 识别 |
-| `fishing_percentage.png` | 该渔区每年产量占全球产量的比例及其平均值（红线） |
+| `fishing_trend.png` | 渔区总产量。设置`timeseries_analysis = TRUE`时，灰色水平线表示相邻**突变点**之间各时段的平均产量，虚线标出每个时段的起始年份（见[突变点的识别方法](#breakpoints)） |
+| `fishing_percentage.png` | 该渔区每年产量占全球所有海洋渔区捕捞产量的比例（内陆渔区则为占全球所有内陆水域捕捞产量的比例），红线为各年比例的平均值 |
 | `area_country_map.png` | 各国历年在该渔区的累计总产量，绘制在世界地图上 |
 
 并返回一个列表：
 
 | 元素 | 内容 |
 |---|---|
-| `area_data` | 该渔区的产量记录，作为其他函数的输入 |
-| `coefs_data` | 相邻突变点之间各时段的起点、终点和平均产量 |
-| `act_world_map` | 地图数据（sf 对象） |
+| `area_data` | 该渔区的产量记录（数据的全部八列），作为其他函数的输入 |
+| `coefs_data` | 总产量相邻突变点之间的各个时段：`start_year`（起始年）、`end_year`（结束年）和`intercept`（该时段的平均产量，吨） |
+| `act_world_map` | 地图数据，即带有各国总产量的sf对象（`plot = FALSE`时为`NULL`） |
 
 ```{r}
 FAO34$coefs_data
@@ -69,20 +71,37 @@ fishing_area_data(
 )
 ```
 
+`fishing_area_data()`的全部参数：
+
 | 参数 | 含义 | 默认值 |
 |---|---|---|
-| `area_name` | FAO 主要渔区 | |
-| `plot` | 是否保存图表 | `TRUE` |
-| `timeseries_analysis` | 在产量图中添加突变点 | `TRUE` |
-| `area_color1`, `area_color2`, `area_alpha` | 产量面积图的填充色、轮廓线颜色和透明度 | `"grey80"`, `"black"`, `0.7` |
-| `line_color`, `line_alpha`, `line_linewidth`, `point_size` | 比例图的折线和点 | `"black"`, `0.8`, `1.5`, `2` |
-| `hline_color`, `hline_alpha`, `hline_linewidth` | 比例图的平均线 | `"red"`, `0.7`, `1.5` |
-| `axis_text_size`, `axis_title_size`, `axis_text_face`, `axis_title_face` | 坐标轴文字 | `10`, `12`, `"plain"`, `"bold"` |
-| `polygon_color`, `fill_scale` | 地图的国界颜色和色板 | `"grey90"`，`fao_settings()` 中的地图色板 |
-| `axis_title_size_map`, `axis_text_size_map`, `legend_text_size_map` | 地图的文字大小 | `14`, `12`, `12` |
-| `lang` | `"en"`、`"zh"` 或 `"both"` | `fao_settings()` 中的语言 |
-| `data_version` | FAO 数据版本：`"latest"`、`"bundled"` 或具体版本号（如 `"2023.1.1"`） | `"latest"` |
-| `pptx` | 同时保存可编辑的 PowerPoint 文件 | `FALSE` |
+| `area_name` | FAO主要渔区，名称与数据中一致（见上表） | |
+| `plot` | 保存三张图；`FALSE`时只返回数据 | `TRUE` |
+| `timeseries_analysis` | 在总产量图中标出突变点和各时段的平均产量（无论取值如何都会返回`coefs_data`） | `TRUE` |
+| `area_color1` | 总产量面积图的填充色 | `"grey80"` |
+| `area_alpha` | 填充色的透明度（0为完全透明，1为不透明） | `0.7` |
+| `area_color2` | 总产量面积图的轮廓线颜色 | `"black"` |
+| `line_color` | 比例图折线的颜色 | `"black"` |
+| `line_alpha` | 折线的透明度 | `0.8` |
+| `line_linewidth` | 折线的宽度 | `1.5` |
+| `point_size` | 比例图中点的大小 | `2` |
+| `hline_color` | 比例图中平均线的颜色 | `"red"` |
+| `hline_alpha` | 平均线的透明度 | `0.7` |
+| `hline_linewidth` | 平均线的宽度 | `1.5` |
+| `axis_text_size` | 比例图坐标轴刻度标签的字号，以及总产量图坐标轴标题的字号 | `10` |
+| `axis_text_face` | 总产量图坐标轴标题的字形：`"plain"`、`"bold"`、`"italic"`或`"bold.italic"` | `"plain"` |
+| `axis_title_size` | 比例图坐标轴标题的字号 | `12` |
+| `axis_title_face` | 比例图和地图坐标轴标题的字形 | `"bold"` |
+| `strip_text_size`、`strip_text_face` | 分面标题的字号和字形；本函数的图表没有分面，因此没有可见效果 | `12`、`"bold"` |
+| `polygon_color` | 地图上国界线的颜色 | `"grey90"` |
+| `fill_scale` | 地图色板，可用`fao_settings()`中`map_palette`的任一取值（如`"blue"`、`"YlOrRd"`、`"viridis"`或一组颜色） | `NULL`：`fao_settings()`中的`map_palette`（`"deep-orange"`） |
+| `axis_title_size_map` | 地图坐标轴标题的字号 | `14` |
+| `axis_text_size_map` | 地图坐标轴标签（经纬度）的字号 | `12` |
+| `legend_text_size_map` | 地图图例文字的字号 | `12` |
+| `ZH` | 指定中文的旧方式：`TRUE`等同于`lang = "zh"` | `FALSE` |
+| `lang` | 图表文字的语言：`"en"`、`"zh"`或`"both"` | `NULL`：`ZH = TRUE`时为`"zh"`，否则使用`fao_settings()`中的语言 |
+| `data_version` | FAO数据版本：`"latest"`（可用的最新版本）、`"bundled"`或具体版本号（如`"2026.1.0"`，见[💾 FAO数据](data.html)） | `"latest"` |
+| `pptx` | 同时在`figures/pptx/`中保存可编辑的PowerPoint文件 | `FALSE`，或`fao_settings()`中的`pptx` |
 
 ## 2️⃣ `fishing_area_species()`：主要物种
 
@@ -92,16 +111,23 @@ species <- fishing_area_species(FAO34$area_data, rank_range = c(1, 10))
 
 | 文件 | 图表 |
 |---|---|
-| `area/area_species.png` | 前十个主要物种的产量随时间的变化 |
-| `area/area_species_wrap.png` | 每个物种一个分面，显示该物种占渔区产量的比例、线性趋势（虚线）以及其平均产量的突变点 |
+| `area/area_species.png` | 所选物种的产量随时间的变化 |
+| `area/area_species_wrap.png` | 每个物种一个分面，显示该物种历年占渔区产量的比例、线性趋势（虚线）以及其平均产量的突变点；设置`timeseries_analysis = FALSE`时，用平滑曲线代替趋势线和突变点 |
 
-函数返回按物种和年份汇总的产量、物种排名以及突变点：
+函数返回一个列表：
+
+| 元素 | 内容 |
+|---|---|
+| `area_species` | 每个物种条目逐年的产量 |
+| `area_species_ranked` | 所选物种逐年的产量，以及它们的总产量和占比 |
+| `area_species_ranked_total` | 所选物种：历年总产量（`Total_Tonnes`）和占渔区产量的比例（`Percentage`） |
+| `coefs_data` | 每个物种的突变点：`start_year`、`end_year`和`intercept`（该时段的平均产量，吨） |
 
 ```{r}
 show_table(species$area_species_ranked_total)
 ```
 
-同时在 `tables/` 中保存两张表：`species_ranked_table.csv`（每十年的平均产量、最近五年的产量、最近一年所占比例）和 `species_coefs_data.csv`（突变点）。
+同时在`tables/`中保存两张表：`species_ranked_table.csv`（每十年的平均产量、最近五年每年的产量、最后一年的产量和占比）和`species_coefs_data.csv`（突变点）。
 
 ```{r}
 show_table(read.csv("tables/species_ranked_table.csv", fileEncoding = "UTF-8-BOM", check.names = FALSE), n = 5, digits = 0)
@@ -109,15 +135,41 @@ show_table(read.csv("tables/species_ranked_table.csv", fileEncoding = "UTF-8-BOM
 
 ### 选项
 
-- **`rank_range`** 指定排名范围：`c(11, 20)` 显示排在其后的十个物种。
-- **`timeseries_analysis = FALSE`** 用平滑曲线代替突变点（平滑方法由 `smooth_method` 指定，默认为 `"loess"`）。
-- **`h_value`** 是相邻突变点之间时段的最短长度，可以是占整个序列的比例（默认 `0.15`），也可以是年数（如 `5`）。取值越大，突变点越少；序列过短的物种会被跳过，并给出提示信息。
+- **`rank_range`**指定排名范围：`c(11, 20)`显示排在其后的十个物种。
+- **`timeseries_analysis = FALSE`**用平滑曲线代替突变点（平滑方法由`smooth_method`指定，默认为`"loess"`）。
+- **`h_value`**是相邻突变点之间时段的最短长度，可以是占整个序列的比例（默认`0.15`），也可以是年数（如`5`）。取值越大，突变点越少；序列过短的物种会被跳过，并给出提示信息。
 
 ```{r, figures = TRUE}
 fishing_area_species(FAO34$area_data, rank_range = c(11, 20), h_value = 5, lang = "both")
 ```
 
-样式参数：`line_width`、`point_size`、`point_alpha`、`point_shape`、`line_alpha`、`axis_text_size`、`axis_title_size`、`strip_text_size`、`axis_text_face`、`axis_title_face`、`strip_text_face`、`smooth_method`、`smooth_linetype`、`line_linewidth`、`text_hjust`、`text_vjust`、`text_size`、`text_color` 和 `facet_ncol`。
+`fishing_area_species()`的全部参数。表中的“时间序列图”指`area_species.png`，“分面图”指`area_species_wrap.png`；带突变点的分面图使用固定的线宽、字号和两列布局，只有`text_*`参数能改变它。
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `area_data` | 渔区产量数据：`fishing_area_data()$area_data`或`load_fao_data()`的任意子集 | |
+| `rank_range` | 显示的物种排名范围（按历年总产量排序）：`c(1, 10)`为前十名，`c(11, 20)`为其后十名 | `c(1, 10)` |
+| `plot` | 保存图表 | `TRUE` |
+| `table` | 在`tables/`中保存两张表 | `TRUE` |
+| `timeseries_analysis` | `TRUE`：分面图显示线性趋势和突变点；`FALSE`：分面图显示平滑曲线 | `TRUE` |
+| `h_value` | 相邻突变点之间时段的最短长度：占序列的比例或年数（即`strucchange::breakpoints()`的`h`） | `0.15` |
+| `line_width` | 时间序列图的线宽 | `1.5` |
+| `line_alpha` | 时间序列图和不带突变点的分面图中折线的透明度 | `0.7` |
+| `line_linewidth` | 不带突变点的分面图的线宽 | `1.5` |
+| `point_size` | 时间序列图和不带突变点的分面图中点的大小 | `1.8` |
+| `point_alpha` | 这些点的透明度 | `0.7` |
+| `point_shape` | 这些点的形状（R的点符号，如`1`为空心圆，`16`为实心圆） | `1` |
+| `axis_text_size`、`axis_text_face` | 坐标轴刻度标签的字号和字形（时间序列图；不带突变点的分面图的y轴） | `10`、`"plain"` |
+| `axis_title_size`、`axis_title_face` | 坐标轴标题的字号和字形（时间序列图；不带突变点的分面图） | `10`、`"bold"` |
+| `strip_text_size`、`strip_text_face` | 不带突变点的分面图中分面标题的字号和字形 | `10`、`"bold"` |
+| `smooth_method` | 不带突变点的分面图中平滑曲线的方法，同`ggplot2::geom_smooth()`：`"loess"`、`"lm"`、`"gam"`等 | `"loess"` |
+| `smooth_linetype` | 平滑曲线的线型：`"dashed"`、`"solid"`、`"dotted"`等 | `"dashed"` |
+| `text_hjust`、`text_vjust` | 各分面中占比标签的水平和垂直对齐（标签锚定在1957年、产量为0处） | `0.9`、`-4` |
+| `text_size`、`text_color` | 占比标签的字号和颜色 | `4.5`、`"black"` |
+| `facet_ncol` | 不带突变点的分面图的列数 | `2` |
+| `ZH` | 指定中文的旧方式：`TRUE`等同于`lang = "zh"` | `FALSE` |
+| `lang` | 图表文字和名称的语言：`"en"`、`"zh"`或`"both"` | `NULL`：`ZH = TRUE`时为`"zh"`，否则使用`fao_settings()`中的语言 |
+| `pptx` | 同时在`figures/pptx/`中保存可编辑的PowerPoint文件 | `FALSE`，或`fao_settings()`中的`pptx` |
 
 ## 3️⃣ `fishing_area_country()`：主要国家
 
@@ -125,15 +177,63 @@ fishing_area_species(FAO34$area_data, rank_range = c(11, 20), h_value = 5, lang 
 countries <- fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
 ```
 
-它的参数和输出与 `fishing_area_species()` 相同，只是按国家统计（`area/area_country.png`、`area/area_country_wrap.png`、`tables/country_ranked_table.csv`、`tables/country_coefs_data.csv`）。
+它的用法与`fishing_area_species()`相同，只是按国家统计：
+
+| 输出 | 内容 |
+|---|---|
+| `area/area_country.png` | 所选国家的产量随时间的变化 |
+| `area/area_country_wrap.png` | 每个国家一个分面，显示其占渔区产量的比例、线性趋势和突变点（或平滑曲线） |
+| `tables/country_ranked_table.csv` | 每十年的平均产量、最近五年每年的产量、最后一年的产量和占比 |
+| `tables/country_coefs_data.csv` | 突变点 |
+| 返回的列表 | `area_country`（每个国家逐年的产量）、`area_country_ranked`、`area_country_ranked_total`和`coefs_data` |
 
 ```{r}
 show_table(countries$area_country_ranked_total)
 ```
 
+`fishing_area_country()`的全部参数。与物种分析一样，带突变点的分面图使用固定的线宽、字号和两列布局。
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `area_data` | 渔区产量数据：`fishing_area_data()$area_data`或`load_fao_data()`的任意子集 | |
+| `rank_range` | 显示的国家排名范围（按历年总产量排序） | `c(1, 10)` |
+| `plot` | 保存图表 | `TRUE` |
+| `table` | 在`tables/`中保存两张表 | `TRUE` |
+| `timeseries_analysis` | `TRUE`：分面图显示线性趋势和突变点；`FALSE`：分面图显示平滑曲线 | `TRUE` |
+| `h_value` | 相邻突变点之间时段的最短长度：占序列的比例或年数 | `0.15` |
+| `line_width` | 时间序列图（`area_country.png`）的线宽 | `1.5` |
+| `line_alpha` | 时间序列图和不带突变点的分面图中折线的透明度 | `0.7` |
+| `line_linewidth` | 不带突变点的分面图的线宽 | `1.5` |
+| `point_size` | 时间序列图和不带突变点的分面图中点的大小 | `1.8` |
+| `point_alpha` | 这些点的透明度 | `0.7` |
+| `point_shape` | 这些点的形状（R的点符号） | `1` |
+| `axis_text_size`、`axis_text_face` | 坐标轴刻度标签的字号和字形（时间序列图；不带突变点的分面图的y轴） | `10`、`"plain"` |
+| `axis_title_size`、`axis_title_face` | 坐标轴标题的字号和字形（时间序列图；不带突变点的分面图） | `10`、`"bold"` |
+| `strip_text_size`、`strip_text_face` | 不带突变点的分面图中分面标题的字号和字形 | `10`、`"bold"` |
+| `smooth_method` | 不带突变点的分面图中平滑曲线的方法，同`ggplot2::geom_smooth()` | `"loess"` |
+| `smooth_linetype` | 平滑曲线的线型 | `"dashed"` |
+| `text_hjust`、`text_vjust` | 各分面中占比标签的对齐方式 | `0.9`、`-4` |
+| `text_size`、`text_color` | 占比标签的字号和颜色 | `4.5`、`"black"` |
+| `facet_ncol` | 不带突变点的分面图的列数 | `2` |
+| `ZH` | 指定中文的旧方式：`TRUE`等同于`lang = "zh"` | `FALSE` |
+| `lang` | 图表文字和名称的语言：`"en"`、`"zh"`或`"both"` | `NULL`：`ZH = TRUE`时为`"zh"`，否则使用`fao_settings()`中的语言 |
+| `pptx` | 同时保存可编辑的PowerPoint文件 | `FALSE`，或`fao_settings()`中的`pptx` |
+
+## 📐 突变点的识别方法 {#breakpoints}
+
+突变点把产量序列划分为平均产量不同的若干时段。每个时段用常数均值模型（`catch ~ 1`）拟合；使残差平方和最小的突变点位置用动态规划求得（Bai和Perron 2003），突变点的个数按贝叶斯信息准则（BIC）选择，即`strucchange::breakpoints()`的做法（Zeileis等2002，2003）。每个时段至少包含`h`年：`fishing_area_data()`中为序列长度的15%，其他函数中由`h_value`指定。
+
+| 函数 | 分析的序列 |
+|---|---|
+| `fishing_area_data()` | 渔区每年的总产量 |
+| `fishing_area_species()` | 每个物种的产量，取其最长的连续年份段 |
+| `fishing_area_country()` | 每个国家的产量，使用所有有记录的年份（年份不连续时给出警告） |
+
+突变点只说明产量水平在何时发生了变化，而不说明原因：捕捞活动、资源量、市场或统计上报方式的变化都可能使产量发生变化。
+
 ## 🌏 另一个渔区：西北太平洋
 
-任何 FAO 渔区的用法都一样。西北太平洋（61 区）是产量最大的渔区：
+任何FAO渔区的用法都一样。西北太平洋（61区）是产量最大的渔区：
 
 ```{r, figures = TRUE}
 FAO61 <- fishing_area_data("Pacific, Northwest")
@@ -141,5 +241,49 @@ fishing_area_country(FAO61$area_data, rank_range = c(1, 8))
 ```
 
 ::: callout-tip
-不同渔区的图表以相同的文件名保存（如 `fishing_trend.png`），因此建议每个渔区使用单独的工作目录，例如 `setwd("reports/FAO61")`。
+不同渔区的图表以相同的文件名保存（如`fishing_trend.png`），因此建议每个渔区使用单独的工作目录，例如`setwd("reports/FAO61")`。
 :::
+
+## 📖 参考文献
+
+```{r references-release, include = FALSE}
+release_info <- fao_data_info()
+```
+
+Bai, J. and Perron, P. (2003). Computation and analysis of multiple structural change models.
+*Journal of Applied Econometrics* 18(1): 1–22.
+[doi:10.1002/jae.659](https://doi.org/10.1002/jae.659)
+
+CWP (Coordinating Working Party on Fishery Statistics). *CWP Handbook of Fishery Statistics*:
+Main water areas (FAO major fishing areas). Rome: FAO.
+<https://www.fao.org/cwp-on-fishery-statistics/handbook/general-concepts/main-water-areas/en/>
+
+FAO (`r sub("[.].*", "", release_info$release)`). FishStat: Global capture production
+`r release_info$years[1]`–`r release_info$years[2]` (release `r release_info$release`).
+In: FishStatJ. <https://www.fao.org/fishery/statistics/software/fishstatj/en>.
+Licence: CC-BY-4.0. Release file: <`r release_info$url`>
+
+FAO (2026). *Fishery and Aquaculture Statistics – Yearbook 2024*. FAO Yearbook of Fishery and
+Aquaculture Statistics. Rome: FAO.
+[doi:10.4060/ce1217en](https://doi.org/10.4060/ce1217en)
+
+Massicotte, P. and South, A. *rnaturalearth: World Map Data from Natural Earth*. R package.
+[doi:10.32614/CRAN.package.rnaturalearth](https://doi.org/10.32614/CRAN.package.rnaturalearth)
+
+Natural Earth. Admin 0 – Details, map units, 1:50m (the country outlines of the maps).
+<https://www.naturalearthdata.com/downloads/50m-cultural-vectors/50m-admin-0-details/>
+
+Pebesma, E. (2018). Simple features for R: standardized support for spatial vector data.
+*The R Journal* 10(1): 439–446.
+[doi:10.32614/RJ-2018-009](https://doi.org/10.32614/RJ-2018-009)
+
+Wickham, H. (2016). *ggplot2: Elegant Graphics for Data Analysis*. New York: Springer.
+[doi:10.1007/978-3-319-24277-4](https://doi.org/10.1007/978-3-319-24277-4)
+
+Zeileis, A., Kleiber, C., Krämer, W. and Hornik, K. (2003). Testing and dating of structural
+changes in practice. *Computational Statistics & Data Analysis* 44(1–2): 109–123.
+[doi:10.1016/S0167-9473(03)00030-6](https://doi.org/10.1016/S0167-9473(03)00030-6)
+
+Zeileis, A., Leisch, F., Hornik, K. and Kleiber, C. (2002). strucchange: an R package for testing
+for structural change in linear regression models. *Journal of Statistical Software* 7(2): 1–38.
+[doi:10.18637/jss.v007.i02](https://doi.org/10.18637/jss.v007.i02)

@@ -2,7 +2,7 @@
 title: "🎨 Customise charts and maps"
 description: >
   fao_settings(): language, theme, colour palettes, map projection and centre, fonts, grid
-  lines, resolution and PowerPoint output.
+  lines, resolution, PowerPoint output and data folders.
 ---
 
 ```{r setup, include = FALSE}
@@ -12,6 +12,10 @@ FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = 
 
 ```{r data-source, echo = FALSE, results = "asis"}
 data_source()
+```
+
+```{r page-language, include = FALSE}
+page_lang <- getOption("faofishingreport.lang", "en")
 ```
 
 All charts and maps follow a few settings, set once per R session with `fao_settings()`. Run it
@@ -31,28 +35,46 @@ fao_settings()
 #>   grid            FALSE
 #>   dpi             600
 #>   pptx            FALSE
-#>   data_dir        C:/Users/<you>/AppData/Local/R/data/R/faofishingreport
+#>   data_dir        C:/Users/<you>/AppData/Roaming/R/data/R/faofishingreport
+#>   online          TRUE
+#>   sst             ersst5
+#>   silent          FALSE
 #>   font            SimSun
 ```
 
+`fao_settings(...)` takes the settings as `name = value`, and one more argument, `reset`:
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `...` | Settings to change, as `name = value` (table below) | |
+| `reset` | `TRUE` first restores all settings to their defaults | `FALSE` |
+
+The settings:
+
 | Setting | Choices | Default |
 |---|---|---|
-| `lang` | `"en"`, `"zh"`, `"both"` | `"en"` |
-| `theme` | `"bw"`, `"classic"`, `"minimal"`, `"light"`, `"linedraw"`, `"gray"`, `"dark"`, or a ggplot2 theme | `"bw"` |
-| `base_size` | Base font size | `12` |
-| `font` | Font family of chart text | chosen for the system |
-| `palette` | Category colours: ggsci, RColorBrewer, `"Okabe-Ito"`, `"viridis"`, ... or colours | `"npg"` |
-| `map_palette` | Map colours: Material (`"deep-orange"`, ...), RColorBrewer (`"YlOrRd"`, ...), viridis, or colours | `"deep-orange"` |
-| `map_center` | `0` (longitudes -180 to 180) or `180` (0 to 360) | `0` |
-| `map_projection` | `"longlat"`, `"robinson"`, `"mollweide"`, `"equal_earth"`, `"winkel_tripel"`, `"mercator"`, a PROJ string or EPSG code | `"longlat"` |
-| `map_land`, `map_ocean` | Colour of countries without data, of the ocean | `"grey90"`, none |
+| `lang` | Language of charts: `"en"`, `"zh"`, `"both"`; the `lang` argument of a function takes precedence | `"en"` |
+| `theme` | `"bw"`, `"classic"`, `"minimal"`, `"light"`, `"linedraw"`, `"gray"`, `"dark"`, or a ggplot2 theme object; maps and pie charts keep a minimal theme | `"bw"` |
+| `base_size` | Base font size of the theme | `12` |
+| `font` | Font family of chart text (see [Fonts](#fonts)) | chosen for the system |
+| `palette` | Colours of categories (countries, species, groups): a ggsci palette (`"npg"`, `"lancet"`, ...), an RColorBrewer palette (`"Set1"`, ...), a base R palette (`grDevices::palette.pals()`, e.g. `"Okabe-Ito"`; `grDevices::hcl.pals()`, e.g. `"viridis"`), or a vector of colours | `"npg"` |
+| `map_palette` | Colours of map values: a Material Design palette of ggsci (`"deep-orange"`, `"blue"`, `"teal"`, ...), an RColorBrewer palette (`"YlOrRd"`, `"Blues"`, ...), a viridis option (`"viridis"`, `"magma"`, `"plasma"`, `"inferno"`, `"cividis"`, `"mako"`, `"rocket"`, `"turbo"`), a `grDevices::hcl.pals()` name, or a vector of colours | `"deep-orange"` |
+| `map_center` | Central longitude of maps: `0` (longitudes -180 to 180, Atlantic in the centre) or `180` (0 to 360, Pacific in the centre); `"-180-180"` and `"0-360"` are also accepted | `0` |
+| `map_projection` | `"longlat"`, `"robinson"`, `"mollweide"`, `"equal_earth"`, `"winkel_tripel"`, `"mercator"`, or a PROJ string or EPSG code (then `map_center` is not applied) | `"longlat"` |
+| `map_land` | Colour of countries without data on maps | `"grey90"` |
+| `map_ocean` | Colour of the ocean on maps | `NA` (no fill) |
 | `grid` | Background grid lines (graticules on maps) | `FALSE` |
 | `dpi` | Resolution of the PNG files | `600` |
-| `pptx` | Also save editable PowerPoint files (needs the eoffice package) | `FALSE` |
-| `data_dir` | Folder of downloaded FAO data | R user data folder |
+| `pptx` | Also save editable PowerPoint files (uses the eoffice package) | `FALSE` |
+| `data_dir` | Folder of downloaded FAO data (see [💾 FAO data](data.html)) | `NULL`: the user data folder of R, see `fao_data_dir()` |
+| `online` | Whether functions may connect to the internet to look for the newest FishBase release; `FALSE` works offline with the downloaded copy (see [🐠 FishBase](fishbase.html)) | `TRUE` |
+| `sst` | Sea surface temperature data of `fao_area_sst()` and `mean_temperature_catch()`: `"ersst5"` (built in), a product downloaded with `download_sst_data()` (e.g. `"hadisst1"`), or the path of your own NetCDF file or folder (see [🌡️ Sea temperature](sst-mtc.html)) | `"ersst5"` |
+| `silent` | Whether the CMSY++ functions work without progress bars and messages; their `silent` argument takes precedence (see [📉 CMSY++](cmsy.html)) | `FALSE` |
 
 `fao_settings(reset = TRUE)` restores the defaults. A wrong name or value gives an error at once,
-with the choices available.
+with the choices available. Each setting is stored as the R option `faofishingreport.<name>`, so
+it can also be set with `options()`, e.g. in an `.Rprofile` file. `fao_settings()` returns the
+current settings invisibly, as a list.
 
 ## 🌐 Language
 
@@ -67,10 +89,14 @@ fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
 ```{r, figures = "area_country.png"}
 fao_settings(lang = "both")
 fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
-fao_settings(lang = "en")
 ```
 
-The older argument `ZH = TRUE` still works and means `lang = "zh"`.
+```{r, include = FALSE}
+fao_settings(lang = page_lang)
+```
+
+Go back to English with `fao_settings(lang = "en")`. The older argument `ZH = TRUE` still works
+and means `lang = "zh"`.
 
 ## 🖼️ Themes
 
@@ -108,7 +134,8 @@ fao_settings(palette = "npg")
 
 Palettes of the ggsci package include `"npg"`, `"aaas"`, `"nejm"`, `"lancet"`, `"jama"`, `"jco"`,
 `"d3"`; of RColorBrewer `"Set1"`, `"Set2"`, `"Dark2"`, `"Paired"`; of base R
-`grDevices::palette.pals()` and `grDevices::hcl.pals()`. More categories than a palette has are
+`grDevices::palette.pals()` (e.g. the Okabe-Ito palette for colour-blind readers, Okabe and Ito
+2008) and `grDevices::hcl.pals()` (Zeileis et al. 2020). More categories than a palette has are
 interpolated.
 
 ## 🗺️ Map projections
@@ -145,6 +172,18 @@ fao_settings(map_projection = "mercator")
 fishing_area_data("Atlantic, Eastern Central")
 ```
 
+The named projections and the PROJ projection each one uses (the maps are drawn with sf, which
+uses the PROJ library):
+
+| `map_projection` | Projection | PROJ | Properties |
+|---|---|---|---|
+| `"longlat"` | Plain longitude-latitude (equidistant cylindrical, plate carrée) | `EPSG:4326`; `+proj=eqc` with `map_center = 180` | Simple; areas far from the equator are enlarged |
+| `"robinson"` | Robinson (Robinson 1974) | `+proj=robin` | Compromise world map: neither equal-area nor conformal |
+| `"equal_earth"` | Equal Earth (Šavrič et al. 2019) | `+proj=eqearth` | Equal-area, with straight parallels |
+| `"mollweide"` | Mollweide (Snyder 1987) | `+proj=moll` | Equal-area, elliptical outline |
+| `"winkel_tripel"` | Winkel tripel | `+proj=wintri` | Compromise world map with low overall distortion |
+| `"mercator"` | Mercator (Snyder 1987) | `+proj=merc` | Conformal; areas grow strongly towards the poles, cut at 80° S and 84° N |
+
 Any other projection can be given as a PROJ string or EPSG code, e.g.
 `fao_settings(map_projection = "+proj=natearth")` or `"EPSG:3857"`.
 
@@ -164,6 +203,10 @@ Fishing area maps show the land without country borders, and the analysed countr
 country_analysis("Morocco")
 ```
 
+Countries are drawn from the Natural Earth map units (1:50m), matched to the FAO countries on
+their ISO 3 codes; the fishing areas from the FAO layer of the major fishing areas, simplified for
+world maps.
+
 ## 🖌️ Map colours
 
 ```{r, figures = "area_country_map"}
@@ -181,21 +224,37 @@ The `fill_scale` argument of `fishing_area_data()`, `species_country()` and
 
 ```{r, include = FALSE}
 fao_settings(reset = TRUE)
-fao_settings(dpi = 100)
+fao_settings(dpi = 100, lang = page_lang)
 ```
 
-## 🔤 Fonts
+## 🔤 Fonts {#fonts}
 
 The font is chosen for the operating system so that Chinese text displays: SimSun on Windows,
-Songti SC on macOS, Noto Serif CJK SC on Linux, or the next installed Chinese font. Change it with:
+Songti SC on macOS, Noto Serif CJK SC on Linux, or the next installed Chinese font (and `"sans"`
+if none is found). Change it with:
 
 ```{r, eval = FALSE}
 fao_font()                            # the current font
 fao_settings(font = "Microsoft YaHei")
 ```
 
-PNG files are drawn with the ragg package, which finds any installed font by name; PowerPoint files
-use the same font name.
+`fao_font()` has one argument:
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `family` | Font family to use from now on, e.g. `"Microsoft YaHei"`; `NULL` only returns the current font | `NULL` |
+
+It returns the font family name. `fao_settings(font = ...)`, `fao_font(...)` and
+`options(faofishingreport.font = ...)` do the same. The fonts tried on each system:
+
+| System | Fonts, in order |
+|---|---|
+| Windows | SimSun, NSimSun, Microsoft YaHei, SimHei, DengXian, KaiTi |
+| macOS | Songti SC, STSong, PingFang SC, Heiti SC, Hiragino Sans GB, Arial Unicode MS |
+| Linux | Noto Serif CJK SC, Noto Sans CJK SC, Source Han Serif SC, Source Han Sans SC, WenQuanYi Zen Hei, WenQuanYi Micro Hei, AR PL UMing CN |
+
+The installed fonts are listed with the systemfonts package. PNG files are drawn with the ragg
+package, which finds any installed font by name; PowerPoint files use the same font name.
 
 ## 📐 Grid lines, resolution and PowerPoint
 
@@ -216,9 +275,16 @@ fishing_area_species(FAO34$area_data, pptx = TRUE)   # or for one call only
 
 ## ⚙️ Arguments of each function
 
-Besides the settings, the older analysis functions have their own style arguments (line widths,
-point sizes, text sizes and colours); see their help pages, e.g. `?fishing_area_data`, and
-[🌊 Fishing area analysis](fishing-areas.html).
+Besides the settings, the analysis functions have their own arguments; `lang`, `pptx` and
+`fill_scale` override the settings for one call. Each article has a table of all of them:
+
+| Functions | All arguments |
+|---|---|
+| `fishing_area_data()`, `fishing_area_species()`, `fishing_area_country()` (line widths, point sizes, text sizes and colours) | [🌊 Fishing area analysis](fishing-areas.html) |
+| `species_country()`, `country_species()`, `country_analysis()` | [🐟 Species and countries](species-countries.html) |
+| `check_fao_update()`, `download_fao_data()`, `load_fao_data()`, `fao_data_info()`, `fao_translate()` | [💾 FAO data](data.html) |
+| Summary analyses, e.g. `stock_status()`, `peak_trend()` | [📈 Composition, stock status and trends](status-trends.html), [🔍 Data quality, diversity and fleets](quality-diversity-fleets.html) |
+| `fao_report()` | [📝 Assessment report in Word](report.html) |
 
 ## 📝 Translations
 
@@ -226,3 +292,60 @@ Chinese names of countries, species and areas come from FAO. The Chinese names o
 major groups and income groups (`inst/extdata/group_names_zh.csv`) and all chart labels
 (`inst/extdata/chart_labels.csv`) are plain CSV files: edit them in the package source and
 reinstall the package to change the wording.
+
+## 📖 References
+
+FAO (2024). FAO Major Fishing Areas for Statistical Purposes. In: FAO Fisheries and Aquaculture
+Division [online]. Licence: CC-BY 4.0.
+<https://www.fao.org/fishery/geonetwork?uuid=ac02a460-da52-11dc-9d70-0017f293bd28>
+(the area boundaries of the fishing area maps, bundled as `inst/extdata/FAO_AREAS_CWP.shp`)
+
+Guo, K. *eoffice: Export or Graph and Tables to 'Microsoft' Office and Import Figures and
+Tables*. R package.
+[doi:10.32614/CRAN.package.eoffice](https://doi.org/10.32614/CRAN.package.eoffice)
+
+Harrower, M. and Brewer, C.A. (2003). ColorBrewer.org: an online tool for selecting colour schemes
+for maps. *The Cartographic Journal* 40(1): 27–37.
+[doi:10.1179/000870403235002042](https://doi.org/10.1179/000870403235002042)
+
+Massicotte, P. and South, A. *rnaturalearth: World Map Data from Natural Earth*. R package.
+[doi:10.32614/CRAN.package.rnaturalearth](https://doi.org/10.32614/CRAN.package.rnaturalearth)
+
+Natural Earth. Admin 0 – Details, map units, 1:50m.
+<https://www.naturalearthdata.com/downloads/50m-cultural-vectors/50m-admin-0-details/>
+
+Okabe, M. and Ito, K. (2008). Color Universal Design (CUD): how to make figures and
+presentations that are friendly to colorblind people. <https://jfly.uni-koeln.de/color/>
+
+Pebesma, E. (2018). Simple features for R: standardized support for spatial vector data.
+*The R Journal* 10(1): 439–446.
+[doi:10.32614/RJ-2018-009](https://doi.org/10.32614/RJ-2018-009)
+
+Pedersen, T.L. and Shemanarev, M. *ragg: Graphic Devices Based on AGG*. R package.
+[doi:10.32614/CRAN.package.ragg](https://doi.org/10.32614/CRAN.package.ragg)
+
+PROJ contributors (2026). *PROJ coordinate transformation software library*. Open Source
+Geospatial Foundation. <https://proj.org/>.
+[doi:10.5281/zenodo.5884394](https://doi.org/10.5281/zenodo.5884394)
+
+Robinson, A.H. (1974). A new map projection: its development and characteristics.
+*International Yearbook of Cartography* 14: 145–155.
+
+Šavrič, B., Patterson, T. and Jenny, B. (2019). The Equal Earth map projection.
+*International Journal of Geographical Information Science* 33(3): 454–465.
+[doi:10.1080/13658816.2018.1504949](https://doi.org/10.1080/13658816.2018.1504949)
+
+Snyder, J.P. (1987). *Map Projections: A Working Manual*. U.S. Geological Survey Professional
+Paper 1395. Washington, DC: U.S. Government Printing Office.
+[doi:10.3133/pp1395](https://doi.org/10.3133/pp1395)
+
+Wickham, H. (2016). *ggplot2: Elegant Graphics for Data Analysis*. New York: Springer.
+[doi:10.1007/978-3-319-24277-4](https://doi.org/10.1007/978-3-319-24277-4)
+
+Xiao, N. *ggsci: Scientific Journal and Sci-Fi Themed Color Palettes for 'ggplot2'*. R package.
+[doi:10.32614/CRAN.package.ggsci](https://doi.org/10.32614/CRAN.package.ggsci)
+
+Zeileis, A., Fisher, J.C., Hornik, K., Ihaka, R., McWhite, C.D., Murrell, P., Stauffer, R. and
+Wilke, C.O. (2020). colorspace: a toolbox for manipulating and assessing colors and palettes.
+*Journal of Statistical Software* 96(1): 1–49.
+[doi:10.18637/jss.v096.i01](https://doi.org/10.18637/jss.v096.i01)

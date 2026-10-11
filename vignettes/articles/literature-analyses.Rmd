@@ -1,0 +1,825 @@
+---
+title: "🔬 Shocks, collapses, synchrony and fleets"
+description: >
+  catch_shocks(), collapse_analysis(), catch_synchrony(), distant_water_profile() and
+  compare_releases(): abrupt falls and collapses of the catch, how synchronously catches
+  fluctuate, where a country's fleets fish, and what FAO revised between two data releases,
+  each following published methods.
+---
+
+```{r setup, include = FALSE}
+source("_setup.R")
+FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+```
+
+```{r data-source, echo = FALSE, results = "asis"}
+data_source()
+```
+
+The five functions of this article follow methods published in the fisheries and ecology
+literature. Each section gives the method with its sources, so that the results can be checked
+against the original studies, and says which settings are choices of this package rather than of
+those studies. The full references are at the end of the page.
+
+- `catch_shocks()`, `collapse_analysis()` and `catch_synchrony()` take catch data, like the
+  summary analyses: a fishing area from `fishing_area_data()`, or any subset of `load_fao_data()`
+  (see [💾 FAO data](data.html)).
+- `distant_water_profile()` takes a country and follows its catch in all FAO areas.
+- `compare_releases()` takes two releases of the FAO data.
+
+The examples use the Eastern Central Atlantic (FAO area 34). The charts are saved in
+`figures/png/summary/` and the tables in `tables/`. The pelagic/demersal ratio,
+`pelagic_demersal()`, belongs to the same group of analyses and is described in
+[📈 Composition, stock status and trends](status-trends.html).
+
+```{r, eval = FALSE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+```
+
+The five functions share these arguments:
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `plot` | Save the charts in `figures/png/summary/` | `TRUE` |
+| `table` | Save the tables in `tables/` | `TRUE` |
+| `lang` | Language of the charts and names: `"en"`, `"zh"` or `"both"`; `NULL` uses the language set with `fao_settings()` | `NULL` |
+| `pptx` | Also save the charts as editable PowerPoint files in `figures/pptx/summary/` | `FALSE`, or `TRUE` after `fao_settings(pptx = TRUE)` |
+| `label` | Name at the start of the file names | The fishing area (or the country) of the data |
+
+They return their results invisibly: assign them (`x <- catch_shocks(...)`) to use the tables.
+
+## 📝 In the Word report
+
+`fao_report()` can add four of these analyses to the Word report of a fishing area (see
+[📝 Assessment report in Word](report.html)). They are switched off by default:
+
+```{r, eval = FALSE}
+fao_report(34, shocks = TRUE, collapse = TRUE, synchrony = TRUE, distant = TRUE)
+```
+
+The settings of each function are given with the name of its section as prefix:
+
+```{r, eval = FALSE}
+fao_report(34, shocks = TRUE, collapse = TRUE, synchrony = TRUE, distant = TRUE,
+           shocks_method = "gephart2017",   # catch_shocks(method = "gephart2017")
+           collapse_method = "worm2006",    # collapse_analysis(method = "worm2006")
+           collapse_seed = 2,               # seed of the random series of the null model
+           synchrony_by = "country",        # catch_synchrony(by = "country")
+           distant_countries = 5,           # profiles of the 5 main distant-water countries
+           distant_min_catch = 100)         # distant_water_profile(min_catch = 100)
+```
+
+| Section | Function | Settings of the report only |
+|---|---|---|
+| `shocks` | `catch_shocks()` | |
+| `collapse` | `collapse_analysis()` | `collapse_seed`: seed of the random series of the null model, default `1`, so that the report gives the same numbers every time |
+| `synchrony` | `catch_synchrony()` | |
+| `distant` | `distant_water_profile()` | `distant_countries`: the number of countries profiled, default `3` (the countries with the largest distant-water catch in the area over the last five years), or their names, e.g. `c("China", "Japan")` |
+| `pelagic` | `pelagic_demersal()` | |
+
+`compare_releases()` compares two versions of the data rather than describing a fishing area, so
+it is not a section of the report.
+
+## ⚡ Catch shocks
+
+A shock is a sudden, unusually large fall in production from one year to the next. Gephart et
+al. (2017) proposed a statistical method to find shocks in national fish production series, and
+Cottrell et al. (2019) used a version of it to compare shocks in crop, livestock, fisheries and
+aquaculture production. `catch_shocks()` applies both versions to FAO catch series and counts how
+often shocks happen, by year and by group.
+
+### Method
+
+By default a series is the catch of one country in one FAO area (`by = c("country", "area")`). It
+runs from its first year with catch to the last year of the data, with missing years counted as
+zero. In each series:
+
+1. The catch $c_t$ is smoothed, and the residuals $r_t = c_t - \hat{c}_t$ from the smooth are
+   kept.
+2. The residuals are regressed on those of the year before: $r_t = a + b\,r_{t-1} + e_t$ (a
+   lag-1 regression).
+3. Years whose **Cook's distance** in this regression is above a threshold are candidate shocks.
+   Cook's distance measures how much one observation changes the fitted regression, so it picks
+   out years that break the usual year-to-year pattern.
+4. A candidate is kept only if the catch fell below a **baseline** $B_t$ computed from the
+   preceding years. The loss is $B_t - c_t$ tonnes, or $100\,(B_t - c_t)/B_t$ percent.
+5. The shock has recovered in the first later year in which the catch is back to at least 95% of
+   $B_t$.
+
+The two methods differ in the smoother, the threshold and the baseline:
+
+| | `"cottrell2019"` (default) | `"gephart2017"` |
+|---|---|---|
+| Smoother | LOESS, span 0.6 | lowess, span 2/3 |
+| Cook's distance above | 0.3 | 0.35 |
+| Baseline $B_t$ | Median catch of the previous 7 years | Mean catch of the previous 5 years |
+| Earliest possible shock | 8th year of the series | 6th year of the series |
+| Source | Cottrell et al. (2019), Methods, and their [code](https://github.com/cottrellr/shocks) | Gephart et al. (2017), section 2, and their [code](https://github.com/jagephart/Shock_Detection) |
+
+Two summaries follow from the shocks:
+
+- the **shock frequency** of a year: the number of shocks divided by the number of series with
+  catch in that year, in percent (Cottrell et al. 2019);
+- the **shock rate** of a group (an area, a country, a continent or a species group): the number
+  of shocks divided by the number of series in the group (Gephart et al. 2017).
+
+Two settings are choices of this package. Series with catch in fewer than `min_years` years (20)
+are left out, because neither study gives a minimum length. The series of countries that no longer
+exist (e.g. the USSR) end in their last year with catch, so that the end of a country is not
+counted as a shock.
+
+### Example
+
+```{r, figures = TRUE}
+shocks <- catch_shocks(FAO34$area_data)
+```
+
+The first chart is the shock frequency of each year. The second shows the `top_n` series with
+the largest catch, from their first to their last year, with a dot for each shock sized by the
+loss in percent. The others give the shock rate of each continent and each country, with the
+number of shocks and series next to each bar; a grouping with a single group (here the area) has
+no chart.
+
+The largest shocks, in tonnes:
+
+```{r}
+largest <- shocks$shocks[order(-shocks$shocks$loss_tonnes), ]
+show_table(data.frame(largest[, c("series_name", "Year", "catch_tonnes", "baseline_tonnes", "loss_tonnes",
+                                  "loss_pct", "cooks_distance", "recovery_years")], row.names = NULL),
+           digits = c(0, 0, 0, 0, 0, 1, 2, 0))
+```
+
+The years with the highest shock frequency, and the shock rate by continent:
+
+```{r}
+show_table(data.frame(head(shocks$by_year[order(-shocks$by_year$shock_frequency_pct), ], 5), row.names = NULL))
+show_table(data.frame(subset(shocks$by_group, grouping == "continent"), row.names = NULL))
+```
+
+**Reading the results.** In area 34, `r nrow(shocks$series)` country series have catch in at
+least 20 years, and `r nrow(shocks$shocks)` shocks were found in
+`r sum(shocks$series$n_shocks > 0)` of them. The shock frequency is at most
+`r round(max(shocks$by_year$shock_frequency_pct), 1)`% in any year: shocks are rare events in any
+one series. `recovery_years` is the number of years until the catch was back to 95% of the
+baseline; `NA` means it had not recovered by the end of the series
+(`r sum(is.na(shocks$shocks$recovery_years))` of the `r nrow(shocks$shocks)` shocks). The USSR,
+a former country, and "Other nei" (catch not attributed to a country) have no continent in the FAO
+country list and are shown as `NA`.
+
+### Other settings
+
+The method of Gephart et al. (2017). The file names do not include the method, so `label` keeps
+the charts of this call from replacing those of the first one:
+
+```{r, figures = "_shocks[.]png$"}
+gephart <- catch_shocks(FAO34$area_data, method = "gephart2017", label = "FAO34 gephart2017")
+```
+
+```{r}
+both <- merge(shocks$shocks[, c("series", "Year")], gephart$shocks[, c("series", "Year")])
+c(cottrell2019 = nrow(shocks$shocks), gephart2017 = nrow(gephart$shocks), both = nrow(both))
+```
+
+The two methods find `r nrow(shocks$shocks)` and `r nrow(gephart$shocks)` shocks, and only
+`r nrow(both)` of them in the same series and year: with a threshold close to the Cook's distance
+of many years, the smoother and the baseline decide the borderline cases. Results that hold with
+both methods are the more robust.
+
+With `by = "species"`, a series is the catch of one species item in the area, all countries
+together, and the shock rate is also given by ISSCAAP species group:
+
+```{r, figures = "_by_species_group"}
+species_shocks <- catch_shocks(FAO34$area_data, by = "species", label = "FAO34 species")
+```
+
+```{r}
+groups <- subset(species_shocks$by_group, grouping == "species_group" & n_series >= 5)
+show_table(data.frame(groups[, c("group_name", "n_series", "n_shocks", "shocks_per_series")], row.names = NULL))
+```
+
+The two studies analysed national totals, all species and areas of a country together. The same
+series come from the data of all areas with `by = "country"` (this takes longer):
+
+```{r, eval = FALSE}
+catch_shocks(load_fao_data(), by = "country", method = "gephart2017")
+```
+
+### Arguments and results
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `area_data` | FAO catch data: `fishing_area_data()$area_data`, or any subset of `load_fao_data()` | |
+| `by` | What a series is: one or more of `"country"`, `"area"` and `"species"` | `c("country", "area")` |
+| `method` | `"cottrell2019"` or `"gephart2017"` | `"cottrell2019"` |
+| `min_years` | Series with catch in fewer years are left out | `20` |
+| `top_n` | Number of series with the largest catch in the timeline chart | `25` |
+| `plot`, `table`, `lang`, `pptx`, `label` | Common arguments (see the start of the page) | |
+
+| Element | Content |
+|---|---|
+| `shocks` | One row per shock: the series, `Year`, `catch_tonnes`, `baseline_tonnes`, `loss_tonnes`, `loss_pct`, `cooks_distance` and `recovery_years` |
+| `by_year` | Each year: `n_series` (series with catch), `n_shocks` and `shock_frequency_pct` |
+| `by_group` | Shock rate by `grouping` (country, area, species, continent, species group): `n_series`, `n_shocks` and `shocks_per_series` |
+| `series` | The series analysed: `first_year`, `last_year`, `n_years`, `total_tonnes` and `n_shocks` |
+
+::: callout-note
+- Both studies analysed national totals. Series of one country in one area, or of one species, use
+  the same method on smaller units.
+- Highly variable series (e.g. Peruvian anchoveta) may show no shocks, because large changes are
+  usual in them (Gephart et al. 2017).
+- A shock is an anomaly of the catch series. It may come from the stock, the environment, markets,
+  management or a change in reporting; the catch data do not say which.
+- The smoother and the regression use the whole series, so a new year of data can change which
+  earlier years are found as shocks.
+:::
+
+## 💥 Fishery collapses
+
+Two definitions of a collapse from catch data are widely used. Mullon et al. (2005) counted the
+collapses in FAO catch series and described the shape of the decline before them; Worm et al.
+(2006) followed the share of fisheries whose catch was below 10% of its maximum. Wilberg and
+Miller (2007) showed that the second measure also rises for random series with no trend, which is
+why `collapse_analysis()` compares the data with such random series.
+
+### Method
+
+| | `"mullon2005"` (default) | `"worm2006"` |
+|---|---|---|
+| A series is | One species or genus caught by one country in one FAO area | One species item in one FAO area, all countries together |
+| Left out | Items not identified to genus or species; the countries in `exclude_countries`; series with a missing year among the last `complete_years` (20) years; series with a mean catch below `min_mean_catch` (500 t a year) | Fisheries with a total catch below `min_total_catch` (10,000 t) |
+| Collapsed | After the year of the maximum catch $X_{max}$, the catch stays below $X_{max}/10$ for 4 consecutive years; the first of them is the collapse year $D_c$ (Mullon et al. 2005, p. 113) | In each year when the catch is below 10% of the maximum; recovered when back above. A fishery starts when its catch first reaches 10% of the maximum |
+| Results | Number of collapses, their years and the shape of the decline | Share of fisheries collapsed in each year, and share that have collapsed at least once (Worm et al. 2006, main text and supplementary pp. 4–5) |
+
+By default `exclude_countries` holds the countries that Mullon et al. (2005, p. 112) left out: the
+former USSR, Yugoslavia and Czechoslovakia, whose series end with the country; South Africa and
+Namibia, whose series were split; and China, whose series they considered distorted.
+
+**Shape of the decline** (Mullon et al. 2005, p. 114), checked in this order (the paper does not
+give an order):
+
+| Type | Rule |
+|---|---|
+| Plateau | Catch above $X_{max}/4$ in every year from $D_c - 8$ to $D_c - 3$: a sudden fall after a long period of high catch |
+| Smooth | Correlation between catch and time from $D_c - 10$ to $D_c$ below $-0.7$: a long, regular decline |
+| Erratic | Otherwise: a fall after several ups and downs |
+| Not classified | Collapses less than 10 years after the first year of the series |
+
+Mullon et al. found 366 collapses among 1,519 FAO series from 1950 to 2000 (24%): 21% plateau,
+33% smooth and 45% erratic.
+
+**Null model.** The maximum of a series grows with its length, so a share of "collapsed"
+fisheries defined against the maximum rises over time even when nothing changes (Wilberg and
+Miller 2007). With `null_model = TRUE` (default) the analysis is repeated on `n_sim` (100) sets of
+random series with no trend, with the same start years and lengths as the real series. As in
+Wilberg and Miller (2007), they are stationary first-order autoregressive lognormal series:
+$x_t = \rho\,x_{t-1} + \varepsilon_t$ with $\rho = 0.75$ and
+$\varepsilon_t \sim N\!\left(0,\ \sigma^2 (1 - \rho^2)\right)$, and catch $= e^{x_t}$, where
+$\sigma^2 = \ln(1 + \text{CV}^2)$ for a coefficient of variation of 80%. The share of collapses
+in these series is the level that the definition gives by itself.
+
+**Random numbers.** The random series are drawn again at every run, so the results of the null
+model change slightly from one run to the next. `set.seed()` before the call fixes them. This page
+uses `set.seed(1)` so that the numbers in the text match the tables at every build of the site;
+`fao_report()` does the same with `collapse_seed` (default 1).
+
+### Example
+
+```{r, figures = TRUE}
+set.seed(1)   # fixes the random series of the null model
+collapses <- collapse_analysis(FAO34$area_data)
+```
+
+The first chart is the number of collapses in each year, by type of decline. The second is the
+mean catch of each type relative to its maximum, from 10 years before to 5 years after the
+collapse year; the dashed lines are $X_{max}/4$ and $X_{max}/10$. The third is the share of
+collapsed series in each ISSCAAP species group with at least 3 series.
+
+```{r}
+s <- collapses$summary
+show_table(data.frame(s, row.names = NULL), digits = 1)
+```
+
+The largest series that collapsed, and the share of collapsed series by species group:
+
+```{r}
+collapsed <- subset(collapses$series, collapsed)
+collapsed <- collapsed[order(-collapsed$max_tonnes), c("series_name", "max_year", "max_tonnes", "collapse_year", "type")]
+show_table(data.frame(collapsed, row.names = NULL), digits = 0)
+groups <- subset(collapses$by_group, grouping == "species_group" & n_series >= 3)
+show_table(data.frame(groups[, c("group_name", "n_series", "n_collapsed", "pct_collapsed")], row.names = NULL), digits = 1)
+```
+
+**Reading the results.** In area 34, `r s$n[1]` of the `r s$n_series[1]` series
+(`r round(s$pct_of_series[1], 1)`%) collapsed by the definition of Mullon et al. (2005), against
+`r round(s$null_pct_of_series[1], 1)`% in random series with no trend. The difference, not the
+share itself, is what points to real collapses. Of the collapses,
+`r round(s$pct_of_collapses[s$type == "erratic"])`% were erratic,
+`r round(s$pct_of_collapses[s$type == "plateau"])`% plateau and
+`r round(s$pct_of_collapses[s$type == "smooth"])`% smooth. Plateau collapses are the hardest to
+foresee: the catch stays high until it falls (Mullon et al. 2005).
+
+### Other settings
+
+The definition of Worm et al. (2006), with the same seed:
+
+```{r, figures = "worm2006[.]png$"}
+set.seed(1)
+worm <- collapse_analysis(FAO34$area_data, method = "worm2006")
+```
+
+The solid lines are the data and the dashed lines the random series of the null model: in red
+the share of fisheries that have collapsed at least once, in blue the share collapsed in the year.
+
+```{r}
+show_table(data.frame(worm$summary, row.names = NULL), digits = 1)
+show_table(data.frame(subset(worm$by_year, Year %in% c(1960, 1980, 2000, max(Year))), row.names = NULL), digits = 1)
+```
+
+By the last year, `r round(worm$summary$pct_of_series[2], 1)`% of the fisheries of area 34 had
+collapsed at least once, but random series with no trend give
+`r round(worm$summary$null_pct_of_series[2], 1)`%: in this area the rising cumulative share comes
+from the definition, which is the point made by Wilberg and Miller (2007). The share collapsed in
+the last year, `r round(worm$summary$pct_of_series[1], 1)`% against
+`r round(worm$summary$null_pct_of_series[1], 1)`% in the null model, is the better indicator.
+
+Three more settings are often useful: `exclude_countries = character(0)` keeps all countries
+with the method of Mullon et al.; `null_model = FALSE` skips the random series, which is faster;
+`n_sim = 1000` gives a steadier null model.
+
+### Arguments and results
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `area_data` | FAO catch data: `fishing_area_data()$area_data`, or any subset of `load_fao_data()` | |
+| `method` | `"mullon2005"` or `"worm2006"` | `"mullon2005"` |
+| `exclude_countries` | Countries left out with `"mullon2005"` | `c("Un. Sov. Soc. Rep.", "Yugoslavia SFR", "Czechoslovakia", "South Africa", "Namibia", "China")` |
+| `complete_years` | With `"mullon2005"`, series need a record in each of the last this many years of the data | `20` |
+| `min_mean_catch` | With `"mullon2005"`, minimum mean catch of a series (t a year) | `500` |
+| `min_total_catch` | With `"worm2006"`, minimum total catch of a fishery (t) | `10000` |
+| `null_model` | Repeat the analysis on random series with no trend (Wilberg and Miller 2007) | `TRUE` |
+| `n_sim` | Number of random data sets of the null model | `100` |
+| `plot`, `table`, `lang`, `pptx`, `label` | Common arguments (see the start of the page) | |
+
+| Element | Content |
+|---|---|
+| `series` | One row per series: `max_year` and `max_tonnes`; with `"mullon2005"` also `collapsed`, `collapse_year` and `type`; with `"worm2006"` `start_year`, `collapsed_last_year` and `first_collapse_year` |
+| `summary` | `"mullon2005"`: number of collapses and of each type, `pct_of_series`, `pct_of_collapses` and the share in the null model `null_pct_of_series`. `"worm2006"`: fisheries collapsed in the last year and at least once, with the null model |
+| `by_year` | `"mullon2005"`: `n_collapses` by year and type. `"worm2006"`: `n_fisheries`, `n_collapsed`, `n_ever_collapsed`, `pct_current`, `pct_cumulative`, and the same shares in the null model |
+| `by_group` | Share of collapsed series by FAO area and species group: `n_series`, `n_collapsed` and `pct_collapsed` |
+
+::: callout-note
+- Catch data alone cannot tell a collapse of the stock from a fall in catch caused by management,
+  markets or reporting.
+- A definition based on the maximum gives "collapses" in random series too. Compare the data with
+  the null model, which is a reference level and not a statistical test.
+- Worm et al. (2006) used species in large marine ecosystems from Sea Around Us data; here a
+  fishery is a species item in an FAO area, so the shares are not directly comparable.
+- With the default `exclude_countries`, the catch of China is left out, as by Mullon et al.
+  (2005).
+:::
+
+## 🎼 Synchrony and the portfolio effect
+
+When the catches of different species rise and fall at different times, their total varies less
+than each of them. This is the portfolio effect, named after the way a diverse investment
+portfolio reduces risk. Ong et al. (2021) analysed 1,092 marine catch series and found that
+regions with more synchronous catches had less stable total catches. `catch_synchrony()` measures
+how synchronously the catch series of the data fluctuate, and how much their asynchrony
+stabilises the total catch.
+
+### Method
+
+The series are chosen as by Ong et al. (2021): the median catch is above `min_median` (10 t a
+year) and more than `min_nonzero` (3/4) of the years have catch. With `by = "species"`, only items
+identified to species are used (Ong et al. left out miscellaneous and "nei" items). Each series is
+**detrended** with a linear regression on year, as by Ong et al., since common trends make series
+look synchronous (Lepš et al. 2019); `detrend = "none"` keeps the trends.
+
+With $\sigma_i$ the standard deviation of series $i$ (after detrending), $\sigma_T$ that of the
+total catch, $m_i$ the mean catch of series $i$ and $m_T$ the mean total catch:
+
+| Measure | Formula | Column |
+|---|---|---|
+| Synchrony | $\varphi = \sigma_T^2 / \left(\sum_i \sigma_i\right)^2$, from 0 (the fluctuations fully compensate each other) to 1 (perfectly synchronous) (Loreau and de Mazancourt 2008, eq. 9) | `synchrony_phi` |
+| CV of the total | $\text{CV}_T = \sigma_T / m_T$ | `cv_total` |
+| Weighted mean CV | $\sum_i \sigma_i / m_T$: the CV of the total if all series were perfectly synchronous | `weighted_mean_cv` |
+| Decomposition | $\text{CV}_T = \sqrt{\varphi} \times \sum_i \sigma_i / m_T$ (Thibaut and Connolly 2013, eqs. 2–4): the lower the synchrony, the more stable the total | |
+| Mean CV of the series | $\overline{\text{CV}} = \frac{1}{n} \sum_i \sigma_i / m_i$ | `mean_cv_series` |
+| Portfolio effect | $100 \times (\overline{\text{CV}} - \text{CV}_T) / \text{CV}_T$: how much more variable the single series are than their total, in percent (Ong et al. 2021, after Carlson and Satterthwaite 2011) | `portfolio_effect_pct` |
+| Pairwise correlations | Correlations between the detrended series: their mean and the share that are positive | `mean_pairwise_correlation`, `positive_correlations_pct` |
+
+The same measures are computed in moving windows of `window` years (20), with the linear trend
+removed in each window (a choice of this package), to show how synchrony changed over time. Ong
+et al. (2021) measured synchrony with wavelet coherence, which separates time scales; this
+function uses the simpler correlation-based measures above.
+
+### Example
+
+```{r, figures = TRUE}
+sync <- catch_synchrony(FAO34$area_data)
+```
+
+The first chart is the synchrony and the portfolio effect in each 20-year window, plotted at the
+middle year of the window. The second compares the CV of the total catch (red, dashed line) with
+the CV of the `top_n` largest series. The third shows the correlations between these series:
+red for series that rise and fall together, blue for series that compensate each other.
+
+```{r}
+show_table(sync$summary[, c("n_series", "synchrony_phi", "cv_total", "weighted_mean_cv", "mean_cv_series",
+                            "portfolio_effect_pct", "mean_pairwise_correlation")], digits = 2)
+with(sync$summary, c(cv_total = cv_total, decomposition = sqrt(synchrony_phi) * weighted_mean_cv))
+```
+
+The second line checks the decomposition of Thibaut and Connolly (2013): the CV of the total is
+$\sqrt{\varphi}$ times the weighted mean CV. For each series, `share_of_variability_pct` is its
+share of $\sum_i \sigma_i$:
+
+```{r}
+show_table(sync$series[, c("series", "mean_tonnes", "sd_tonnes", "cv", "share_of_variability_pct")], digits = 2)
+show_table(data.frame(subset(sync$windows, first_year %% 10 == 0), row.names = NULL), digits = 2)
+```
+
+**Reading the results.** The `r sync$summary$n_series` species series of area 34 have a synchrony
+of `r sprintf("%.2f", sync$summary$synchrony_phi)`, far from 1: their fluctuations largely
+compensate each other. The CV of the total catch, `r sprintf("%.2f", sync$summary$cv_total)`, is
+`r sprintf("%.2f", sqrt(sync$summary$synchrony_phi))` ($\sqrt{\varphi}$) times what it would be if
+all species fluctuated together (`r sprintf("%.2f", sync$summary$weighted_mean_cv)`). A single
+species series varies on average `r sprintf("%.1f", sync$summary$mean_cv_series / sync$summary$cv_total)`
+times as much as the total, a portfolio effect of `r round(sync$summary$portfolio_effect_pct)`%.
+The mean correlation between two series is
+`r sprintf("%.2f", sync$summary$mean_pairwise_correlation)`. In the moving windows, the synchrony
+was `r sprintf("%.2f", sync$windows$synchrony_phi[1])` in
+`r sync$windows$first_year[1]`–`r sync$windows$last_year[1]`, reached
+`r sprintf("%.2f", max(sync$windows$synchrony_phi))` in
+`r sync$windows$first_year[which.max(sync$windows$synchrony_phi)]`–`r sync$windows$last_year[which.max(sync$windows$synchrony_phi)]`
+and fell to `r sprintf("%.2f", tail(sync$windows$synchrony_phi, 1))` in
+`r tail(sync$windows$first_year, 1)`–`r tail(sync$windows$last_year, 1)`.
+
+### Other settings
+
+Without detrending, and by country instead of species:
+
+```{r, figures = "synchrony_species[.]png$"}
+none <- catch_synchrony(FAO34$area_data, detrend = "none", label = "FAO34 no detrending")
+```
+
+```{r, figures = "synchrony_country[.]png$"}
+countries <- catch_synchrony(FAO34$area_data, by = "country")
+```
+
+```{r}
+settings <- rbind(sync$summary, none$summary, countries$summary)
+settings$by <- c("species", "species", "country")
+show_table(settings[, c("by", "detrend", "n_series", "synchrony_phi", "cv_total", "mean_cv_series",
+                        "portfolio_effect_pct", "mean_pairwise_correlation")], digits = 2)
+```
+
+Without detrending, the synchrony is `r sprintf("%.2f", none$summary$synchrony_phi)` instead of
+`r sprintf("%.2f", sync$summary$synchrony_phi)`: the catches of most species grew over the
+decades, and this common trend makes the series look synchronous (Lepš et al. 2019). The catches
+of the `r countries$summary$n_series` countries compensate each other even more
+($\varphi$ = `r sprintf("%.2f", countries$summary$synchrony_phi)`).
+
+### Arguments and results
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `area_data` | FAO catch data: `fishing_area_data()$area_data`, or any subset of `load_fao_data()` | |
+| `by` | What a series is: `"species"` or `"country"` | `"species"` |
+| `detrend` | `"linear"` to remove a linear trend from each series, or `"none"` | `"linear"` |
+| `window` | Length of the moving windows (years) | `20` |
+| `top_n` | Number of series with the largest catch in the CV and correlation charts | `20` |
+| `min_median` | Series need a median catch above this many tonnes a year | `10` |
+| `min_nonzero` | Series need catch in more than this share of the years | `0.75` |
+| `plot`, `table`, `lang`, `pptx`, `label` | Common arguments (see the start of the page) | |
+
+| Element | Content |
+|---|---|
+| `summary` | `n_series`, `first_year`, `last_year`, `detrend`, `synchrony_phi`, `cv_total`, `weighted_mean_cv`, `mean_cv_series`, `portfolio_effect_pct`, `mean_pairwise_correlation` and `positive_correlations_pct` |
+| `series` | Each series: `mean_tonnes`, `sd_tonnes` (after detrending), `cv` and `share_of_variability_pct` |
+| `windows` | The measures in each moving window: `first_year`, `last_year`, `mid_year`, `n_series`, `synchrony_phi`, `cv_total`, `mean_cv_series` and `portfolio_effect_pct` (`NULL` when the data have fewer than `window` + 2 years) |
+| `correlation` | Matrix of the pairwise correlations of the detrended series |
+
+::: callout-note
+- Trends make series look synchronous (Lepš et al. 2019): compare `detrend = "linear"` and
+  `"none"` before reading much into the synchrony.
+- The measures are correlation-based. Ong et al. (2021) used wavelet coherence, which separates
+  time scales and allows for lags.
+- Catches can fluctuate together because of the fish or because of fishing: Ong et al. (2021)
+  found that coherent catches can come from coherent biomass or from coherent fishing mortality.
+- The mean CV of the series is not weighted, so small and variable series raise the portfolio
+  effect; $\varphi$ and the weighted mean CV weight each series by its size.
+:::
+
+## 🚢 Distant-water profile of a country
+
+Since 1950 marine fisheries have spread over a growing part of the ocean (Swartz et al.
+2010). `distant_water_profile()` follows this expansion for one country with FAO statistics: its
+catch in the FAO areas it borders and in those it does not border, the number of areas in which
+it fishes each year, and the first and last year, peak and recent catch in each area.
+
+### Method
+
+- **Distant-water catch** is defined as by FAO: the catch of a country in the FAO major fishing
+  areas it does not border. Fishing outside its own waters but in an area it borders does not
+  count (Grainger and Garcia 1996, section 2.6; Garibaldi and Limongelli 2003, section 2.1).
+- An area is **adjacent** to a country when the country's land, including overseas territories,
+  lies within 20 km of the FAO area boundary. This is a rule of this package, the same as in
+  `coastal_distant()` (see [🔍 Data quality, diversity and fleets](quality-diversity-fleets.html)).
+- An area counts as **fished** in a year when the country's catch there is above `min_catch`
+  tonnes (default 0, any reported catch).
+- Inland fishing areas are left out.
+
+FAO records the catch by the flag of the vessel and by FAO major area, not by exclusive economic
+zone (EEZ). The profile shows in which FAO areas a country's fleet fished, not whether the catch
+came from its own waters, the waters of other countries or the high seas. Swartz et al. (2010)
+mapped the expansion with Sea Around Us catch maps; this function uses FAO statistics only, at the
+resolution of FAO major areas.
+
+### Example
+
+The function takes a country, as named in the FAO data, and uses the catch of all areas:
+
+```{r, figures = TRUE}
+china <- distant_water_profile("China")
+```
+
+The charts are the catch in adjacent and distant-water areas (in tonnes and as a share), the
+catch in each distant-water area (the `top_n` largest, the others combined), the number of areas
+fished each year, and the years from the first to the last catch in each area.
+
+```{r}
+show_table(data.frame(tail(china$yearly, 5), row.names = NULL), digits = 1)
+show_table(china$areas[, c("area", "adjacent", "first_year", "last_year", "peak_year", "peak_tonnes",
+                           "total_tonnes", "share_of_distant_pct")], n = 20, digits = 1)
+```
+
+`share_of_distant_pct` is the share of each distant-water area in all the distant-water catch of
+the country over the whole period. China borders only the Northwest Pacific (area 61). It
+reported its first catch in area 34 in `r china$areas$first_year[china$areas$area_en == "Atlantic, Eastern Central"]`,
+and area 34 makes up
+`r round(china$areas$share_of_distant_pct[china$areas$area_en == "Atlantic, Eastern Central"], 1)`%
+of its distant-water catch.
+
+::: callout-note
+For China, FAO notes that in 2022 China reported 2.3 million tonnes of distant-water catch but
+gave species and areas only for the catch landed in China (area 61). FAO filled the other areas
+with data from regional fisheries management organizations and entered 1.3 million tonnes as
+"Marine fishes nei" in area 61 (FAO 2024). The recent distant-water catch of China is therefore
+partly counted in its adjacent area 61.
+:::
+
+### Other settings
+
+Spain, with `min_catch = 100`: an area counts as fished only in the years with more than 100 t:
+
+```{r, figures = "Spain_distant_water_(share|timeline)[.]png$"}
+spain <- distant_water_profile("Spain", min_catch = 100)
+```
+
+```{r}
+show_table(spain$areas[, c("area", "adjacent", "first_year", "last_year", "peak_year", "peak_tonnes",
+                           "total_tonnes", "share_of_distant_pct")], n = 20, digits = 1)
+```
+
+Spain borders three FAO areas: the Northeast Atlantic, the Mediterranean and Black Sea, and the
+Eastern Central Atlantic, because of the Canary Islands. Its catch in area 34 is therefore not
+distant-water catch, and `share_of_distant_pct` is empty for it.
+
+How much of the distant-water catch of several countries comes from area 34, over the whole period
+(`share_of_distant_pct`) and over the last five years (`recent_share_pct`), with the
+distant-water share of their marine catch in the last year (`distant_pct_latest`):
+
+```{r}
+others <- c("Russian Federation", "Netherlands (Kingdom of the)", "Japan", "Korea, Republic of")
+profiles <- c(list(China = china, Spain = spain),
+              sapply(others, distant_water_profile, plot = FALSE, table = FALSE, simplify = FALSE))
+area34 <- do.call(rbind, lapply(names(profiles), function(country) {
+  areas <- profiles[[country]]$areas
+  here <- areas$area_en == "Atlantic, Eastern Central"
+  recent <- 100 * areas$last_5_years_tonnes / sum(areas$last_5_years_tonnes[!areas$adjacent])
+  data.frame(country = fao_translate(country, "country", lang = NULL),
+             distant_pct_latest = tail(profiles[[country]]$yearly$distant_pct, 1),
+             area34_adjacent = areas$adjacent[here],
+             area34_first_year = areas$first_year[here],
+             share_of_distant_pct = areas$share_of_distant_pct[here],
+             recent_share_pct = ifelse(areas$adjacent[here], NA, recent[here]))
+}))
+show_table(area34, digits = 1)
+```
+
+### Arguments and results
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `country_name` | The country, as named in the FAO data (e.g. `"China"`, `"Spain"`) | |
+| `top_n` | Number of distant-water areas shown separately; the others are combined | `8` |
+| `min_catch` | An area counts as fished in a year when the country's catch there is above this many tonnes | `0` |
+| `data_version` | The FAO data release to use; see `load_fao_data()` | `"latest"` |
+| `plot`, `table`, `lang`, `pptx`, `label` | Common arguments (see the start of the page); `label` defaults to the country | |
+
+| Element | Content |
+|---|---|
+| `yearly` | Each year: `adjacent_tonnes`, `distant_tonnes`, `distant_pct`, `n_adjacent_areas`, `n_distant_areas` and `n_areas` (areas fished) |
+| `areas` | One row per FAO area fished: `adjacent`, `first_year` and `last_year` with catch above `min_catch`, `n_years`, `peak_year`, `peak_tonnes`, `last_5_years_tonnes`, `total_tonnes` and `share_of_distant_pct` (empty for adjacent areas) |
+| `distant` | Yearly catch in each distant-water area (`top_n` areas, the others combined) |
+
+## 🔁 Revisions between FAO releases
+
+FAO publishes a new release of the Global Capture Production data every year. A release adds the
+latest year and also revises earlier years when countries send corrected or more complete data
+(Garibaldi 2012). Zeller and Pauly (2018) call "presentist bias" the practice of applying
+improvements in reporting to recent years only, without revising the earlier years, which makes a
+time series show an increase that did not happen. `compare_releases()` compares two releases
+record by record and shows which years and countries were revised, and how far back the revisions
+reach.
+
+### Method
+
+A record is the catch of one country, species item and FAO area in one year. Each record of the
+two releases is put in one class:
+
+| Class | Rule |
+|---|---|
+| `revised` | In both releases, with catches that differ by more than `tolerance` (0.5 t, rounding) |
+| `added` | Only in the new release, for a year the older release already covered |
+| `removed` | Only in the older release |
+| `reclassified` | Removed under one species item and added under another with the same country, area, year and catch, e.g. when FAO renames or splits a species item; not counted as a revision |
+| `new year` | In a year after the last year of the older release |
+| `unchanged` | Everything else |
+
+The function then sums the catch of each year in both releases and the revisions by country, and
+counts the records whose status flag changed (e.g. from an estimate to an official figure). The
+releases are compared on the names used by the package, matched through the FAO codes when a
+release is downloaded. No published study has compared successive FishStat releases record by
+record in this way: the comparison is a tool of this package, and the two papers above give the
+background.
+
+### Example
+
+The comparison needs both releases on the computer. The newest release is bundled with the
+package; download older ones with `download_fao_data()` (about 5 MB each, from FAO).
+`check_fao_update()` lists the releases available.
+
+```{r, eval = FALSE}
+check_fao_update()               # releases available from FAO
+download_fao_data("2025.1.0")    # download an older release
+```
+
+```{r, include = FALSE}
+invisible(download_fao_data("2025.1.0", quiet = TRUE))
+```
+
+```{r, figures = TRUE}
+releases <- compare_releases("2025.1.0", "2026.1.0", area_name = "Atlantic, Eastern Central")
+```
+
+The first chart is the total catch of each year in the two releases. The second is the revision of
+each year's total (new minus old release), in thousand tonnes. The third gives the net revision of
+the `top_n` countries with the largest revisions, ranked by the sum of their absolute revisions:
+a country can rank high with a small net revision when its revisions up and down cancel out.
+
+```{r}
+table(releases$records$change)
+show_table(data.frame(tail(releases$by_year, 10), row.names = NULL), digits = 1)
+show_table(releases$by_country[, c("country", "net_change_tonnes", "abs_change_tonnes", "n_records",
+                                   "first_year", "last_year")], digits = 0)
+```
+
+`records` keeps only the records that changed. The largest revisions:
+
+```{r}
+records <- releases$records[order(-abs(releases$records$difference)), ]
+show_table(data.frame(records[, c("country_name", "species_name", "Year", "tonnes_old", "tonnes_new",
+                                  "difference", "change", "status_old", "status_new")], row.names = NULL),
+           digits = 0)
+```
+
+**Reading the results.** Between the two releases, `r sum(releases$records$change == "revised")`
+records of area 34 were revised, `r sum(releases$records$change == "added")` added and
+`r sum(releases$records$change == "removed")` removed. Most of them concern the last ten years
+covered by the older release (`r sum(tail(releases$by_year$n_revised, 10))` of the revised
+records), and the largest revisions are in the last two years. The total catch of
+`r tail(releases$by_year$Year, 1)` went down by
+`r round(-tail(releases$by_year$change_tonnes, 1) / 1000)` thousand tonnes
+(`r round(-tail(releases$by_year$change_pct, 1), 1)`%). The
+`r format(sum(releases$records$change == "reclassified"), big.mark = ",")` reclassified records
+are catches moved from one species item to another, which leave the totals unchanged.
+
+### Other settings
+
+One country, ignoring changes of 100 t or less:
+
+```{r, figures = "_by_year[.]png$"}
+mauritania <- compare_releases("2025.1.0", "2026.1.0", area_name = "Atlantic, Eastern Central",
+                               country_name = "Mauritania", tolerance = 100)
+```
+
+```{r}
+revised <- subset(mauritania$by_year, n_revised + n_added + n_removed > 0)
+show_table(data.frame(revised[, c("Year", "old_tonnes", "new_tonnes", "change_tonnes", "change_pct",
+                                  "n_revised", "n_added", "n_removed", "n_status_changed")], row.names = NULL),
+           digits = 1)
+```
+
+For Mauritania, the revisions up to `r max(revised$Year[abs(revised$change_tonnes) < 1])` moved
+catch between species items and left the yearly totals unchanged; the revisions of the last two
+years lowered the totals by `r sprintf("%.1f", -revised$change_pct[nrow(revised) - 1])`% and
+`r sprintf("%.1f", -revised$change_pct[nrow(revised)])`%. Without `area_name` and `country_name` the
+whole data set is compared; without `old` and `new` the newest release on the computer is
+compared with the one before it.
+
+### Arguments and results
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `old`, `new` | The releases to compare, e.g. `"2025.1.0"` and `"2026.1.0"`, or `"bundled"` for the data bundled with the package | `NULL`: the newest release on the computer for `new`, and the one before it for `old` |
+| `area_name` | FAO fishing areas to compare | `NULL` (all) |
+| `country_name` | Countries to compare | `NULL` (all) |
+| `tolerance` | Changes of at most this many tonnes are ignored | `0.5` |
+| `top_n` | Number of countries with the largest revisions in the country chart | `10` |
+| `data_dir` | Folder where the downloaded releases are stored | `fao_data_dir()` |
+| `plot`, `table`, `lang`, `pptx`, `label` | Common arguments (see the start of the page); `label` defaults to the areas and countries compared | |
+
+| Element | Content |
+|---|---|
+| `by_year` | Each year covered by the older release: `old_tonnes`, `new_tonnes`, `change_tonnes`, `change_pct`, and the numbers of records `n_revised`, `n_added`, `n_removed`, `n_reclassified` and `n_status_changed` |
+| `by_country` | Revisions by country, without reclassified records: `net_change_tonnes`, `abs_change_tonnes`, `n_records`, `first_year` and `last_year` |
+| `records` | Every revised, added, removed or reclassified record: `tonnes_old`, `tonnes_new`, `status_old`, `status_new`, `difference`, `change` and `status_changed` |
+| `releases` | The two releases compared |
+
+::: callout-note
+- Recent years are revised most, because their figures are often provisional or estimated when
+  first published (see `data_quality()` in [🔍 Data quality, diversity and fleets](quality-diversity-fleets.html)).
+- A record counts as reclassified only when the same catch moves to another species item. When
+  FAO splits one item into several with different catches, the change shows as records removed
+  and added.
+- Revisions show what FAO changed, not which release is right.
+:::
+
+## 📖 References
+
+Carlson, S.M. and Satterthwaite, W.H. (2011). Weakened portfolio effect in a collapsed salmon
+population complex. *Canadian Journal of Fisheries and Aquatic Sciences* 68: 1579–1589.
+[doi:10.1139/f2011-084](https://doi.org/10.1139/f2011-084)
+
+Cottrell, R.S., Nash, K.L., Halpern, B.S., Remenyi, T.A., Corney, S.P., Fleming, A., Fulton,
+E.A., Hornborg, S., Johne, A., Watson, R.A. and Blanchard, J.L. (2019). Food production shocks
+across land and sea. *Nature Sustainability* 2: 130–137.
+[doi:10.1038/s41893-018-0210-1](https://doi.org/10.1038/s41893-018-0210-1)
+
+FAO (2024). *The State of World Fisheries and Aquaculture 2024. Blue Transformation in action*.
+Rome: FAO. [doi:10.4060/cd0683en](https://doi.org/10.4060/cd0683en)
+
+Garibaldi, L. (2012). The FAO global capture production database: a six-decade effort to catch
+the trend. *Marine Policy* 36: 760–768.
+[doi:10.1016/j.marpol.2011.10.024](https://doi.org/10.1016/j.marpol.2011.10.024)
+
+Garibaldi, L. and Limongelli, L. (2003). *Trends in oceanic captures and clustering of large
+marine ecosystems: two studies based on the FAO capture database*. FAO Fisheries Technical Paper
+435. Rome: FAO. [https://www.fao.org/4/y4449e/y4449e00.htm](https://www.fao.org/4/y4449e/y4449e00.htm)
+
+Gephart, J.A., Deutsch, L., Pace, M.L., Troell, M. and Seekell, D.A. (2017). Shocks to fish
+production: identification, trends, and consequences. *Global Environmental Change* 42: 24–32.
+[doi:10.1016/j.gloenvcha.2016.11.003](https://doi.org/10.1016/j.gloenvcha.2016.11.003)
+
+Grainger, R.J.R. and Garcia, S.M. (1996). *Chronicles of marine fishery landings (1950-1994):
+trend analysis and fisheries potential*. FAO Fisheries Technical Paper 359. Rome: FAO.
+[https://www.fao.org/4/w3244e/w3244e00.htm](https://www.fao.org/4/w3244e/w3244e00.htm)
+
+Lepš, J., Götzenberger, L., Valencia, E. and de Bello, F. (2019). Accounting for long-term
+directional trends on year-to-year synchrony in species fluctuations. *Ecography* 42: 1728–1741.
+[doi:10.1111/ecog.04528](https://doi.org/10.1111/ecog.04528)
+
+Loreau, M. and de Mazancourt, C. (2008). Species synchrony and its drivers: neutral and
+nonneutral community dynamics in fluctuating environments. *The American Naturalist* 172:
+E48–E66. [doi:10.1086/589746](https://doi.org/10.1086/589746)
+
+Mullon, C., Fréon, P. and Cury, P. (2005). The dynamics of collapse in world fisheries. *Fish and
+Fisheries* 6: 111–120.
+[doi:10.1111/j.1467-2979.2005.00181.x](https://doi.org/10.1111/j.1467-2979.2005.00181.x)
+
+Ong, J.J.L., Walter, J.A., Jensen, O.P. and Pinsky, M.L. (2021). Global hotspots of coherent
+marine fishery catches. *Ecological Applications* 31: e02321.
+[doi:10.1002/eap.2321](https://doi.org/10.1002/eap.2321)
+
+Swartz, W., Sala, E., Tracey, S., Watson, R. and Pauly, D. (2010). The spatial expansion and
+ecological footprint of fisheries (1950 to present). *PLoS ONE* 5: e15143.
+[doi:10.1371/journal.pone.0015143](https://doi.org/10.1371/journal.pone.0015143)
+
+Thibaut, L.M. and Connolly, S.R. (2013). Understanding diversity–stability relationships:
+towards a unified model of portfolio effects. *Ecology Letters* 16: 140–150.
+[doi:10.1111/ele.12019](https://doi.org/10.1111/ele.12019)
+
+Wilberg, M.J. and Miller, T.J. (2007). Comment on "Impacts of biodiversity loss on ocean
+ecosystem services". *Science* 316: 1285.
+[doi:10.1126/science.1137946](https://doi.org/10.1126/science.1137946)
+
+Worm, B., Barbier, E.B., Beaumont, N., Duffy, J.E., Folke, C., Halpern, B.S., Jackson, J.B.C.,
+Lotze, H.K., Micheli, F., Palumbi, S.R., Sala, E., Selkoe, K.A., Stachowicz, J.J. and Watson, R.
+(2006). Impacts of biodiversity loss on ocean ecosystem services. *Science* 314: 787–790.
+[doi:10.1126/science.1132294](https://doi.org/10.1126/science.1132294)
+
+Zeller, D. and Pauly, D. (2018). The 'presentist bias' in time-series data: implications for
+fisheries science and policy. *Marine Policy* 90: 14–19.
+[doi:10.1016/j.marpol.2018.01.015](https://doi.org/10.1016/j.marpol.2018.01.015)

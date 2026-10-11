@@ -1,8 +1,9 @@
 ---
 title: "📈 Composition, stock status and trends"
 description: >
-  species_group_composition(), stock_status(), peak_trend(), area_overview(), regime_shift() and
-  pelagic_demersal(): what is caught, how the stocks have developed, and when things changed.
+  species_group_composition(), stock_status(), peak_trend(), area_overview(), regime_shift(),
+  pelagic_demersal() and fao_pd_groups(): what is caught, how the stocks have developed, and when
+  things changed.
 ---
 
 ```{r setup, include = FALSE}
@@ -17,24 +18,42 @@ data_source()
 The summary analyses take any catch data: a fishing area from `fishing_area_data()`, or any subset
 of `load_fao_data()` (see [💾 FAO data](data.html)). Their charts are saved in
 `figures/png/summary/` and their tables in `tables/`, with the name of the area at the start of the
-file names (or `label`).
+file names (or `label`). Each function also returns its results invisibly, so they can be assigned
+and used in R.
 
 ```{r, eval = FALSE}
 FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 ```
 
+## ⚙️ Common arguments {#common-arguments}
+
+Most functions of this article share these arguments; the tables of each function list only its
+own arguments.
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `area_data` | FAO catch data: `fishing_area_data()$area_data`, or any subset of `load_fao_data()` (e.g. one country, or several fishing areas) | required |
+| `plot` | Save the charts in `figures/png/summary/` | `TRUE` |
+| `table` | Save the tables in `tables/` | `TRUE` |
+| `lang` | Language of the chart text and names: `"en"`, `"zh"` or `"both"` | `NULL`: the language of `fao_settings()` (`"en"` unless changed) |
+| `pptx` | Also save the charts as editable PowerPoint files in `figures/pptx/summary/` | `FALSE`; `fao_settings(pptx = TRUE)` changes it for all functions |
+| `label` | Name at the start of the output file names | `NULL`: the fishing area of the data (or its country; `"selected_data"` for several areas and countries) |
+
 ## 🧺 Species group composition
 
 `species_group_composition()` sums the catch by **ISSCAAP species group** (the FAO
 classification of species into about 50 groups, such as "Herrings, sardines, anchovies") or by
-**major group** (fishes, crustaceans, molluscs, ...).
+**major group** (fishes, crustaceans, molluscs, ...). FAO gives no Chinese names for the groups;
+the Chinese names used are unofficial translations.
 
 ```{r, figures = TRUE}
 groups <- species_group_composition(FAO34$area_data)
 ```
 
 The first chart shows the catch of each group, the second its share of the yearly catch. The
-`top_n` largest groups are shown separately (default 8), the others combined:
+`top_n` largest groups are shown separately, the others combined. The table gives the mean yearly
+catch of each decade, the catch of each of the last five years and the share of each group in the
+last year (tonnes and %):
 
 ```{r}
 show_table(groups$table, digits = 0)
@@ -46,8 +65,12 @@ species_group_composition(FAO34$area_data, group = "major", lang = "zh")
 
 | Argument | Meaning | Default |
 |---|---|---|
-| `group` | `"isscaap"` or `"major"` | `"isscaap"` |
-| `top_n` | Number of groups shown separately | `8` |
+| `group` | `"isscaap"` (ISSCAAP species groups) or `"major"` (major groups) | `"isscaap"` |
+| `top_n` | Number of groups shown separately; the others are combined | `8` |
+| `area_data`, `plot`, `table`, `lang`, `pptx`, `label` | See [Common arguments](#common-arguments) | |
+
+Output: `<label>_group_isscaap.png` (or `_group_major`) and `..._share.png`, and the table
+`<label>_group_isscaap.csv`; the function returns `yearly` (catch by group and year) and `table`.
 
 ## 🚦 Stock status plots
 
@@ -67,16 +90,17 @@ status <- stock_status(FAO34$area_data)
 ```
 
 The first chart is the share of **stocks** in each status, the second the share of the **catch**.
-A "stock" here is one species item in the data (all countries together). Only series that meet
-the inclusion criteria are classified:
+A "stock" here is one species item in the data (all countries together), and years after the last
+reported catch count as zero catch. Only series that meet the inclusion criteria are classified:
 
-| Argument | Criterion | Default |
+| Argument | Meaning | Default |
 |---|---|---|
-| `taxon_levels` | Items identified to species, genus or family (pooled groups such as "Marine fishes nei" are left out) | `c("species", "genus", "family")` |
-| `min_years` | Years from the first to the last catch | `10` |
-| `min_consecutive` | Consecutive years with catch | `5` |
-| `min_catch` | Total catch (t) | `1000` |
-| `smooth` | 3-year running mean before classifying | `FALSE` |
+| `taxon_levels` | Taxonomic levels of the items included: any of `"species"`, `"genus"`, `"family"` and `"higher"` (pooled groups such as "Marine fishes nei" are `"higher"`) | `c("species", "genus", "family")` |
+| `min_years` | Minimum number of years from the first to the last year with catch | `10` |
+| `min_consecutive` | Minimum number of consecutive years with catch | `5` |
+| `min_catch` | Minimum total catch of a series (tonnes) | `1000` |
+| `smooth` | Smooth the catch with a 3-year running mean before classifying | `FALSE` |
+| `area_data`, `plot`, `table`, `lang`, `pptx`, `label` | See [Common arguments](#common-arguments) | |
 
 The table of stocks gives the peak year and the status of each stock in the last year:
 
@@ -90,6 +114,11 @@ table(status$stocks$status_last_year)
 stock_status(FAO34$area_data, smooth = TRUE, min_catch = 10000, label = "FAO34 smoothed")
 ```
 
+Output: `<label>_stock_status_stocks.png` and `<label>_stock_status_catch.png`, and the tables
+`<label>_stock_status.csv` (stocks and catch by status and year) and
+`<label>_stock_status_stocks.csv`; the function returns `yearly`, `stocks` and `status` (the
+status of each stock in each year).
+
 ::: callout-note
 Stock status plots use catch data only. A falling catch can also come from management,
 markets or reporting, so the results are indicative and do not replace stock assessments.
@@ -101,9 +130,11 @@ markets or reporting, so the results are indicative and do not replace stock ass
 size of the **peak catch**, the catch in the last year as a **percentage of the peak**, and the
 trend over the last `recent_years` years:
 
-- **growth rate**: the average yearly change between the first and last of these years;
-- **trend**: a Mann-Kendall test (Kendall's τ between year and catch); "increasing" or
-  "decreasing" when p < 0.05.
+- **growth rate** (`growth_pct_per_year`): the average yearly growth between the first and the
+  last of these years, $100\,[(C_n/C_1)^{1/(n-1)} - 1]$, with $C_1$ and $C_n$ the catch of the
+  first and the last of the $n$ years;
+- **trend**: a Mann-Kendall test (Mann 1945; Kendall 1975), Kendall's τ between year and catch;
+  `trend` is `"up"` or `"down"` when p < 0.05, otherwise `"none"`.
 
 ```{r, figures = TRUE}
 species_trend <- peak_trend(FAO34$area_data, by = "species", top_n = 10)
@@ -119,14 +150,18 @@ peak_trend(FAO34$area_data, by = "country", top_n = 15, recent_years = 20, lang 
 
 | Argument | Meaning | Default |
 |---|---|---|
-| `by` | `"species"`, `"country"` or `"area"` | `"species"` |
-| `top_n` | Number of series (`Inf` for all) | `10` |
-| `recent_years` | Years used for the trend | `10` |
+| `by` | What to compare: `"species"`, `"country"` or `"area"` | `"species"` |
+| `top_n` | Number of series with the largest total catch (`Inf` for all) | `10` |
+| `recent_years` | Number of most recent years used for the trend | `10` |
+| `area_data`, `plot`, `table`, `lang`, `pptx`, `label` | See [Common arguments](#common-arguments) | |
+
+Output: `<label>_peak_trend_species.png` (or `_country`, `_area`) and the table with the same
+name; the function returns a data frame with one row per series, the total first.
 
 ## 🌍 All FAO marine areas
 
 `area_overview()` compares all FAO marine fishing areas: the catch of each area over time with its
-peak, and the peak and trend chart for the areas:
+peak, and the peak and trend chart of `peak_trend(by = "area")` for the areas:
 
 ```{r, figures = TRUE}
 overview <- area_overview()
@@ -136,10 +171,23 @@ overview <- area_overview()
 show_table(overview[, c("name", "peak_year", "peak_tonnes", "last_year_tonnes", "pct_of_peak", "trend")], n = 20, digits = 0)
 ```
 
+| Argument | Meaning | Default |
+|---|---|---|
+| `recent_years` | Number of most recent years used for the trend | `10` |
+| `data_version` | FAO data release to use (see `load_fao_data()`) | `"latest"` |
+| `plot`, `table`, `lang`, `pptx` | See [Common arguments](#common-arguments) | |
+
+`area_overview()` reads the FAO data itself, so it has no `area_data` or `label`. Output:
+`marine_areas_catch.png`, `marine_areas_peak_trend_area.png` and the table
+`marine_areas_peak_trend_area.csv`; the function returns the data frame of `peak_trend()`.
+
 ## 🔀 Synchronous breakpoints
 
-`regime_shift()` runs the breakpoint analysis on the main species (default 20) and counts how many
-species change their mean catch in each year. Years when many species change together may point
+`regime_shift()` runs a breakpoint analysis on the catch series of the main species (all species
+items, including "nei" groups) and counts how many species change their mean catch in each year.
+Each series is split where its mean changes (`strucchange::breakpoints()`, Bai and Perron 2003;
+Zeileis et al. 2002, 2003), with the number of breakpoints chosen by BIC; the year of a
+breakpoint is the first year of the new period. Years when many species change together may point
 to an ecosystem-wide regime shift, or to changes in management or reporting.
 
 ```{r, figures = TRUE}
@@ -153,15 +201,23 @@ head(shifts$yearly[order(-shifts$yearly$n_species), ], 5)
 
 | Argument | Meaning | Default |
 |---|---|---|
-| `top_n` | Number of main species analysed | `20` |
-| `h_value` | Minimum period length (fraction or years) | `0.15` |
+| `top_n` | Number of species with the largest total catch that are analysed | `20` |
+| `h_value` | Minimum length of a period between breakpoints: a fraction of the series length or a number of years | `0.15` |
+| `area_data`, `plot`, `table`, `lang`, `pptx`, `label` | See [Common arguments](#common-arguments) | |
+
+Species whose series is too short for `h_value` are skipped with a message. Output:
+`<label>_regime_shift.png` (number of species with a breakpoint in each year),
+`<label>_regime_shift_species.png` (breakpoints of each species), and the tables
+`<label>_regime_shift.csv` and `<label>_regime_shift_years.csv`; the function returns
+`breakpoints` and `yearly`.
 
 ## 🐟 Pelagic/demersal ratio
 
 `pelagic_demersal()` divides the catch of pelagic fishes by the catch of demersal fishes (P/D) in
 each FAO marine area, by year and by decade. Caddy (1993) proposed that nutrient enrichment
 favours short-lived plankton-feeding pelagic fishes over demersal fishes, and de Leiva Moreno
-et al. (2000) used P/D as a proxy for the nutrient level of the seas around Europe.
+et al. (2000) used P/D as a proxy for the nutrient level of the seas around Europe. The ratio of a
+decade is the mean of its yearly ratios (as Hondorp et al. 2010), with the lowest and the highest.
 
 ```{r, figures = "pelagic_demersal_ratio"}
 pd <- pelagic_demersal(FAO34$area_data)
@@ -173,43 +229,102 @@ show_table(pd$groups[, c("group", "counted_as", "catch_pct")], n = 12)
 ```
 
 The FAO data give each species an ISSCAAP species group, so the function counts groups.
-`fao_pd_groups()` shows how each group is counted by the two published definitions:
+`fao_pd_groups()` shows how each group is counted by the two published definitions (it has no
+arguments):
 
 | `definition` | Pelagic | Demersal |
 |---|---|---|
-| `"de_leiva_moreno"` (default) | Herrings, sardines, anchovies (small pelagics) | Flounders, cods and hakes, miscellaneous coastal and demersal fishes, marine crustaceans |
-| `"grainger_garcia"` | Small pelagics, tunas and billfishes, miscellaneous pelagic fishes | Flounders, cods and hakes, miscellaneous coastal and demersal fishes, sharks and rays, unidentified marine fishes |
+| `"de_leiva_moreno"` (default) | Herrings, sardines, anchovies (small pelagics) | Flounders, cods and hakes, miscellaneous coastal and demersal fishes, marine crustaceans except krill |
+| `"grainger_garcia"` (Grainger and Garcia 1996) | Small pelagics, tunas and billfishes, miscellaneous pelagic fishes | Flounders, cods and hakes, miscellaneous coastal and demersal fishes, sharks and rays, unidentified marine fishes |
+
+```{r}
+show_table(fao_pd_groups(), n = 15)
+```
 
 Your own groups can be given with `pelagic = ...` and `demersal = ...`. The published studies
 classed each species rather than ISSCAAP groups, so their values (below 1 in oligotrophic seas,
 about 1 to 3.5 in mesotrophic and about 6 to 20 in eutrophic seas, in de Leiva Moreno et al.
 2000) are only roughly comparable. P/D also changes with fishing and markets (demersal fishes
-are in higher demand), hypoxia, the natural variability of small pelagics and reporting; see
-`?pelagic_demersal`. In area 34, the large catch of small pelagics in upwelling waters keeps
-P/D high.
+are in higher demand; Caddy et al. 1998), hypoxia (Hondorp et al. 2010), the natural variability
+of small pelagics and reporting; see `?pelagic_demersal`. In area 34, the large catch of small
+pelagics in upwelling waters keeps P/D high.
 
 | Argument | Meaning | Default |
 |---|---|---|
-| `definition` | Groups counted as pelagic and demersal | `"de_leiva_moreno"` |
-| `pelagic`, `demersal` | Your own ISSCAAP groups instead | `NULL` |
+| `definition` | Groups counted as pelagic and demersal: `"de_leiva_moreno"` or `"grainger_garcia"` | `"de_leiva_moreno"` |
+| `pelagic`, `demersal` | Your own ISSCAAP groups (English names as in the FAO data, e.g. `"Herrings, sardines, anchovies"`) instead of those of `definition` | `NULL` |
+| `area_data`, `plot`, `table`, `lang`, `pptx`, `label` | See [Common arguments](#common-arguments) | |
+
+Inland areas are left out with a message. Output: `<label>_pelagic_demersal_ratio.png` (P/D by
+year, one panel per area), `<label>_pelagic_demersal.png` and `..._share.png` (pelagic,
+demersal and other catch), and the tables `<label>_pelagic_demersal.csv`, `..._decades.csv` and
+`..._groups.csv`; the function returns `yearly`, `decades` and `groups`.
+
+## 📝 In the Word report
+
+`fao_report()` writes these analyses into the Word report of a fishing area (see
+[📝 Assessment report in Word](report.html)). The ISSCAAP groups (`groups = TRUE`) and the stock
+status plots (`status = TRUE`) are sections by default; the pelagic/demersal ratio is added with
+`pelagic = TRUE`. The settings of a function are given with the section name as prefix, e.g.
+`status_smooth = TRUE` is `smooth = TRUE` of `stock_status()`:
+
+```{r, eval = FALSE}
+fao_report(34, pelagic = TRUE, status_smooth = TRUE, pelagic_definition = "grainger_garcia")
+```
+
+`peak_trend()` gives the trends in the tables of the main species and countries of the report;
+`area_overview()` and `regime_shift()` are not part of it.
 
 ## 📖 References
+
+```{r references-release, include = FALSE}
+release_info <- fao_data_info()
+```
+
+Bai, J. and Perron, P. (2003). Computation and analysis of multiple structural change models.
+*Journal of Applied Econometrics* 18: 1–22. [doi:10.1002/jae.659](https://doi.org/10.1002/jae.659)
 
 Caddy, J.F. (1993). Toward a comparative evaluation of human impacts on fishery ecosystems of
 enclosed and semi-enclosed seas. *Reviews in Fisheries Science* 1: 57–95.
 [doi:10.1080/10641269309388535](https://doi.org/10.1080/10641269309388535)
+
+Caddy, J.F., Carocci, F. and Coppola, S. (1998). Have peak fishery production levels been passed
+in continental shelf area? Some perspectives arising from historical trends in production per
+shelf area. *Journal of Northwest Atlantic Fishery Science* 23: 191–219.
+[doi:10.2960/J.v23.a13](https://doi.org/10.2960/J.v23.a13)
 
 de Leiva Moreno, J.I., Agostini, V.N., Caddy, J.F. and Carocci, F. (2000). Is the pelagic-demersal
 ratio from fishery landings a useful proxy for nutrient availability? A preliminary data
 exploration for the semi-enclosed seas around Europe. *ICES Journal of Marine Science* 57:
 1091–1102. [doi:10.1006/jmsc.2000.0705](https://doi.org/10.1006/jmsc.2000.0705)
 
-Grainger, R.J.R. and Garcia, S.M. (1996). *Chronicles of marine fishery landings (1950-1994):
+FAO (`r sub("[.].*", "", release_info$release)`). *Global Capture Production
+`r release_info$years[1]`–`r release_info$years[2]`*, release `r release_info$release`. In:
+Fisheries and Aquaculture. Rome: FAO. <https://www.fao.org/fishery/collection/capture/en>.
+Licence: CC BY 4.0. Release file: <`r release_info$url`>
+
+Grainger, R.J.R. and Garcia, S.M. (1996). *Chronicles of marine fishery landings (1950–1994):
 trend analysis and fisheries potential*. FAO Fisheries Technical Paper 359. Rome: FAO.
+<https://www.fao.org/4/w3244e/w3244e00.htm>
+
+Hondorp, D.W., Breitburg, D.L. and Davias, L.A. (2010). Eutrophication and fisheries: separating
+the effects of nitrogen loads and hypoxia on the pelagic-to-demersal ratio and other measures of
+landings composition. *Marine and Coastal Fisheries* 2: 339–361.
+[doi:10.1577/C09-020.1](https://doi.org/10.1577/C09-020.1)
+
+Kendall, M.G. (1975). *Rank correlation methods*, 4th edition. London: Charles Griffin.
 
 Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global catch data for inferences
 on the world's marine fisheries. *Fish and Fisheries* 14: 293–311.
 [doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
 
+Mann, H.B. (1945). Nonparametric tests against trend. *Econometrica* 13: 245–259.
+[doi:10.2307/1907187](https://doi.org/10.2307/1907187)
+
+Zeileis, A., Leisch, F., Hornik, K. and Kleiber, C. (2002). strucchange: an R package for
+testing for structural change in linear regression models. *Journal of Statistical Software*
+7(2): 1–38. [doi:10.18637/jss.v007.i02](https://doi.org/10.18637/jss.v007.i02)
+
 Zeileis, A., Kleiber, C., Krämer, W. and Hornik, K. (2003). Testing and dating of structural
 changes in practice. *Computational Statistics & Data Analysis* 44: 109–123.
+[doi:10.1016/S0167-9473(03)00030-6](https://doi.org/10.1016/S0167-9473(03)00030-6)

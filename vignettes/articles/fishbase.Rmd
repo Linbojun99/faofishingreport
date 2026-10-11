@@ -1,0 +1,554 @@
+---
+title: "🐠 FishBase and SeaLifeBase traits"
+description: >
+  check_fishbase_update(), download_fishbase_data(), fishbase_table(), fishbase_match() and
+  fishbase_sources(): species traits from FishBase and SeaLifeBase, how they are matched to the
+  FAO species items, and how the mean temperature of the catch and the CMSY++ priors use them.
+---
+
+```{r setup, include = FALSE}
+source("_setup.R")
+FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+```
+
+```{r data-source, echo = FALSE, results = "asis"}
+data_source()
+```
+
+The FAO capture statistics give the catch of each species item, with its English and scientific
+name from the ASFIS list, but nothing about its biology. FishBase (fishes) and SeaLifeBase (other
+aquatic animals and plants) give these traits: trophic level, preferred temperature, habitat,
+maximum length, vulnerability to fishing, resilience and prior r. The package uses them in two
+places: the preferred temperature for the [mean temperature of the catch](sst-mtc.html), and the
+resilience and prior r for the [CMSY++ priors](cmsy.html).
+
+The data come from fixed copies (releases) of the FishBase and SeaLifeBase tables, which the
+rfishbase project publishes as parquet files (Boettiger et al. 2012). The package matches them to
+the FAO species items only by published rules, and every match carries the links needed to check
+it.
+
+| Function | What it does | Internet |
+|---|---|---|
+| `check_fishbase_update()` | Lists the newest release online and the releases downloaded | Yes |
+| `download_fishbase_data()` | Downloads the tables of a release | Yes |
+| `fishbase_table()` | Reads one table of a release | Only if the table has not been downloaded |
+| `fishbase_match()` | Matches the FAO species items to FishBase and SeaLifeBase | No with `version = "builtin"` or a downloaded release |
+| `fishbase_sources()` | Lists sources, licences, tables and matching rules | No |
+
+## 📦 Releases, folders and the built-in table {#releases}
+
+A release is named by its year and month, e.g. `"26.06"` (June 2026). Releases are fixed
+snapshots, so a table downloaded once is identical to the one online. They are published at
+<https://data.source.coop/cboettig/fishbase/>, and the package saves the tables it downloads in the
+`fishbase` folder of `fao_data_dir()`:
+
+| Path in `fao_data_dir()` | Content |
+|---|---|
+| `fishbase/fb/<release>/<table>.parquet` | FishBase tables, e.g. `fishbase/fb/26.06/estimate.parquet` |
+| `fishbase/slb/<release>/<table>.parquet` | SeaLifeBase tables |
+| `fishbase/fb/<release>/files.csv` (and `slb/`) | URL, size and download date of each table |
+| `fishbase/corrections.csv` | Your corrections of matches (see [Check and correct the matches](#corrections)) |
+| `fishbase/worms_lookup.csv` | Names looked up in WoRMS, reused when the computer is offline |
+
+`fao_data_dir()` is the user data folder of R unless it is changed with
+`fao_settings(data_dir = ...)`, for example to a folder shared by a team. Each function also has
+a `data_dir` argument. Reading the parquet files needs the nanoparquet package, which is
+installed with faofishingreport.
+
+The `version` argument chooses the release:
+
+| `version` | Release used |
+|---|---|
+| `"latest"` (default) | Online: the newest release online; its tables are downloaded the first time they are needed. Offline, or with `fao_settings(online = FALSE)`: the newest downloaded release, with a message. Offline with nothing downloaded: `fishbase_match()` uses the built-in table; `fishbase_table()` stops with an error |
+| A release, e.g. `"26.06"` | This release, downloaded if needed |
+| `"builtin"` | The built-in table, without connecting to the internet (`fishbase_match()` and the functions that call it) |
+
+### The built-in table
+
+The package includes the result of `fishbase_match()` for every species item of the FAO data
+bundled with the package, without manual corrections. It is the file
+`inst/extdata/fishbase_traits.rda`, made by `data-raw/build_fishbase_traits.R`, and its
+attributes give the releases it was made from:
+
+```{r}
+load(system.file("extdata", "fishbase_traits.rda", package = "faofishingreport"))
+attr(fishbase_traits, "fishbase_version")   # FishBase and SeaLifeBase releases
+attr(fishbase_traits, "fao_release")        # FAO release whose species items were matched
+attr(fishbase_traits, "built")              # date the table was made
+nrow(fishbase_traits)
+table(fishbase_traits$match_type)
+```
+
+With `version = "builtin"` nothing is downloaded and the results are the same on every computer.
+This article uses it, so the website can be built without downloads. Items that are not in the
+built-in table, such as new items of a later FAO release, are marked as "pending online check".
+`version = "latest"` gives the values of the newest release, which can differ slightly once
+FishBase publishes a new one.
+
+::: callout-note
+**Licence.** FishBase and SeaLifeBase data are licensed
+[CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) by the FishBase.org team: they
+can be used with attribution, but not for commercial purposes. Cite FishBase (Froese and Pauly,
+Eds.) and SeaLifeBase (Palomares and Pauly, Eds.) with the release used. The same licence applies
+to the built-in table and to the trait values in the results of these functions. Valid names
+from WoRMS are licensed CC BY. `fishbase_sources()` lists every source.
+:::
+
+## 🔄 Check for new releases: check_fishbase_update()
+
+`check_fishbase_update()` lists the releases published online and compares the newest with the
+releases downloaded on this computer. It contacts the data server, so it is not run here. On a
+computer where nothing has been downloaded yet, it prints:
+
+```{r, eval = FALSE}
+check_fishbase_update()
+#> FishBase
+#>   Latest online release: 26.06 (222 tables)
+#>   Downloaded locally:    none
+#>   Run download_fishbase_data("fishbase") to download the latest release (or the tables of it that are missing).
+#> SeaLifeBase
+#>   Latest online release: 26.06 (202 tables)
+#>   Downloaded locally:    none
+#>   Run download_fishbase_data("sealifebase") to download the latest release (or the tables of it that are missing).
+```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `server` | `"fishbase"`, `"sealifebase"` or both | both |
+| `data_dir` | Folder where downloaded data is stored | `fao_data_dir()` |
+| `quiet` | If `TRUE`, no message is printed | `FALSE` |
+
+It returns, invisibly, a data frame with one row per database:
+
+| Column | Meaning |
+|---|---|
+| `server` | `"fishbase"` or `"sealifebase"` |
+| `latest_online` | Newest release online (`NA` when offline) |
+| `newest_local` | Newest release downloaded (`NA` if none) |
+| `tables_online` | Number of tables in the newest online release |
+| `tables_local` | Number of tables downloaded of the newest local release |
+| `update_available` | `TRUE` when a newer release is online, or when the newest release is downloaded but not all of its tables |
+
+Because of the second condition, `update_available` stays `TRUE` after the default download of
+six tables (next section). To see whether a newer release exists, compare `latest_online` with
+`newest_local`.
+
+## ⬇️ Download a release: download_fishbase_data()
+
+`download_fishbase_data()` downloads the tables of a FishBase and/or SeaLifeBase release to
+`data_dir`, so they can be used offline. Downloading beforehand is optional: with
+`version = "latest"`, `fishbase_match()` and `mean_temperature_catch()` download the four tables
+they need the first time they run (about 23 MB for both databases with release 26.06).
+Download beforehand to work offline later, to keep one release for a whole project, or to get
+every table.
+
+```{r, eval = FALSE}
+download_fishbase_data()                              # the six tables the package uses, both databases
+download_fishbase_data(tables = "all")                # every table of FishBase and SeaLifeBase
+download_fishbase_data("fishbase", tables = c("species", "estimate"))
+download_fishbase_data(version = "25.04")             # an earlier release
+```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `server` | `"fishbase"`, `"sealifebase"` or both | both |
+| `version` | The release to download, e.g. `"26.06"`. A release that is not online gives an error listing the releases that are | `"latest"` |
+| `tables` | `"needed"` for the six tables the package uses, `"all"` for every table, or table names, e.g. `c("species", "estimate")` | `"needed"` |
+| `data_dir` | Folder where the tables are saved | `fao_data_dir()` |
+| `overwrite` | If `TRUE`, tables already downloaded are downloaded again | `FALSE` |
+| `quiet` | If `TRUE`, progress messages are not printed | `FALSE` |
+
+Sizes of release 26.06:
+
+| Tables | FishBase | SeaLifeBase |
+|---|---|---|
+| `tables = "needed"` (6 tables) | 15.8 MB | 13.2 MB |
+| The 4 tables used by `fishbase_match()` | 12.6 MB | 10.3 MB |
+| `tables = "all"` | 222 tables, about 140 MB | 202 tables, about 108 MB |
+
+The six tables of `tables = "needed"`:
+
+| Table | Content | Used by |
+|---|---|---|
+| `species` | Genus, species, family code, habitat (`DemersPelag`), maximum length (`Length`), vulnerability to fishing (`Vulnerability`) | `fishbase_match()` |
+| `estimate` | Trophic level (`Troph`, `seTroph`), preferred temperature (`TempPrefMean`), prior r (`prior_r`, `lcl_r`, `ucl_r`) | `fishbase_match()`; the built-in CMSY++ prior table |
+| `families` | Family, order, class and phylum | `fishbase_match()` |
+| `synonyms` | Other names of each species with their status (accepted name, synonym, misapplied name, ambiguous synonym) | `fishbase_match()` |
+| `stocks` | Resilience (High, Medium, Low, Very low) | the built-in CMSY++ prior table |
+| `faoareas` | Occurrence of each species by FAO major fishing area | |
+
+Before downloading, the function prints what it will download, from where, under which licence
+and to which folder. Each table is first written as a `.part` file and renamed when it is
+complete. Tables already downloaded (with the same size as online) are skipped, so an interrupted
+download continues when the function is run again; tables that fail give a warning.
+
+It returns, invisibly, a data frame with one row per table: `server`, `version`, `table`, `size`
+(bytes) and `status` (`"downloaded"`, `"already downloaded"` or `"failed"`).
+
+## 📋 Read a table: fishbase_table()
+
+`fishbase_table()` returns one table of FishBase or SeaLifeBase as a data frame, read from the
+copy on this computer. When the computer is online, it first looks up the newest release and
+downloads the table if it is not there yet. When it is offline, or with
+`fao_settings(online = FALSE)`, it uses the newest downloaded release that has the table, and
+says so. It is not run here, since it needs downloaded tables; the output shown is that of
+release 26.06:
+
+```{r, eval = FALSE}
+estimate <- fishbase_table("estimate")
+#> Using FishBase release 26.06 (the latest online release).
+attr(estimate, "fishbase_version")
+#> [1] "26.06"
+# European pilchard (Sardina pilchardus) is SpecCode 1350 in FishBase
+estimate[estimate$SpecCode == 1350, c("SpecCode", "Troph", "seTroph", "TempPrefMean", "prior_r", "lcl_r", "ucl_r")]
+#>      SpecCode Troph seTroph TempPrefMean   prior_r     lcl_r     ucl_r
+#> 1243     1350  3.06     0.1         10.3 0.6281019 0.4145473 0.9421529
+
+slb_species <- fishbase_table("species", server = "sealifebase", version = "26.06")
+```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `table` | The table name, e.g. `"species"`, `"estimate"`, `"ecology"`, `"synonyms"` or `"families"` | (required) |
+| `server` | `"fishbase"` or `"sealifebase"` | `"fishbase"` |
+| `version` | The release, e.g. `"26.06"` | `"latest"` |
+| `data_dir` | Folder where downloaded data is stored | `fao_data_dir()` |
+
+It returns the whole table, with every column (the FishBase 26.06 `estimate` table has 36,761
+rows and 70 columns), and three attributes: `fishbase_server`, `fishbase_version` and
+`source_url`, the address of the parquet file. A table that has been read is kept in memory for
+the rest of the R session. `check_fishbase_update()` shows how many tables a release has; the
+[rfishbase documentation](https://docs.ropensci.org/rfishbase/) describes what they contain.
+
+## 🔗 Match the FAO species items: fishbase_match()
+
+`fishbase_match()` goes through the FAO species items of the data one by one. It looks each up
+in FishBase or SeaLifeBase by its scientific name in the FAO species list, and returns the matched
+record with its trophic level, preferred temperature, habitat, maximum length and vulnerability
+to fishing. Each row gives the rule used and its source, and links to the FishBase, SeaLifeBase
+or WoRMS pages, so that the match can be checked. Items that no rule matches are left empty and
+marked as failed, with links for searching the name online.
+
+```{r, message = TRUE}
+fb34 <- fishbase_match(FAO34$area_data, version = "builtin", corrections = FALSE)
+```
+
+`corrections = FALSE` leaves out any corrections saved on this computer, so the example gives
+the same result everywhere. The items are sorted by catch, so the first rows cover most of it:
+
+```{r}
+main <- head(fb34, 15)
+main$page <- ifelse(is.na(main$url), "", paste0("[open](", main$url, ")"))
+show_table(main[, c("species_name", "fao_scientific_name", "catch_pct", "match_type", "database",
+                    "temp_pref_mean", "trophic_level", "page")], n = 15)
+```
+
+Species found under their FAO name (`exact`) get all values. Items above species level, such as
+"Jack and horse mackerels nei" (*Trachurus* spp), get the mean trophic level of their genus or
+family but no preferred temperature. "Marine fishes nei" has no values: its FAO name,
+Actinopterygii, is not found in FishBase, which places these fishes in classes such as Teleostei,
+and WoRMS gives the same name as valid. A value for such an item can be given in the corrections
+file, with its source.
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `area_data` | FAO catch data: `fishing_area_data()$area_data`, or any subset of `load_fao_data()` | `NULL`: all species in `load_fao_data()` |
+| `version` | The FishBase and SeaLifeBase release (see [above](#releases)): `"latest"`, a release such as `"26.06"`, or `"builtin"` | `"latest"` |
+| `corrections` | Path of a corrections file, or `FALSE` for none | `NULL`: `corrections.csv` in the `fishbase` folder of `data_dir`, created as an empty template the first time |
+| `table` | If `TRUE`, the table is saved as `tables/<label>_fishbase_match.csv` | `TRUE` |
+| `lang` | Language of the `species_name` column: `"en"`, `"zh"` or `"both"` | `NULL`: the language set with `fao_settings()` |
+| `label` | Name used in the file name | The fishing area (or country) of the data |
+| `data_dir` | Folder where downloaded data, corrections and WoRMS results are stored | `fao_data_dir()` |
+
+It returns, invisibly, a data frame with one row per FAO species item, sorted by catch. Its
+attribute `fishbase_version` gives the releases used. The columns:
+
+| Column | Meaning |
+|---|---|
+| `species_name`, `species_en` | FAO name in the language chosen, and in English |
+| `alpha3`, `fao_scientific_name` | FAO 3-alpha code and scientific name |
+| `taxon_level`, `major_group` | Level of the item (species, genus, family, higher) and FAO major group (PISCES, CRUSTACEA, ...) |
+| `catch_tonnes`, `catch_pct`, `cumulative_pct` | Catch of the item over all years of the data, its share of the total catch and the cumulative share (%) |
+| `status` | `"matched"`, `"failed"` or `"pending online check"` |
+| `match_type` | The rule that matched the item (next section) |
+| `database`, `matched_name`, `SpecCode` | Database, name and species code of the record used |
+| `n_species` | Number of species of the taxon, for items above species level |
+| `trophic_level`, `trophic_level_se` | Trophic level (`Troph`) and its standard error |
+| `temp_pref_mean` | Preferred temperature (`TempPrefMean`, °C) |
+| `habitat` | Habitat (`DemersPelag`, e.g. pelagic-neritic, demersal, reef-associated) |
+| `max_length_cm` | Maximum length (cm) |
+| `vulnerability` | Vulnerability to fishing (FishBase index, out of 100) |
+| `url` | FishBase or SeaLifeBase page of the record (species page, species list of the genus, family page, or a search) |
+| `search_url`, `worms_url` | Search of the FAO name in FishBase or SeaLifeBase, and its WoRMS page |
+| `match_note`, `rule_source` | Why an item was matched or not, and the published source of the rule |
+| `source` | Database and release, with "(built-in table)" when the built-in table was used |
+| `checked`, `note` | Empty columns for recording your checks |
+
+The trophic levels are the FishBase and SeaLifeBase estimates (table `estimate`, column `Troph`).
+They come from diet studies or, when there are none, from related species and body size (Froese
+and Pauly 2000, "The FOOD ITEMS table", boxes 25 and 26). The preferred temperatures
+(`TempPrefMean`) are means over the AquaMaps distribution of each species (FishBase reference
+123201; Froese 2020); Cheung et al. (2013) used medians instead.
+
+### Matching rules
+
+Fishes (FAO major group PISCES) are looked up in FishBase first and all other items in
+SeaLifeBase first, following Branch et al. (2010, Supplementary Information p. 1). The value of
+`match_type` tells which rule matched an item:
+
+| `match_type` | Rule | Values given | Source |
+|---|---|---|---|
+| `exact` | The FAO scientific name is a valid species name in the database | All | Branch et al. (2010) |
+| `synonym` | The FAO name is a synonym (status "synonym") of one valid species in the synonym table of the database. Misapplied names are never used, since they are misidentifications, not other names of the species; ambiguous synonyms, and names that point to several species, are not matched | All | Froese and Pauly (2000), "The SYNONYMS table" |
+| `WoRMS valid name (...)` | A name not found by the rules above is looked up online in the World Register of Marine Species (WoRMS), which the FAO ASFIS list follows for most groups. Only an exact WoRMS record with status "accepted", or with a single valid name, is used; the valid name is then matched again, and the rule it matched is given in brackets, e.g. `WoRMS valid name (exact)` | As for that rule | FAO (2026), pp. 1–3; WoRMS Editorial Board |
+| `genus`, `family`, `order`, `class`, `phylum` | An item above species level (e.g. "Sardinella spp" or "Sparidae") takes the unweighted mean trophic level of the species of that taxon in the database | Trophic level only | Branch et al. (2010); Liang and Pauly (2017) |
+| `plant (TL 1)` | Aquatic plants (FAO major group PLANTAE AQUATICAE) | Trophic level 1 | Pauly et al. (1998) |
+| `manual` | A correction in the corrections file | The values or record given | Your source, in `note` |
+| `not matched` | Species not found (the values of their genus are not used), items that name several taxa (e.g. "Sepiidae, Sepiolidae"), WoRMS records that are uncertain or several | None (`status` is `"failed"`) | No published rule for these cases |
+
+Temperature preference, habitat, length and vulnerability are left empty for items above species
+level, since studies of the mean temperature of the catch leave these items out (Tsikliras and
+Stergiou 2014; Liang et al. 2018). Results of the WoRMS look-ups are saved in `worms_lookup.csv`
+and reused when the computer is offline; a name not looked up before is then marked
+`"pending online check"`. The built-in table was made online, so its items have all been looked
+up.
+
+### Coverage of the catch
+
+The share of the catch matched depends on how the catch is reported. `catch_pct` is the share of
+the total catch of all years in the data:
+
+```{r}
+# Share of the catch (%) by kind of match
+round(sort(tapply(fb34$catch_pct, fb34$match_type, sum), decreasing = TRUE), 1)
+
+# Share of the catch (%) of species-level items with a preferred temperature
+species_level <- c("exact", "synonym", "WoRMS valid name (exact)", "WoRMS valid name (synonym)")
+round(sum(fb34$catch_pct[fb34$match_type %in% species_level & !is.na(fb34$temp_pref_mean)]), 1)
+```
+
+In area 34, matched items make up `r round(sum(fb34$catch_pct[fb34$status == "matched"]))`% of
+the catch, but much of it comes from genus and family items, which have a trophic level only.
+Species-level items with a preferred temperature make up
+`r round(sum(fb34$catch_pct[fb34$match_type %in% species_level & !is.na(fb34$temp_pref_mean)]))`%,
+and this is the part of the catch that the mean temperature of the catch can use. The coverage
+also changes from year to year; `mean_temperature_catch()` shows it for each year (see
+[below](#mtc)).
+
+### Check and correct the matches {#corrections}
+
+The matches are made automatically and are not checked by the package. Names do not always
+agree between databases: FAO ASFIS names change slowly, FishBase, SeaLifeBase and WoRMS follow
+different classifications, and synonyms and misspellings are common (Grenié et al. 2023). Before
+using the values:
+
+1. Open the table saved in `tables/` (here `tables/Atlantic__Eastern_Central_fishbase_match.csv`).
+   The items are sorted by catch, so the first rows matter most.
+2. For each item, open `url` (the record used), `search_url` and `worms_url`, and read
+   `match_note` and `rule_source`. Check that the record is the FAO item, and that its values are
+   plausible for the stock in the area.
+3. Write who checked it, or the date, in `checked`. Correct wrong or missing values in a
+   corrections file, with their source.
+
+A corrections file is a CSV file with one row per FAO item to correct:
+
+| Column | Meaning |
+|---|---|
+| `alpha3` | FAO 3-alpha code of the item (required) |
+| `species_en` | FAO English name (optional, for reading the file) |
+| `database`, `SpecCode` | `"FishBase"` or `"SeaLifeBase"`, and the species code of the record to use; its values are then read from the downloaded tables |
+| `trophic_level`, `temp_pref_mean`, `habitat`, `max_length_cm`, `vulnerability` | Values to use directly (they replace those of the record) |
+| `note` | The source of the correction |
+
+By default `fishbase_match()` reads `corrections.csv` in the `fishbase` folder of `data_dir`, and
+creates an empty one there the first time. Corrections are applied every time the function runs,
+so a team that shares `data_dir` shares them. A corrected item gets `status` "matched",
+`match_type` "manual", and its `rule_source` gives the file and the note.
+
+As an example, "Frigate and bullet tunas" names two species (*Auxis thazard* and *A. rochei*), so
+no rule matches it. Here it is given the values of frigate tuna, the first of the two, from the
+match of the item "Frigate tuna". Whether such a value fits an item has to be judged by you; the
+note says where it comes from:
+
+```{r, message = TRUE}
+fri <- fb34[fb34$alpha3 == "FRI", ]
+fix <- data.frame(alpha3 = "FRZ", species_en = "Frigate and bullet tunas",
+                  trophic_level = fri$trophic_level, temp_pref_mean = fri$temp_pref_mean,
+                  note = paste("Values of Auxis thazard,", fri$source, "SpecCode", fri$SpecCode))
+write.csv(fix, "my_corrections.csv", row.names = FALSE)
+
+fb34_fixed <- fishbase_match(FAO34$area_data, version = "builtin", corrections = "my_corrections.csv")
+show_table(fb34_fixed[fb34_fixed$alpha3 == "FRZ", c("species_name", "status", "match_type", "trophic_level",
+                                                    "temp_pref_mean", "rule_source")])
+```
+
+With downloaded tables, a correction can instead name the record to use, and all its values are
+read from it. The built-in table cannot look up a `SpecCode`, so with `version = "builtin"` give
+the values themselves:
+
+```{r, eval = FALSE}
+fix <- data.frame(alpha3 = "FRZ", database = "FishBase", SpecCode = 94,
+                  note = "Record of Auxis thazard; give your source here")
+write.csv(fix, "my_corrections.csv", row.names = FALSE)
+fishbase_match(FAO34$area_data, version = "26.06", corrections = "my_corrections.csv")
+```
+
+`mean_temperature_catch()`, and `fao_report()` through it, run `fishbase_match()` with the
+default corrections file. Corrections meant for them therefore belong in `corrections.csv` in the
+`fishbase` folder of `data_dir` (add rows to it with a spreadsheet program), or in a checked match
+table given with `match =` (`mtc_match =` in `fao_report()`).
+
+## 📜 Sources and licences: fishbase_sources()
+
+`fishbase_sources()` lists where the FishBase, SeaLifeBase and WoRMS data come from, their
+licences and how to cite them, the tables downloaded and what they hold, and the matching rules
+of `fishbase_match()` with their published sources. `download_fishbase_data()` prints a summary
+of the same information.
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `print` | If `TRUE`, the list is printed | `TRUE` |
+
+It returns, invisibly, a data frame with one row per data source, table or rule, and the columns
+`type` (`"data"`, `"table"` or `"rule"`), `item`, `description`, `source` (citation or licence)
+and `link`. The data sources:
+
+```{r}
+src <- fishbase_sources(print = FALSE)
+show_table(src[src$type == "data", c("item", "description", "source", "link")])
+```
+
+## 🌡️ Use in the mean temperature of the catch {#mtc}
+
+[`mean_temperature_catch()`](sst-mtc.html) computes the mean temperature of the catch (MTC):
+the mean preferred temperature of the species caught, weighted by their catch (Cheung et al.
+2013). It takes the preferred temperatures from `fishbase_match()`, which it runs with its own
+`version` and `data_dir` (applying the corrections file), or from a match table given with
+`match =`. Only items with `status` "matched" and a `match_type` in `use_match` are used; by
+default `exact`, `synonym`, `WoRMS valid name (exact)`, `WoRMS valid name (synonym)` and `manual`.
+Genus and family items have no preferred temperature and are not used.
+
+Here the corrected table of the example above is given with `match =`, so the frigate and bullet
+tunas are now used:
+
+```{r, figures = TRUE}
+mtc <- mean_temperature_catch(FAO34$area_data, match = fb34_fixed)
+```
+
+```{r}
+show_table(mtc$species[mtc$species$used, c("species_name", "match_type", "temp_pref_mean", "catch_pct",
+                                           "weight_pct", "contribution_c")], n = 8)
+```
+
+`match =` takes a data frame or the path of a CSV file: the table saved by `fishbase_match()`, or
+the species table of an earlier run of `mean_temperature_catch()`, after checking it. Items marked
+in `checked` count as checked; until all items used are checked, the function says how much of
+the catch has been checked, and the chart caption says that the values are automatic first
+matches. Without `match =`, the default `version = "latest"` downloads the tables it needs the
+first time (about 23 MB):
+
+```{r, eval = FALSE}
+mtc <- mean_temperature_catch(FAO34$area_data)                         # newest FishBase release
+mtc <- mean_temperature_catch(FAO34$area_data, version = "builtin")    # built-in table, no download
+mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern_Central_fishbase_match.csv")
+```
+
+The article [🌡️ Sea temperature and catch temperature](sst-mtc.html) explains the SST data, the
+trends, and the limitations of the preferred temperatures.
+
+## 📉 Use in the CMSY++ priors
+
+CMSY++ needs a prior range for the intrinsic growth rate r of each stock. `cmsy_priors()` searches
+a second built-in table (`inst/extdata/cmsy_priors.csv`, made by `data-raw/cmsy_priors.R`) with
+the resilience (table `stocks`) and the prior r (table `estimate`) of the species-level items of
+the FAO capture statistics in FishBase or SeaLifeBase 26.06. It works offline:
+
+```{r}
+p34 <- cmsy_priors(c("PIL", "SAA", "VMA", "BOA"))
+show_table(p34[, c("species_name", "matched_name", "match_type", "resilience", "prior_r",
+                   "r_low", "r_high", "r_source")], digits = 3)
+```
+
+The r range follows the CMSY++ user guide (Froese et al. 2021): the 95% confidence limits of the
+FishBase prior r when the species has one (Table 1); otherwise the range of its resilience
+(Table 2: High 0.6–1.5, Medium 0.2–0.8, Low 0.05–0.5, Very low 0.015–0.1); otherwise none, and
+the prior has to come from the user. This table is matched more strictly than `fishbase_match()`:
+fishes are looked up in FishBase first and other items in SeaLifeBase first, as valid species
+names and then through the synonym table of the database, but there is no WoRMS look-up, and
+ambiguous synonyms and items above species level get no values (`match_type` "ambiguous
+synonym", "not a species" or "not found"). The corrections file of `fishbase_match()` does not
+change it; priors of your own are given with `priors =` in `cmsy_input()`. See
+[📉 CMSY++ stock assessment](cmsy.html), step 3.
+
+## 📝 In the Word report
+
+The Word report of an area can include a section on the mean temperature of the catch
+(`fao_report(34, mtc = TRUE)`). It uses the built-in FishBase table by default
+(`mtc_version = "builtin"`), so writing the report downloads nothing; give another release with
+`mtc_version`, e.g. `mtc_version = "latest"`. The table of species used, with their FishBase
+matches, is returned as `report$mtc_species`, and the report cites the FishBase release used. See
+[📝 Word report](report.html).
+
+```{r, eval = FALSE}
+report <- fao_report(34, mtc = TRUE)
+head(report$mtc_species[, c("species_name", "match_type", "temp_pref_mean", "used", "url")])
+fao_report(34, mtc = TRUE, mtc_version = "latest")    # newest FishBase release
+```
+
+## 📖 References
+
+Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase: exploring, manipulating and
+visualizing FishBase data from R. *Journal of Fish Biology* 81: 2030–2039.
+[doi:10.1111/j.1095-8649.2012.03464.x](https://doi.org/10.1111/j.1095-8649.2012.03464.x)
+
+Branch, T.A., Watson, R., Fulton, E.A., Jennings, S., McGilliard, C.R., Pablico, G.T., Ricard, D.
+and Tracey, S.R. (2010). The trophic fingerprint of marine fisheries. *Nature* 468: 431–435.
+[doi:10.1038/nature09528](https://doi.org/10.1038/nature09528)
+
+Cheung, W.W.L., Watson, R. and Pauly, D. (2013). Signature of ocean warming in global fisheries
+catch. *Nature* 497: 365–368. [doi:10.1038/nature12156](https://doi.org/10.1038/nature12156)
+
+FAO (2026). *Nomenclature, revision, and references of the ASFIS list (version 2026)*. Rome: FAO.
+<https://www.fao.org/fishery/static/ASFIS/ASFIS_References_2026_EN.pdf>
+
+Froese, R. (2020). Personal communication: R code (PrefTempBatch_5.R) to estimate preferred
+temperature from AquaMaps (version 10/2019). FishBase reference 123201.
+<https://www.fishbase.se/references/FBRefSummary.php?ID=123201>
+
+Froese, R., Demirel, N., Coro, G. and Winker, H. (2021). *User Guide for CMSY++*. GEOMAR,
+Germany, 17 pp. <https://oceanrep.geomar.de/id/eprint/52147/>
+
+Froese, R. and Pauly, D. (Eds.) (2000). *FishBase 2000: concepts, design and data sources*.
+ICLARM, Los Baños, Philippines. Chapters "The SYNONYMS table"
+(<https://www.fishbase.se/manual/fishbasethe_synonyms_table.htm>) and "The FOOD ITEMS table",
+boxes 25 and 26 (<https://www.fishbase.se/manual/fishbasethe_food_items_table.htm>).
+
+Froese, R. and Pauly, D. (Eds.) (2026). FishBase. World Wide Web electronic publication. Version
+(06/2026). <https://www.fishbase.se>
+
+Grenié, M., Berti, E., Carvajal-Quintero, J., Dädlow, G.M.L., Sagouis, A. and Winter, M. (2023).
+Harmonizing taxon names in biodiversity data: a review of tools, databases and best practices.
+*Methods in Ecology and Evolution* 14: 12–25.
+[doi:10.1111/2041-210X.13802](https://doi.org/10.1111/2041-210X.13802)
+
+Liang, C. and Pauly, D. (2017). Fisheries impacts on China's coastal ecosystems: unmasking a
+pervasive 'fishing down' effect. *PLoS ONE* 12: e0173296.
+[doi:10.1371/journal.pone.0173296](https://doi.org/10.1371/journal.pone.0173296)
+
+Liang, C., Xian, W. and Pauly, D. (2018). Impacts of ocean warming on China's fisheries catches:
+an application of "mean temperature of the catch" concept. *Frontiers in Marine Science* 5: 26.
+[doi:10.3389/fmars.2018.00026](https://doi.org/10.3389/fmars.2018.00026)
+
+Palomares, M.L.D. and Pauly, D. (Eds.) (2026). SeaLifeBase. World Wide Web electronic
+publication. Version (06/2026). <https://www.sealifebase.se>
+
+Pauly, D., Christensen, V., Dalsgaard, J., Froese, R. and Torres, F. (1998). Fishing down marine
+food webs. *Science* 279: 860–863.
+[doi:10.1126/science.279.5352.860](https://doi.org/10.1126/science.279.5352.860)
+
+Tsikliras, A.C. and Stergiou, K.I. (2014). Mean temperature of the catch increases quickly in the
+Mediterranean Sea. *Marine Ecology Progress Series* 515: 281–284.
+[doi:10.3354/meps11005](https://doi.org/10.3354/meps11005)
+
+WoRMS Editorial Board. World Register of Marine Species. Flanders Marine Institute (VLIZ).
+<https://www.marinespecies.org>, [doi:10.14284/170](https://doi.org/10.14284/170)

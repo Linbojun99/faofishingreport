@@ -1,7 +1,7 @@
 ---
 title: "📈 类群结构、资源状态与趋势"
 description: >
-  species_group_composition()、stock_status()、peak_trend()、area_overview()、regime_shift() 和 pelagic_demersal()：捕捞了什么，各种群如何发展，以及何时发生了变化。
+  species_group_composition()、stock_status()、peak_trend()、area_overview()、regime_shift()、pelagic_demersal()和fao_pd_groups()：捕捞了什么，各种群如何发展，以及何时发生了变化。
 ---
 
 ```{r setup, include = FALSE}
@@ -17,21 +17,34 @@ fao_settings(lang = "zh")   # 本文所有图表使用中文
 data_source("zh")
 ```
 
-汇总分析适用于任何产量数据：可以是 `fishing_area_data()` 得到的某个渔区，也可以是 `load_fao_data()` 的任意子集（见 [💾 FAO 数据](data.html)）。图表保存在 `figures/png/summary/`，表格保存在 `tables/`，文件名以渔区名称（或 `label` 的值）开头。
+汇总分析适用于任何产量数据：可以是`fishing_area_data()`得到的某个渔区，也可以是`load_fao_data()`的任意子集（见[💾 FAO数据](data.html)）。图表保存在`figures/png/summary/`，表格保存在`tables/`，文件名以渔区名称（或`label`的值）开头。每个函数还会以不可见的方式返回结果，可以赋值给变量后在R中继续使用。
 
 ```{r, eval = FALSE}
 FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 ```
 
+## ⚙️ 通用参数 {#common-arguments}
+
+本文大多数函数都有下面这些参数，后面各函数的参数表只列出它们自己的参数。
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `area_data` | FAO产量数据：`fishing_area_data()$area_data`，或`load_fao_data()`的任意子集（如一个国家或几个渔区） | 必填 |
+| `plot` | 是否把图保存到`figures/png/summary/` | `TRUE` |
+| `table` | 是否把表格保存到`tables/` | `TRUE` |
+| `lang` | 图中文字和名称的语言：`"en"`、`"zh"`或`"both"` | `NULL`：使用`fao_settings()`设定的语言（未修改时为`"en"`） |
+| `pptx` | 是否同时把图保存为可编辑的PowerPoint文件，存放在`figures/pptx/summary/` | `FALSE`；`fao_settings(pptx = TRUE)`可对所有函数生效 |
+| `label` | 输出文件名开头的名称 | `NULL`：数据所属的渔区（或国家；含多个渔区和国家时为`"selected_data"`） |
+
 ## 🧺 物种类群结构
 
-`species_group_composition()` 按 **ISSCAAP 物种类群**（FAO 将物种划分为约 50 个类群的分类体系，如 "Herrings, sardines, anchovies"）或按**大类**（鱼类、甲壳类、软体动物……）汇总产量。
+`species_group_composition()`按**ISSCAAP物种类群**（FAO将物种划分为约50个类群的分类体系，如"Herrings, sardines, anchovies"）或按**大类**（鱼类、甲壳类、软体动物……）汇总产量。FAO没有给出这些类群的中文名，本包使用的中文名是非官方译名。
 
 ```{r, figures = TRUE}
 groups <- species_group_composition(FAO34$area_data)
 ```
 
-第一幅图显示各类群的产量，第二幅图显示各类群在每年总产量中的占比。产量最大的 `top_n` 个类群单独显示（默认 8 个），其余合并为一类：
+第一幅图显示各类群的产量，第二幅图显示各类群在每年总产量中的占比。产量最大的`top_n`个类群单独显示，其余合并为一类。表格列出各类群每个年代的年均产量、最近五年每年的产量，以及最后一年的占比（吨和%）：
 
 ```{r}
 show_table(groups$table, digits = 0)
@@ -43,34 +56,38 @@ species_group_composition(FAO34$area_data, group = "major", lang = "zh")
 
 | 参数 | 含义 | 默认值 |
 |---|---|---|
-| `group` | `"isscaap"` 或 `"major"` | `"isscaap"` |
-| `top_n` | 单独显示的类群数 | `8` |
+| `group` | `"isscaap"`（ISSCAAP物种类群）或`"major"`（大类） | `"isscaap"` |
+| `top_n` | 单独显示的类群数，其余合并 | `8` |
+| `area_data`、`plot`、`table`、`lang`、`pptx`、`label` | 见[通用参数](#common-arguments) | |
+
+输出：图`<label>_group_isscaap.png`（或`_group_major`）和`..._share.png`，表格`<label>_group_isscaap.csv`；函数返回`yearly`（各类群逐年产量）和`table`。
 
 ## 🚦 资源状态图
 
-`stock_status()` 根据每个物种的产量相对于其序列**峰值产量**的比例，逐年判定该产量序列的资源开发状态（Kleisner et al. 2013）：
+`stock_status()`根据每个物种的产量相对于其序列**峰值产量**的比例，逐年判定该产量序列的资源开发状态（Kleisner et al. 2013）：
 
 | 状态 | 判定规则 |
 |---|---|
-| 开发中 (Developing) | 峰值年之前，产量不超过峰值的 50% |
-| 充分开发 (Exploited) | 产量高于峰值的 50% |
-| 过度开发 (Over-exploited) | 峰值年之后，产量在峰值的 10% 至 50% 之间 |
-| 崩溃 (Collapsed) | 峰值年之后，产量低于峰值的 10% |
-| 恢复中 (Rebuilding) | 崩溃之后，产量回升至峰值的 10% 至 50% 之间 |
+| 开发中(Developing) | 峰值年之前，产量不超过峰值的50% |
+| 充分开发(Exploited) | 产量高于峰值的50% |
+| 过度开发(Over-exploited) | 峰值年之后，产量在峰值的10%至50%之间 |
+| 崩溃(Collapsed) | 峰值年之后，产量低于峰值的10% |
+| 恢复中(Rebuilding) | 崩溃之后，产量回升至峰值的10%至50%之间 |
 
 ```{r, figures = TRUE}
 status <- stock_status(FAO34$area_data)
 ```
 
-第一幅图是处于各状态的**种群**数量占比，第二幅图是各状态的**产量**占比。这里的“种群”指数据中的一个物种条目（所有国家合计）。只有符合纳入标准的序列才会参与分类：
+第一幅图是处于各状态的**种群**数量占比，第二幅图是各状态的**产量**占比。这里的“种群”指数据中的一个物种条目（所有国家合计），最后一次报告产量之后的年份按零产量计。只有符合纳入标准的序列才会参与分类：
 
-| 参数 | 标准 | 默认值 |
+| 参数 | 含义 | 默认值 |
 |---|---|---|
-| `taxon_levels` | 鉴定到种、属或科的条目（"Marine fishes nei" 等合并类群不纳入） | `c("species", "genus", "family")` |
-| `min_years` | 从首次到最后一次有产量的年数 | `10` |
-| `min_consecutive` | 连续有产量的年数 | `5` |
-| `min_catch` | 总产量（吨） | `1000` |
-| `smooth` | 分类前先做 3 年滑动平均 | `FALSE` |
+| `taxon_levels` | 纳入的分类阶元：`"species"`、`"genus"`、`"family"`和`"higher"`中的任意几个（"Marine fishes nei"等合并类群属于`"higher"`） | `c("species", "genus", "family")` |
+| `min_years` | 从首次到最后一次有产量的最少年数 | `10` |
+| `min_consecutive` | 连续有产量的最少年数 | `5` |
+| `min_catch` | 序列的最低总产量（吨） | `1000` |
+| `smooth` | 分类前是否先做3年滑动平均 | `FALSE` |
+| `area_data`、`plot`、`table`、`lang`、`pptx`、`label` | 见[通用参数](#common-arguments) | |
 
 种群表列出每个种群的峰值年份及其最后一年的状态：
 
@@ -84,16 +101,18 @@ table(status$stocks$status_last_year)
 stock_status(FAO34$area_data, smooth = TRUE, min_catch = 10000, label = "FAO34 smoothed")
 ```
 
+输出：图`<label>_stock_status_stocks.png`和`<label>_stock_status_catch.png`，表格`<label>_stock_status.csv`（各状态逐年的种群数和产量）和`<label>_stock_status_stocks.csv`；函数返回`yearly`、`stocks`和`status`（每个种群每年的状态）。
+
 ::: callout-note
 资源状态图只使用产量数据。产量下降也可能源于管理措施、市场或数据上报的变化，因此结果仅供参考，不能替代资源评估。
 :::
 
 ## ⛰️ 峰值与趋势
 
-`peak_trend()` 针对总产量以及主要物种（或国家、渔区），找出**峰值产量**出现的年份和数值、最后一年产量相当于**峰值的百分比**，以及最近 `recent_years` 年的趋势：
+`peak_trend()`针对总产量以及主要物种（或国家、渔区），找出**峰值产量**出现的年份和数值、最后一年产量相当于**峰值的百分比**，以及最近`recent_years`年的趋势：
 
-- **年均增长率**：这段时间首年到末年之间的年平均变化；
-- **趋势**：Mann-Kendall 趋势检验（年份与产量之间的 Kendall τ）；p < 0.05 时判定为 "increasing"（上升）或 "decreasing"（下降）。
+- **年均增长率**（`growth_pct_per_year`）：这段时间首年到末年之间的年均增长率，即$100\,[(C_n/C_1)^{1/(n-1)} - 1]$，其中$C_1$和$C_n$分别是这$n$年中第一年和最后一年的产量；
+- **趋势**：Mann-Kendall趋势检验（Mann 1945；Kendall 1975），即年份与产量之间的Kendall τ；p < 0.05时`trend`为`"up"`（上升）或`"down"`（下降），否则为`"none"`。
 
 ```{r, figures = TRUE}
 species_trend <- peak_trend(FAO34$area_data, by = "species", top_n = 10)
@@ -109,13 +128,16 @@ peak_trend(FAO34$area_data, by = "country", top_n = 15, recent_years = 20, lang 
 
 | 参数 | 含义 | 默认值 |
 |---|---|---|
-| `by` | `"species"`、`"country"` 或 `"area"` | `"species"` |
-| `top_n` | 序列数（`Inf` 表示全部） | `10` |
-| `recent_years` | 用于计算趋势的年数 | `10` |
+| `by` | 比较的对象：`"species"`、`"country"`或`"area"` | `"species"` |
+| `top_n` | 取总产量最大的几个序列（`Inf`表示全部） | `10` |
+| `recent_years` | 计算趋势所用的最近年数 | `10` |
+| `area_data`、`plot`、`table`、`lang`、`pptx`、`label` | 见[通用参数](#common-arguments) | |
 
-## 🌍 全部 FAO 海洋渔区
+输出：图`<label>_peak_trend_species.png`（或`_country`、`_area`）和同名表格；函数返回一个数据框，每个序列一行，第一行是总产量。
 
-`area_overview()` 对比全部 FAO 海洋渔区：给出各渔区产量随时间的变化并标出峰值，以及各渔区的峰值与趋势图：
+## 🌍 全部FAO海洋渔区
+
+`area_overview()`对比全部FAO海洋渔区：给出各渔区产量随时间的变化并标出峰值，以及各渔区的峰值与趋势图（即`peak_trend(by = "area")`）：
 
 ```{r, figures = TRUE}
 overview <- area_overview()
@@ -125,9 +147,17 @@ overview <- area_overview()
 show_table(overview[, c("name", "peak_year", "peak_tonnes", "last_year_tonnes", "pct_of_peak", "trend")], n = 20, digits = 0)
 ```
 
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `recent_years` | 计算趋势所用的最近年数 | `10` |
+| `data_version` | 使用的FAO数据版本（见`load_fao_data()`） | `"latest"` |
+| `plot`、`table`、`lang`、`pptx` | 见[通用参数](#common-arguments) | |
+
+`area_overview()`自己读取FAO数据，所以没有`area_data`和`label`参数。输出：图`marine_areas_catch.png`、`marine_areas_peak_trend_area.png`和表格`marine_areas_peak_trend_area.csv`；函数返回`peak_trend()`的数据框。
+
 ## 🔀 突变点同步性
 
-`regime_shift()` 对主要物种（默认 20 个）做突变点分析，并统计每一年有多少个物种的平均产量发生变化。许多物种在同一年发生变化，可能意味着整个生态系统发生了生态系统转变 (regime shift)，也可能源于管理或数据上报方式的改变。
+`regime_shift()`对主要物种（所有物种条目，包括nei类群）的产量序列做突变点分析，并统计每一年有多少个物种的平均产量发生变化。每个序列在平均值发生变化处分段（`strucchange::breakpoints()`，Bai and Perron 2003；Zeileis et al. 2002，2003），突变点个数按BIC选择；突变点的年份是新时段的第一年。许多物种在同一年发生变化，可能意味着整个生态系统发生了生态系统转变(regime shift)，也可能源于管理或数据上报方式的改变。
 
 ```{r, figures = TRUE}
 shifts <- regime_shift(FAO34$area_data, top_n = 20)
@@ -140,12 +170,15 @@ head(shifts$yearly[order(-shifts$yearly$n_species), ], 5)
 
 | 参数 | 含义 | 默认值 |
 |---|---|---|
-| `top_n` | 分析的主要物种数 | `20` |
-| `h_value` | 最短时段长度（比例或年数） | `0.15` |
+| `top_n` | 分析总产量最大的几个物种 | `20` |
+| `h_value` | 两个突变点之间的最短时段：序列长度的比例或年数 | `0.15` |
+| `area_data`、`plot`、`table`、`lang`、`pptx`、`label` | 见[通用参数](#common-arguments) | |
+
+序列太短、不满足`h_value`的物种会跳过并给出提示。输出：图`<label>_regime_shift.png`（每年发生突变的物种数）和`<label>_regime_shift_species.png`（各物种的突变点），表格`<label>_regime_shift.csv`和`<label>_regime_shift_years.csv`；函数返回`breakpoints`和`yearly`。
 
 ## 🐟 中上层鱼/底层鱼渔获比
 
-`pelagic_demersal()` 计算每个 FAO 海洋渔区中上层鱼渔获量与底层鱼渔获量之比（P/D），按年和按十年给出。Caddy (1993) 提出，营养盐增加有利于以浮游生物为食、寿命短的中上层鱼，而不利于底层鱼；de Leiva Moreno et al. (2000) 用 P/D 作为欧洲周边海域营养水平的替代指标。
+`pelagic_demersal()`计算每个FAO海洋渔区中上层鱼渔获量与底层鱼渔获量之比（P/D），按年和按年代给出。Caddy (1993)提出，营养盐增加有利于以浮游生物为食、寿命短的中上层鱼，而不利于底层鱼；de Leiva Moreno et al. (2000)用P/D作为欧洲周边海域营养水平的替代指标。每个年代的P/D是该年代各年P/D的平均值（与Hondorp et al. 2010相同），并给出最低值和最高值。
 
 ```{r, figures = "pelagic_demersal_ratio"}
 pd <- pelagic_demersal(FAO34$area_data)
@@ -156,37 +189,87 @@ show_table(pd$decades[, c("period", "pd_mean", "pd_min", "pd_max", "counted_pct"
 show_table(pd$groups[, c("group", "counted_as", "catch_pct")], n = 12)
 ```
 
-FAO 数据中每个物种都有一个 ISSCAAP 类群，所以函数按类群划分。`fao_pd_groups()` 列出两种已发表的定义如何计算每个类群：
+FAO数据中每个物种都有一个ISSCAAP类群，所以函数按类群划分。`fao_pd_groups()`（没有参数）列出两种已发表的定义如何计算每个类群：
 
 | `definition` | 中上层鱼 | 底层鱼 |
 |---|---|---|
-| `"de_leiva_moreno"`（默认） | 鲱、沙丁鱼、鳀类（小型中上层鱼） | 鲆鲽类、鳕类、其他沿岸鱼类、其他底层鱼类、海洋甲壳类 |
-| `"grainger_garcia"` | 小型中上层鱼、金枪鱼和旗鱼类、其他中上层鱼类 | 鲆鲽类、鳕类、其他沿岸鱼类、其他底层鱼类、鲨鳐类、未鉴定的海洋鱼类 |
+| `"de_leiva_moreno"`（默认） | 鲱、沙丁鱼、鳀类（小型中上层鱼） | 鲆鲽类、鳕类、其他沿岸鱼类、其他底层鱼类、海洋甲壳类（磷虾除外） |
+| `"grainger_garcia"`（Grainger and Garcia 1996） | 小型中上层鱼、金枪鱼和旗鱼类、其他中上层鱼类 | 鲆鲽类、鳕类、其他沿岸鱼类、其他底层鱼类、鲨鳐类、未鉴定的海洋鱼类 |
 
-也可以用 `pelagic = ...` 和 `demersal = ...` 指定自己的类群。已发表的研究是逐个物种划分的，不是按 ISSCAAP 类群，所以它们的数值只能粗略对比：de Leiva Moreno et al. (2000) 中，贫营养海域低于 1，中营养海域约 1 至 3.5，富营养海域约 6 至 20。除了营养盐，捕捞和市场（底层鱼需求更高）、缺氧、小型中上层鱼本身的自然波动以及报告方式都会改变 P/D，详见 `?pelagic_demersal`。34 区上升流海域的小型中上层鱼产量很高，所以 P/D 一直较高。
+```{r}
+show_table(fao_pd_groups(), n = 15)
+```
+
+也可以用`pelagic = ...`和`demersal = ...`指定自己的类群。已发表的研究是逐个物种划分的，不是按ISSCAAP类群，所以它们的数值只能粗略对比：de Leiva Moreno et al. (2000)中，贫营养海域低于1，中营养海域约1至3.5，富营养海域约6至20。除了营养盐，捕捞和市场（底层鱼需求更高；Caddy et al. 1998）、缺氧（Hondorp et al. 2010）、小型中上层鱼本身的自然波动以及报告方式都会改变P/D，详见`?pelagic_demersal`。34区上升流海域的小型中上层鱼产量很高，所以P/D一直较高。
 
 | 参数 | 含义 | 默认值 |
 |---|---|---|
-| `definition` | 哪些类群算中上层鱼和底层鱼 | `"de_leiva_moreno"` |
-| `pelagic`、`demersal` | 改用自己指定的 ISSCAAP 类群 | `NULL` |
+| `definition` | 哪些类群算中上层鱼和底层鱼：`"de_leiva_moreno"`或`"grainger_garcia"` | `"de_leiva_moreno"` |
+| `pelagic`、`demersal` | 改用自己指定的ISSCAAP类群（使用FAO数据中的英文名，如`"Herrings, sardines, anchovies"`），代替`definition`的类群 | `NULL` |
+| `area_data`、`plot`、`table`、`lang`、`pptx`、`label` | 见[通用参数](#common-arguments) | |
+
+内陆渔区会被剔除，并给出提示。输出：图`<label>_pelagic_demersal_ratio.png`（逐年P/D，每个渔区一个分图）、`<label>_pelagic_demersal.png`和`..._share.png`（中上层鱼、底层鱼和其他渔获），表格`<label>_pelagic_demersal.csv`、`..._decades.csv`和`..._groups.csv`；函数返回`yearly`、`decades`和`groups`。
+
+## 📝 写入Word报告
+
+`fao_report()`可以把这些分析写进某个渔区的Word报告（见[📝 一键生成Word评估报告](report.html)）。ISSCAAP类群（`groups = TRUE`）和资源状态图（`status = TRUE`）默认就是报告的章节；中上层鱼/底层鱼渔获比用`pelagic = TRUE`加入。各函数的设置以章节名为前缀传入，例如`status_smooth = TRUE`就是`stock_status()`的`smooth = TRUE`：
+
+```{r, eval = FALSE}
+fao_report(34, pelagic = TRUE, status_smooth = TRUE, pelagic_definition = "grainger_garcia")
+```
+
+报告中主要物种表和主要国家表的趋势由`peak_trend()`计算；`area_overview()`和`regime_shift()`不在报告中。
 
 ## 📖 参考文献
+
+```{r references-release, include = FALSE}
+release_info <- fao_data_info()
+```
+
+Bai, J. and Perron, P. (2003). Computation and analysis of multiple structural change models.
+*Journal of Applied Econometrics* 18: 1–22. [doi:10.1002/jae.659](https://doi.org/10.1002/jae.659)
 
 Caddy, J.F. (1993). Toward a comparative evaluation of human impacts on fishery ecosystems of
 enclosed and semi-enclosed seas. *Reviews in Fisheries Science* 1: 57–95.
 [doi:10.1080/10641269309388535](https://doi.org/10.1080/10641269309388535)
+
+Caddy, J.F., Carocci, F. and Coppola, S. (1998). Have peak fishery production levels been passed
+in continental shelf area? Some perspectives arising from historical trends in production per
+shelf area. *Journal of Northwest Atlantic Fishery Science* 23: 191–219.
+[doi:10.2960/J.v23.a13](https://doi.org/10.2960/J.v23.a13)
 
 de Leiva Moreno, J.I., Agostini, V.N., Caddy, J.F. and Carocci, F. (2000). Is the pelagic-demersal
 ratio from fishery landings a useful proxy for nutrient availability? A preliminary data
 exploration for the semi-enclosed seas around Europe. *ICES Journal of Marine Science* 57:
 1091–1102. [doi:10.1006/jmsc.2000.0705](https://doi.org/10.1006/jmsc.2000.0705)
 
-Grainger, R.J.R. and Garcia, S.M. (1996). *Chronicles of marine fishery landings (1950-1994):
+FAO (`r sub("[.].*", "", release_info$release)`). *Global Capture Production
+`r release_info$years[1]`–`r release_info$years[2]`*, release `r release_info$release`. In:
+Fisheries and Aquaculture. Rome: FAO. <https://www.fao.org/fishery/collection/capture/en>.
+Licence: CC BY 4.0. Release file: <`r release_info$url`>
+
+Grainger, R.J.R. and Garcia, S.M. (1996). *Chronicles of marine fishery landings (1950–1994):
 trend analysis and fisheries potential*. FAO Fisheries Technical Paper 359. Rome: FAO.
+<https://www.fao.org/4/w3244e/w3244e00.htm>
+
+Hondorp, D.W., Breitburg, D.L. and Davias, L.A. (2010). Eutrophication and fisheries: separating
+the effects of nitrogen loads and hypoxia on the pelagic-to-demersal ratio and other measures of
+landings composition. *Marine and Coastal Fisheries* 2: 339–361.
+[doi:10.1577/C09-020.1](https://doi.org/10.1577/C09-020.1)
+
+Kendall, M.G. (1975). *Rank correlation methods*, 4th edition. London: Charles Griffin.
 
 Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global catch data for inferences
 on the world's marine fisheries. *Fish and Fisheries* 14: 293–311.
 [doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
 
+Mann, H.B. (1945). Nonparametric tests against trend. *Econometrica* 13: 245–259.
+[doi:10.2307/1907187](https://doi.org/10.2307/1907187)
+
+Zeileis, A., Leisch, F., Hornik, K. and Kleiber, C. (2002). strucchange: an R package for
+testing for structural change in linear regression models. *Journal of Statistical Software*
+7(2): 1–38. [doi:10.18637/jss.v007.i02](https://doi.org/10.18637/jss.v007.i02)
+
 Zeileis, A., Kleiber, C., Krämer, W. and Hornik, K. (2003). Testing and dating of structural
 changes in practice. *Computational Statistics & Data Analysis* 44: 109–123.
+[doi:10.1016/S0167-9473(03)00030-6](https://doi.org/10.1016/S0167-9473(03)00030-6)

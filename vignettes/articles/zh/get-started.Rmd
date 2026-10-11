@@ -1,7 +1,7 @@
 ---
 title: "🚀 快速入门"
 description: >
-  安装 faofishingreport，更新 FAO 数据，并为中东大西洋（FAO 34 渔区）绘制第一批图表。
+  安装faofishingreport，更新FAO数据，为中东大西洋（FAO 34渔区）绘制第一批图表，并一键生成Word报告。
 ---
 
 ```{r setup, include = FALSE}
@@ -16,49 +16,52 @@ fao_settings(lang = "zh")   # 本文所有图表使用中文
 data_source("zh")
 ```
 
-**faofishingreport** 把 FAO 全球捕捞产量统计（Global Capture Production）整理成报告用的图表、地图和表格。
-本文以**中东大西洋（FAO 主要渔区 34）**为例，完整演示第一次分析的全过程；下面每张图都由其上方的代码生成。
+**faofishingreport**把FAO全球捕捞产量统计（Global Capture Production）整理成报告用的图表、地图和表格。
+本文以**中东大西洋（FAO主要渔区34）**为例，完整演示第一次分析的全过程；下面每张图都由其上方的代码生成。
 
 典型的工作流程：
 
 | 步骤 | 做什么 | 函数 |
 |---|---|---|
-| 1. 数据 | 检查并下载 FAO 最新版本 | `check_fao_update()`, `download_fao_data()` |
-| 2. 渔区 | 某个渔区的总产量、主要物种和主要捕捞国家 | `fishing_area_data()`, `fishing_area_species()`, `fishing_area_country()` |
-| 3. 物种与国家 | 某个物种由哪些国家捕捞，某个国家捕什么 | `species_country()`, `country_species()`, `country_analysis()` |
-| 4. 汇总分析 | 类群结构、资源开发状态、趋势、数据质量、船队 | `stock_status()`, `peak_trend()`, `coastal_distant()`, ... |
-| 5. 风格 | 语言、主题、颜色、地图投影 | `fao_settings()` |
+| 1. 数据 | 检查并下载FAO最新版本，查看所用的版本 | `check_fao_update()`、`download_fao_data()`、`fao_data_info()` |
+| 2. 渔区 | 某个渔区的总产量、主要物种和主要捕捞国家 | `fishing_area_data()`、`fishing_area_species()`、`fishing_area_country()` |
+| 3. 物种与国家 | 某个物种由哪些国家捕捞，某个国家捕什么 | `species_country()`、`country_species()`、`country_analysis()` |
+| 4. 汇总分析 | 类群结构、资源开发状态、趋势、数据质量、多样性、船队 | `species_group_composition()`、`stock_status()`、`peak_trend()`、`data_quality()`、`coastal_distant()`等 |
+| 5. 文献方法 | 渔获骤变、渔业崩溃、同步性、中上层/底层比、渔获平均温度 | `catch_shocks()`、`collapse_analysis()`、`catch_synchrony()`、`pelagic_demersal()`、`mean_temperature_catch()` |
+| 6. 资源评估 | 主要物种的CMSY++评估 | `cmsy_setup()`、`cmsy_area()` |
+| 7. 报告 | 一键生成某个渔区的Word报告 | `fao_report()` |
+| 8. 风格 | 语言、主题、颜色、地图投影 | `fao_settings()` |
 
 ## 📦 安装
 
-faofishingreport 需要 **R 4.2 或以上版本**，从 GitHub 安装：
+faofishingreport需要**R 4.2或以上版本**，从GitHub安装：
 
 ```{r, eval = FALSE}
 install.packages("remotes")
 remotes::install_github("Linbojun99/faofishingreport", dependencies = TRUE)
 ```
 
-用到的所有依赖包（dplyr、ggplot2、sf、rnaturalearth，以及生成 Word 报告的 officer、读取 FishBase 和海表温度数据的包、CMSY++ 所需的 R 包等）都会自动安装。CMSY++ 还需要 JAGS 程序：运行一次 `cmsy_setup()` 即可。
+设置`dependencies = TRUE`后，各项分析用到的包都会随本包一起安装：绘制图表和地图的dplyr、ggplot2和sf，提供世界地图的rnaturalearth，生成Word报告的officer和xml2，输出可编辑PowerPoint图表的eoffice，读取FishBase和SeaLifeBase数据表的nanoparquet，读取海表温度文件的ncdf4，以及CMSY++所需的R包（coda、conicfit、gplots、MASS、mvtnorm、neuralnet等）。唯一的例外是rjags和R2jags，它们需要单独的JAGS程序：第一次使用CMSY++时运行`cmsy_setup()`，即可安装JAGS和这两个包（见[📉 CMSY++资源评估](cmsy.html)）。
 
 ::: callout-note
-**Windows 和 macOS** 安装的是二进制包，不需要编译器（Rtools）。
-**Linux** 需要先安装 sf 包依赖的系统库；如果要绘制中文图表，还需要安装中文字体：
+**Windows和macOS**安装的是二进制包，不需要编译器（Rtools）。在macOS上输出可编辑的PowerPoint图表还需要安装[XQuartz](https://www.xquartz.org)。
+**Linux**需要先安装sf包依赖的系统库；如果要绘制中文图表，还需要安装中文字体：
 
 ```bash
 sudo apt-get install libgdal-dev libgeos-dev libproj-dev libudunits2-dev fonts-noto-cjk
 ```
 :::
 
-加载本包。启动信息会显示当前操作系统和图表所用的字体（Windows 上为 SimSun，macOS 上为 Songti SC，Linux 上为 Noto Serif CJK SC）：
+加载本包。启动信息会显示当前操作系统和图表所用的字体（Windows上为SimSun，macOS上为Songti SC，Linux上为Noto Serif CJK SC）：
 
 ```{r, eval = FALSE}
 library(faofishingreport)
 #> faofishingreport: Windows, chart font "SimSun" (change it with fao_font())
 ```
 
-## 💾 获取 FAO 最新数据
+## 💾 获取FAO最新数据
 
-本包自带 FAO `r readLines(system.file("extdata", "bundled_release.txt", package = "faofishingreport"))` 版本的数据。FAO 大约每年发布一次新版本。可以先检查是否有更新的版本，再下载（约 5 MB，几秒钟即可完成）：
+本包自带FAO `r fao_data_info("bundled")$release`版本的数据。FAO大约每年发布一次新版本。可以先检查是否有更新的版本，再下载（约5 MB，几秒钟即可完成）：
 
 ```{r, eval = FALSE}
 check_fao_update()
@@ -71,7 +74,7 @@ check_fao_update()
 download_fao_data()   # 只有在有更新版本时才需要运行
 ```
 
-所有函数都会自动使用可用的最新数据。如何选择版本、数据格式以及如何分析自己的数据子集，见[💾 FAO 数据](data.html)。
+所有函数都会自动使用可用的最新数据。`fao_data_info()`显示所用的是哪个版本、来自哪里以及如何引用。这些函数的全部参数、如何选择版本、数据格式以及如何分析自己的数据子集，见[💾 FAO数据](data.html)。
 
 ## 📁 结果保存在哪里
 
@@ -79,9 +82,10 @@ download_fao_data()   # 只有在有更新版本时才需要运行
 
 | 文件夹 | 内容 |
 |---|---|
-| `figures/png/` | PNG 格式的图表（始终输出） |
-| `figures/pptx/` | 可编辑的 PowerPoint 图表（设置 `pptx = TRUE` 时输出，需要 eoffice 包） |
-| `tables/` | CSV 格式的表格，用 Excel 打开时中文名称也能正常显示 |
+| `figures/png/` | PNG格式的图表（始终输出）；汇总分析的图表在`figures/png/summary/` |
+| `figures/pptx/` | 可编辑的PowerPoint图表（设置`pptx = TRUE`时输出，使用eoffice包） |
+| `tables/` | CSV格式的表格，用Excel打开时中文名称也能正常显示 |
+| `reports/` | `fao_report()`生成的Word报告 |
 
 所以先为报告选定一个文件夹：
 
@@ -89,22 +93,21 @@ download_fao_data()   # 只有在有更新版本时才需要运行
 setwd("D:/reports/FAO34")   # 任意文件夹均可
 ```
 
-## 🌊 第一次分析：FAO 34 渔区
+## 🌊 第一次分析：FAO 34渔区
 
-`fishing_area_data()` 提取某个 FAO 主要渔区的产量数据，绘制该渔区的总产量并标出平均产量的突变点，
-计算其占全球产量的比例，并绘制在该渔区捕捞的国家的世界地图。
+`fishing_area_data()`提取某个FAO主要渔区的产量数据，绘制该渔区的总产量并标出平均产量的突变点，计算其占全球所有海洋渔区捕捞产量的比例，并绘制在该渔区捕捞的国家的世界地图。
 
 ```{r, figures = TRUE}
 FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 ```
 
-返回结果是一个列表；其中 `FAO34$area_data` 是该渔区的产量记录，也是其他大多数函数的输入数据：
+返回结果是一个列表，包括该渔区的产量记录（`area_data`）、相邻突变点之间的各个时段（`coefs_data`）和地图数据（`act_world_map`）。其中`FAO34$area_data`是其他大多数函数的输入数据：
 
 ```{r}
 show_table(FAO34$area_data, n = 5)
 ```
 
-其他渔区的用法完全相同。全部 FAO 主要渔区的名称如下：
+其他渔区的用法完全相同。全部FAO主要渔区的名称如下：
 
 ```{r}
 data <- load_fao_data()
@@ -113,7 +116,7 @@ sort(unique(data$FAO.major.fishing.area..Name.))
 
 ## 🐟 主要物种和国家
 
-34 渔区产量最高的十个物种、它们的产量变化以及平均产量的突变点：
+34渔区产量最高的十个物种、它们的产量变化以及平均产量的突变点：
 
 ```{r, figures = TRUE}
 species <- fishing_area_species(FAO34$area_data, rank_range = c(1, 10))
@@ -127,28 +130,104 @@ countries <- fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
 
 ## 🌐 中文与中英双语图表
 
-每项分析都有一个 `lang` 参数，取值为 `"en"`（英文）、`"zh"`（中文）或 `"both"`（中英双语）。国家、物种和渔区名称使用 FAO 官方中文名。
+每项分析都有一个`lang`参数，取值为`"en"`（英文）、`"zh"`（中文）或`"both"`（中英双语）。国家、物种和渔区名称使用FAO官方中文名。
 
 ```{r, figures = "country_ranked_wrap"}
 species_country(FAO34$area_data, species_name = "European pilchard(=Sardine)", lang = "both")
 ```
 
-如果希望所有图表都使用中文，只需用 `fao_settings(lang = "zh")` 设置一次即可。本文开头就是这样设置的，所以本文其余的图表都是中文。
+如果希望所有图表都使用中文，只需用`fao_settings(lang = "zh")`设置一次即可。本文开头就是这样设置的，所以本文其余的图表都是中文。
 
 ## 📊 第一项汇总分析：资源开发状态
 
-`stock_status()` 根据每个物种的产量相对于其历史峰值产量的比例，判断其资源开发状态：
+`stock_status()`根据每个物种的产量相对于其历史峰值产量的比例，判断其资源开发状态（资源状态图，Kleisner等2013）：
 
 ```{r, figures = TRUE}
 status <- stock_status(FAO34$area_data)
 ```
 
+## 📝 一键生成Word报告
+
+`fao_report()`运行某个渔区的各项分析，并生成一份Word报告，包括封面、摘要、数据来源与分析方法、附图表的结果、结论、参考文献和附表。渔区可以用名称或代码指定：
+
+```{r, eval = FALSE}
+fao_report(34, lang = "en")   # 在工作目录中生成reports/FAO34_report_en.docx
+```
+
+报告默认包括总产量及其阶段、主要物种和主要国家、ISSCAAP类群、资源状态图、数据质量、渔获多样性，以及沿岸国与远洋捕捞；渔获骤变、渔业崩溃、同步性、中上层/底层比、渔获平均温度、远洋国家概况和CMSY++可以另外打开。把`lang`设为`"zh"`即生成中文报告。全部设置见[📝 一键生成Word评估报告](report.html)。
+
+## ⚙️ 本文所用函数的设置
+
+各分析函数共有的参数：
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `lang` | 图表文字和名称的语言：`"en"`、`"zh"`或`"both"` | `NULL`：使用`fao_settings()`中的语言（默认`"en"`） |
+| `plot` | 是否保存图表 | `TRUE` |
+| `table` | 是否在`tables/`中保存表格（`fishing_area_data()`没有此参数） | `TRUE` |
+| `pptx` | 同时保存可编辑的PowerPoint图表 | `FALSE`，或`fao_settings()`中的`pptx` |
+| `ZH` | 指定中文的旧方式：`ZH = TRUE`等同于`lang = "zh"`（只有渔区、物种和国家分析函数有此参数） | `FALSE` |
+| `label` | 汇总分析（如`stock_status()`）输出文件名中使用的名称 | `NULL`：数据所属的渔区（或国家） |
+
+每个函数还有各自的参数，各篇文章中都有完整的参数表：
+
+| 函数 | 主要参数 | 全部参数 |
+|---|---|---|
+| `check_fao_update()`、`download_fao_data()`、`load_fao_data()`、`fao_data_info()` | `version`、`data_dir`、`overwrite`、`quiet` | [💾 FAO数据](data.html) |
+| `fishing_area_data()` | `area_name`、`timeseries_analysis`、`data_version`、颜色和文字大小 | [🌊 渔区分析](fishing-areas.html) |
+| `fishing_area_species()`、`fishing_area_country()` | `rank_range`、`timeseries_analysis`、`h_value`、线条和文字样式 | [🌊 渔区分析](fishing-areas.html) |
+| `species_country()` | `species_name`、`rank_range`、`h_value`、地图样式 | [🐟 物种与国家分析](species-countries.html) |
+| `stock_status()` | `taxon_levels`、`min_years`、`min_consecutive`、`min_catch`、`smooth` | [📈 类群结构、资源状态与趋势](status-trends.html) |
+| `fao_report()` | `area`、`lang`、`file`、各部分的开关、各项分析的设置 | [📝 一键生成Word评估报告](report.html) |
+| `fao_settings()`、`fao_font()` | `lang`、`theme`、`palette`、`map_projection`、`dpi`等 | [🎨 自定义图表与地图](customise.html) |
+
 ## 🧭 下一步
 
-- [💾 FAO 数据：下载与自定义](data.html)：版本、数据格式、数据子集、中文名称
+- [💾 FAO数据：下载与自定义](data.html)：版本、数据格式、数据子集、中文名称
 - [🌊 渔区分析](fishing-areas.html)：渔区分析函数的全部选项
 - [🐟 物种与国家分析](species-countries.html)：`species_country()`、`country_species()`、`country_analysis()`
-- [📈 类群结构、资源状态与趋势](status-trends.html)和
-  [🔍 数据质量、多样性与船队](quality-diversity-fleets.html)：九项汇总分析
-- [🌡️ 海表温度与渔获平均温度](sst-mtc.html)：渔区海表温度（内置或读取自己的 NetCDF 文件）与渔获平均温度
+- [📈 类群结构、资源状态与趋势](status-trends.html)和[🔍 数据质量、多样性与船队](quality-diversity-fleets.html)：各项汇总分析
+- [🔬 渔获骤变、渔业崩溃、同步性与远洋捕捞](literature-analyses.html)：来自文献的方法（渔获骤变、渔业崩溃、同步性与组合效应、远洋船队，以及FAO数据版本之间的修订）
+- [🌡️ 海表温度与渔获平均温度](sst-mtc.html)：渔区海表温度（内置或读取自己的NetCDF文件）与渔获平均温度
+- [🐠 FishBase与SeaLifeBase物种特征](fishbase.html)：将FAO物种条目与FishBase和SeaLifeBase匹配，并使用其物种特征
+- [📉 CMSY++资源评估](cmsy.html)：主要物种的仅基于渔获量的资源评估
+- [📝 一键生成Word评估报告](report.html)：把某个渔区的全部分析写成一份Word报告
 - [🎨 自定义图表与地图](customise.html)：主题、色板、地图投影、字体和输出设置
+
+## 📖 参考文献
+
+```{r references-release, include = FALSE}
+release_info <- fao_data_info()
+```
+
+Bai, J. and Perron, P. (2003). Computation and analysis of multiple structural change models.
+*Journal of Applied Econometrics* 18(1): 1–22.
+[doi:10.1002/jae.659](https://doi.org/10.1002/jae.659)
+
+CWP (Coordinating Working Party on Fishery Statistics). *CWP Handbook of Fishery Statistics*:
+Main water areas (FAO major fishing areas). Rome: FAO.
+<https://www.fao.org/cwp-on-fishery-statistics/handbook/general-concepts/main-water-areas/en/>
+
+FAO (`r sub("[.].*", "", release_info$release)`). FishStat: Global capture production
+`r release_info$years[1]`–`r release_info$years[2]` (release `r release_info$release`).
+In: FishStatJ. <https://www.fao.org/fishery/statistics/software/fishstatj/en>.
+Licence: CC-BY-4.0. Release file: <`r release_info$url`>
+
+FAO (2026). *Fishery and Aquaculture Statistics – Yearbook 2024*. FAO Yearbook of Fishery and
+Aquaculture Statistics. Rome: FAO.
+[doi:10.4060/ce1217en](https://doi.org/10.4060/ce1217en)
+
+Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global catch data for inferences
+on the world's marine fisheries. *Fish and Fisheries* 14(3): 293–311.
+[doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
+
+Natural Earth. Free vector and raster map data at 1:10m, 1:50m and 1:110m scales.
+<https://www.naturalearthdata.com/>
+
+Zeileis, A., Kleiber, C., Krämer, W. and Hornik, K. (2003). Testing and dating of structural
+changes in practice. *Computational Statistics & Data Analysis* 44(1–2): 109–123.
+[doi:10.1016/S0167-9473(03)00030-6](https://doi.org/10.1016/S0167-9473(03)00030-6)
+
+Zeileis, A., Leisch, F., Hornik, K. and Kleiber, C. (2002). strucchange: an R package for testing
+for structural change in linear regression models. *Journal of Statistical Software* 7(2): 1–38.
+[doi:10.18637/jss.v007.i02](https://doi.org/10.18637/jss.v007.i02)

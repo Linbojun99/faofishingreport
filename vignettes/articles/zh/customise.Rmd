@@ -1,7 +1,7 @@
 ---
 title: "🎨 自定义图表与地图"
 description: >
-  fao_settings()：语言、主题、色板、地图投影与中心、字体、网格线、分辨率和 PowerPoint 输出。
+  fao_settings()：语言、主题、色板、地图投影与中心、字体、网格线、分辨率、PowerPoint输出和数据文件夹。
 ---
 
 ```{r setup, include = FALSE}
@@ -17,7 +17,11 @@ fao_settings(lang = "zh")   # 本文所有图表使用中文
 data_source("zh")
 ```
 
-所有图表和地图都遵循少数几项设置，每个 R 会话中用 `fao_settings()` 设置一次即可。不带参数运行它可以查看当前设置：
+```{r page-language, include = FALSE}
+page_lang <- getOption("faofishingreport.lang", "en")
+```
+
+所有图表和地图都遵循少数几项设置，每个R会话中用`fao_settings()`设置一次即可。不带参数运行它可以查看当前设置：
 
 ```{r, eval = FALSE}
 fao_settings()
@@ -33,31 +37,47 @@ fao_settings()
 #>   grid            FALSE
 #>   dpi             600
 #>   pptx            FALSE
-#>   data_dir        C:/Users/<you>/AppData/Local/R/data/R/faofishingreport
+#>   data_dir        C:/Users/<you>/AppData/Roaming/R/data/R/faofishingreport
+#>   online          TRUE
+#>   sst             ersst5
+#>   silent          FALSE
 #>   font            SimSun
 ```
 
+`fao_settings(...)`以`名称 = 取值`的形式接收设置，另外还有一个参数`reset`：
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `...` | 要修改的设置，形式为`名称 = 取值`（见下表） | |
+| `reset` | 设为`TRUE`时先把所有设置恢复为默认值 | `FALSE` |
+
+各项设置：
+
 | 设置 | 可选值 | 默认值 |
 |---|---|---|
-| `lang` | `"en"`, `"zh"`, `"both"` | `"en"` |
-| `theme` | `"bw"`、`"classic"`、`"minimal"`、`"light"`、`"linedraw"`、`"gray"`、`"dark"`，或任意 ggplot2 主题 | `"bw"` |
-| `base_size` | 基础字号 | `12` |
-| `font` | 图表文字的字体 | 根据操作系统自动选择 |
-| `palette` | 分类配色：ggsci、RColorBrewer、`"Okabe-Ito"`、`"viridis"` 等色板，或一组颜色 | `"npg"` |
-| `map_palette` | 地图配色：Material（`"deep-orange"` 等）、RColorBrewer（`"YlOrRd"` 等）、viridis，或一组颜色 | `"deep-orange"` |
-| `map_center` | `0`（经度 -180 到 180）或 `180`（经度 0 到 360） | `0` |
-| `map_projection` | `"longlat"`、`"robinson"`、`"mollweide"`、`"equal_earth"`、`"winkel_tripel"`、`"mercator"`，或 PROJ 字符串、EPSG 代码 | `"longlat"` |
-| `map_land`, `map_ocean` | 无数据国家的颜色、海洋的颜色 | `"grey90"`，无 |
+| `lang` | 图表语言：`"en"`、`"zh"`、`"both"`；函数自身的`lang`参数优先 | `"en"` |
+| `theme` | `"bw"`、`"classic"`、`"minimal"`、`"light"`、`"linedraw"`、`"gray"`、`"dark"`，或任意ggplot2主题对象；地图和饼图保持简洁主题 | `"bw"` |
+| `base_size` | 主题的基础字号 | `12` |
+| `font` | 图表文字的字体（见[字体](#fonts)） | 根据操作系统自动选择 |
+| `palette` | 分类配色（国家、物种、分组）：ggsci色板（`"npg"`、`"lancet"`等）、RColorBrewer色板（`"Set1"`等）、基础R色板（`grDevices::palette.pals()`，如`"Okabe-Ito"`；`grDevices::hcl.pals()`，如`"viridis"`），或一组颜色 | `"npg"` |
+| `map_palette` | 地图配色：ggsci的Material Design色板（`"deep-orange"`、`"blue"`、`"teal"`等）、RColorBrewer色板（`"YlOrRd"`、`"Blues"`等）、viridis系列（`"viridis"`、`"magma"`、`"plasma"`、`"inferno"`、`"cividis"`、`"mako"`、`"rocket"`、`"turbo"`）、`grDevices::hcl.pals()`中的名称，或一组颜色 | `"deep-orange"` |
+| `map_center` | 地图的中心经度：`0`（经度-180到180，大西洋居中）或`180`（经度0到360，太平洋居中）；也可以写成`"-180-180"`和`"0-360"` | `0` |
+| `map_projection` | `"longlat"`、`"robinson"`、`"mollweide"`、`"equal_earth"`、`"winkel_tripel"`、`"mercator"`，或PROJ字符串、EPSG代码（此时不使用`map_center`） | `"longlat"` |
+| `map_land` | 地图上无数据国家的颜色 | `"grey90"` |
+| `map_ocean` | 地图上海洋的颜色 | `NA`（不填充） |
 | `grid` | 背景网格线（地图上为经纬网） | `FALSE` |
-| `dpi` | PNG 文件的分辨率 | `600` |
-| `pptx` | 同时保存可编辑的 PowerPoint 文件（需要 eoffice 包） | `FALSE` |
-| `data_dir` | 下载的 FAO 数据所在的文件夹 | R 用户数据文件夹 |
+| `dpi` | PNG文件的分辨率 | `600` |
+| `pptx` | 同时保存可编辑的PowerPoint文件（使用eoffice包） | `FALSE` |
+| `data_dir` | 下载的FAO数据所在的文件夹（见[💾 FAO数据](data.html)） | `NULL`：R的用户数据文件夹，见`fao_data_dir()` |
+| `online` | 是否允许函数联网查找FishBase的最新版本；设为`FALSE`时离线使用已下载的数据（见[🐠 FishBase](fishbase.html)） | `TRUE` |
+| `sst` | `fao_area_sst()`和`mean_temperature_catch()`使用的海表温度数据：`"ersst5"`（内置）、用`download_sst_data()`下载的数据产品（如`"hadisst1"`），或自己的NetCDF文件或文件夹的路径（见[🌡️ 海表温度](sst-mtc.html)） | `"ersst5"` |
+| `silent` | CMSY++函数是否不显示进度条和提示信息；函数自身的`silent`参数优先（见[📉 CMSY++](cmsy.html)） | `FALSE` |
 
-`fao_settings(reset = TRUE)` 恢复全部默认设置。设置名称或取值有误时会立即报错，并列出可用的选项。
+`fao_settings(reset = TRUE)`恢复全部默认设置。设置名称或取值有误时会立即报错，并列出可用的选项。每项设置都保存为R选项`faofishingreport.<名称>`，因此也可以用`options()`设置，例如写在`.Rprofile`文件中。`fao_settings()`以不可见的方式返回当前设置组成的列表。
 
 ## 🌐 语言
 
-每个分析函数都有 `lang` 参数；`fao_settings(lang = ...)` 会统一修改所有函数的默认语言。`"both"` 同时显示中文和英文，例如“百万吨 (Million Tonnes)”和“摩洛哥 Morocco”。
+每个分析函数都有`lang`参数；`fao_settings(lang = ...)`会统一修改所有函数的默认语言。`"both"`同时显示中文和英文，例如“百万吨 (Million Tonnes)”和“摩洛哥 Morocco”。
 
 ```{r, figures = "area_country.png"}
 fao_settings(lang = "zh")
@@ -67,10 +87,13 @@ fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
 ```{r, figures = "area_country.png"}
 fao_settings(lang = "both")
 fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
-fao_settings(lang = "zh")
 ```
 
-旧参数 `ZH = TRUE` 仍然可用，等同于 `lang = "zh"`。
+```{r, include = FALSE}
+fao_settings(lang = page_lang)
+```
+
+用`fao_settings(lang = "zh")`即可恢复为中文。旧参数`ZH = TRUE`仍然可用，等同于`lang = "zh"`。
 
 ## 🖼️ 主题
 
@@ -84,11 +107,11 @@ fao_settings(theme = "minimal", base_size = 14)
 fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
 ```
 
-也可以使用任意 ggplot2 主题，例如 `fao_settings(theme = ggplot2::theme_light(base_size = 13))`。
+也可以使用任意ggplot2主题，例如`fao_settings(theme = ggplot2::theme_light(base_size = 13))`。
 
 ## 🎨 色板
 
-`palette` 决定国家、物种和分组的颜色：
+`palette`决定国家、物种和分组的颜色：
 
 ```{r, figures = "area_country.png"}
 fao_settings(theme = "bw", base_size = 12, palette = "lancet")
@@ -106,11 +129,11 @@ fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
 fao_settings(palette = "npg")
 ```
 
-可用的色板包括 ggsci 包的 `"npg"`、`"aaas"`、`"nejm"`、`"lancet"`、`"jama"`、`"jco"`、`"d3"`；RColorBrewer 的 `"Set1"`、`"Set2"`、`"Dark2"`、`"Paired"`；以及基础 R 中 `grDevices::palette.pals()` 和 `grDevices::hcl.pals()` 列出的色板。类别数超过色板的颜色数时，会自动插值补足颜色。
+可用的色板包括ggsci包的`"npg"`、`"aaas"`、`"nejm"`、`"lancet"`、`"jama"`、`"jco"`、`"d3"`；RColorBrewer的`"Set1"`、`"Set2"`、`"Dark2"`、`"Paired"`；以及基础R中`grDevices::palette.pals()`（如适合色盲读者的Okabe-Ito色板，Okabe和Ito 2008）和`grDevices::hcl.pals()`（Zeileis等2020）列出的色板。类别数超过色板的颜色数时，会自动插值补足颜色。
 
 ## 🗺️ 地图投影
 
-同一张地图（各国在 34 区的产量）在各种投影下的效果：
+同一张地图（各国在34区的产量）在各种投影下的效果：
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "longlat")      # 普通经纬度坐标（默认）
@@ -142,11 +165,22 @@ fao_settings(map_projection = "mercator")
 fishing_area_data("Atlantic, Eastern Central")
 ```
 
-其他投影可以用 PROJ 字符串或 EPSG 代码指定，例如 `fao_settings(map_projection = "+proj=natearth")` 或 `"EPSG:3857"`。
+各种命名投影及其对应的PROJ投影（地图由sf绘制，sf使用PROJ库进行投影）：
+
+| `map_projection` | 投影 | PROJ | 特点 |
+|---|---|---|---|
+| `"longlat"` | 普通经纬度坐标（等距圆柱投影） | `EPSG:4326`；`map_center = 180`时为`+proj=eqc` | 简单；离赤道越远，面积放大越多 |
+| `"robinson"` | Robinson投影（Robinson 1974） | `+proj=robin` | 折中的世界地图投影，既不等积也不等角 |
+| `"equal_earth"` | Equal Earth投影（Šavrič等2019） | `+proj=eqearth` | 等积投影，纬线为直线 |
+| `"mollweide"` | Mollweide投影（Snyder 1987） | `+proj=moll` | 等积投影，外轮廓为椭圆 |
+| `"winkel_tripel"` | Winkel tripel投影 | `+proj=wintri` | 折中的世界地图投影，总体变形较小 |
+| `"mercator"` | Mercator投影（Snyder 1987） | `+proj=merc` | 等角投影；越靠近两极面积放大越多，截取南纬80°至北纬84° |
+
+其他投影可以用PROJ字符串或EPSG代码指定，例如`fao_settings(map_projection = "+proj=natearth")`或`"EPSG:3857"`。
 
 ## 🌏 太平洋居中地图
 
-`map_center = 180` 显示经度 0 到 360，太平洋位于地图中央。数据中在日期变更线处被切开的渔区和国家（如太平洋各渔区、俄罗斯）会重新拼合在一起：
+`map_center = 180`显示经度0到360，太平洋位于地图中央。数据中在日期变更线处被切开的渔区和国家（如太平洋各渔区、俄罗斯）会重新拼合在一起：
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "robinson", map_center = 180)
@@ -158,6 +192,8 @@ fishing_area_data("Pacific, Northwest")
 ```{r, figures = "fishing_area_map"}
 country_analysis("Morocco")
 ```
+
+国家轮廓来自Natural Earth的1:50m地图单元，通过ISO 3代码与FAO国家匹配；渔区边界来自FAO主要渔区图层，并为世界地图做了简化。
 
 ## 🖌️ 地图配色
 
@@ -171,26 +207,39 @@ fao_settings(map_palette = "YlOrRd", map_land = "grey85", map_ocean = "#EAF4FB")
 fishing_area_data("Atlantic, Eastern Central")
 ```
 
-`fishing_area_data()`、`species_country()` 和 `country_analysis()` 的 `fill_scale` 参数可以在单次调用中覆盖 `map_palette`。
+`fishing_area_data()`、`species_country()`和`country_analysis()`的`fill_scale`参数可以在单次调用中覆盖`map_palette`。
 
 ```{r, include = FALSE}
 fao_settings(reset = TRUE)
-fao_settings(dpi = 100)
-fao_settings(lang = "zh")
+fao_settings(dpi = 100, lang = page_lang)
 ```
 
-## 🔤 字体
+## 🔤 字体 {#fonts}
 
-字体会根据操作系统自动选择，以保证中文正常显示：Windows 上为 SimSun，macOS 上为 Songti SC，Linux 上为 Noto Serif CJK SC；如果这些字体不可用，则选用系统中已安装的下一个中文字体。可以这样修改字体：
+字体会根据操作系统自动选择，以保证中文正常显示：Windows上为SimSun，macOS上为Songti SC，Linux上为Noto Serif CJK SC；如果这些字体不可用，则选用系统中已安装的下一个中文字体（都没有时为`"sans"`）。可以这样修改字体：
 
 ```{r, eval = FALSE}
 fao_font()                            # 查看当前字体
 fao_settings(font = "Microsoft YaHei")
 ```
 
-PNG 文件由 ragg 包绘制，它可以按名称找到任何已安装的字体；PowerPoint 文件使用相同的字体名称。
+`fao_font()`只有一个参数：
 
-## 📐 网格线、分辨率和 PowerPoint
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `family` | 此后使用的字体，如`"Microsoft YaHei"`；为`NULL`时只返回当前字体 | `NULL` |
+
+函数返回字体名称。`fao_settings(font = ...)`、`fao_font(...)`和`options(faofishingreport.font = ...)`的效果相同。各系统依次尝试的字体：
+
+| 系统 | 字体（按顺序） |
+|---|---|
+| Windows | SimSun、NSimSun、Microsoft YaHei、SimHei、DengXian、KaiTi |
+| macOS | Songti SC、STSong、PingFang SC、Heiti SC、Hiragino Sans GB、Arial Unicode MS |
+| Linux | Noto Serif CJK SC、Noto Sans CJK SC、Source Han Serif SC、Source Han Sans SC、WenQuanYi Zen Hei、WenQuanYi Micro Hei、AR PL UMing CN |
+
+已安装的字体由systemfonts包列出。PNG文件由ragg包绘制，它可以按名称找到任何已安装的字体；PowerPoint文件使用相同的字体名称。
+
+## 📐 网格线、分辨率和PowerPoint
 
 ```{r, figures = "area_country.png"}
 fao_settings(grid = TRUE)
@@ -198,18 +247,83 @@ fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
 fao_settings(grid = FALSE)
 ```
 
-PowerPoint 文件由 eoffice 包生成，它会随 faofishingreport 一起安装；在 macOS 上还需要安装 [XQuartz](https://www.xquartz.org)。
+PowerPoint文件由eoffice包生成，它会随faofishingreport一起安装；在macOS上还需要安装[XQuartz](https://www.xquartz.org)。
 
 ```{r, eval = FALSE}
-fao_settings(dpi = 300)      # PNG 文件更小
-fao_settings(pptx = TRUE)    # 同时在 figures/pptx/ 中保存可编辑的 PowerPoint
+fao_settings(dpi = 300)      # PNG文件更小
+fao_settings(pptx = TRUE)    # 同时在figures/pptx/中保存可编辑的PowerPoint
 fishing_area_species(FAO34$area_data, pptx = TRUE)   # 或只对单次调用生效
 ```
 
 ## ⚙️ 各函数的参数
 
-除了上述设置，较早的分析函数还有各自的样式参数（线宽、点大小、文字大小和颜色），详见各函数的帮助页面（如 `?fishing_area_data`）以及 [🌊 渔区分析](fishing-areas.html)。
+除了上述设置，各分析函数还有各自的参数；其中`lang`、`pptx`和`fill_scale`可以在单次调用中覆盖设置。各篇文章中都有完整的参数表：
+
+| 函数 | 全部参数 |
+|---|---|
+| `fishing_area_data()`、`fishing_area_species()`、`fishing_area_country()`（线宽、点大小、字号和颜色） | [🌊 渔区分析](fishing-areas.html) |
+| `species_country()`、`country_species()`、`country_analysis()` | [🐟 物种与国家分析](species-countries.html) |
+| `check_fao_update()`、`download_fao_data()`、`load_fao_data()`、`fao_data_info()`、`fao_translate()` | [💾 FAO数据](data.html) |
+| 汇总分析，如`stock_status()`、`peak_trend()` | [📈 类群结构、资源状态与趋势](status-trends.html)、[🔍 数据质量、多样性与船队](quality-diversity-fleets.html) |
+| `fao_report()` | [📝 一键生成Word评估报告](report.html) |
 
 ## 📝 翻译
 
-国家、物种和渔区的中文名称来自 FAO。ISSCAAP 类群、主要类群和收入组的中文名称（`inst/extdata/group_names_zh.csv`）以及所有图表标签（`inst/extdata/chart_labels.csv`）都是普通的 CSV 文件：如需修改措辞，在包源代码中编辑这些文件，然后重新安装本包即可。
+国家、物种和渔区的中文名称来自FAO。ISSCAAP类群、主要类群和收入组的中文名称（`inst/extdata/group_names_zh.csv`）以及所有图表标签（`inst/extdata/chart_labels.csv`）都是普通的CSV文件：如需修改措辞，在包源代码中编辑这些文件，然后重新安装本包即可。
+
+## 📖 参考文献
+
+FAO (2024). FAO Major Fishing Areas for Statistical Purposes. In: FAO Fisheries and Aquaculture
+Division [online]. Licence: CC-BY 4.0.
+<https://www.fao.org/fishery/geonetwork?uuid=ac02a460-da52-11dc-9d70-0017f293bd28>
+(the area boundaries of the fishing area maps, bundled as `inst/extdata/FAO_AREAS_CWP.shp`)
+
+Guo, K. *eoffice: Export or Graph and Tables to 'Microsoft' Office and Import Figures and
+Tables*. R package.
+[doi:10.32614/CRAN.package.eoffice](https://doi.org/10.32614/CRAN.package.eoffice)
+
+Harrower, M. and Brewer, C.A. (2003). ColorBrewer.org: an online tool for selecting colour schemes
+for maps. *The Cartographic Journal* 40(1): 27–37.
+[doi:10.1179/000870403235002042](https://doi.org/10.1179/000870403235002042)
+
+Massicotte, P. and South, A. *rnaturalearth: World Map Data from Natural Earth*. R package.
+[doi:10.32614/CRAN.package.rnaturalearth](https://doi.org/10.32614/CRAN.package.rnaturalearth)
+
+Natural Earth. Admin 0 – Details, map units, 1:50m.
+<https://www.naturalearthdata.com/downloads/50m-cultural-vectors/50m-admin-0-details/>
+
+Okabe, M. and Ito, K. (2008). Color Universal Design (CUD): how to make figures and
+presentations that are friendly to colorblind people. <https://jfly.uni-koeln.de/color/>
+
+Pebesma, E. (2018). Simple features for R: standardized support for spatial vector data.
+*The R Journal* 10(1): 439–446.
+[doi:10.32614/RJ-2018-009](https://doi.org/10.32614/RJ-2018-009)
+
+Pedersen, T.L. and Shemanarev, M. *ragg: Graphic Devices Based on AGG*. R package.
+[doi:10.32614/CRAN.package.ragg](https://doi.org/10.32614/CRAN.package.ragg)
+
+PROJ contributors (2026). *PROJ coordinate transformation software library*. Open Source
+Geospatial Foundation. <https://proj.org/>.
+[doi:10.5281/zenodo.5884394](https://doi.org/10.5281/zenodo.5884394)
+
+Robinson, A.H. (1974). A new map projection: its development and characteristics.
+*International Yearbook of Cartography* 14: 145–155.
+
+Šavrič, B., Patterson, T. and Jenny, B. (2019). The Equal Earth map projection.
+*International Journal of Geographical Information Science* 33(3): 454–465.
+[doi:10.1080/13658816.2018.1504949](https://doi.org/10.1080/13658816.2018.1504949)
+
+Snyder, J.P. (1987). *Map Projections: A Working Manual*. U.S. Geological Survey Professional
+Paper 1395. Washington, DC: U.S. Government Printing Office.
+[doi:10.3133/pp1395](https://doi.org/10.3133/pp1395)
+
+Wickham, H. (2016). *ggplot2: Elegant Graphics for Data Analysis*. New York: Springer.
+[doi:10.1007/978-3-319-24277-4](https://doi.org/10.1007/978-3-319-24277-4)
+
+Xiao, N. *ggsci: Scientific Journal and Sci-Fi Themed Color Palettes for 'ggplot2'*. R package.
+[doi:10.32614/CRAN.package.ggsci](https://doi.org/10.32614/CRAN.package.ggsci)
+
+Zeileis, A., Fisher, J.C., Hornik, K., Ihaka, R., McWhite, C.D., Murrell, P., Stauffer, R. and
+Wilke, C.O. (2020). colorspace: a toolbox for manipulating and assessing colors and palettes.
+*Journal of Statistical Software* 96(1): 1–49.
+[doi:10.18637/jss.v096.i01](https://doi.org/10.18637/jss.v096.i01)

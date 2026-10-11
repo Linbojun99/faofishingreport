@@ -19,6 +19,10 @@ The three fishing area functions describe one FAO major fishing area. The exampl
 
 ## 🗺️ The FAO major fishing areas
 
+The FAO major fishing areas for statistical purposes are defined by the Coordinating Working
+Party on Fishery Statistics (CWP): marine areas, and the inland waters of each continent. Their
+catch in the last year of the data:
+
 ```{r}
 data <- load_fao_data()
 areas <- aggregate(Production ~ FAO.major.fishing.area..Name., data = subset(data, Year == max(Year)), FUN = sum)
@@ -34,21 +38,21 @@ Use these names (e.g. `"Pacific, Northwest"`) in `fishing_area_data()`.
 FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 ```
 
-It saves three charts:
+It saves three charts in `figures/png/`:
 
 | File | Chart |
 |---|---|
-| `fishing_trend.png` | Total catch of the area. With `timeseries_analysis = TRUE`, the grey bars are the mean catch of each period between **breakpoints** (dashed lines), found with `strucchange::breakpoints()` |
-| `fishing_percentage.png` | The area's share of the world catch each year, and its average (red line) |
+| `fishing_trend.png` | Total catch of the area. With `timeseries_analysis = TRUE`, the grey horizontal lines are the mean catch of each period between **breakpoints**, and the dashed lines mark the start of each period (see [How the breakpoints are found](#breakpoints)) |
+| `fishing_percentage.png` | The area's share of the world catch of all marine areas each year (for an inland area: of the world catch of all inland waters), and the average of these shares (red line) |
 | `area_country_map.png` | Total catch of each country in the area over all years, on a world map |
 
 and returns a list:
 
 | Element | Content |
 |---|---|
-| `area_data` | Catch records of the area: the input of the other functions |
-| `coefs_data` | Start, end and mean catch of each period between breakpoints |
-| `act_world_map` | The map data (an sf object) |
+| `area_data` | Catch records of the area (all eight columns of the data): the input of the other functions |
+| `coefs_data` | Periods between breakpoints of the total catch: `start_year`, `end_year` and `intercept` (mean catch of the period, in tonnes) |
+| `act_world_map` | The map data, an sf object with the total catch of each country (`NULL` with `plot = FALSE`) |
 
 ```{r}
 FAO34$coefs_data
@@ -68,20 +72,37 @@ fishing_area_data(
 )
 ```
 
+All arguments of `fishing_area_data()`:
+
 | Argument | Meaning | Default |
 |---|---|---|
-| `area_name` | FAO major fishing area | |
-| `plot` | Save charts | `TRUE` |
-| `timeseries_analysis` | Add breakpoints to the catch chart | `TRUE` |
-| `area_color1`, `area_color2`, `area_alpha` | Fill, outline and transparency of the catch area | `"grey80"`, `"black"`, `0.7` |
-| `line_color`, `line_alpha`, `line_linewidth`, `point_size` | Line and points of the share chart | `"black"`, `0.8`, `1.5`, `2` |
-| `hline_color`, `hline_alpha`, `hline_linewidth` | Average line of the share chart | `"red"`, `0.7`, `1.5` |
-| `axis_text_size`, `axis_title_size`, `axis_text_face`, `axis_title_face` | Axis text | `10`, `12`, `"plain"`, `"bold"` |
-| `polygon_color`, `fill_scale` | Country borders and palette of the map | `"grey90"`, map palette of `fao_settings()` |
-| `axis_title_size_map`, `axis_text_size_map`, `legend_text_size_map` | Text sizes of the map | `14`, `12`, `12` |
-| `lang` | `"en"`, `"zh"` or `"both"` | language of `fao_settings()` |
-| `data_version` | FAO release: `"latest"`, `"bundled"` or e.g. `"2023.1.1"` | `"latest"` |
-| `pptx` | Also save editable PowerPoint | `FALSE` |
+| `area_name` | FAO major fishing area, as named in the data (table above) | |
+| `plot` | Save the three charts; `FALSE` only returns the data | `TRUE` |
+| `timeseries_analysis` | Draw the breakpoints and the mean catch of each period on the total catch chart (`coefs_data` is returned either way) | `TRUE` |
+| `area_color1` | Fill colour of the total catch | `"grey80"` |
+| `area_alpha` | Transparency of that fill (0 transparent to 1 opaque) | `0.7` |
+| `area_color2` | Outline colour of the total catch | `"black"` |
+| `line_color` | Colour of the line of the share chart | `"black"` |
+| `line_alpha` | Transparency of that line | `0.8` |
+| `line_linewidth` | Width of that line | `1.5` |
+| `point_size` | Size of the points of the share chart | `2` |
+| `hline_color` | Colour of the average line of the share chart | `"red"` |
+| `hline_alpha` | Transparency of the average line | `0.7` |
+| `hline_linewidth` | Width of the average line | `1.5` |
+| `axis_text_size` | Size of the axis labels of the share chart, and of the axis titles of the total catch chart | `10` |
+| `axis_text_face` | Font face of the axis titles of the total catch chart: `"plain"`, `"bold"`, `"italic"` or `"bold.italic"` | `"plain"` |
+| `axis_title_size` | Size of the axis titles of the share chart | `12` |
+| `axis_title_face` | Font face of the axis titles of the share chart and the map | `"bold"` |
+| `strip_text_size`, `strip_text_face` | Size and font face of panel titles; the charts of this function have no panels, so they have no visible effect | `12`, `"bold"` |
+| `polygon_color` | Colour of the country borders on the map | `"grey90"` |
+| `fill_scale` | Palette of the map, any choice of `map_palette` in `fao_settings()` (e.g. `"blue"`, `"YlOrRd"`, `"viridis"` or a vector of colours) | `NULL`: `map_palette` of `fao_settings()` (`"deep-orange"`) |
+| `axis_title_size_map` | Size of the axis titles of the map | `14` |
+| `axis_text_size_map` | Size of the axis labels (longitudes and latitudes) of the map | `12` |
+| `legend_text_size_map` | Size of the legend text of the map | `12` |
+| `ZH` | Older way of asking for Chinese: `TRUE` is `lang = "zh"` | `FALSE` |
+| `lang` | Language of the chart text: `"en"`, `"zh"` or `"both"` | `NULL`: `"zh"` if `ZH = TRUE`, else the language of `fao_settings()` |
+| `data_version` | FAO release: `"latest"` (newest available), `"bundled"` or a release such as `"2026.1.0"` (see [💾 FAO data](data.html)) | `"latest"` |
+| `pptx` | Also save the charts as editable PowerPoint files in `figures/pptx/` | `FALSE`, or `pptx` of `fao_settings()` |
 
 ## 2️⃣ `fishing_area_species()`: main species
 
@@ -91,17 +112,25 @@ species <- fishing_area_species(FAO34$area_data, rank_range = c(1, 10))
 
 | File | Chart |
 |---|---|
-| `area/area_species.png` | Catch of the ten main species over time |
-| `area/area_species_wrap.png` | One panel per species with its share of the area's catch, a linear trend (dashed) and the breakpoints of its mean catch |
+| `area/area_species.png` | Catch of the selected species over time |
+| `area/area_species_wrap.png` | One panel per species with its share of the area's catch over all years, a linear trend (dashed) and the breakpoints of its mean catch; with `timeseries_analysis = FALSE`, a smooth curve instead of the trend and breakpoints |
 
-The function returns the catch by species and year, the ranking, and the breakpoints:
+The function returns a list:
+
+| Element | Content |
+|---|---|
+| `area_species` | Catch of every species item by year |
+| `area_species_ranked` | Catch by year of the selected species, with their total catch and share |
+| `area_species_ranked_total` | The selected species: total catch over all years (`Total_Tonnes`) and share of the area's catch (`Percentage`) |
+| `coefs_data` | Breakpoints of each species: `start_year`, `end_year` and `intercept` (mean catch of the period, in tonnes) |
 
 ```{r}
 show_table(species$area_species_ranked_total)
 ```
 
 It also saves two tables in `tables/`: `species_ranked_table.csv` (average catch per decade, catch
-in the last five years, share in the last year) and `species_coefs_data.csv` (breakpoints).
+in each of the last five years, catch and share in the last year) and `species_coefs_data.csv`
+(the breakpoints).
 
 ```{r}
 show_table(read.csv("tables/species_ranked_table.csv", fileEncoding = "UTF-8-BOM", check.names = FALSE), n = 5, digits = 0)
@@ -120,10 +149,35 @@ show_table(read.csv("tables/species_ranked_table.csv", fileEncoding = "UTF-8-BOM
 fishing_area_species(FAO34$area_data, rank_range = c(11, 20), h_value = 5, lang = "both")
 ```
 
-Style arguments: `line_width`, `point_size`, `point_alpha`, `point_shape`, `line_alpha`,
-`axis_text_size`, `axis_title_size`, `strip_text_size`, `axis_text_face`, `axis_title_face`,
-`strip_text_face`, `smooth_method`, `smooth_linetype`, `line_linewidth`, `text_hjust`,
-`text_vjust`, `text_size`, `text_color` and `facet_ncol`.
+All arguments of `fishing_area_species()`. "Time series chart" is `area_species.png`, "panel
+chart" is `area_species_wrap.png`; the panel chart with breakpoints has fixed line widths, text
+sizes and two columns, and only the `text_*` arguments change it.
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `area_data` | Catch data of an area: `fishing_area_data()$area_data` or any subset of `load_fao_data()` | |
+| `rank_range` | Ranks of the species shown, by total catch over all years: `c(1, 10)` the ten largest, `c(11, 20)` the next ten | `c(1, 10)` |
+| `plot` | Save the charts | `TRUE` |
+| `table` | Save the two tables in `tables/` | `TRUE` |
+| `timeseries_analysis` | `TRUE`: panel chart with linear trend and breakpoints; `FALSE`: panel chart with a smooth curve | `TRUE` |
+| `h_value` | Minimum length of a period between breakpoints: a fraction of the series or a number of years (the `h` of `strucchange::breakpoints()`) | `0.15` |
+| `line_width` | Width of the lines of the time series chart | `1.5` |
+| `line_alpha` | Transparency of the lines of the time series chart and of the panel chart without breakpoints | `0.7` |
+| `line_linewidth` | Width of the lines of the panel chart without breakpoints | `1.5` |
+| `point_size` | Size of the points of the time series chart and of the panel chart without breakpoints | `1.8` |
+| `point_alpha` | Transparency of these points | `0.7` |
+| `point_shape` | Shape of these points (R point symbol, e.g. `1` open circle, `16` filled circle) | `1` |
+| `axis_text_size`, `axis_text_face` | Size and font face of the axis labels (time series chart; y axis of the panel chart without breakpoints) | `10`, `"plain"` |
+| `axis_title_size`, `axis_title_face` | Size and font face of the axis titles (time series chart; panel chart without breakpoints) | `10`, `"bold"` |
+| `strip_text_size`, `strip_text_face` | Size and font face of the panel titles of the panel chart without breakpoints | `10`, `"bold"` |
+| `smooth_method` | Smoothing method of the curve in the panel chart without breakpoints, as in `ggplot2::geom_smooth()`: `"loess"`, `"lm"`, `"gam"`, ... | `"loess"` |
+| `smooth_linetype` | Line type of that curve: `"dashed"`, `"solid"`, `"dotted"`, ... | `"dashed"` |
+| `text_hjust`, `text_vjust` | Horizontal and vertical justification of the share label in each panel (it is anchored at 1957 and zero catch) | `0.9`, `-4` |
+| `text_size`, `text_color` | Size and colour of the share label | `4.5`, `"black"` |
+| `facet_ncol` | Number of columns of the panel chart without breakpoints | `2` |
+| `ZH` | Older way of asking for Chinese: `TRUE` is `lang = "zh"` | `FALSE` |
+| `lang` | Language of the chart text and names: `"en"`, `"zh"` or `"both"` | `NULL`: `"zh"` if `ZH = TRUE`, else the language of `fao_settings()` |
+| `pptx` | Also save the charts as editable PowerPoint files in `figures/pptx/` | `FALSE`, or `pptx` of `fao_settings()` |
 
 ## 3️⃣ `fishing_area_country()`: main countries
 
@@ -131,13 +185,66 @@ Style arguments: `line_width`, `point_size`, `point_alpha`, `point_shape`, `line
 countries <- fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
 ```
 
-It has the same arguments and outputs as `fishing_area_species()`, by country
-(`area/area_country.png`, `area/area_country_wrap.png`, `tables/country_ranked_table.csv`,
-`tables/country_coefs_data.csv`).
+It works like `fishing_area_species()`, by country:
+
+| Output | Content |
+|---|---|
+| `area/area_country.png` | Catch of the selected countries over time |
+| `area/area_country_wrap.png` | One panel per country with its share of the area's catch, a linear trend and the breakpoints (or a smooth curve) |
+| `tables/country_ranked_table.csv` | Average catch per decade, catch in each of the last five years, catch and share in the last year |
+| `tables/country_coefs_data.csv` | The breakpoints |
+| Returned list | `area_country` (catch of every country by year), `area_country_ranked`, `area_country_ranked_total` and `coefs_data` |
 
 ```{r}
 show_table(countries$area_country_ranked_total)
 ```
+
+All arguments of `fishing_area_country()`. As for the species, the panel chart with breakpoints
+has fixed line widths, text sizes and two columns.
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `area_data` | Catch data of an area: `fishing_area_data()$area_data` or any subset of `load_fao_data()` | |
+| `rank_range` | Ranks of the countries shown, by total catch over all years | `c(1, 10)` |
+| `plot` | Save the charts | `TRUE` |
+| `table` | Save the two tables in `tables/` | `TRUE` |
+| `timeseries_analysis` | `TRUE`: panel chart with linear trend and breakpoints; `FALSE`: panel chart with a smooth curve | `TRUE` |
+| `h_value` | Minimum length of a period between breakpoints: a fraction of the series or a number of years | `0.15` |
+| `line_width` | Width of the lines of the time series chart (`area_country.png`) | `1.5` |
+| `line_alpha` | Transparency of the lines of the time series chart and of the panel chart without breakpoints | `0.7` |
+| `line_linewidth` | Width of the lines of the panel chart without breakpoints | `1.5` |
+| `point_size` | Size of the points of the time series chart and of the panel chart without breakpoints | `1.8` |
+| `point_alpha` | Transparency of these points | `0.7` |
+| `point_shape` | Shape of these points (R point symbol) | `1` |
+| `axis_text_size`, `axis_text_face` | Size and font face of the axis labels (time series chart; y axis of the panel chart without breakpoints) | `10`, `"plain"` |
+| `axis_title_size`, `axis_title_face` | Size and font face of the axis titles (time series chart; panel chart without breakpoints) | `10`, `"bold"` |
+| `strip_text_size`, `strip_text_face` | Size and font face of the panel titles of the panel chart without breakpoints | `10`, `"bold"` |
+| `smooth_method` | Smoothing method of the curve in the panel chart without breakpoints, as in `ggplot2::geom_smooth()` | `"loess"` |
+| `smooth_linetype` | Line type of that curve | `"dashed"` |
+| `text_hjust`, `text_vjust` | Justification of the share label in each panel | `0.9`, `-4` |
+| `text_size`, `text_color` | Size and colour of the share label | `4.5`, `"black"` |
+| `facet_ncol` | Number of columns of the panel chart without breakpoints | `2` |
+| `ZH` | Older way of asking for Chinese: `TRUE` is `lang = "zh"` | `FALSE` |
+| `lang` | Language of the chart text and names: `"en"`, `"zh"` or `"both"` | `NULL`: `"zh"` if `ZH = TRUE`, else the language of `fao_settings()` |
+| `pptx` | Also save the charts as editable PowerPoint files | `FALSE`, or `pptx` of `fao_settings()` |
+
+## 📐 How the breakpoints are found {#breakpoints}
+
+The breakpoints divide a catch series into periods with different mean catch. Each series is
+fitted with a model of constant mean (`catch ~ 1`) in each period; the breakpoints that minimise
+the residual sum of squares are found by dynamic programming (Bai and Perron 2003), and the
+number of breakpoints is chosen by the Bayesian information criterion (BIC), as done by
+`strucchange::breakpoints()` (Zeileis et al. 2002, 2003). Every period has at least `h` years:
+15% of the series in `fishing_area_data()`, and `h_value` in the other functions.
+
+| Function | Series analysed |
+|---|---|
+| `fishing_area_data()` | Total catch of the area in each year |
+| `fishing_area_species()` | Catch of each species, over its longest run of consecutive years |
+| `fishing_area_country()` | Catch of each country, over all years with records (a warning is given when years are missing) |
+
+The breakpoints show when the level of the catch changed, not why: changes in fishing, in the
+stocks, in markets or in reporting can all move the catch.
 
 ## 🌏 Another area: the Northwest Pacific
 
@@ -152,3 +259,47 @@ fishing_area_country(FAO61$area_data, rank_range = c(1, 8))
 Charts of different areas are saved under the same file names (e.g. `fishing_trend.png`), so
 use one working folder per area, e.g. `setwd("reports/FAO61")`.
 :::
+
+## 📖 References
+
+```{r references-release, include = FALSE}
+release_info <- fao_data_info()
+```
+
+Bai, J. and Perron, P. (2003). Computation and analysis of multiple structural change models.
+*Journal of Applied Econometrics* 18(1): 1–22.
+[doi:10.1002/jae.659](https://doi.org/10.1002/jae.659)
+
+CWP (Coordinating Working Party on Fishery Statistics). *CWP Handbook of Fishery Statistics*:
+Main water areas (FAO major fishing areas). Rome: FAO.
+<https://www.fao.org/cwp-on-fishery-statistics/handbook/general-concepts/main-water-areas/en/>
+
+FAO (`r sub("[.].*", "", release_info$release)`). FishStat: Global capture production
+`r release_info$years[1]`–`r release_info$years[2]` (release `r release_info$release`).
+In: FishStatJ. <https://www.fao.org/fishery/statistics/software/fishstatj/en>.
+Licence: CC-BY-4.0. Release file: <`r release_info$url`>
+
+FAO (2026). *Fishery and Aquaculture Statistics – Yearbook 2024*. FAO Yearbook of Fishery and
+Aquaculture Statistics. Rome: FAO.
+[doi:10.4060/ce1217en](https://doi.org/10.4060/ce1217en)
+
+Massicotte, P. and South, A. *rnaturalearth: World Map Data from Natural Earth*. R package.
+[doi:10.32614/CRAN.package.rnaturalearth](https://doi.org/10.32614/CRAN.package.rnaturalearth)
+
+Natural Earth. Admin 0 – Details, map units, 1:50m (the country outlines of the maps).
+<https://www.naturalearthdata.com/downloads/50m-cultural-vectors/50m-admin-0-details/>
+
+Pebesma, E. (2018). Simple features for R: standardized support for spatial vector data.
+*The R Journal* 10(1): 439–446.
+[doi:10.32614/RJ-2018-009](https://doi.org/10.32614/RJ-2018-009)
+
+Wickham, H. (2016). *ggplot2: Elegant Graphics for Data Analysis*. New York: Springer.
+[doi:10.1007/978-3-319-24277-4](https://doi.org/10.1007/978-3-319-24277-4)
+
+Zeileis, A., Kleiber, C., Krämer, W. and Hornik, K. (2003). Testing and dating of structural
+changes in practice. *Computational Statistics & Data Analysis* 44(1–2): 109–123.
+[doi:10.1016/S0167-9473(03)00030-6](https://doi.org/10.1016/S0167-9473(03)00030-6)
+
+Zeileis, A., Leisch, F., Hornik, K. and Kleiber, C. (2002). strucchange: an R package for testing
+for structural change in linear regression models. *Journal of Statistical Software* 7(2): 1–38.
+[doi:10.18637/jss.v007.i02](https://doi.org/10.18637/jss.v007.i02)

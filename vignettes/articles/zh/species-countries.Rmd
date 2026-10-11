@@ -1,7 +1,7 @@
 ---
 title: "🐟 物种与国家分析"
 description: >
-  species_country()、country_species() 和 country_analysis()：某个物种由哪些国家捕捞，某个国家在一个渔区捕什么，以及某个国家在全部 FAO 渔区的产量。
+  species_country()、country_species()和country_analysis()：某个物种由哪些国家捕捞，某个国家在一个渔区捕什么，以及某个国家在全部FAO渔区的产量。
 ---
 
 ```{r setup, include = FALSE}
@@ -17,7 +17,7 @@ fao_settings(lang = "zh")   # 本文所有图表使用中文
 data_source("zh")
 ```
 
-这些函数以 `fishing_area_data()` 返回的渔区数据（这里是 34 渔区）为输入，聚焦于单个物种或单个国家。`country_analysis()` 则分析一个国家在全部 FAO 渔区的捕捞情况。
+这些函数以`fishing_area_data()`返回的渔区数据（这里是34渔区）为输入，聚焦于单个物种或单个国家。`country_analysis()`则分析一个国家在全部FAO渔区的捕捞情况。
 
 ```{r, eval = FALSE}
 FAO34 <- fishing_area_data("Atlantic, Eastern Central")
@@ -25,7 +25,7 @@ FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 
 ## 1️⃣ `species_country()`：某个物种由哪些国家捕捞
 
-物种名必须与 FAO 物种名称完全一致；不妨先看看该渔区的主要物种：
+物种名必须与FAO物种名称完全一致；不妨先看看该渔区的主要物种：
 
 ```{r}
 top <- aggregate(Production ~ ASFIS.species..Name., data = FAO34$area_data, FUN = sum)
@@ -36,15 +36,17 @@ head(top[order(-top$Production), "ASFIS.species..Name."], 10)
 sardine <- species_country(FAO34$area_data, species_name = "European pilchard(=Sardine)")
 ```
 
+文件名中的`<species>`是把物种名中的空格和标点替换为`_`后的名称（如`European_pilchard__Sardine_`）：
+
 | 文件 | 图表 |
 |---|---|
 | `<species>_country_map.png` | 世界地图：各国历年累计的该物种产量 |
-| `species/<species>_country_ranked_total.png` | 前十个主要国家的总产量及占比 |
+| `species/<species>_country_ranked_total.png` | 所选国家（默认为前十名）的总产量及占比 |
 | `species/<species>_country_ranked.png` | 这些国家的产量随时间的变化 |
-| `species/<species>_country_ranked_wrap.png` | 每个国家一个分面，标出占比、线性趋势和突变点 |
-| `species/<species>_country_pie_selected.png` | 主要国家在各年代以及近几年逐年的占比 |
+| `species/<species>_country_ranked_wrap.png` | 每个国家一个分面，标出占比、线性趋势和平均产量的突变点（设置`timeseries_analysis = FALSE`时为平滑曲线） |
+| `species/<species>_country_pie_selected.png` | 主要国家在各年代以及当前年代逐年的占比（最多四个国家，其余合并） |
 
-表格 `tables/<species>_country_ranked_table.csv` 列出每个国家各年代的平均产量、最近五年的产量，以及最后一年的占比：
+表格`tables/<species>_country_ranked_table.csv`列出每个国家各年代的平均产量、最近五年的产量，以及最后一年的占比：
 
 ```{r}
 table <- read.csv("tables/European_pilchard__Sardine__country_ranked_table.csv",
@@ -52,19 +54,36 @@ table <- read.csv("tables/European_pilchard__Sardine__country_ranked_table.csv",
 show_table(table, n = 10, digits = 0)
 ```
 
+设置`timeseries_analysis = TRUE`时，函数返回一个包含两个数据框的列表：所选国家逐年的产量（`sardine[[1]]`）和它们的突变点（`sardine[[2]]`：每个时段的起始年、结束年和平均产量）；设置`timeseries_analysis = FALSE`时只返回前者。
+
 ### 参数
 
 | 参数 | 含义 | 默认值 |
 |---|---|---|
-| `species_name` | FAO 物种名 | |
-| `rank_range` | 显示的国家排名范围 | `c(1, 10)` |
-| `timeseries_analysis` | 在分面图中做突变点分析（否则绘制平滑曲线） | `TRUE` |
-| `h_value` | 突变点分析的最短时段长度（比例或年数） | `0.15` |
-| `polygon_color`, `fill_scale` | 地图边界颜色和色板 | `"grey90"`、`fao_settings()` 的地图色板 |
-| `axis_*`, `strip_*`, `legend_text_size_map` | 文字大小和字体样式 | |
-| `table`, `plot`, `lang`, `pptx` | 输出内容和语言 | |
+| `area_data` | 渔区产量数据：`fishing_area_data()$area_data`或`load_fao_data()`的任意子集 | |
+| `species_name` | FAO物种名（ASFIS英文名，与数据中一致） | |
+| `rank_range` | 显示的国家排名范围（按该物种历年总产量排序） | `c(1, 10)` |
+| `plot` | 保存图表 | `TRUE` |
+| `table` | 在`tables/`中保存表格 | `TRUE` |
+| `timeseries_analysis` | `TRUE`：分面图显示线性趋势和突变点；`FALSE`：分面图显示平滑（loess）曲线 | `TRUE` |
+| `h_value` | 相邻突变点之间时段的最短长度：占序列的比例或年数 | `0.15` |
+| `polygon_color` | 地图上国界线的颜色 | `"grey90"` |
+| `fill_scale` | 地图色板，可用`fao_settings()`中`map_palette`的任一取值 | `NULL`：`fao_settings()`中的`map_palette`（`"deep-orange"`） |
+| `axis_title_face` | 地图坐标轴标题的字形 | `"bold"` |
+| `axis_title_size_map` | 地图坐标轴标题的字号 | `14` |
+| `axis_text_size_map` | 地图坐标轴标签的字号 | `12` |
+| `legend_text_size_map` | 地图图例文字的字号 | `12` |
+| `axis_text_size`、`axis_title_size` | 其他图表坐标轴标签和标题的字号 | `10`、`12` |
+| `strip_text_size`、`strip_text_face` | 分面标题的字号和字形 | `12`、`"bold"` |
+| `ZH` | 指定中文的旧方式：`TRUE`等同于`lang = "zh"` | `FALSE` |
+| `lang` | 图表文字和名称的语言：`"en"`、`"zh"`或`"both"` | `NULL`：`ZH = TRUE`时为`"zh"`，否则使用`fao_settings()`中的语言 |
+| `pptx` | 同时保存可编辑的PowerPoint文件 | `FALSE`，或`fao_settings()`中的`pptx` |
 
-有些国家的金枪鱼产量序列较短；把 `h_value` 设大一些，突变点会更清晰：
+::: callout-note
+在当前版本中，`species_country()`的排名图、时间序列图、分面图和饼图使用固定的字号：`axis_text_size`、`axis_title_size`、`strip_text_size`和`strip_text_face`可以传入，但不会改变这些图。地图的参数有效。
+:::
+
+有些国家的金枪鱼产量序列较短；把`h_value`设大一些，突变点会更清晰：
 
 ```{r, figures = "wrap"}
 species_country(FAO34$area_data, species_name = "Skipjack tuna", h_value = 5, lang = "zh")
@@ -76,37 +95,57 @@ species_country(FAO34$area_data, species_name = "Skipjack tuna", h_value = 5, la
 morocco <- country_species(FAO34$area_data, country_name = "Morocco")
 ```
 
+文件名中的`<country>`是把国家名中的空格和标点替换为`_`后的名称：
+
 | 文件 | 图表 |
 |---|---|
-| `country/<country>_species_ranked_total.png` | 该国前十个主要物种的总产量及占比 |
+| `country/<country>_species_ranked_total.png` | 该国所选物种（默认为前十名）的总产量及占比 |
 | `country/<country>_species_ranked.png` | 这些物种的产量随时间的变化 |
 | `country/<country>_species_ranked_wrap.png` | 每个物种一个分面，标出占比、趋势和突变点 |
-| `country/<country>_species_pie_selected.png` | 各物种在各年代以及近几年逐年的占比 |
+| `country/<country>_species_pie_selected.png` | 各物种在各年代以及当前年代逐年的占比 |
+| `tables/<country>_country_ranked_table.csv` | 每个物种各年代的平均产量、最近五年的产量和最后一年的占比 |
 
-`time_analysis_text_displacement` 用来移动分面图中占比标签的位置（以首次出现产量后的年数计），当标签与曲线重叠时很有用：
+函数返回所选物种逐年的产量。
+
+`time_analysis_text_displacement`用来移动分面图中占比标签的位置（以首次出现产量后的年数计），当标签与曲线重叠时很有用：
 
 ```{r, figures = "wrap"}
 country_species(FAO34$area_data, country_name = "Spain", h_value = 5,
                 time_analysis_text_displacement = 6, lang = "both")
 ```
 
-## 3️⃣ `country_analysis()`：某个国家在全部 FAO 渔区的捕捞
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `area_data` | 渔区产量数据：`fishing_area_data()$area_data`或`load_fao_data()`的任意子集 | |
+| `country_name` | FAO国家名，与数据中一致 | |
+| `rank_range` | 显示的物种排名范围（按该国历年总产量排序） | `c(1, 10)` |
+| `plot` | 保存图表 | `TRUE` |
+| `table` | 在`tables/`中保存表格 | `TRUE` |
+| `timeseries_analysis` | `TRUE`：分面图显示线性趋势和突变点；`FALSE`：分面图显示平滑（loess）曲线 | `TRUE` |
+| `time_analysis_text_displacement` | 分面图中占比标签的位置：首次出现产量后的年数 | `10` |
+| `h_value` | 相邻突变点之间时段的最短长度：占序列的比例或年数 | `0.15` |
+| `ZH` | 指定中文的旧方式：`TRUE`等同于`lang = "zh"` | `FALSE` |
+| `lang` | 图表文字和名称的语言：`"en"`、`"zh"`或`"both"` | `NULL`：`ZH = TRUE`时为`"zh"`，否则使用`fao_settings()`中的语言 |
+| `pptx` | 同时保存可编辑的PowerPoint文件 | `FALSE`，或`fao_settings()`中的`pptx` |
 
-`country_analysis()` 使用一个国家在**全部** FAO 渔区的产量，因此只需提供国家名：
+## 3️⃣ `country_analysis()`：某个国家在全部FAO渔区的捕捞
+
+`country_analysis()`使用一个国家在**全部**FAO渔区的产量，因此只需提供国家名：
 
 ```{r, figures = TRUE}
 morocco_global <- country_analysis(country_name = "Morocco")
 ```
 
-除了物种相关的图表（与 `country_species()` 相同，文件名为 `<country>analysis_...`），它还会保存：
+除了物种相关的图表（与`country_species()`相同，文件名为`<country>analysis_...`），它还会保存：
 
 | 文件 | 图表 |
 |---|---|
-| `country/<country>fishing_area_map.png` | 该国在各 FAO 渔区的总产量；该国本身以红色标出 |
-| `country/<country>analysis_species_by_area.png` | 主要物种的产量，按渔区拆分 |
+| `country/<country>fishing_area_map.png` | 该国在各FAO渔区的总产量，绘制在FAO渔区地图上；该国本身以红色标出 |
+| `country/<country>analysis_species_by_area.png` | 主要物种的产量，按渔区拆分，并标出各渔区占该物种产量的比例 |
 | `country/<country>analysis_area_total_production.png` | 各渔区的总产量及占比 |
 | `country/<country>yearly_area_production.png` | 各渔区产量随时间的变化 |
 | `country/<country>yearly_area_production_wrap.png` | 每个渔区一个分面 |
+| `tables/<country>analysis_country_ranked_table.csv` | 每个物种各年代的平均产量、最近五年的产量和最后一年的占比 |
 
 函数返回绘图所用的数据：
 
@@ -115,15 +154,69 @@ names(morocco_global)
 show_table(morocco_global$country_species_area_total, n = 8, digits = 1)
 ```
 
+| 元素 | 内容 |
+|---|---|
+| `country_species_ranked` | 所选物种逐年的产量 |
+| `country_species_ranked_coefs_data` | 这些物种的突变点 |
+| `table` | 保存在`tables/`中的表格 |
+| `country_species_area_total` | 所选物种在各渔区的产量，以及各渔区占该物种产量的比例 |
+| `country_yearly_area_production` | 各渔区逐年的产量，以及占该国当年总产量的比例 |
+
 | 参数 | 含义 | 默认值 |
 |---|---|---|
-| `country_name` | FAO 国家名 | |
-| `rank_range` | 显示的物种排名范围 | `c(1, 10)` |
-| `timeseries_analysis`, `h_value`, `time_analysis_text_displacement` | 同上 | |
-| `fill_scale` | 地图色板 | `fao_settings()` 的地图色板 |
-| `data_version` | FAO 数据版本 | `"latest"` |
-| `table`, `plot`, `lang`, `pptx` | 输出内容和语言 | |
+| `country_name` | FAO国家名，与数据中一致 | |
+| `rank_range` | 显示的物种排名范围（按该国历年总产量排序） | `c(1, 10)` |
+| `plot` | 保存图表 | `TRUE` |
+| `table` | 在`tables/`中保存表格 | `TRUE` |
+| `timeseries_analysis` | `TRUE`：物种分面图显示线性趋势和突变点；`FALSE`：显示平滑曲线 | `TRUE` |
+| `time_analysis_text_displacement` | 分面图中占比标签的位置：首次出现产量后的年数 | `10` |
+| `h_value` | 相邻突变点之间时段的最短长度：占序列的比例或年数 | `0.15` |
+| `ZH` | 指定中文的旧方式：`TRUE`等同于`lang = "zh"` | `FALSE` |
+| `fill_scale` | 渔区地图的色板，可用`fao_settings()`中`map_palette`的任一取值 | `NULL`：`fao_settings()`中的`map_palette` |
+| `lang` | 图表文字和名称的语言：`"en"`、`"zh"`或`"both"` | `NULL`：`ZH = TRUE`时为`"zh"`，否则使用`fao_settings()`中的语言 |
+| `data_version` | FAO数据版本：`"latest"`、`"bundled"`或具体版本号（如`"2026.1.0"`，见[💾 FAO数据](data.html)） | `"latest"` |
+| `pptx` | 同时保存可编辑的PowerPoint文件 | `FALSE`，或`fao_settings()`中的`pptx` |
+
+突变点的识别方法见[🌊 渔区分析](fishing-areas.html)（用`strucchange::breakpoints()`拟合各时段均值不变的模型）。
 
 ::: callout-tip
-国家名采用 FAO 的名称，例如 `"Korea, Republic of"`、`"Russian Federation"`、`"Taiwan Province of China"`。可以这样查找：`grep("Korea", unique(load_fao_data()$Country..Name.), value = TRUE)`。
+国家名采用FAO的名称，例如`"Korea, Republic of"`、`"Russian Federation"`、`"Taiwan Province of China"`。可以这样查找：`grep("Korea", unique(load_fao_data()$Country..Name.), value = TRUE)`。
 :::
+
+## 📖 参考文献
+
+```{r references-release, include = FALSE}
+release_info <- fao_data_info()
+```
+
+Bai, J. and Perron, P. (2003). Computation and analysis of multiple structural change models.
+*Journal of Applied Econometrics* 18(1): 1–22.
+[doi:10.1002/jae.659](https://doi.org/10.1002/jae.659)
+
+FAO (`r sub("[.].*", "", release_info$release)`). FishStat: Global capture production
+`r release_info$years[1]`–`r release_info$years[2]` (release `r release_info$release`).
+In: FishStatJ. <https://www.fao.org/fishery/statistics/software/fishstatj/en>.
+Licence: CC-BY-4.0. Release file: <`r release_info$url`>
+
+FAO. *ASFIS List of Species for Fishery Statistics Purposes*. Rome: FAO.
+<https://www.fao.org/fishery/collection/asfis/en>
+
+FAO (2024). FAO Major Fishing Areas for Statistical Purposes. In: FAO Fisheries and Aquaculture
+Division [online]. Licence: CC-BY 4.0.
+<https://www.fao.org/fishery/geonetwork?uuid=ac02a460-da52-11dc-9d70-0017f293bd28>
+(the area boundaries of the fishing area map, bundled as `inst/extdata/FAO_AREAS_CWP.shp`)
+
+Natural Earth. Admin 0 – Details, map units, 1:50m (the country outlines of the maps).
+<https://www.naturalearthdata.com/downloads/50m-cultural-vectors/50m-admin-0-details/>
+
+Pebesma, E. (2018). Simple features for R: standardized support for spatial vector data.
+*The R Journal* 10(1): 439–446.
+[doi:10.32614/RJ-2018-009](https://doi.org/10.32614/RJ-2018-009)
+
+Zeileis, A., Kleiber, C., Krämer, W. and Hornik, K. (2003). Testing and dating of structural
+changes in practice. *Computational Statistics & Data Analysis* 44(1–2): 109–123.
+[doi:10.1016/S0167-9473(03)00030-6](https://doi.org/10.1016/S0167-9473(03)00030-6)
+
+Zeileis, A., Leisch, F., Hornik, K. and Kleiber, C. (2002). strucchange: an R package for testing
+for structural change in linear regression models. *Journal of Statistical Software* 7(2): 1–38.
+[doi:10.18637/jss.v007.i02](https://doi.org/10.18637/jss.v007.i02)

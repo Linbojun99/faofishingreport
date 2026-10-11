@@ -1,8 +1,8 @@
 ---
 title: "🚀 Get started"
 description: >
-  Install faofishingreport, update the FAO data and produce the first charts for the
-  Eastern Central Atlantic (FAO area 34).
+  Install faofishingreport, update the FAO data, produce the first charts for the
+  Eastern Central Atlantic (FAO area 34) and write a Word report in one call.
 ---
 
 ```{r setup, include = FALSE}
@@ -22,11 +22,14 @@ A typical workflow:
 
 | Step | What you do | Functions |
 |---|---|---|
-| 1. Data | Check for and download the latest FAO release | `check_fao_update()`, `download_fao_data()` |
+| 1. Data | Check for and download the latest FAO release; see which release you use | `check_fao_update()`, `download_fao_data()`, `fao_data_info()` |
 | 2. Fishing area | Total catch, main species and main countries of an area | `fishing_area_data()`, `fishing_area_species()`, `fishing_area_country()` |
 | 3. Species and countries | Who catches a species, what a country catches | `species_country()`, `country_species()`, `country_analysis()` |
-| 4. Summaries | Composition, stock status, trends, data quality, fleets | `stock_status()`, `peak_trend()`, `coastal_distant()`, ... |
-| 5. Style | Language, theme, colours, map projection | `fao_settings()` |
+| 4. Summaries | Composition, stock status, trends, data quality, diversity, fleets | `species_group_composition()`, `stock_status()`, `peak_trend()`, `data_quality()`, `coastal_distant()`, ... |
+| 5. Methods from the literature | Catch shocks, collapses, synchrony, pelagic/demersal ratio, mean temperature of the catch | `catch_shocks()`, `collapse_analysis()`, `catch_synchrony()`, `pelagic_demersal()`, `mean_temperature_catch()` |
+| 6. Stock assessment | CMSY++ for the main species | `cmsy_setup()`, `cmsy_area()` |
+| 7. Report | A Word report of an area in one call | `fao_report()` |
+| 8. Style | Language, theme, colours, map projection | `fao_settings()` |
 
 ## 📦 Installation
 
@@ -37,12 +40,17 @@ install.packages("remotes")
 remotes::install_github("Linbojun99/faofishingreport", dependencies = TRUE)
 ```
 
-All the packages it uses (dplyr, ggplot2, sf, rnaturalearth, officer for Word reports, FishBase and
-sea surface temperature readers, the R packages of CMSY++, ...) are installed automatically.
-CMSY++ also needs the JAGS program: run `cmsy_setup()` once.
+With `dependencies = TRUE` every package that the analyses use is installed with it: dplyr,
+ggplot2 and sf for the charts and maps, rnaturalearth for the world maps, officer and xml2 for
+Word reports, eoffice for editable PowerPoint charts, nanoparquet for the FishBase and
+SeaLifeBase tables, ncdf4 for sea surface temperature files, and the R packages of CMSY++
+(coda, conicfit, gplots, MASS, mvtnorm, neuralnet, ...). The only exceptions are rjags and
+R2jags, which need the separate JAGS program: `cmsy_setup()` installs JAGS and both packages
+the first time you use CMSY++ (see [📉 CMSY++ stock assessment](cmsy.html)).
 
 ::: callout-note
-**Windows and macOS** use binary packages, so no compiler (Rtools) is needed.
+**Windows and macOS** use binary packages, so no compiler (Rtools) is needed. On macOS,
+editable PowerPoint charts also need [XQuartz](https://www.xquartz.org).
 **Linux** needs the system libraries of the sf package and, for Chinese charts, a Chinese font:
 
 ```bash
@@ -60,7 +68,7 @@ library(faofishingreport)
 
 ## 💾 Get the latest FAO data
 
-The package comes with FAO release `r readLines(system.file("extdata", "bundled_release.txt", package = "faofishingreport"))`.
+The package comes with FAO release `r fao_data_info("bundled")$release`.
 FAO publishes a new release about once a year. Check whether a newer one exists and download
 it (about 5 MB, a few seconds):
 
@@ -75,8 +83,10 @@ check_fao_update()
 download_fao_data()   # only needed when a newer release is available
 ```
 
-All functions automatically use the newest data available. See
-[💾 FAO data](data.html) for choosing releases, the data format and working with your own subsets.
+All functions automatically use the newest data available. `fao_data_info()` tells which
+release that is, where it comes from and how to cite it. See [💾 FAO data](data.html) for all
+the arguments of these functions, choosing releases, the data format and working with your
+own subsets.
 
 ## 📁 Where the results go
 
@@ -84,9 +94,10 @@ Each analysis saves its charts and tables in the **current working folder**:
 
 | Folder | Content |
 |---|---|
-| `figures/png/` | Charts as PNG (always) |
-| `figures/pptx/` | Charts as editable PowerPoint files (with `pptx = TRUE`; needs the eoffice package) |
+| `figures/png/` | Charts as PNG (always); the summary analyses use `figures/png/summary/` |
+| `figures/pptx/` | Charts as editable PowerPoint files (with `pptx = TRUE`; uses the eoffice package) |
 | `tables/` | Tables as CSV, readable by Excel including Chinese names |
+| `reports/` | Word reports of `fao_report()` |
 
 So start by choosing a folder for the report:
 
@@ -97,14 +108,15 @@ setwd("D:/reports/FAO34")   # any folder
 ## 🌊 First analysis: FAO area 34
 
 `fishing_area_data()` extracts the catch of one FAO major fishing area and draws its total catch
-with the breakpoints of the mean catch, its share of the world catch, and a world map of the
-countries fishing there.
+with the breakpoints of the mean catch, its share of the world catch of all marine areas, and a
+world map of the countries fishing there.
 
 ```{r, figures = TRUE}
 FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 ```
 
-The result is a list; `FAO34$area_data` holds the catch records of the area and is the input of
+The result is a list with the catch records of the area (`area_data`), the periods between
+breakpoints (`coefs_data`) and the map data (`act_world_map`). `FAO34$area_data` is the input of
 most other functions:
 
 ```{r}
@@ -146,11 +158,53 @@ To use Chinese everywhere, set it once with `fao_settings(lang = "zh")`.
 
 ## 📊 A first summary: stock status
 
-`stock_status()` classifies each species by its catch relative to its peak catch:
+`stock_status()` classifies each species by its catch relative to its peak catch (stock status
+plots, Kleisner et al. 2013):
 
 ```{r, figures = TRUE}
 status <- stock_status(FAO34$area_data)
 ```
+
+## 📝 A Word report in one call
+
+`fao_report()` runs the analyses of an area and writes a Word report with cover, abstract,
+data sources and methods, results with charts and tables, conclusions, references and appendix
+tables. The area can be given by its name or its code:
+
+```{r, eval = FALSE}
+fao_report(34, lang = "en")   # writes reports/FAO34_report_en.docx in the working folder
+```
+
+By default the report has the total catch and its stages, the main species and countries, the
+ISSCAAP groups, the stock status plots, the data quality, the diversity of the catch and the
+coastal and distant-water fleets. Catch shocks, collapses, synchrony, the pelagic/demersal ratio,
+the mean temperature of the catch, distant-water fleet profiles and CMSY++ can be switched on.
+See [📝 Assessment report in Word](report.html) for all its settings.
+
+## ⚙️ Settings of the functions on this page
+
+The arguments shared by the analyses:
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `lang` | Language of the chart text and names: `"en"`, `"zh"` or `"both"` | `NULL`: the language of `fao_settings()` (`"en"` unless changed) |
+| `plot` | Save the charts | `TRUE` |
+| `table` | Save the tables in `tables/` (not in `fishing_area_data()`) | `TRUE` |
+| `pptx` | Also save the charts as editable PowerPoint files | `FALSE`, or `pptx` of `fao_settings()` |
+| `ZH` | Older way of asking for Chinese: `ZH = TRUE` is `lang = "zh"` (only in the fishing area, species and country functions) | `FALSE` |
+| `label` | Name used in the output files of the summary analyses, e.g. `stock_status()` | `NULL`: the fishing area (or country) of the data |
+
+Every function has its own arguments as well; each article has a table of all of them:
+
+| Functions | Main arguments | All arguments |
+|---|---|---|
+| `check_fao_update()`, `download_fao_data()`, `load_fao_data()`, `fao_data_info()` | `version`, `data_dir`, `overwrite`, `quiet` | [💾 FAO data](data.html) |
+| `fishing_area_data()` | `area_name`, `timeseries_analysis`, `data_version`, colours and text sizes | [🌊 Fishing area analysis](fishing-areas.html) |
+| `fishing_area_species()`, `fishing_area_country()` | `rank_range`, `timeseries_analysis`, `h_value`, line and text styles | [🌊 Fishing area analysis](fishing-areas.html) |
+| `species_country()` | `species_name`, `rank_range`, `h_value`, map style | [🐟 Species and countries](species-countries.html) |
+| `stock_status()` | `taxon_levels`, `min_years`, `min_consecutive`, `min_catch`, `smooth` | [📈 Composition, stock status and trends](status-trends.html) |
+| `fao_report()` | `area`, `lang`, `file`, sections switched on or off, settings of each analysis | [📝 Assessment report in Word](report.html) |
+| `fao_settings()`, `fao_font()` | `lang`, `theme`, `palette`, `map_projection`, `dpi`, ... | [🎨 Customise charts and maps](customise.html) |
 
 ## 🧭 Next steps
 
@@ -158,7 +212,52 @@ status <- stock_status(FAO34$area_data)
 - [🌊 Fishing area analysis](fishing-areas.html): all options of the fishing area functions
 - [🐟 Species and countries](species-countries.html): `species_country()`, `country_species()`, `country_analysis()`
 - [📈 Composition, stock status and trends](status-trends.html) and
-  [🔍 Data quality, diversity and fleets](quality-diversity-fleets.html): the nine summary analyses
+  [🔍 Data quality, diversity and fleets](quality-diversity-fleets.html): the summary analyses
+- [🔬 Shocks, collapses, synchrony and fleets](literature-analyses.html): methods from the
+  literature (catch shocks, fishery collapses, synchrony and the portfolio effect, distant-water
+  fleets, revisions between FAO releases)
 - [🌡️ Sea temperature and catch temperature](sst-mtc.html): SST of the fishing areas (built in or
   from your own NetCDF files) and the mean temperature of the catch
+- [🐠 FishBase and SeaLifeBase traits](fishbase.html): match FAO species items to FishBase and
+  SeaLifeBase and use their traits
+- [📉 CMSY++ stock assessment](cmsy.html): catch-only stock assessment of the main species
+- [📝 Assessment report in Word](report.html): the whole analysis of an area as a Word report
 - [🎨 Customise charts and maps](customise.html): themes, palettes, map projections, fonts and output
+
+## 📖 References
+
+```{r references-release, include = FALSE}
+release_info <- fao_data_info()
+```
+
+Bai, J. and Perron, P. (2003). Computation and analysis of multiple structural change models.
+*Journal of Applied Econometrics* 18(1): 1–22.
+[doi:10.1002/jae.659](https://doi.org/10.1002/jae.659)
+
+CWP (Coordinating Working Party on Fishery Statistics). *CWP Handbook of Fishery Statistics*:
+Main water areas (FAO major fishing areas). Rome: FAO.
+<https://www.fao.org/cwp-on-fishery-statistics/handbook/general-concepts/main-water-areas/en/>
+
+FAO (`r sub("[.].*", "", release_info$release)`). FishStat: Global capture production
+`r release_info$years[1]`–`r release_info$years[2]` (release `r release_info$release`).
+In: FishStatJ. <https://www.fao.org/fishery/statistics/software/fishstatj/en>.
+Licence: CC-BY-4.0. Release file: <`r release_info$url`>
+
+FAO (2026). *Fishery and Aquaculture Statistics – Yearbook 2024*. FAO Yearbook of Fishery and
+Aquaculture Statistics. Rome: FAO.
+[doi:10.4060/ce1217en](https://doi.org/10.4060/ce1217en)
+
+Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global catch data for inferences
+on the world's marine fisheries. *Fish and Fisheries* 14(3): 293–311.
+[doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
+
+Natural Earth. Free vector and raster map data at 1:10m, 1:50m and 1:110m scales.
+<https://www.naturalearthdata.com/>
+
+Zeileis, A., Kleiber, C., Krämer, W. and Hornik, K. (2003). Testing and dating of structural
+changes in practice. *Computational Statistics & Data Analysis* 44(1–2): 109–123.
+[doi:10.1016/S0167-9473(03)00030-6](https://doi.org/10.1016/S0167-9473(03)00030-6)
+
+Zeileis, A., Leisch, F., Hornik, K. and Kleiber, C. (2002). strucchange: an R package for testing
+for structural change in linear regression models. *Journal of Statistical Software* 7(2): 1–38.
+[doi:10.18637/jss.v007.i02](https://doi.org/10.18637/jss.v007.i02)

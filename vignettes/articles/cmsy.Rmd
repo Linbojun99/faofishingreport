@@ -1,7 +1,10 @@
 ---
 title: "📉 CMSY++ catch-only stock assessment"
 description: >
-  cmsy_area(), cmsy_system(), cmsy_setup(), cmsy_priors(), cmsy_input(), cmsy_run(), cmsy_plot(), cmsy_forecast(), cmsy_compare() and cmsy_tables(): catch-only assessments of FAO catch series with the bundled CMSY++ code, FishBase priors and JAGS.
+  cmsy_area(), cmsy_system(), cmsy_setup(), cmsy_install_jags(), cmsy_download_jags(),
+  cmsy_jags_versions(), cmsy_sources(), cmsy_priors(), cmsy_input(), cmsy_defaults(), cmsy_run(),
+  cmsy_plot(), cmsy_forecast(), cmsy_compare() and cmsy_tables(): catch-only assessments of FAO
+  catch series with the bundled CMSY++ code, FishBase priors and JAGS.
 ---
 
 ```{r setup, include = FALSE}
@@ -15,11 +18,32 @@ show_png <- function(file) {
 }
 ```
 
-CMSY++ (Froese et al. 2023) estimates MSY, Bmsy and Fmsy, and the relative stock size (B/Bmsy) and exploitation (F/Fmsy) of every year, from a catch series, a prior for the intrinsic growth rate r and priors for the relative biomass B/k. The package bundles the official CMSY++ code (`CMSY++16.R`, January 2021), its neural network and its user guide, and a few functions take care of everything from installing JAGS to drawing the charts.
+CMSY++ (Froese et al. 2023), the successor of CMSY (Froese et al. 2017), estimates MSY, Bmsy and
+Fmsy, and the relative stock size (B/Bmsy) and exploitation (F/Fmsy) of every year, from a catch
+series, a prior for the intrinsic growth rate r and priors for the relative biomass B/k. The
+package bundles the official CMSY++ code (`CMSY++16.R`, January 2021), its neural network and its
+user guide (Froese et al. 2021), and a few functions take care of everything from installing
+JAGS (Plummer 2003) to drawing the charts. The CMSY++ runs shown in this article were made
+beforehand; building the article does not run CMSY++.
 
 ::: {.alert .alert-warning}
 **FishStat has catches only, no CPUE.** The FAO capture statistics have no abundance index (CPUE or survey biomass), so every stock is assessed with the catch-only part of CMSY++ (CMSY, `btype = "None"`) and the Bayesian Schaefer model (BSM) does not run. The results then depend mostly on the B/k priors, and independent tests found that catch-only methods classify stock status poorly with default priors (Free et al. 2020; Ovando et al. 2021; Kell et al. 2022). The results are **indicative** and do not replace stock assessments. As in FAO (2026), the status has two classes only: **maximally sustainably fished** (B/Bmsy at least 0.8 in the last year) or **overfished** (below 0.8); catch-only results do not make a stock "underfished".
 :::
+
+## ⚙️ Common arguments {#common-arguments}
+
+These arguments have the same meaning in all CMSY functions that have them; the tables of each
+function below list its other arguments.
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `stocks` | Stocks to use: `Stock` identifiers (e.g. `"GRB_34"`) or species, by English or Chinese FAO name, scientific name or FAO 3-alpha code (all stocks of the species) | `NULL`: all stocks |
+| `table` | Save the tables (in `tables/cmsy/`) | `TRUE` |
+| `lang` | Language of the chart text, names and table columns: `"en"`, `"zh"` or `"both"` | `NULL`: the language of `fao_settings()` (`"en"` unless changed) |
+| `pptx` | Also save the charts as editable PowerPoint files (in `figures/pptx/cmsy/`) | `FALSE`; `fao_settings(pptx = TRUE)` changes it for all functions |
+| `annotations` | Text added to the axis titles and labels: `FALSE` none, `TRUE` all, or any of `"title"`, `"subtitle"`, `"caption"`, `"legend"` and `"labels"` (text inside the chart) | `FALSE`; `options(faofishingreport.cmsy_annotations = TRUE)` changes it for the session |
+| `silent` | Print no progress bars and messages | `FALSE`; `fao_settings(silent = TRUE)` changes it for the session |
+| `data_dir` | Folder where downloads are kept | `fao_data_dir()` |
 
 ## 🚀 One step: cmsy_area()
 
@@ -28,17 +52,45 @@ cmsy_setup()                                                     # once: JAGS an
 area34 <- cmsy_area("Atlantic, Eastern Central", top = 10)
 ```
 
-`cmsy_area()` does Steps 1 to 9 below in one call: it takes the `top` species with the largest catch of the last `recent_years` years (10 by default) of a fishing area (or the species given in `species`), prepares the input, runs CMSY++, draws all charts, projects the stocks and writes the tables, with a progress bar for each step. `area` can name several areas; each gets its own folder in `out_dir` (`cmsy_areas` by default), sorted into:
+`cmsy_area()` does Steps 4 to 7 and Step 9 below in one call: it takes the `top` species with the
+largest catch of the last `recent_years` years of a fishing area (or the species given in
+`species`), prepares the input, runs CMSY++, draws all charts, projects the stocks and writes the
+tables, with a progress bar for each step. Main species that cannot be assessed (e.g. without an
+r prior) are listed with the reason. `area` can name several areas; each gets its own folder in
+`out_dir`, sorted into:
 
 ```
 cmsy_areas/Atlantic__Eastern_Central/
-├── input/      CMSY++ catch and ID files, the stocks assessed, and main species left out with the reason
-├── runs/       CMSY++ output of each stock (JPEG charts, cmsy_output.csv, log.txt), changed code and list of changes
+├── input/      CMSY++ catch and ID files (catch.csv, id.csv), the stocks assessed (stocks.csv)
+│               and the main species left out with the reason (excluded.csv)
+├── runs/       CMSY++ output of each stock (JPEG charts, cmsy_output.csv, log.txt), the changed
+│               code and the list of changes (code_changes.csv)
 ├── figures/    a folder of charts per stock and summary/ (figures_pptx/ with pptx = TRUE)
-└── tables/     results.csv, series.csv, priors and results tables, projections and sources.csv
+└── tables/     results.csv, series.csv, priors_table.csv, results_table.csv, forecast.csv,
+                forecast_share.csv, settings_used.csv and sources.csv
 ```
 
-On a Mac with Apple silicon, the six main species of area 34 take about a minute from input to tables.
+| Argument | Meaning | Default |
+|---|---|---|
+| `area` | FAO major fishing area name(s), as in `fishing_area_data()` (e.g. `"Atlantic, Eastern Central"`), or FAO catch data such as `fishing_area_data()$area_data` | required |
+| `top` | Number of species with the largest catch to assess | `10` |
+| `species` | Species to assess instead of the `top` ones: English or Chinese name, scientific name or FAO 3-alpha code | `NULL` |
+| `recent_years` | Species are ranked by their mean catch over the last `recent_years` years of the data | `10` |
+| `out_dir` | Folder in which a folder per area is made | `"cmsy_areas"` |
+| `auto_start` | Start a stock in the year suggested by CMSY++ when its start biomass is ambiguous (see Step 5) | `TRUE` (`FALSE` in `cmsy_run()`) |
+| `seed` | Random seed, so runs can be repeated with the same results | `1` |
+| `parallel` | Number of stocks run at the same time; each uses two more processes for its two MCMC chains | `NULL`: half the processor cores |
+| `settings` | CMSY++ settings that replace its defaults (see [The settings of CMSY++](#cmsy-settings)) | `list()`: none |
+| `charts` | Charts to draw (see Step 6) | all charts |
+| `classes` | Status classes: `"fao"` (two) or `"palomares"` (five) | `"fao"` |
+| `forecast` | Also project the stocks under the default scenarios of `cmsy_forecast()` | `TRUE` |
+| `annotations`, `lang`, `pptx`, `silent` | See [Common arguments](#common-arguments) | |
+| `...` | Further arguments of `cmsy_input()`, e.g. `priors`, `default_resilience` or `min_years` | |
+
+`cmsy_area()` runs CMSY++ without the retrospective analysis, so its retrospective chart is
+skipped (see Step 5). It returns the result of `cmsy_run()` with `input`, `forecast`, `tables` and
+`dir` (the folder of the area); for several areas, a list of these named by area. On a Mac with
+Apple silicon, the six main species of area 34 take about a minute from input to tables.
 
 ## 💻 Step 1: check the computer and adapt the settings
 
@@ -49,12 +101,23 @@ sys <- cmsy_system()
 show_table(sys$changes)
 ```
 
-The changes are made to a copy of the code written into each run folder (`CMSY++16_faofishingreport.R`, with the list in `code_changes.csv`); the bundled original never changes. Charts are drawn on an off-screen device by default, which saves the JPEG files on every system without opening windows; `device = "screen"` uses the system's own window instead. If the detection is wrong, set the system:
+The changes are made to a copy of the code written into each run folder (`CMSY++16_faofishingreport.R`, with the list in `code_changes.csv`); the bundled original never changes. Charts are drawn on an off-screen device by default, which saves the JPEG files on every system without opening windows; `device = "screen"` uses the system's own window instead (`windows()`, `quartz()` or `x11()`). If the detection is wrong, set the system:
 
 ```{r, eval = FALSE}
 cmsy_system(os = "windows")                       # settings used on Windows
 options(faofishingreport.cmsy_os = "macos")       # for the whole session
 ```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `os` | Operating system whose settings are used: `"auto"` (detect it), `"windows"`, `"macos"` or `"linux"` | `"auto"` |
+| `device` | Where CMSY++ draws its charts before saving them as JPEG files: `"file"` (an off-screen device that works on every system and in batch runs) or `"screen"` (the system's own window) | `"file"` |
+| `jags` | JAGS version to recommend: `"recommended"` (the newest JAGS 4 for this R version, which works with rjags from CRAN), `"latest"` (JAGS 5.0.0, which needs rjags 5 from SourceForge) or a version number such as `"4.3.2"` | `"recommended"` |
+| `silent` | See [Common arguments](#common-arguments) | |
+
+It returns the system (`os`, `os_detected`, `arch`, `r_version`), the installed `jags` and
+`rjags` versions, the `packages` table, the recommended `jags_installer` and `rjags_source`, the
+chart `device` and `antialias`, and the `changes` made to the CMSY++ code.
 
 ## 🧰 Step 2: install JAGS and the R packages
 
@@ -62,14 +125,41 @@ options(faofishingreport.cmsy_os = "macos")       # for the whole session
 cmsy_setup()
 ```
 
-`cmsy_setup()` asks before installing anything. It installs the missing R packages from CRAN (R2jags, rjags, coda, gplots, mvtnorm, neuralnet, conicfit; snpar, archived on CRAN on 2022-05-10, is replaced by the same runs test), downloads the JAGS installer for the system and R version from its pinned link, checks its size and MD5 checksum and opens it (`.exe` on Windows, `.pkg` on macOS; on Linux it downloads the source and shows the commands), and checks the bundled CMSY++ files. Restart R after installing JAGS and run `cmsy_setup()` again.
+`cmsy_setup()` asks before installing anything, then:
 
-JAGS 4.3.2 (4.3.1 for older R versions) is the default because rjags on CRAN (4-17) needs JAGS 4. The newest JAGS, 5.0.0, needs rjags 5-3 from SourceForge: `cmsy_setup(jags = "latest")`. Installers copied into `inst/jags/` of the package source are used instead of downloading. Versions, links, sizes, checksums, licences and references of every component:
+1. installs the missing R packages from CRAN (R2jags, rjags, coda, gplots, mvtnorm, neuralnet,
+   conicfit); snpar, archived on CRAN on 2022-05-10, is replaced by the same approximate runs
+   test;
+2. downloads the JAGS installer for the system and R version from its pinned link, checks its
+   size and MD5 checksum and opens it (`.exe` on Windows, `.pkg` on macOS; on Linux it downloads
+   the source and shows the commands). JAGS is a separate program: restart R after installing it
+   and run `cmsy_setup()` again to check;
+3. checks the bundled CMSY++ files.
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `jags` | JAGS version: `"recommended"`, `"latest"` or a version number (as in `cmsy_system()`) | `"recommended"` |
+| `os` | Operating system: `"auto"`, `"windows"`, `"macos"` or `"linux"` | `"auto"` |
+| `ask` | Ask before installing anything; in a non-interactive session nothing is installed when `ask` is `TRUE` | `TRUE` |
+| `data_dir`, `silent` | See [Common arguments](#common-arguments) | |
+
+It returns the result of `cmsy_system()` after the installation. JAGS 4.3.2 (4.3.1 for older R
+versions) is the default because rjags on CRAN (4-17) needs JAGS 4. The newest JAGS, 5.0.0, needs
+rjags 5-3 from SourceForge: `cmsy_setup(jags = "latest")`. Installers copied into `inst/jags/` of
+the package source are used instead of downloading. Versions, links, sizes, checksums, licences
+and references of every component are listed by `cmsy_sources()`:
 
 ```{r}
 src <- cmsy_sources()
 show_table(src[, c("component", "version", "platform", "file", "license", "url")], n = 30)
 ```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `component` | Text to keep only matching components, e.g. `"JAGS"` or `"CMSY"` | `NULL`: all |
+
+The table also gives `page`, `size`, `md5`, `sha256`, `released`, `requires` and `citation` (the
+reference to cite) of each component.
 
 ### The R version and the JAGS version must match
 
@@ -92,7 +182,13 @@ jv <- cmsy_jags_versions()
 show_table(jv[, c("system", "r_versions", "jags", "installer", "rjags", "default", "this_computer")], n = 10)
 ```
 
-No need to look it up: `cmsy_download_jags()` picks the installer for the system, R version and processor, downloads it and checks its size, MD5 and SHA-256; for JAGS 5 it also downloads rjags 5-3. It can also download for other systems or R versions, e.g. to prepare installers for computers without internet:
+| Argument | Meaning | Default |
+|---|---|---|
+| `os` | `"all"`, or one system: `"auto"` (this computer), `"windows"`, `"macos"` or `"linux"` | `"all"` |
+| `r_version` | R version marked as `this_computer` | `getRversion()`: the running R |
+| `silent` | Do not print the match for this computer | see [Common arguments](#common-arguments) |
+
+No need to look it up: `cmsy_download_jags()` picks the installer for the system, R version and processor, downloads it and checks its size, MD5 and SHA-256; for JAGS 5 it also downloads rjags 5-3. The files are kept in `fao_data_dir()/cmsy/downloads`, so they are downloaded only once. It can also download for other systems or R versions, e.g. to prepare installers for computers without internet. `cmsy_install_jags()` downloads the installer and opens it:
 
 ```{r, eval = FALSE}
 cmsy_download_jags()                                        # the JAGS for this computer
@@ -101,9 +197,36 @@ cmsy_download_jags(os = "all", r_version = "4.4.1", dest = "jags_installers")   
 cmsy_install_jags()                                         # download and open the installer
 ```
 
+`cmsy_download_jags()`:
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `version` | `"recommended"` (JAGS 4 for this R version), `"latest"` (JAGS 5.0.0 with rjags 5-3) or a JAGS version such as `"4.3.1"` | `"recommended"` |
+| `os` | `"auto"` (this computer), `"windows"`, `"macos"`, `"linux"` or `"all"` (the installers of the three systems for `r_version`) | `"auto"` |
+| `r_version` | R version the installer is for | `getRversion()`: the running R |
+| `arch` | Processor, for the rjags 5 binary on macOS: `"auto"`, `"arm64"` (Apple silicon) or `"x86_64"` (Intel) | `"auto"` |
+| `dest` | Folder to copy the files to | `NULL`: none |
+| `rjags` | Also download the rjags package needed by JAGS 5 (rjags 4-17 for JAGS 4 comes from CRAN through `cmsy_setup()`) | `TRUE` |
+| `data_dir`, `silent` | See [Common arguments](#common-arguments) | |
+
+It returns a table with one row per file: system, R version, component, version, file, local
+path, link, SHA-256 and whether the checksums matched.
+
+`cmsy_install_jags()`:
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `version` | `"recommended"`, `"latest"` or a version number | `"recommended"` |
+| `os` | `"auto"`, `"windows"`, `"macos"` or `"linux"` | `"auto"` |
+| `open` | Open the installer (`.exe` on Windows, `.pkg` on macOS; on Linux the commands to install JAGS are shown) | `TRUE` |
+| `data_dir`, `silent` | See [Common arguments](#common-arguments) | |
+
+It returns the path of the downloaded installer; an installer placed in `inst/jags/` of the
+package source is used instead of downloading.
+
 ## 🐟 Step 3: priors for r from FishBase and SeaLifeBase
 
-A built-in table gives the resilience and prior r of the 3,155 species-level items of the FAO capture statistics in FishBase or SeaLifeBase (release 26.06). It can be searched offline by English, Chinese or scientific name or by 3-alpha code, and every row links to its source page (`open = TRUE` opens the pages):
+A built-in table gives the resilience and prior r of the 3,155 species-level items of the FAO capture statistics in FishBase or SeaLifeBase (release 26.06). It can be searched offline by English, Chinese or scientific name or by 3-alpha code, and every row links to its source page (`open = TRUE` opens the pages). How FishBase and SeaLifeBase data are obtained and matched to FAO names is explained in [🐠 FishBase and SeaLifeBase traits](fishbase.html).
 
 ```{r}
 cod <- cmsy_priors("Gadus morhua")
@@ -111,19 +234,34 @@ show_table(cod[, c("species_name", "scientific_name", "SpecCode", "resilience", 
                    "r_low", "r_high", "r_source", "url")])
 ```
 
-The r range follows the CMSY++ user guide: the 95% confidence limits of FishBase's prior r when the species has one (user guide Table 1, "alternatively and better"); otherwise the range of its resilience (Table 2: High 0.6–1.5, Medium 0.2–0.8, Low 0.05–0.5, Very low 0.015–0.1); otherwise none, and the user gives it (e.g. r close to 2M or 2Fmsy, Table 1). FAO names are matched as valid species names, then through each database's own synonym table; ambiguous synonyms and genus or family items get no values.
+The r range follows the CMSY++ user guide:
+
+| Case | r range | Source |
+|---|---|---|
+| The species has a prior r in FishBase or SeaLifeBase ("Estimates based on models") | The 95% confidence limits of the prior r | User guide Table 1 ("alternatively and better") |
+| Only the resilience is known | High 0.6–1.5; Medium 0.2–0.8; Low 0.05–0.5; Very low 0.015–0.1 | User guide Table 2 |
+| Neither | No default: the user gives it (e.g. r close to 2M or 2Fmsy) | User guide Table 1 |
+
+FAO names are matched as valid species names, then through each database's own synonym table; ambiguous synonyms and genus or family items get no values. When FishBase lists several stocks of a species with different resilience, the species-wide value is used and the others are given in `resilience_note`.
 
 ```{r}
 priors <- cmsy_priors()
 table(priors$match_type)
+table(!is.na(priors$r_source))
 ```
 
 Species can be named by English or Chinese FAO name, both together (as shown with `lang = "both"`), scientific name or FAO 3-alpha code, in `cmsy_priors()`, `cmsy_input(species = )`, `cmsy_run(stocks = )` and `cmsy_plot(stocks = )`: full names are matched first (ignoring case), then parts of names; if several species match, they are listed so a more precise name or code can be given. `lang` sets the language of the results; `species_en` and `species_zh` always give both names.
 
 ```{r}
-p <- cmsy_priors(c("COD", "Sardina pilchardus", "European pilchard"), lang = "both")
+p <- cmsy_priors(c("COD", "Sardina pilchardus", "European pilchard", "沙丁鱼"), lang = "both")
 show_table(p[, c("species_name", "scientific_name", "alpha3", "r_low", "r_high", "url", "data_url", "rule_url")])
 ```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `species` | Names to search for: English, Chinese or scientific names, FAO 3-alpha codes, or parts of them (e.g. `"Atlantic cod"`, `"Gadus morhua"`, `"COD"`, `"cod"`) | `NULL`: all rows |
+| `open` | Open the FishBase or SeaLifeBase pages of the rows found (at most 10) in the browser | `FALSE` |
+| `lang` | Language of the `species_name` column: `"en"`, `"zh"` or `"both"` | `NULL`: the language of `fao_settings()` |
 
 Every row links to its sources: `url`, the FishBase or SeaLifeBase page of the species (where resilience and prior r can be checked); `data_url`, the FishBase or SeaLifeBase table the value was read from (`estimate` for prior r, `stocks` for resilience); and `rule_url`, the CMSY++ user guide, whose Tables 1 and 2 turn the values into the r range. The results of `cmsy_input()` and `cmsy_run()` add `fao_data_url`, the FAO data release used.
 
@@ -132,15 +270,43 @@ Every row links to its sources: `url`, the FishBase or SeaLifeBase page of the s
 ```{r}
 input <- cmsy_input(FAO34$area_data)
 input
+```
+
+`cmsy_input()` makes the two input tables of CMSY++: the catch file (`Stock`, `yr`, `ct`, `bt`) and the ID file (one row per stock, with its priors and settings). It also returns the table of stocks (`stocks`) and of stocks left out with the reason (`excluded`), and with `table = TRUE` saves the four tables in `tables/cmsy/` (`<area>_cmsy_catch.csv`, `..._id.csv`, `..._stocks.csv` and `..._excluded.csv`). Following the user guide:
+
+- **Stock**: the catch of one species item in one fishing area summed over countries (`by = "area"`); `by = "country"` keeps countries apart. Only items identified to species and measured in tonnes are used.
+- **Years**: years are consecutive. A stock runs from its first to its last year with catch, and missing or zero years in between are interpolated (and counted in `filled_years`).
+- **Left out**: stocks with fewer than `min_years` years (CMSY++ uses the first and last ten years for its default priors), less than `min_catch` tonnes, more than `max_filled` years filled, or no r prior.
+
+```{r}
+show_table(input$stocks[, c("Stock", "species_name", "first_year", "last_year", "filled_years",
+                            "Resilience", "r.low", "r.hi", "r_source")])
 table(input$excluded$reason)
 ```
 
-A stock is the catch of one species item in one fishing area summed over countries (`by = "country"` keeps countries apart); only items identified to species and measured in tonnes are used. Following the user guide, years are consecutive: a stock runs from its first to its last year with catch, and missing or zero years in between are interpolated (and counted). Stocks are left out with fewer than `min_years` years (default 10: CMSY++ uses the first and last ten years for its default priors), less than `min_catch` tonnes, more than `max_filled` years filled (default 20%) or no r prior. Expert priors replace the defaults:
+Expert priors replace the defaults, e.g. a B/k prior for the last year as in Table 3 of the user guide, or a resilience for species without a FishBase value:
 
 ```{r, eval = FALSE}
-input <- cmsy_input(FAO34$area_data,
-                    priors = data.frame(alpha3 = "PIL", endb.low = 0.2, endb.hi = 0.6))
+input <- cmsy_input(FAO34$area_data, priors = data.frame(
+  alpha3   = c("PIL", "SAA"),
+  endb.low = c(0.2, 0.01),
+  endb.hi  = c(0.6, 0.4)
+))
+input <- cmsy_input(FAO34$area_data, default_resilience = "Medium")  # stocks without a FishBase value
 ```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `area_data` | FAO catch data: `fishing_area_data()$area_data`, or any subset of `load_fao_data()` | required |
+| `species` | Species to keep: English or Chinese FAO name, both together, scientific name or FAO 3-alpha code | `NULL`: all species |
+| `by` | `"area"`: one stock per species item and fishing area, summed over countries; `"country"`: one stock per species item, area and country | `"area"` |
+| `priors` | Data frame of priors and settings that replace the defaults, one row per stock or species, identified by a `Stock`, `alpha3`, `species_en` or `species` column, with any of the ID file columns `Resilience`, `r.low`, `r.hi`, `stb.low`, `stb.hi`, `int.yr`, `intb.low`, `intb.hi`, `endb.low`, `endb.hi`, `StartYear`, `EndYear` and `Comment` (recorded as "user") | `NULL` |
+| `default_resilience` | Resilience (`"High"`, `"Medium"`, `"Low"` or `"Very low"`) for stocks whose species has no resilience or prior r | `NULL`: such stocks are left out, since the user guide gives no default |
+| `min_years` | Minimum number of years from the first to the last year with catch | `10` |
+| `min_catch` | Minimum total catch of a stock (tonnes) | `1000` |
+| `max_filled` | Maximum share of the years of a stock filled by interpolation | `0.2` |
+| `label` | Name at the start of the table file names | `NULL`: the fishing area (or country) of the data |
+| `table`, `lang`, `silent` | See [Common arguments](#common-arguments) | |
 
 ## ▶️ Step 5: run CMSY++
 
@@ -150,15 +316,30 @@ result <- cmsy_run(input, stocks = "Brachydeuterus auritus", auto_start = TRUE, 
 result$summary
 ```
 
-`stocks` takes `Stock` identifiers (e.g. `"GRB_34"`) or species by English or Chinese name, scientific name or 3-alpha code (all stocks of the species). Each stock runs in its own folder, `cmsy/<area>/<stock>/`, and R process; the folders keep CMSY++'s own output (`_AN.jpg`, `_MAN.jpg`, `_KOBE.jpg`, `cmsy_output.csv`, `log.txt`). `parallel` sets how many stocks run at the same time, and a progress bar shows the stocks finished, the elapsed and the remaining time (see "Progress bars and silent" below).
+Each stock runs in its own folder, `cmsy/<area>_cmsy/<stock>/` (e.g. `cmsy/Atlantic__Eastern_Central_cmsy/GRB_34/`), and R process; the folders keep CMSY++'s own output (`_AN.jpg`, `_MAN.jpg`, `_KOBE.jpg`, `cmsy_output.csv`, `log.txt`), and the folder of the run has the changed code, `code_changes.csv`, `settings_used.csv` and `sources.csv`. `parallel` sets how many stocks run at the same time, and a progress bar shows the stocks finished, the elapsed and the remaining time (see "Progress bars and silent" below).
 
-Many FAO series start in 1950 with low catches, which CMSY++ flags as ambiguous (depleted or unexploited) and for which it suggests a start year: the first year with 40% of the maximum catch. `auto_start = TRUE` uses that year (CMSY++'s own `auto.start` stops with an error in `CMSY++16.R`, so the same rule is applied to the start year before the run, and not used if fewer than ten years would remain). The user guide prefers setting `StartYear` or the start B/k prior (`stb.low`, `stb.hi`) yourself.
+Many FAO series start in 1950 with low catches, which CMSY++ flags as ambiguous (depleted or unexploited) and for which it suggests a start year: the first year with 40% of the maximum catch. `auto_start = TRUE` uses that year (CMSY++'s own `auto.start` stops with an error in `CMSY++16.R`, so the same rule is applied to the start year before the run, and not used if fewer than ten years would remain). The user guide prefers setting `StartYear` or the start B/k prior (`stb.low`, `stb.hi`) yourself in `cmsy_input(priors = )`.
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `input` | The result of `cmsy_input()` | required |
+| `stocks` | Stocks to run (see [Common arguments](#common-arguments)) | `NULL`: all stocks of `input` |
+| `out_dir` | Folder for the CMSY++ output | `"cmsy"` in the working directory |
+| `parallel` | Number of stocks run at the same time; each uses two more processes for its two MCMC chains | `NULL`: half the processor cores |
+| `plots` | CMSY++ charts saved as JPEG files: any of `"analysis"`, `"management"`, `"kobe"`, `"prior_posterior"` and `"retrospective"` (the last two are needed by the charts of the same name in Step 6) | `c("analysis", "management", "kobe")` |
+| `os`, `device` | Operating system and chart device (as in `cmsy_system()`) | `"auto"`, `"file"` |
+| `seed` | Random seed, so runs can be repeated with the same results | `NULL` |
+| `auto_start` | Start each stock in the year suggested by CMSY++ when its start biomass is ambiguous | `FALSE`, as in CMSY++ |
+| `settings` | CMSY++ settings that replace its defaults (see [The settings of CMSY++](#cmsy-settings)) | `list()`: none |
+| `timeout` | Maximum time for one stock (seconds); a stock still running after it is reported as failed | `3600` |
+| `table`, `lang`, `silent` | See [Common arguments](#common-arguments); the tables are `tables/cmsy/<area>_cmsy_results.csv`, `..._series.csv` and `..._sources.csv` | |
 
 The example is the 30 stocks with the largest catch in 2015–2024 in FAO area 34 (Eastern Central Atlantic), run with the start years suggested by CMSY++ (`p_green`: probability of the green Kobe quadrant, B ≥ Bmsy and F ≤ Fmsy, in the last year):
 
 ```{r}
 top30 <- read.csv(file.path(fig_dir, "..", "top30_area34.csv"), check.names = FALSE)
-show_table(top30[, c("rank", "Stock", "species_en", "scientific_name", "first_year", "B_Bmsy", "F_Fmsy", "p_green", "status")],
+top30$species <- fao_translate(top30$species_en, "species", getOption("faofishingreport.lang", "en"))
+show_table(top30[, c("rank", "Stock", "species", "scientific_name", "first_year", "B_Bmsy", "F_Fmsy", "p_green", "status")],
            n = 30, digits = 2)
 ```
 
@@ -169,15 +350,15 @@ show_table(read.csv(file.path(fig_dir, "priors_table.csv"), check.names = FALSE)
 show_table(read.csv(file.path(fig_dir, "results_table.csv"), check.names = FALSE))
 ```
 
-`result$summary` has MSY, Bmsy, Fmsy, r and k with their 95% limits, the last-year B/Bmsy, F/Fmsy and biomass with their limits, the probability of each Kobe quadrant and of B/Bmsy below 0.8, the status in two schemes (`status`, FAO; `status_palomares`, Palomares et al. 2018), all priors with their sources and CMSY++'s own notes (such as `suggested_start_year`). `result$series` gives catch, predicted catch, B/k, biomass, B/Bmsy, F and F/Fmsy by year with 95% limits; `result$details` the posterior draws of r, k and B/k and the prior parameters; and `result$sources` the versions and links of CMSY++, JAGS, R, the R packages, the FAO data and FishBase used.
+`result$summary` has one row per stock: MSY, Bmsy, Fmsy, r and k with their 95% limits, the last-year B/Bmsy, F/Fmsy and biomass with their limits, the probability of each Kobe quadrant and of B/Bmsy below 0.8 (`p_overfished`), the status in two schemes (`status`, FAO; `status_palomares`, Palomares et al. 2018), all priors with their sources and CMSY++'s own notes (such as `suggested_start_year`). `result$series` gives catch, predicted catch, B/k, biomass, B/Bmsy, F and F/Fmsy by year with 95% limits; `result$kobe` the last-year draws; `result$details` the posterior draws of r, k and B/k, the prior parameters and the retrospective runs; `result$settings` the CMSY++ settings used; `result$changes` the changes to the code; and `result$sources` the versions and links of CMSY++, JAGS, R, the R packages, the FAO data and FishBase used.
 
 ## 📊 Step 6: charts
 
 ```{r, eval = FALSE}
-cmsy_plot(result, lang = "en")
+cmsy_plot(result)
 ```
 
-Based on a survey of the charts of 54 CMSY application papers, `cmsy_plot()` draws, for each stock, every chart of the CMSY++ user guide, and the usual summaries of several stocks, in `figures/png/cmsy/<stock>/` and `figures/png/cmsy/summary/` (and as PowerPoint with `pptx = TRUE`).
+Based on a survey of the charts of 54 CMSY application papers, `cmsy_plot()` draws, for each stock, every chart of the CMSY++ user guide, and the usual summaries of several stocks, in `figures/png/cmsy/<stock>/` and `figures/png/cmsy/summary/` (and as PowerPoint with `pptx = TRUE`). It returns the ggplot objects.
 
 **By default only axis titles and labels are shown**, so charts can take report captions of their own. Titles, subtitles, captions (method, data and prior sources), legends and text in the charts (quadrant probabilities, PPVR, Mohn's rho) are switched on with `annotations`: `TRUE` for all, or e.g. `c("title", "legend")`; `options(faofishingreport.cmsy_annotations = TRUE)` changes the session default.
 
@@ -188,11 +369,19 @@ Based on a survey of the charts of 54 CMSY application papers, `cmsy_plot()` dra
 | `management` | The four management panels (Figure 2): catch and MSY, B/Bmsy, F/Fmsy, Kobe plot |
 | `kobe` | Kobe plot (Figure 3): path from the first (square) through the intermediate (circle) to the last year (triangle), 50/80/95% regions of the last-year draws, quadrant probabilities |
 | `prior_posterior` | Prior and posterior of r, k, MSY and B/k in three years, with PPVR (Figure 4) |
-| `retrospective` | B/Bmsy and F/Fmsy without the last 1–3 years, with Mohn's rho (Figure 5; needs `cmsy_run(plots = "retrospective")`) |
+| `retrospective` | B/Bmsy and F/Fmsy without the last 1–3 years, with Mohn's rho (Mohn 1999; Figure 5; needs `cmsy_run(plots = "retrospective")`) |
 | `overview`, `kobe_all` | Last-year B/Bmsy of each stock with limits; Kobe plot of all stocks (sized by catch) |
 | `status`, `status_time`, `histogram` | Share of stocks and of catch by status, in the last year and every year; distribution of last-year B/Bmsy |
 | `b_bmsy_all`, `trend`, `aggregate` | Small multiples of B/Bmsy; median B/Bmsy and share below 0.8 Bmsy; total catch / total MSY and total biomass / total Bmsy |
 | `map` | Median last-year B/Bmsy by FAO fishing area |
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `result` | The result of `cmsy_run()` | required |
+| `stocks` | Stocks to draw (see [Common arguments](#common-arguments)) | `NULL`: all stocks that ran |
+| `charts` | Charts to draw (table above) | all charts |
+| `classes` | Status classes: `"fao"` (two classes) or `"palomares"` (five classes) | `"fao"` |
+| `annotations`, `lang`, `pptx`, `silent` | See [Common arguments](#common-arguments) | |
 
 Status follows FAO (2026) for Tier 3 (data-limited) assessments by default: maximally sustainably fished (B/Bmsy ≥ 0.8) or overfished. `classes = "palomares"` uses the five classes of Palomares et al. (2018), common in CMSY studies: healthy (≥ 1), slightly overfished (0.8–1), overfished (0.5–0.8), grossly overfished (0.2–0.5), collapsed (< 0.2).
 
@@ -241,7 +430,23 @@ show_png("area34_map.png")
 projection <- cmsy_forecast(result, catch = 100000)
 ```
 
-`CMSY++16.R` has no projection, so `cmsy_forecast()` projects with the CMSY++ model itself (Schaefer surplus production with productivity declining below 0.25 k), from the posterior draws of r, k and last-year B/k of the same MCMC iterations, with lognormal process error (`sigma`, 0.1 by default as `sigmaR` in CMSY++). The default scenarios are 0.5, 0.6, 0.8 and 0.95 Fmsy (as in Froese et al. 2018) and the last-year fishing mortality; constant catches can be added (`catch`). It gives B/Bmsy, F/Fmsy and catch by year with 95% limits, the probability that B is at least Bmsy and, for several stocks, the share of stocks at or above Bmsy.
+`CMSY++16.R` has no projection, so `cmsy_forecast()` projects with the CMSY++ model itself (Schaefer surplus production with productivity declining below 0.25 k), from the posterior draws of r, k and last-year B/k of the same MCMC iterations, with lognormal process error (`sigma`, 0.1 by default as `sigmaR` in CMSY++). In the F scenarios Fmsy is reduced linearly below half of Bmsy, as in the management results of CMSY++. The default scenarios are 0.5, 0.6, 0.8 and 0.95 Fmsy (as in Froese et al. 2018) and the last-year fishing mortality; constant catches can be added (`catch`).
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `result` | The result of `cmsy_run()` | required |
+| `stocks` | Stocks to project (see [Common arguments](#common-arguments)) | `NULL`: all stocks that ran |
+| `years` | Number of years to project | `10` |
+| `f` | Fishing mortality scenarios as multiples of Fmsy | `c(0.5, 0.6, 0.8, 0.95)` |
+| `status_quo` | Also project the last-year fishing mortality | `TRUE` |
+| `catch` | Constant catches to project (tonnes per year) | `NULL` |
+| `sigma` | Standard deviation of the lognormal process error | `0.1` |
+| `seed` | Random seed | `NULL` |
+| `plot` | Save the charts `figures/png/cmsy/<stock>/forecast.png` and `figures/png/cmsy/summary/forecast_share.png` | `TRUE` |
+| `table` | Save `tables/cmsy/forecast.csv` and `forecast_share.csv` | `TRUE` |
+| `lang`, `annotations`, `pptx`, `silent` | See [Common arguments](#common-arguments) | |
+
+It returns `projection` (by stock, scenario and year: median B/Bmsy, F/Fmsy and catch with 95% limits, and the probability that B is at least Bmsy) and `share` (by scenario and year: share of stocks at or above Bmsy, with 95% limits).
 
 ```{r, echo = FALSE}
 show_png("grunt_forecast.png")
@@ -260,20 +465,35 @@ cmsy_compare(`1950` = result_1950, `CMSY++` = result, stocks = "GRB_34")
 show_png("grunt_compare.png")
 ```
 
+| Argument | Meaning | Default |
+|---|---|---|
+| `...` | Results of `cmsy_run()`, named or not (e.g. `default = run1, start_1980 = run2`) | |
+| `stocks` | Stocks to draw (see [Common arguments](#common-arguments)) | `NULL`: all stocks that ran |
+| `external` | Data frame of other estimates, with columns `Stock`, `Year`, `B_Bmsy` (optionally `F_Fmsy`) and `source` (the name shown in the legend) | `NULL` |
+| `lang`, `annotations`, `pptx`, `silent` | See [Common arguments](#common-arguments) | |
+
+The charts are saved as `figures/png/cmsy/compare/<stock>.png`; the function returns `last_year` (one row per stock and run) and `plots`.
+
 ## 📋 Step 9: tables for reports
 
 ```{r, eval = FALSE}
-tables <- cmsy_tables(result, lang = "en")
+tables <- cmsy_tables(result)
 ```
 
-`cmsy_tables()` makes the two tables of CMSY papers, the priors table and the results table shown in Step 5, rounded, with ranges as "low-high" and column names in the chosen language, saved in `tables/cmsy/`.
+`cmsy_tables()` makes the two tables of CMSY papers, the priors table and the results table shown in Step 5, rounded, with ranges as "low-high" and column names in the chosen language, saved as `tables/cmsy/cmsy_priors_table.csv` and `cmsy_results_table.csv`. The results give the status in the two classes of FAO (2026) and in the five classes of Palomares et al. (2018).
 
-## ⚙️ The settings of CMSY++
+| Argument | Meaning | Default |
+|---|---|---|
+| `result` | The result of `cmsy_run()` | required |
+| `stocks` | Stocks in the tables (see [Common arguments](#common-arguments)) | `NULL`: all stocks that ran |
+| `table`, `lang`, `silent` | See [Common arguments](#common-arguments) | |
+
+## ⚙️ The settings of CMSY++ {#cmsy-settings}
 
 CMSY++ has a set of general settings, such as the catch observation error `CV.C`, the process error `sigmaR` and the number of MCMC chains and iterations. `cmsy_run()` keeps the CMSY++ values unless they are changed; `cmsy_defaults()` lists each one with its CMSY++ default, the value used and what it does:
 
 ```{r}
-show_table(cmsy_defaults(lang = "en")[, c("setting", "cmsy_default", "applies_to", "description")], n = 30)
+show_table(cmsy_defaults()[, c("setting", "cmsy_default", "applies_to", "description")], n = 30)
 ```
 
 Settings marked "BSM" only matter with abundance data (CPUE or biomass); with FAO catch data only those marked "all" affect the results. To change some, give only those in `settings`; the others keep their CMSY++ values, and every value is checked (name, range, enough MCMC draws):
@@ -288,7 +508,12 @@ result <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE,
 result$settings[result$settings$changed, ]          # the changed settings
 ```
 
-The settings used are saved in `settings_used.csv` of the run folder and recorded in `result$sources`. The chart and output switches of CMSY++ (`mgraphs`, `kobe.plot`, `retros`, ...) are set by the `plots` argument of `cmsy_run()`, not in `settings`.
+| Argument | Meaning | Default |
+|---|---|---|
+| `settings` | Named list of changed settings, e.g. `list(sigmaR = 0.2)`, shown next to the defaults and checked | `list()` |
+| `lang` | Language of the `description` column: `"en"`, `"zh"` or `"both"` | `NULL`: the language of `fao_settings()` |
+
+The settings used are saved in `settings_used.csv` of the run folder and recorded in `result$settings` and `result$sources`. The chart and output switches of CMSY++ (`mgraphs`, `kobe.plot`, `retros`, ...) are set by the `plots` argument of `cmsy_run()`, not in `settings`.
 
 ## 🖥️ Windows, macOS and Linux
 
@@ -318,17 +543,93 @@ With the same JAGS 4.3.x and rjags 4-17, the results are identical on all three 
 CMSY++ [==================            ] 18/30 ( 60%) 00:51 elapsed, 00:34 left GAL_34
 ```
 
-All CMSY functions have a `silent` argument: with `silent = TRUE` they print no progress bars or messages (`cmsy_setup()` still asks before installing). `fao_settings(silent = TRUE)` sets the session default.
+All CMSY functions that print have a `silent` argument: with `silent = TRUE` they print no progress bars or messages (`cmsy_setup()` still asks before installing). `fao_settings(silent = TRUE)` sets the session default.
 
-## 📚 References
+## 📝 In the Word report
 
-- Froese R, Winker H, Coro G, Palomares MLD, Tsikliras AC, Dimarchopoulou D, Touloumis K, Demirel N, Vianna GMS, Scarcella G, Schijns R, Liang C, Pauly D (2023). New developments in the analysis of catch time series as the basis for fish stock assessments: the CMSY++ method. *Acta Ichthyologica et Piscatoria* 53: 173–189. <https://doi.org/10.3897/aiep.53.105910>
-- Froese R, Demirel N, Coro G, Winker H (2021). *User Guide for CMSY++*. GEOMAR, 17 pp. <https://oceanrep.geomar.de/id/eprint/52147/> (bundled: `system.file("cmsy", "CMSYUserGuideMarch2021.pdf", package = "faofishingreport")`)
-- Free CM, Jensen OP, Anderson SC, et al. (2020). Blood from a stone: performance of catch-only methods in estimating stock biomass status. *Fisheries Research* 223: 105452. <https://doi.org/10.1016/j.fishres.2019.105452>
-- Ovando D, Hilborn R, Monnahan C, et al. (2021). Improving estimates of the state of global fisheries depends on better data. *Fish and Fisheries* 22(6): 1377–1391. <https://doi.org/10.1111/faf.12593>
-- Kell LT, Sharma R, Winker H (2022). Artefact and artifice: evaluation of the skill of catch-only methods for classifying stock status. *Frontiers in Marine Science* 9: 762203. <https://doi.org/10.3389/fmars.2022.762203>
-- FAO (2026). *The State of World Fisheries and Aquaculture 2026*, Box 1.3 (assessment tiers and status classes).
-- Froese R, Winker H, Coro G, Demirel N, Tsikliras AC, Dimarchopoulou D, Scarcella G, Quaas M, Matz-Lück N (2018). Status and rebuilding of European fisheries. *Marine Policy* 93: 159–170. <https://doi.org/10.1016/j.marpol.2018.04.018>
-- Palomares MLD, Froese R, Derrick B, Nöel S-L, Tsui G, Woroniak J, Pauly D (2018). *A preliminary global assessment of the status of exploited marine fish and invertebrate populations*. Report by the Sea Around Us for OCEANA. <https://www.fishbase.de/rfroese/OceanaFinalReport_V7a.pdf>
-- Mohn R (1999). The retrospective problem in sequential population analysis. *ICES Journal of Marine Science* 56: 473–488. <https://doi.org/10.1006/jmsc.1999.0481>
-- Plummer M (2003). JAGS: a program for analysis of Bayesian graphical models using Gibbs sampling. DSC 2003. <https://mcmc-jags.sourceforge.io/>
+`fao_report()` assesses the main species of the area with CMSY++ when `cmsy = TRUE` (see [📝 Assessment report in Word](report.html)), and adds a part on the assessment with the results of every species and appendix tables of the reference points, the priors and their sources. It runs `cmsy_area()` on the `top_n` main species of the report (10 by default), without projections. The settings of `cmsy_area()` and `cmsy_input()` are given with the prefix `cmsy_`, e.g. `cmsy_top = 5`, `cmsy_default_resilience = "Medium"` or `cmsy_settings = list(n.iter = 100000)`. All CMSY++ results (runs, charts and tables) are kept in the folder `cmsy/` next to the report, with `cmsy_result.rds`, so the report can be written again without running CMSY++: `cmsy = readRDS("cmsy/<area>/cmsy_result.rds")`, with the path from the working directory (by default `reports/cmsy/<area>/cmsy_result.rds`). The result of an earlier `cmsy_area()` run can be given in the same way.
+
+```{r, eval = FALSE}
+report <- fao_report(34, cmsy = TRUE, cmsy_top = 5)
+report$cmsy_reference_points                  # r, k, MSY, B/Bmsy, ... with 95% limits
+fao_report(34, cmsy = readRDS("reports/cmsy/Atlantic__Eastern_Central/cmsy_result.rds"))
+```
+
+## 📖 References
+
+```{r references-release, include = FALSE}
+release_info <- fao_data_info()
+```
+
+Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase: exploring, manipulating and
+visualizing FishBase data from R. *Journal of Fish Biology* 81: 2030–2039.
+[doi:10.1111/j.1095-8649.2012.03464.x](https://doi.org/10.1111/j.1095-8649.2012.03464.x)
+
+FAO (`r sub("[.].*", "", release_info$release)`). *Global Capture Production
+`r release_info$years[1]`–`r release_info$years[2]`*, release `r release_info$release`. In:
+Fisheries and Aquaculture. Rome: FAO. <https://www.fao.org/fishery/collection/capture/en>.
+Licence: CC BY 4.0. Release file: <`r release_info$url`>
+
+FAO (2026). *The State of World Fisheries and Aquaculture 2026 – Blue Transformation: turning
+vision into impact*. Rome: FAO. [doi:10.4060/cd8357en](https://doi.org/10.4060/cd8357en).
+Section "The status of fishery resources", Box 1.3 (assessment tiers and status classes):
+<https://openknowledge.fao.org/server/api/core/bitstreams/09d03e2f-7097-4d59-bf94-db65e95f44fd/content/sofia-2026/the-status-fishery-resources.html>
+
+Free, C.M., Jensen, O.P., Anderson, S.C., Gutierrez, N.L., Kleisner, K.M., Longo, C., Minto, C.,
+Osio, G.C. and Walsh, J.C. (2020). Blood from a stone: performance of catch-only methods in
+estimating stock biomass status. *Fisheries Research* 223: 105452.
+[doi:10.1016/j.fishres.2019.105452](https://doi.org/10.1016/j.fishres.2019.105452)
+
+Froese, R., Demirel, N., Coro, G., Kleisner, K.M. and Winker, H. (2017). Estimating fisheries
+reference points from catch and resilience. *Fish and Fisheries* 18: 506–526.
+[doi:10.1111/faf.12190](https://doi.org/10.1111/faf.12190)
+
+Froese, R., Demirel, N., Coro, G. and Winker, H. (2021). *User Guide for CMSY++*. GEOMAR,
+Germany, 17 pp. <https://oceanrep.geomar.de/id/eprint/52147/> (bundled with the package:
+`system.file("cmsy", "CMSYUserGuideMarch2021.pdf", package = "faofishingreport")`)
+
+Froese, R. and Pauly, D. (Eds.) (2026). FishBase. World Wide Web electronic publication. Version
+(06/2026). <https://www.fishbase.se>
+
+Froese, R., Winker, H., Coro, G., Demirel, N., Tsikliras, A.C., Dimarchopoulou, D., Scarcella,
+G., Quaas, M. and Matz-Lück, N. (2018). Status and rebuilding of European fisheries. *Marine
+Policy* 93: 159–170.
+[doi:10.1016/j.marpol.2018.04.018](https://doi.org/10.1016/j.marpol.2018.04.018)
+
+Froese, R., Winker, H., Coro, G., Palomares, M.L.D., Tsikliras, A.C., Dimarchopoulou, D.,
+Touloumis, K., Demirel, N., Vianna, G.M.S., Scarcella, G., Schijns, R., Liang, C. and Pauly, D.
+(2023). New developments in the analysis of catch time series as the basis for fish stock
+assessments: the CMSY++ method. *Acta Ichthyologica et Piscatoria* 53: 173–189.
+[doi:10.3897/aiep.53.105910](https://doi.org/10.3897/aiep.53.105910)
+
+Kell, L.T., Sharma, R. and Winker, H. (2022). Artefact and artifice: evaluation of the skill of
+catch-only methods for classifying stock status. *Frontiers in Marine Science* 9: 762203.
+[doi:10.3389/fmars.2022.762203](https://doi.org/10.3389/fmars.2022.762203)
+
+Mohn, R. (1999). The retrospective problem in sequential population analysis: an investigation
+using cod fishery and simulated data. *ICES Journal of Marine Science* 56: 473–488.
+[doi:10.1006/jmsc.1999.0481](https://doi.org/10.1006/jmsc.1999.0481)
+
+Ovando, D., Hilborn, R., Monnahan, C., Rudd, M., Sharma, R., Thorson, J.T., Rousseau, Y. and Ye,
+Y. (2021). Improving estimates of the state of global fisheries depends on better data. *Fish and
+Fisheries* 22: 1377–1391. [doi:10.1111/faf.12593](https://doi.org/10.1111/faf.12593)
+
+Palomares, M.L.D., Froese, R., Derrick, B., Nöel, S.-L., Tsui, G., Woroniak, J. and Pauly, D.
+(2018). *A preliminary global assessment of the status of exploited marine fish and invertebrate
+populations*. A report prepared by the Sea Around Us for OCEANA. University of British Columbia
+and GEOMAR. <https://www.fishbase.de/rfroese/OceanaFinalReport_V7a.pdf>
+
+Palomares, M.L.D. and Pauly, D. (Eds.) (2026). SeaLifeBase. World Wide Web electronic
+publication. Version (06/2026). <https://www.sealifebase.se>
+
+Plummer, M. (2003). JAGS: a program for analysis of Bayesian graphical models using Gibbs
+sampling. In: *Proceedings of the 3rd International Workshop on Distributed Statistical
+Computing (DSC 2003)*, Vienna, 1–10.
+<https://www.r-project.org/conferences/DSC-2003/Proceedings/Plummer.pdf>; JAGS:
+<https://mcmc-jags.sourceforge.io/>
+
+Plummer, M. (2025). rjags: Bayesian Graphical Models using MCMC. R package version 4-17.
+[doi:10.32614/CRAN.package.rjags](https://doi.org/10.32614/CRAN.package.rjags)
+
+Su, Y. and Yajima, M. (2024). R2jags: Using R to Run 'JAGS'. R package version 0.8-9.
+[doi:10.32614/CRAN.package.R2jags](https://doi.org/10.32614/CRAN.package.R2jags)

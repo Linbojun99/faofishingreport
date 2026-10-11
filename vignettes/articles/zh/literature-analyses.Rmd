@@ -1,0 +1,635 @@
+---
+title: "🔬 渔获骤变、渔业崩溃、同步性与远洋捕捞"
+description: >
+  catch_shocks()、collapse_analysis()、catch_synchrony()、distant_water_profile()和compare_releases()：按已发表的方法识别渔获量的骤降和崩溃，衡量各渔获序列波动的同步程度，追踪一个国家的船队在哪些渔区作业，并查看FAO在两个数据版本之间修订了什么。
+---
+
+```{r setup, include = FALSE}
+source("../_setup.R")
+FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+```
+
+```{r}
+fao_settings(lang = "zh")   # 本文所有图表使用中文
+```
+
+```{r data-source, echo = FALSE, results = "asis"}
+data_source("zh")
+```
+
+本文的五个函数都采用渔业学和生态学文献中已发表的方法。每一节都给出方法及其出处，便于对照原始研究核查结果，并说明哪些设置是本包的选择、而非原始研究的做法。完整的参考文献列在文末。
+
+- `catch_shocks()`、`collapse_analysis()`和`catch_synchrony()`与汇总分析一样使用产量数据：可以是`fishing_area_data()`得到的某个渔区，也可以是`load_fao_data()`的任意子集（见[💾 FAO数据](data.html)）。
+- `distant_water_profile()`的输入是一个国家，追踪该国在所有FAO渔区的渔获。
+- `compare_releases()`的输入是FAO数据的两个版本。
+
+示例使用中东大西洋（FAO 34区）。图表保存在`figures/png/summary/`，表格保存在`tables/`。中上层鱼/底层鱼渔获比`pelagic_demersal()`也属于这一类分析，见[📈 类群结构、资源状态与趋势](status-trends.html)。
+
+```{r, eval = FALSE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+```
+
+五个函数共有以下参数：
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `plot` | 将图表保存到`figures/png/summary/` | `TRUE` |
+| `table` | 将表格保存到`tables/` | `TRUE` |
+| `lang` | 图表和名称的语言：`"en"`、`"zh"`或`"both"`；`NULL`表示使用`fao_settings()`设置的语言 | `NULL` |
+| `pptx` | 同时把图表保存为可编辑的PowerPoint文件，存放在`figures/pptx/summary/` | `FALSE`；运行`fao_settings(pptx = TRUE)`后为`TRUE` |
+| `label` | 输出文件名开头的名称 | 数据所属的渔区（或国家） |
+
+这些函数以不可见的方式返回结果：把结果赋给一个对象（`x <- catch_shocks(...)`），才能使用其中的表格。
+
+## 📝 写入Word报告
+
+`fao_report()`可以把其中四项分析加入某个渔区的Word报告（见[📝 一键生成Word评估报告](report.html)）。这些章节默认关闭：
+
+```{r, eval = FALSE}
+fao_report(34, shocks = TRUE, collapse = TRUE, synchrony = TRUE, distant = TRUE)
+```
+
+各函数的参数以章节名作前缀传入：
+
+```{r, eval = FALSE}
+fao_report(34, shocks = TRUE, collapse = TRUE, synchrony = TRUE, distant = TRUE,
+           shocks_method = "gephart2017",   # 即catch_shocks(method = "gephart2017")
+           collapse_method = "worm2006",    # 即collapse_analysis(method = "worm2006")
+           collapse_seed = 2,               # 零模型随机序列的随机数种子
+           synchrony_by = "country",        # 即catch_synchrony(by = "country")
+           distant_countries = 5,           # 介绍5个主要远洋捕捞国家
+           distant_min_catch = 100)         # 即distant_water_profile(min_catch = 100)
+```
+
+| 章节 | 函数 | 报告专有的设置 |
+|---|---|---|
+| `shocks` | `catch_shocks()` | |
+| `collapse` | `collapse_analysis()` | `collapse_seed`：零模型随机序列的随机数种子，默认为`1`，使报告每次给出相同的数字 |
+| `synchrony` | `catch_synchrony()` | |
+| `distant` | `distant_water_profile()` | `distant_countries`：介绍的国家数，默认为`3`（近五年在该渔区远洋渔获量最高的国家），也可以直接给出国家名，如`c("China", "Japan")` |
+| `pelagic` | `pelagic_demersal()` | |
+
+`compare_releases()`比较的是数据的两个版本，而不是描述某个渔区，所以不是报告的章节。
+
+## ⚡ 渔获骤变
+
+骤变（shock）指产量从一年到下一年突然出现的异常大幅下降。Gephart et al. (2017)提出了在各国水产品产量序列中识别骤变的统计方法，Cottrell et al. (2019)用该方法的一个变体比较了作物、畜牧、渔业和水产养殖生产中的骤变。`catch_shocks()`把这两种方法用于FAO产量序列，并按年份和分组统计骤变发生的频率。
+
+### 方法
+
+默认情况下，一条序列是一个国家在一个FAO渔区的产量（`by = c("country", "area")`）。序列从第一个有产量的年份开始，到数据的最后一年结束，缺失的年份按0计。对每条序列：
+
+1. 对产量$c_t$做平滑，保留平滑后的残差$r_t = c_t - \hat{c}_t$。
+2. 用残差对前一年的残差做回归：$r_t = a + b\,r_{t-1} + e_t$（滞后1年的回归）。
+3. 在这一回归中**库克距离**（Cook's distance）超过阈值的年份为候选骤变。库克距离衡量单个观测值对回归拟合的影响，因此能找出打破通常年际变化规律的年份。
+4. 只有产量低于根据前几年计算的**基线**$B_t$时，候选年份才算骤变。损失量为$B_t - c_t$吨，或$100\,(B_t - c_t)/B_t$%。
+5. 此后产量第一次回升到$B_t$的95%以上的年份，即为该次骤变的恢复年份。
+
+两种方法的平滑方法、阈值和基线不同：
+
+| | `"cottrell2019"`（默认） | `"gephart2017"` |
+|---|---|---|
+| 平滑方法 | LOESS，跨度0.6 | lowess，跨度2/3 |
+| 库克距离阈值 | 大于0.3 | 大于0.35 |
+| 基线$B_t$ | 前7年产量的中位数 | 前5年产量的平均值 |
+| 最早可能出现骤变的年份 | 序列的第8年 | 序列的第6年 |
+| 出处 | Cottrell et al. (2019)的方法部分及其[代码](https://github.com/cottrellr/shocks) | Gephart et al. (2017)第2节及其[代码](https://github.com/jagephart/Shock_Detection) |
+
+由骤变可以得到两个汇总指标：
+
+- 某一年的**骤变频率**：当年的骤变次数除以当年有产量的序列数，以百分比表示（Cottrell et al. 2019）；
+- 某个分组（渔区、国家、大洲或物种类群）的**骤变率**：骤变次数除以该组的序列数（Gephart et al. 2017）。
+
+有两项设置是本包的选择。有产量的年数少于`min_years`（20年）的序列不纳入分析，因为两项研究都没有规定序列的最短长度。已不存在的国家（如苏联）的序列在其最后一个有产量的年份结束，以免把国家的解体算作骤变。
+
+### 示例
+
+```{r, figures = TRUE}
+shocks <- catch_shocks(FAO34$area_data)
+```
+
+第一幅图是每年的骤变频率。第二幅图显示产量最大的`top_n`条序列从首年到末年的时间范围，每次骤变用一个点表示，点的大小代表损失的百分比。其余的图给出各大洲和各国家的骤变率，柱旁标注骤变次数和序列数；只有一个组的分组（这里是渔区）不出图。
+
+按损失吨数排列的最大几次骤变：
+
+```{r}
+largest <- shocks$shocks[order(-shocks$shocks$loss_tonnes), ]
+show_table(data.frame(largest[, c("series_name", "Year", "catch_tonnes", "baseline_tonnes", "loss_tonnes",
+                                  "loss_pct", "cooks_distance", "recovery_years")], row.names = NULL),
+           digits = c(0, 0, 0, 0, 0, 1, 2, 0))
+```
+
+骤变频率最高的年份，以及各大洲的骤变率：
+
+```{r}
+show_table(data.frame(head(shocks$by_year[order(-shocks$by_year$shock_frequency_pct), ], 5), row.names = NULL))
+show_table(data.frame(subset(shocks$by_group, grouping == "continent"), row.names = NULL))
+```
+
+**结果解读**：34区有`r nrow(shocks$series)`条国家序列至少有20年有产量，其中`r sum(shocks$series$n_shocks > 0)`条序列共出现`r nrow(shocks$shocks)`次骤变。任何一年的骤变频率都不超过`r round(max(shocks$by_year$shock_frequency_pct), 1)`%：对单条序列而言，骤变是罕见事件。`recovery_years`是产量回升到基线95%所用的年数；`NA`表示到序列结束时仍未恢复（`r nrow(shocks$shocks)`次骤变中有`r sum(is.na(shocks$shocks$recovery_years))`次）。已不存在的苏联和“Other nei”（未归属到具体国家的渔获）在FAO国家列表中没有所属大洲，因此显示为`NA`。
+
+### 其他设置
+
+Gephart et al. (2017)的方法。文件名中不含方法名，所以用`label`避免这次调用的图表覆盖第一次调用的图表：
+
+```{r, figures = "_shocks[.]png$"}
+gephart <- catch_shocks(FAO34$area_data, method = "gephart2017", label = "FAO34 gephart2017")
+```
+
+```{r}
+both <- merge(shocks$shocks[, c("series", "Year")], gephart$shocks[, c("series", "Year")])
+c(cottrell2019 = nrow(shocks$shocks), gephart2017 = nrow(gephart$shocks), both = nrow(both))
+```
+
+两种方法分别找到`r nrow(shocks$shocks)`次和`r nrow(gephart$shocks)`次骤变，其中只有`r nrow(both)`次落在相同的序列和年份：许多年份的库克距离都接近阈值，这些临界情况取决于平滑方法和基线。两种方法都能得到的结果更为可靠。
+
+`by = "species"`时，一条序列是一个物种条目在该渔区的产量（所有国家合计），骤变率还会按ISSCAAP物种类群给出：
+
+```{r, figures = "_by_species_group"}
+species_shocks <- catch_shocks(FAO34$area_data, by = "species", label = "FAO34 species")
+```
+
+```{r}
+groups <- subset(species_shocks$by_group, grouping == "species_group" & n_series >= 5)
+show_table(data.frame(groups[, c("group_name", "n_series", "n_shocks", "shocks_per_series")], row.names = NULL))
+```
+
+两项原始研究分析的是各国的全国总量，即一个国家所有物种和渔区的合计。使用全部渔区的数据并设`by = "country"`，即可得到同样的序列（耗时较长）：
+
+```{r, eval = FALSE}
+catch_shocks(load_fao_data(), by = "country", method = "gephart2017")
+```
+
+### 参数与返回值
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `area_data` | FAO产量数据：`fishing_area_data()$area_data`，或`load_fao_data()`的任意子集 | |
+| `by` | 序列的定义：`"country"`、`"area"`和`"species"`中的一个或多个 | `c("country", "area")` |
+| `method` | `"cottrell2019"`或`"gephart2017"` | `"cottrell2019"` |
+| `min_years` | 有产量的年数少于该值的序列不纳入分析 | `20` |
+| `top_n` | 时间线图中显示的产量最大的序列数 | `25` |
+| `plot`、`table`、`lang`、`pptx`、`label` | 通用参数（见本文开头） | |
+
+| 元素 | 内容 |
+|---|---|
+| `shocks` | 每次骤变一行：所属序列、`Year`、`catch_tonnes`、`baseline_tonnes`、`loss_tonnes`、`loss_pct`、`cooks_distance`和`recovery_years` |
+| `by_year` | 每年的`n_series`（有产量的序列数）、`n_shocks`和`shock_frequency_pct` |
+| `by_group` | 按`grouping`（国家、渔区、物种、大洲、物种类群）统计的骤变率：`n_series`、`n_shocks`和`shocks_per_series` |
+| `series` | 参与分析的序列：`first_year`、`last_year`、`n_years`、`total_tonnes`和`n_shocks` |
+
+::: callout-note
+- 两项原始研究分析的都是全国总量。一个国家在一个渔区的序列，或一个物种的序列，是把同一方法用于更小的单元。
+- 波动剧烈的序列（如秘鲁鳀）可能不出现骤变，因为大幅变化在这类序列中很常见（Gephart et al. 2017）。
+- 骤变只是产量序列中的异常，可能源于资源本身、环境、市场、管理或统计报告方式的变化，产量数据本身无法区分。
+- 平滑和回归都使用整条序列，所以增加一年的新数据，可能改变较早的年份是否被判定为骤变。
+:::
+
+## 💥 渔业崩溃
+
+根据产量数据判定崩溃，常用的定义有两种。Mullon et al. (2005)统计了FAO产量序列中的崩溃，并描述了崩溃前产量下降的形态；Worm et al. (2006)跟踪产量低于其最高值10%的渔业所占的比例。Wilberg and Miller (2007)指出，即使是没有趋势的随机序列，按第二种指标计算的比例也会上升，所以`collapse_analysis()`会把数据与这样的随机序列进行比较。
+
+### 方法
+
+| | `"mullon2005"`（默认） | `"worm2006"` |
+|---|---|---|
+| 一条序列 | 一个国家在一个FAO渔区捕捞的一个物种或属 | 一个物种条目在一个FAO渔区的产量，所有国家合计 |
+| 不纳入分析 | 未鉴定到属或种的条目；`exclude_countries`中的国家；最后`complete_years`（20）年中有缺失年份的序列；年平均产量低于`min_mean_catch`（500吨）的序列 | 总产量低于`min_total_catch`（1万吨）的渔业 |
+| 崩溃 | 在最高产量$X_{max}$出现的年份之后，产量连续4年低于$X_{max}/10$；其中第一年为崩溃年份$D_c$（Mullon et al. 2005，第113页） | 产量低于最高值10%的年份即处于崩溃状态，回升到10%以上即为恢复。渔业从产量首次达到最高值10%的年份算起 |
+| 结果 | 崩溃次数、崩溃年份和崩溃前的下降形态 | 每年处于崩溃状态的渔业比例，以及曾经崩溃的渔业比例（Worm et al. 2006，正文及补充材料第4–5页） |
+
+`exclude_countries`默认包含Mullon et al. (2005)第112页排除的国家：前苏联、南斯拉夫和捷克斯洛伐克，它们的序列随国家解体而中断；南非和纳米比亚，它们的序列曾被拆分；以及中国，作者认为其序列失真。
+
+**下降形态**（Mullon et al. 2005，第114页）按以下顺序判定（原文没有说明判定顺序）：
+
+| 类型 | 规则 |
+|---|---|
+| 平台型 | 从$D_c - 8$到$D_c - 3$的每一年产量都高于$X_{max}/4$：长期高产之后突然下降 |
+| 平滑型 | 从$D_c - 10$到$D_c$产量与时间的相关系数低于$-0.7$：长期、平稳的下降 |
+| 波动型 | 其余情况：几经起伏之后的下降 |
+| 未分类 | 发生在序列首年之后不足10年的崩溃 |
+
+Mullon et al.在1950–2000年的1519条FAO序列中发现366次崩溃（24%）：平台型占21%，平滑型占33%，波动型占45%。
+
+**零模型**：序列的最高值随序列长度增加而增大，因此即使什么都没有变化，以最高值为参照定义的“崩溃”渔业比例也会随时间上升（Wilberg and Miller 2007）。`null_model = TRUE`（默认）时，函数在`n_sim`（100）组无趋势的随机序列上重复同样的分析，随机序列的起始年份和长度与真实序列相同。与Wilberg and Miller (2007)一样，这些序列是平稳的一阶自回归对数正态序列：$x_t = \rho\,x_{t-1} + \varepsilon_t$，其中$\rho = 0.75$，$\varepsilon_t \sim N\!\left(0,\ \sigma^2 (1 - \rho^2)\right)$，产量$= e^{x_t}$；$\sigma^2 = \ln(1 + \text{CV}^2)$，对应80%的变异系数。随机序列中的崩溃比例，就是定义本身所产生的水平。
+
+**随机数**：每次运行都会重新抽取随机序列，所以零模型的结果每次略有不同。在调用前使用`set.seed()`可以固定结果。本页使用`set.seed(1)`，使网站每次构建时正文中的数字都与表格一致；`fao_report()`用`collapse_seed`（默认为1）做同样的处理。
+
+### 示例
+
+```{r, figures = TRUE}
+set.seed(1)   # 固定零模型的随机序列
+collapses <- collapse_analysis(FAO34$area_data)
+```
+
+第一幅图是每年的崩溃次数，按下降形态区分。第二幅图是各类型崩溃前后的平均产量（相对于各自的最高值），从崩溃前10年到崩溃后5年；虚线为$X_{max}/4$和$X_{max}/10$。第三幅图是至少有3条序列的ISSCAAP物种类群中崩溃序列所占的比例。
+
+```{r}
+s <- collapses$summary
+show_table(data.frame(s, row.names = NULL), digits = 1)
+```
+
+最高产量最大的崩溃序列，以及各物种类群的崩溃比例：
+
+```{r}
+collapsed <- subset(collapses$series, collapsed)
+collapsed <- collapsed[order(-collapsed$max_tonnes), c("series_name", "max_year", "max_tonnes", "collapse_year", "type")]
+show_table(data.frame(collapsed, row.names = NULL), digits = 0)
+groups <- subset(collapses$by_group, grouping == "species_group" & n_series >= 3)
+show_table(data.frame(groups[, c("group_name", "n_series", "n_collapsed", "pct_collapsed")], row.names = NULL), digits = 1)
+```
+
+**结果解读**：按Mullon et al. (2005)的定义，34区`r s$n_series[1]`条序列中有`r s$n[1]`条（`r round(s$pct_of_series[1], 1)`%）发生了崩溃，而无趋势的随机序列中这一比例为`r round(s$null_pct_of_series[1], 1)`%。指向真实崩溃的是两者之差，而不是比例本身。在所有崩溃中，波动型占`r round(s$pct_of_collapses[s$type == "erratic"])`%，平台型占`r round(s$pct_of_collapses[s$type == "plateau"])`%，平滑型占`r round(s$pct_of_collapses[s$type == "smooth"])`%。平台型崩溃最难预见：产量在骤降之前一直保持在高位（Mullon et al. 2005）。
+
+### 其他设置
+
+Worm et al. (2006)的定义，使用同样的种子：
+
+```{r, figures = "worm2006[.]png$"}
+set.seed(1)
+worm <- collapse_analysis(FAO34$area_data, method = "worm2006")
+```
+
+实线为数据，虚线为零模型的随机序列；红色为曾经崩溃的渔业比例，蓝色为当年处于崩溃状态的渔业比例。
+
+```{r}
+show_table(data.frame(worm$summary, row.names = NULL), digits = 1)
+show_table(data.frame(subset(worm$by_year, Year %in% c(1960, 1980, 2000, max(Year))), row.names = NULL), digits = 1)
+```
+
+到最后一年，34区有`r round(worm$summary$pct_of_series[2], 1)`%的渔业至少崩溃过一次，而无趋势的随机序列为`r round(worm$summary$null_pct_of_series[2], 1)`%：在这个渔区，不断上升的累计比例来自定义本身，这正是Wilberg and Miller (2007)指出的问题。最后一年处于崩溃状态的比例（`r round(worm$summary$pct_of_series[1], 1)`%，零模型为`r round(worm$summary$null_pct_of_series[1], 1)`%）是更好的指标。
+
+另外三项设置也常用：`exclude_countries = character(0)`在Mullon et al.的方法中保留所有国家；`null_model = FALSE`不生成随机序列，运行更快；`n_sim = 1000`使零模型的结果更稳定。
+
+### 参数与返回值
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `area_data` | FAO产量数据：`fishing_area_data()$area_data`，或`load_fao_data()`的任意子集 | |
+| `method` | `"mullon2005"`或`"worm2006"` | `"mullon2005"` |
+| `exclude_countries` | `"mullon2005"`方法中不纳入分析的国家 | `c("Un. Sov. Soc. Rep.", "Yugoslavia SFR", "Czechoslovakia", "South Africa", "Namibia", "China")` |
+| `complete_years` | `"mullon2005"`方法中，序列在数据的最后这么多年里每年都须有记录 | `20` |
+| `min_mean_catch` | `"mullon2005"`方法中，序列的最低年平均产量（吨） | `500` |
+| `min_total_catch` | `"worm2006"`方法中，渔业的最低总产量（吨） | `10000` |
+| `null_model` | 是否在无趋势的随机序列上重复分析（Wilberg and Miller 2007） | `TRUE` |
+| `n_sim` | 零模型随机数据集的组数 | `100` |
+| `plot`、`table`、`lang`、`pptx`、`label` | 通用参数（见本文开头） | |
+
+| 元素 | 内容 |
+|---|---|
+| `series` | 每条序列一行：`max_year`和`max_tonnes`；`"mullon2005"`方法另有`collapsed`、`collapse_year`和`type`，`"worm2006"`方法另有`start_year`、`collapsed_last_year`和`first_collapse_year` |
+| `summary` | `"mullon2005"`：崩溃次数及各类型的次数、`pct_of_series`、`pct_of_collapses`和零模型中的比例`null_pct_of_series`。`"worm2006"`：最后一年处于崩溃状态的渔业和曾经崩溃的渔业，以及零模型的对应结果 |
+| `by_year` | `"mullon2005"`：按年份和类型统计的`n_collapses`。`"worm2006"`：`n_fisheries`、`n_collapsed`、`n_ever_collapsed`、`pct_current`、`pct_cumulative`，以及零模型中的相应比例 |
+| `by_group` | 按FAO渔区和物种类群统计的崩溃比例：`n_series`、`n_collapsed`和`pct_collapsed` |
+
+::: callout-note
+- 单凭产量数据，无法区分资源崩溃与管理、市场或统计报告造成的产量下降。
+- 以最高值为参照的定义在随机序列中同样会产生“崩溃”。应把数据与零模型比较；零模型给出的是参照水平，而不是统计检验。
+- Worm et al. (2006)使用的是Sea Around Us数据中各大海洋生态系统的物种；这里的一个渔业是FAO渔区中的一个物种条目，所以两者的比例不能直接比较。
+- 使用默认的`exclude_countries`时，与Mullon et al. (2005)一样，中国的产量不纳入分析。
+:::
+
+## 🎼 同步性与组合效应
+
+不同物种的产量如果在不同的时间涨落，它们的总产量就比各自的产量更稳定。这就是组合效应（portfolio effect），名称来自分散投资降低风险的道理。Ong et al. (2021)分析了1092条海洋渔获序列，发现渔获越同步的海区，总渔获量越不稳定。`catch_synchrony()`衡量数据中各产量序列波动的同步程度，以及它们的不同步在多大程度上稳定了总产量。
+
+### 方法
+
+序列的选取与Ong et al. (2021)相同：年产量的中位数高于`min_median`（10吨），且超过`min_nonzero`（3/4）的年份有产量。`by = "species"`时只使用鉴定到种的条目（Ong et al.排除了“其他”类和未分类的nei条目）。与Ong et al.一样，每条序列先用对年份的线性回归**去趋势**，因为共同的趋势会使序列看起来同步（Lepš et al. 2019）；`detrend = "none"`则保留趋势。
+
+记$\sigma_i$为序列$i$（去趋势后）的标准差，$\sigma_T$为总产量的标准差，$m_i$为序列$i$的平均产量，$m_T$为平均总产量：
+
+| 指标 | 公式 | 列 |
+|---|---|---|
+| 同步性 | $\varphi = \sigma_T^2 / \left(\sum_i \sigma_i\right)^2$，从0（波动完全相互抵消）到1（完全同步）（Loreau and de Mazancourt 2008，式9） | `synchrony_phi` |
+| 总产量的变异系数 | $\text{CV}_T = \sigma_T / m_T$ | `cv_total` |
+| 加权平均变异系数 | $\sum_i \sigma_i / m_T$：所有序列完全同步时总产量的变异系数 | `weighted_mean_cv` |
+| 分解 | $\text{CV}_T = \sqrt{\varphi} \times \sum_i \sigma_i / m_T$（Thibaut and Connolly 2013，式2–4）：同步性越低，总产量越稳定 | |
+| 序列的平均变异系数 | $\overline{\text{CV}} = \frac{1}{n} \sum_i \sigma_i / m_i$ | `mean_cv_series` |
+| 组合效应 | $100 \times (\overline{\text{CV}} - \text{CV}_T) / \text{CV}_T$：单条序列比总产量多变多少，以百分比表示（Ong et al. 2021，参照Carlson and Satterthwaite 2011） | `portfolio_effect_pct` |
+| 两两相关 | 去趋势后各序列之间的相关系数：平均值及正相关所占的比例 | `mean_pairwise_correlation`、`positive_correlations_pct` |
+
+同样的指标也在长度为`window`年（20年）的滑动窗口中计算（每个窗口内分别去除线性趋势，这是本包的选择），以显示同步性随时间的变化。Ong et al. (2021)用小波相干（wavelet coherence）衡量同步性，可以区分不同的时间尺度；本函数采用上述较简单的、基于相关的指标。
+
+### 示例
+
+```{r, figures = TRUE}
+sync <- catch_synchrony(FAO34$area_data)
+```
+
+第一幅图是每个20年窗口的同步性和组合效应，标在窗口的中间年份。第二幅图比较总产量的变异系数（红色，虚线）与产量最大的`top_n`条序列的变异系数。第三幅图是这些序列之间的相关系数：红色表示同涨同落，蓝色表示相互抵消。
+
+```{r}
+show_table(sync$summary[, c("n_series", "synchrony_phi", "cv_total", "weighted_mean_cv", "mean_cv_series",
+                            "portfolio_effect_pct", "mean_pairwise_correlation")], digits = 2)
+with(sync$summary, c(cv_total = cv_total, decomposition = sqrt(synchrony_phi) * weighted_mean_cv))
+```
+
+第二行验证Thibaut and Connolly (2013)的分解：总产量的变异系数等于$\sqrt{\varphi}$乘以加权平均变异系数。各序列的`share_of_variability_pct`是其在$\sum_i \sigma_i$中所占的比例：
+
+```{r}
+show_table(sync$series[, c("series", "mean_tonnes", "sd_tonnes", "cv", "share_of_variability_pct")], digits = 2)
+show_table(data.frame(subset(sync$windows, first_year %% 10 == 0), row.names = NULL), digits = 2)
+```
+
+**结果解读**：34区`r sync$summary$n_series`条物种序列的同步性为`r sprintf("%.2f", sync$summary$synchrony_phi)`，远低于1：它们的波动在很大程度上相互抵消。总产量的变异系数为`r sprintf("%.2f", sync$summary$cv_total)`，是所有物种同步波动时（`r sprintf("%.2f", sync$summary$weighted_mean_cv)`）的`r sprintf("%.2f", sqrt(sync$summary$synchrony_phi))`倍（即$\sqrt{\varphi}$）。单条物种序列的变异平均是总产量的`r sprintf("%.1f", sync$summary$mean_cv_series / sync$summary$cv_total)`倍，组合效应为`r round(sync$summary$portfolio_effect_pct)`%。两条序列之间的平均相关系数为`r sprintf("%.2f", sync$summary$mean_pairwise_correlation)`。在滑动窗口中，同步性在`r sync$windows$first_year[1]`–`r sync$windows$last_year[1]`年为`r sprintf("%.2f", sync$windows$synchrony_phi[1])`，在`r sync$windows$first_year[which.max(sync$windows$synchrony_phi)]`–`r sync$windows$last_year[which.max(sync$windows$synchrony_phi)]`年达到最高的`r sprintf("%.2f", max(sync$windows$synchrony_phi))`，到`r tail(sync$windows$first_year, 1)`–`r tail(sync$windows$last_year, 1)`年降至`r sprintf("%.2f", tail(sync$windows$synchrony_phi, 1))`。
+
+### 其他设置
+
+不去趋势，以及按国家而非物种分析：
+
+```{r, figures = "synchrony_species[.]png$"}
+none <- catch_synchrony(FAO34$area_data, detrend = "none", label = "FAO34 no detrending")
+```
+
+```{r, figures = "synchrony_country[.]png$"}
+countries <- catch_synchrony(FAO34$area_data, by = "country")
+```
+
+```{r}
+settings <- rbind(sync$summary, none$summary, countries$summary)
+settings$by <- c("species", "species", "country")
+show_table(settings[, c("by", "detrend", "n_series", "synchrony_phi", "cv_total", "mean_cv_series",
+                        "portfolio_effect_pct", "mean_pairwise_correlation")], digits = 2)
+```
+
+不去趋势时，同步性为`r sprintf("%.2f", none$summary$synchrony_phi)`，而不是`r sprintf("%.2f", sync$summary$synchrony_phi)`：几十年来多数物种的产量都在增长，这一共同趋势使序列看起来同步（Lepš et al. 2019）。`r countries$summary$n_series`个国家的产量相互抵消得更多（$\varphi$ = `r sprintf("%.2f", countries$summary$synchrony_phi)`）。
+
+### 参数与返回值
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `area_data` | FAO产量数据：`fishing_area_data()$area_data`，或`load_fao_data()`的任意子集 | |
+| `by` | 序列的定义：`"species"`或`"country"` | `"species"` |
+| `detrend` | `"linear"`去除每条序列的线性趋势，`"none"`不去趋势 | `"linear"` |
+| `window` | 滑动窗口的长度（年） | `20` |
+| `top_n` | 变异系数图和相关图中显示的产量最大的序列数 | `20` |
+| `min_median` | 序列的年产量中位数须高于该值（吨） | `10` |
+| `min_nonzero` | 有产量的年份须超过该比例 | `0.75` |
+| `plot`、`table`、`lang`、`pptx`、`label` | 通用参数（见本文开头） | |
+
+| 元素 | 内容 |
+|---|---|
+| `summary` | `n_series`、`first_year`、`last_year`、`detrend`、`synchrony_phi`、`cv_total`、`weighted_mean_cv`、`mean_cv_series`、`portfolio_effect_pct`、`mean_pairwise_correlation`和`positive_correlations_pct` |
+| `series` | 各序列的`mean_tonnes`、`sd_tonnes`（去趋势后）、`cv`和`share_of_variability_pct` |
+| `windows` | 各滑动窗口的指标：`first_year`、`last_year`、`mid_year`、`n_series`、`synchrony_phi`、`cv_total`、`mean_cv_series`和`portfolio_effect_pct`（数据不足`window` + 2年时为`NULL`） |
+| `correlation` | 去趋势后各序列两两相关系数的矩阵 |
+
+::: callout-note
+- 趋势会使序列看起来同步（Lepš et al. 2019）：解读同步性之前，先比较`detrend = "linear"`和`"none"`的结果。
+- 这些指标基于相关系数。Ong et al. (2021)使用小波相干，可以区分时间尺度，并允许存在时滞。
+- 渔获同步波动可能源于鱼类本身，也可能源于捕捞：Ong et al. (2021)发现，渔获的相干既可能来自生物量的相干，也可能来自捕捞死亡率的相干。
+- 序列的平均变异系数不加权，所以产量小而波动大的序列会抬高组合效应；$\varphi$和加权平均变异系数则按各序列的大小加权。
+:::
+
+## 🚢 国家的远洋捕捞概况
+
+1950年以来，海洋渔业的作业范围扩展到越来越大的海域（Swartz et al. 2010）。`distant_water_profile()`用FAO统计数据追踪一个国家的这种扩张：该国在其邻近渔区和不相邻渔区的产量，每年作业的渔区数，以及在每个渔区的首年、末年、峰值和近期产量。
+
+### 方法
+
+- **远洋渔获**采用FAO的定义：一个国家在其不相邻的FAO主要渔区的产量。在本国水域以外、但仍在邻近渔区内的捕捞不算远洋渔获（Grainger and Garcia 1996，第2.6节；Garibaldi and Limongelli 2003，第2.1节）。
+- 一个国家的陆地（包括海外领土）距FAO渔区边界20 km以内，该渔区即为该国的**邻近渔区**。这是本包的规则，与`coastal_distant()`相同（见[🔍 数据质量、多样性与船队](quality-diversity-fleets.html)）。
+- 一个国家某年在某渔区的产量超过`min_catch`吨（默认为0，即有任何上报的产量），该渔区就算该年**有作业**。
+- 内陆渔区不纳入分析。
+
+FAO按渔船的船旗国和FAO主要渔区记录产量，而不是按专属经济区（EEZ）。因此，概况显示的是一个国家的船队在哪些FAO渔区作业，而不是渔获来自本国水域、他国水域还是公海。Swartz et al. (2010)用Sea Around Us的渔获分布图描绘了这种扩张；本函数只用FAO统计数据，空间分辨率为FAO主要渔区。
+
+### 示例
+
+函数的输入是FAO数据中的国家名，使用该国在所有渔区的产量：
+
+```{r, figures = TRUE}
+china <- distant_water_profile("China")
+```
+
+这些图依次是邻近渔区和远洋渔区的产量（吨数和占比）、各远洋渔区的产量（产量最大的`top_n`个渔区，其余合并）、每年作业的渔区数，以及每个渔区从首次到最后一次有产量的年份。
+
+```{r}
+show_table(data.frame(tail(china$yearly, 5), row.names = NULL), digits = 1)
+show_table(china$areas[, c("area", "adjacent", "first_year", "last_year", "peak_year", "peak_tonnes",
+                           "total_tonnes", "share_of_distant_pct")], n = 20, digits = 1)
+```
+
+`share_of_distant_pct`是各远洋渔区在该国整个时期全部远洋渔获中所占的比例。中国只与西北太平洋（61区）相邻。中国在`r china$areas$first_year[china$areas$area_en == "Atlantic, Eastern Central"]`年首次上报34区的产量，34区占其远洋渔获的`r round(china$areas$share_of_distant_pct[china$areas$area_en == "Atlantic, Eastern Central"], 1)`%。
+
+::: callout-note
+FAO指出，2022年中国上报了230万吨远洋渔获，但只对在中国上岸的渔获（61区）给出了物种和渔区。FAO用区域渔业管理组织的数据补充了其他渔区，并把130万吨记为61区的“Marine fishes nei”（FAO 2024）。因此，中国近年的远洋渔获有一部分计入了与其相邻的61区。
+:::
+
+### 其他设置
+
+西班牙，设`min_catch = 100`：只有产量超过100吨的年份才算在该渔区有作业：
+
+```{r, figures = "Spain_distant_water_(share|timeline)[.]png$"}
+spain <- distant_water_profile("Spain", min_catch = 100)
+```
+
+```{r}
+show_table(spain$areas[, c("area", "adjacent", "first_year", "last_year", "peak_year", "peak_tonnes",
+                           "total_tonnes", "share_of_distant_pct")], n = 20, digits = 1)
+```
+
+西班牙与三个FAO渔区相邻：东北大西洋、地中海和黑海，以及因加那利群岛而相邻的中东大西洋。因此，西班牙在34区的产量不算远洋渔获，其`share_of_distant_pct`为空。
+
+几个国家的远洋渔获中有多少来自34区：整个时期的比例（`share_of_distant_pct`）和最近五年的比例（`recent_share_pct`），以及最后一年远洋渔获在其海洋渔获中所占的比例（`distant_pct_latest`）：
+
+```{r}
+others <- c("Russian Federation", "Netherlands (Kingdom of the)", "Japan", "Korea, Republic of")
+profiles <- c(list(China = china, Spain = spain),
+              sapply(others, distant_water_profile, plot = FALSE, table = FALSE, simplify = FALSE))
+area34 <- do.call(rbind, lapply(names(profiles), function(country) {
+  areas <- profiles[[country]]$areas
+  here <- areas$area_en == "Atlantic, Eastern Central"
+  recent <- 100 * areas$last_5_years_tonnes / sum(areas$last_5_years_tonnes[!areas$adjacent])
+  data.frame(country = fao_translate(country, "country", lang = NULL),
+             distant_pct_latest = tail(profiles[[country]]$yearly$distant_pct, 1),
+             area34_adjacent = areas$adjacent[here],
+             area34_first_year = areas$first_year[here],
+             share_of_distant_pct = areas$share_of_distant_pct[here],
+             recent_share_pct = ifelse(areas$adjacent[here], NA, recent[here]))
+}))
+show_table(area34, digits = 1)
+```
+
+### 参数与返回值
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `country_name` | FAO数据中的国家名（如`"China"`、`"Spain"`） | |
+| `top_n` | 单独显示的远洋渔区数，其余合并 | `8` |
+| `min_catch` | 某年该国在某渔区的产量超过该吨数，才算该年在该渔区有作业 | `0` |
+| `data_version` | 使用的FAO数据版本，见`load_fao_data()` | `"latest"` |
+| `plot`、`table`、`lang`、`pptx`、`label` | 通用参数（见本文开头）；`label`默认为国家名 | |
+
+| 元素 | 内容 |
+|---|---|
+| `yearly` | 每年的`adjacent_tonnes`、`distant_tonnes`、`distant_pct`、`n_adjacent_areas`、`n_distant_areas`和`n_areas`（作业的渔区数） |
+| `areas` | 每个有作业的FAO渔区一行：`adjacent`，产量超过`min_catch`的`first_year`和`last_year`，以及`n_years`、`peak_year`、`peak_tonnes`、`last_5_years_tonnes`、`total_tonnes`和`share_of_distant_pct`（邻近渔区为空） |
+| `distant` | 各远洋渔区的逐年产量（`top_n`个渔区，其余合并） |
+
+## 🔁 FAO数据版本之间的修订
+
+FAO每年发布一版全球捕捞产量数据。新版本不仅增加最近一年的数据，还会在各国提交更正或更完整的数据时修订以前的年份（Garibaldi 2012）。Zeller and Pauly (2018)把只在近年数据中采用改进的统计方法、却不修订以前年份的做法称为“现时偏差”（presentist bias），它会使时间序列显示出实际并未发生的增长。`compare_releases()`逐条比较两个版本的记录，显示哪些年份和国家的数据被修订，以及修订追溯到多早。
+
+### 方法
+
+一条记录是一个国家、一个物种条目、一个FAO渔区在一年中的产量。两个版本中的每条记录归入以下一类：
+
+| 类别 | 规则 |
+|---|---|
+| `revised` | 两个版本中都有，产量之差超过`tolerance`（0.5吨，即舍入误差） |
+| `added` | 只在新版本中出现，且年份在旧版本已覆盖的范围内 |
+| `removed` | 只在旧版本中出现 |
+| `reclassified` | 在一个物种条目下被删除，又以相同的国家、渔区、年份和产量出现在另一个物种条目下，例如FAO更名或拆分物种条目时；不算修订 |
+| `new year` | 年份晚于旧版本的最后一年 |
+| `unchanged` | 其余记录 |
+
+然后，函数汇总两个版本中每年的产量和各国的修订量，并统计状态标记发生变化的记录（如从估算值变为官方数据）。两个版本按本包使用的名称比较，下载时已通过FAO编码统一名称。目前还没有已发表的研究以这种方式逐条比较相继的FishStat版本：这一比较是本包提供的工具，上面两篇文献提供了背景。
+
+### 示例
+
+比较需要电脑上同时有两个版本。最新版本随包内置；较早的版本用`download_fao_data()`从FAO下载（每个约5 MB）。`check_fao_update()`列出可以下载的版本。
+
+```{r, eval = FALSE}
+check_fao_update()               # FAO网站上可以下载的版本
+download_fao_data("2025.1.0")    # 下载较早的版本
+```
+
+```{r, include = FALSE}
+invisible(download_fao_data("2025.1.0", quiet = TRUE))
+```
+
+```{r, figures = TRUE}
+releases <- compare_releases("2025.1.0", "2026.1.0", area_name = "Atlantic, Eastern Central")
+```
+
+第一幅图是两个版本中每年的总产量。第二幅图是每年总产量的修订量（新版本减旧版本），单位为千吨。第三幅图是修订量最大的`top_n`个国家的净修订量，按修订量绝对值之和排序：一个国家的上调和下调相互抵消时，净修订量虽小，排名仍可能靠前。
+
+```{r}
+table(releases$records$change)
+show_table(data.frame(tail(releases$by_year, 10), row.names = NULL), digits = 1)
+show_table(releases$by_country[, c("country", "net_change_tonnes", "abs_change_tonnes", "n_records",
+                                   "first_year", "last_year")], digits = 0)
+```
+
+`records`只保留发生变化的记录。修订量最大的记录：
+
+```{r}
+records <- releases$records[order(-abs(releases$records$difference)), ]
+show_table(data.frame(records[, c("country_name", "species_name", "Year", "tonnes_old", "tonnes_new",
+                                  "difference", "change", "status_old", "status_new")], row.names = NULL),
+           digits = 0)
+```
+
+**结果解读**：两个版本之间，34区有`r sum(releases$records$change == "revised")`条记录被修订，`r sum(releases$records$change == "added")`条新增，`r sum(releases$records$change == "removed")`条删除。它们大多集中在旧版本覆盖的最后十年（被修订的记录中有`r sum(tail(releases$by_year$n_revised, 10))`条），修订量最大的是最后两年。`r tail(releases$by_year$Year, 1)`年的总产量下调了`r sprintf("%.1f", -tail(releases$by_year$change_tonnes, 1) / 1e4)`万吨（`r round(-tail(releases$by_year$change_pct, 1), 1)`%）。`r sum(releases$records$change == "reclassified")`条重新归类的记录是从一个物种条目移到另一个物种条目的产量，不影响总量。
+
+### 其他设置
+
+只比较一个国家，忽略100吨及以下的变化：
+
+```{r, figures = "_by_year[.]png$"}
+mauritania <- compare_releases("2025.1.0", "2026.1.0", area_name = "Atlantic, Eastern Central",
+                               country_name = "Mauritania", tolerance = 100)
+```
+
+```{r}
+revised <- subset(mauritania$by_year, n_revised + n_added + n_removed > 0)
+show_table(data.frame(revised[, c("Year", "old_tonnes", "new_tonnes", "change_tonnes", "change_pct",
+                                  "n_revised", "n_added", "n_removed", "n_status_changed")], row.names = NULL),
+           digits = 1)
+```
+
+毛里塔尼亚在`r max(revised$Year[abs(revised$change_tonnes) < 1])`年及以前的修订只是在物种条目之间调整产量，每年的总量不变；最后两年的修订则使总量分别下调了`r sprintf("%.1f", -revised$change_pct[nrow(revised) - 1])`%和`r sprintf("%.1f", -revised$change_pct[nrow(revised)])`%。不给出`area_name`和`country_name`时比较整个数据集；不给出`old`和`new`时，比较电脑上最新的版本与它的前一个版本。
+
+### 参数与返回值
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `old`、`new` | 要比较的版本，如`"2025.1.0"`和`"2026.1.0"`；`"bundled"`表示随包内置的数据 | `NULL`：`new`为电脑上最新的版本，`old`为它的前一个版本 |
+| `area_name` | 要比较的FAO渔区 | `NULL`（全部） |
+| `country_name` | 要比较的国家 | `NULL`（全部） |
+| `tolerance` | 不超过该吨数的变化忽略不计 | `0.5` |
+| `top_n` | 国家图中显示的修订量最大的国家数 | `10` |
+| `data_dir` | 下载的版本所在的文件夹 | `fao_data_dir()` |
+| `plot`、`table`、`lang`、`pptx`、`label` | 通用参数（见本文开头）；`label`默认为所比较的渔区和国家 | |
+
+| 元素 | 内容 |
+|---|---|
+| `by_year` | 旧版本覆盖的每一年：`old_tonnes`、`new_tonnes`、`change_tonnes`、`change_pct`，以及各类记录的条数`n_revised`、`n_added`、`n_removed`、`n_reclassified`和`n_status_changed` |
+| `by_country` | 各国的修订（不含重新归类的记录）：`net_change_tonnes`、`abs_change_tonnes`、`n_records`、`first_year`和`last_year` |
+| `records` | 所有被修订、新增、删除或重新归类的记录：`tonnes_old`、`tonnes_new`、`status_old`、`status_new`、`difference`、`change`和`status_changed` |
+| `releases` | 所比较的两个版本 |
+
+::: callout-note
+- 近年的数据修订最多，因为它们首次发布时往往是临时数据或估算值（见[🔍 数据质量、多样性与船队](quality-diversity-fleets.html)中的`data_quality()`）。
+- 只有同样的产量移到另一个物种条目时，记录才算重新归类。FAO把一个条目拆分为几个产量不同的条目时，这一变化会显示为删除和新增的记录。
+- 修订显示的是FAO改动了什么，而不是哪个版本正确。
+:::
+
+## 📖 参考文献
+
+Carlson, S.M. and Satterthwaite, W.H. (2011). Weakened portfolio effect in a collapsed salmon
+population complex. *Canadian Journal of Fisheries and Aquatic Sciences* 68: 1579–1589.
+[doi:10.1139/f2011-084](https://doi.org/10.1139/f2011-084)
+
+Cottrell, R.S., Nash, K.L., Halpern, B.S., Remenyi, T.A., Corney, S.P., Fleming, A., Fulton,
+E.A., Hornborg, S., Johne, A., Watson, R.A. and Blanchard, J.L. (2019). Food production shocks
+across land and sea. *Nature Sustainability* 2: 130–137.
+[doi:10.1038/s41893-018-0210-1](https://doi.org/10.1038/s41893-018-0210-1)
+
+FAO (2024). *The State of World Fisheries and Aquaculture 2024. Blue Transformation in action*.
+Rome: FAO. [doi:10.4060/cd0683en](https://doi.org/10.4060/cd0683en)
+
+Garibaldi, L. (2012). The FAO global capture production database: a six-decade effort to catch
+the trend. *Marine Policy* 36: 760–768.
+[doi:10.1016/j.marpol.2011.10.024](https://doi.org/10.1016/j.marpol.2011.10.024)
+
+Garibaldi, L. and Limongelli, L. (2003). *Trends in oceanic captures and clustering of large
+marine ecosystems: two studies based on the FAO capture database*. FAO Fisheries Technical Paper
+435. Rome: FAO. [https://www.fao.org/4/y4449e/y4449e00.htm](https://www.fao.org/4/y4449e/y4449e00.htm)
+
+Gephart, J.A., Deutsch, L., Pace, M.L., Troell, M. and Seekell, D.A. (2017). Shocks to fish
+production: identification, trends, and consequences. *Global Environmental Change* 42: 24–32.
+[doi:10.1016/j.gloenvcha.2016.11.003](https://doi.org/10.1016/j.gloenvcha.2016.11.003)
+
+Grainger, R.J.R. and Garcia, S.M. (1996). *Chronicles of marine fishery landings (1950-1994):
+trend analysis and fisheries potential*. FAO Fisheries Technical Paper 359. Rome: FAO.
+[https://www.fao.org/4/w3244e/w3244e00.htm](https://www.fao.org/4/w3244e/w3244e00.htm)
+
+Lepš, J., Götzenberger, L., Valencia, E. and de Bello, F. (2019). Accounting for long-term
+directional trends on year-to-year synchrony in species fluctuations. *Ecography* 42: 1728–1741.
+[doi:10.1111/ecog.04528](https://doi.org/10.1111/ecog.04528)
+
+Loreau, M. and de Mazancourt, C. (2008). Species synchrony and its drivers: neutral and
+nonneutral community dynamics in fluctuating environments. *The American Naturalist* 172:
+E48–E66. [doi:10.1086/589746](https://doi.org/10.1086/589746)
+
+Mullon, C., Fréon, P. and Cury, P. (2005). The dynamics of collapse in world fisheries. *Fish and
+Fisheries* 6: 111–120.
+[doi:10.1111/j.1467-2979.2005.00181.x](https://doi.org/10.1111/j.1467-2979.2005.00181.x)
+
+Ong, J.J.L., Walter, J.A., Jensen, O.P. and Pinsky, M.L. (2021). Global hotspots of coherent
+marine fishery catches. *Ecological Applications* 31: e02321.
+[doi:10.1002/eap.2321](https://doi.org/10.1002/eap.2321)
+
+Swartz, W., Sala, E., Tracey, S., Watson, R. and Pauly, D. (2010). The spatial expansion and
+ecological footprint of fisheries (1950 to present). *PLoS ONE* 5: e15143.
+[doi:10.1371/journal.pone.0015143](https://doi.org/10.1371/journal.pone.0015143)
+
+Thibaut, L.M. and Connolly, S.R. (2013). Understanding diversity–stability relationships:
+towards a unified model of portfolio effects. *Ecology Letters* 16: 140–150.
+[doi:10.1111/ele.12019](https://doi.org/10.1111/ele.12019)
+
+Wilberg, M.J. and Miller, T.J. (2007). Comment on "Impacts of biodiversity loss on ocean
+ecosystem services". *Science* 316: 1285.
+[doi:10.1126/science.1137946](https://doi.org/10.1126/science.1137946)
+
+Worm, B., Barbier, E.B., Beaumont, N., Duffy, J.E., Folke, C., Halpern, B.S., Jackson, J.B.C.,
+Lotze, H.K., Micheli, F., Palumbi, S.R., Sala, E., Selkoe, K.A., Stachowicz, J.J. and Watson, R.
+(2006). Impacts of biodiversity loss on ocean ecosystem services. *Science* 314: 787–790.
+[doi:10.1126/science.1132294](https://doi.org/10.1126/science.1132294)
+
+Zeller, D. and Pauly, D. (2018). The 'presentist bias' in time-series data: implications for
+fisheries science and policy. *Marine Policy* 90: 14–19.
+[doi:10.1016/j.marpol.2018.01.015](https://doi.org/10.1016/j.marpol.2018.01.015)

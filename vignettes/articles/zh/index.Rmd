@@ -131,7 +131,7 @@ report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE)
 | `catch_shocks()` | 渔获骤变（Cottrell 等 2019 或 Gephart 等 2017），按年份和类别统计 |
 | `collapse_analysis()` | 渔业崩溃（Mullon 等 2005 或 Worm 等 2006），与随机序列对照 |
 | `catch_synchrony()` | 物种或国家渔获量的同步性与组合效应 |
-| `distant_water_profile()` | 某个国家在毗邻渔区和远洋渔区的渔获量变化 |
+| `distant_water_profile()` | 某个国家在邻近渔区和远洋渔区的渔获量变化 |
 | `compare_releases()` | 两个 FAO 数据版本之间修订、新增和删除的记录 |
 | `pelagic_demersal()` | 中上层与底层渔获比（Caddy 1993；de Leiva Moreno 等 2000） |
 | `fao_pd_groups()` | 计为中上层或底层的 ISSCAAP 类群 |
