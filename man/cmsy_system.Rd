@@ -51,9 +51,18 @@ detection is wrong), set `os`, or set it for the session with
 `options(faofishingreport.cmsy_os = "macos")`.
 }
 \examples{
-\dontrun{
-cmsy_system()
-cmsy_system(os = "windows")   # settings that would be used on Windows
+\donttest{
+# What this computer has, and the settings cmsy_run() will use on it
+sys <- cmsy_system()
+sys$changes                      # the changes made to a copy of the CMSY++ code
+
+# The settings that would be used on Windows or macOS, e.g. to check them for a colleague
+cmsy_system(os = "windows", silent = TRUE)$changes
+cmsy_system(os = "macos", silent = TRUE)$device_call
+
+# The JAGS installer recommended here, and the newest JAGS
+cmsy_system(silent = TRUE)$jags_installer[, c("version", "file", "url")]
+cmsy_system(jags = "latest", silent = TRUE)$jags_installer[, c("version", "file", "requires")]
 }
 }
 \seealso{

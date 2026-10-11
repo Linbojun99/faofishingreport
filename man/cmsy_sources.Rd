@@ -26,8 +26,15 @@ repository OceanRep (record 52147), published under the CC BY 4.0 licence. [cmsy
 applies a few documented changes to a copy of the code before running it (see [cmsy_system()]).
 }
 \examples{
-cmsy_sources()
-cmsy_sources("JAGS")[, c("component", "version", "platform", "url")]
+# Every component, with version, file, licence and link
+src <- cmsy_sources()
+src[, c("component", "version", "platform", "file", "license")]
+
+# The JAGS installers for each system, with their checksums
+cmsy_sources("JAGS")[, c("component", "version", "platform", "url", "sha256")]
+
+# The references to cite
+unique(src$citation[nzchar(src$citation)])
 }
 \references{
 Froese, R., Winker, H., Coro, G., Palomares, M.L.D., Tsikliras, A.C., Dimarchopoulou, D.,

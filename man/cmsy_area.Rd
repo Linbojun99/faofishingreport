@@ -13,6 +13,7 @@ cmsy_area(
   auto_start = TRUE,
   seed = 1,
   parallel = NULL,
+  settings = list(),
   charts = c(cmsy_stock_charts, cmsy_summary_charts),
   classes = c("fao", "palomares"),
   forecast = TRUE,
@@ -51,6 +52,12 @@ before the run. Default is FALSE, as in CMSY++; the user guide prefers setting
 
 \item{parallel}{The number of stocks run at the same time. Each uses two more processes for
 its two MCMC chains. Default is half the number of processor cores.}
+
+\item{settings}{Optional named list of CMSY++ settings that replace its defaults, e.g.
+`list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000)`. See [cmsy_defaults()] for the
+settings, their defaults and what they do. Default is no change: CMSY++ runs with its own
+defaults. The settings used are saved in `settings_used.csv` of the run folder and in
+`result$settings`.}
 
 \item{charts}{The charts to draw (see Details). Default is all of them.}
 
@@ -100,7 +107,8 @@ The results of each area are saved in their own folder, `out_dir/<area>/`:
   \item{figures/}{one folder of charts per stock and a `summary/` folder for all stocks (PNG,
     and PowerPoint in `figures_pptx/` when `pptx` is TRUE);}
   \item{tables/}{results, yearly series, the priors and results tables for reports,
-    projections and the sources of everything used (`sources.csv`).}
+    projections, the CMSY++ settings used (`settings_used.csv`) and the sources of everything
+    used (`sources.csv`).}
 }
 
 As in [cmsy_input()], FAO data have catches only (no abundance index), so all stocks are
@@ -108,11 +116,22 @@ assessed with the catch-only part of CMSY++ and the results are indicative.
 }
 \examples{
 \dontrun{
-cmsy_setup()
+cmsy_setup()                     # once: JAGS and the R packages CMSY++ needs
+
+# The ten species with the largest catch of the last ten years in FAO area 34, in Chinese
 area34 <- cmsy_area("Atlantic, Eastern Central", top = 10, lang = "zh")
 area34$summary[, c("Stock", "species_name", "B_Bmsy", "F_Fmsy", "status")]
+area34$dir                       # folder with input/, runs/, figures/ and tables/
 
-# Several areas, quietly
-cmsy_area(c("Atlantic, Eastern Central", "Pacific, Northwest"), top = 5, silent = TRUE)
+# Chosen species (scientific name, FAO code, ...), all annotations, five status classes
+cmsy_area("Atlantic, Eastern Central", species = c("Brachydeuterus auritus", "PIL"),
+          annotations = TRUE, classes = "palomares")
+
+# Species without a FishBase prior get a resilience (passed on to cmsy_input())
+cmsy_area("Atlantic, Eastern Central", top = 20, default_resilience = "Medium")
+
+# Several areas, quietly, with longer MCMC chains (see cmsy_defaults())
+cmsy_area(c("Atlantic, Eastern Central", "Pacific, Northwest"), top = 5, silent = TRUE,
+          settings = list(n.iter = 100000, n.burnin = 50000))
 }
 }

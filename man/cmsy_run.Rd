@@ -14,6 +14,7 @@ cmsy_run(
   device = c("file", "screen"),
   seed = NULL,
   auto_start = FALSE,
+  settings = list(),
   table = TRUE,
   lang = NULL,
   silent = fao_setting("silent"),
@@ -53,6 +54,12 @@ setting for this (`auto.start`) stops with an error in `CMSY++16.R` (the year ra
 longer matches the catch years), so the same rule is applied here to `StartYear`
 before the run. Default is FALSE, as in CMSY++; the user guide prefers setting
 `StartYear` or the start B/k prior (`stb.low`, `stb.hi`) in [cmsy_input()].}
+
+\item{settings}{Optional named list of CMSY++ settings that replace its defaults, e.g.
+`list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000)`. See [cmsy_defaults()] for the
+settings, their defaults and what they do. Default is no change: CMSY++ runs with its own
+defaults. The settings used are saved in `settings_used.csv` of the run folder and in
+`result$settings`.}
 
 \item{table}{A logical value. If TRUE (default), tables are saved in `tables/`.}
 
@@ -99,12 +106,33 @@ underfished.
 }
 \examples{
 \dontrun{
-cmsy_setup()
+cmsy_setup()                                       # once
 FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
 input <- cmsy_input(FAO34$area_data)
-result <- cmsy_run(input, stocks = input$stocks$Stock[1:3], seed = 1)
-result$summary
-cmsy_plot(result, lang = "zh")
+
+# Bigeye grunt, with the start year suggested by CMSY++ and a fixed seed
+result <- cmsy_run(input, stocks = "Brachydeuterus auritus", auto_start = TRUE, seed = 1)
+result$summary[, c("Stock", "first_year", "B_Bmsy", "B_Bmsy_lcl", "B_Bmsy_ucl", "F_Fmsy", "status")]
+head(result$series)                                # catch, B/k, biomass, B/Bmsy, F/Fmsy by year
+
+# Every CMSY++ chart of the user guide, including the retrospective analysis
+result <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE,
+                   plots = c("analysis", "management", "kobe", "prior_posterior", "retrospective"))
+
+# Changed CMSY++ settings (see cmsy_defaults()): longer chains and a larger process error
+result <- cmsy_run(input, stocks = "GRB_34", seed = 1,
+                   settings = list(n.iter = 100000, n.burnin = 50000, sigmaR = 0.15))
+result$settings[result$settings$changed, c("setting", "cmsy_default", "used")]
+
+# The ten main stocks, four at a time, without progress bar or messages
+result <- cmsy_run(input, stocks = input$stocks$Stock[1:10], parallel = 4, silent = TRUE)
+
+# Settings that would be used on Windows, and charts in the system's own windows
+result <- cmsy_run(input, stocks = "GRB_34", os = "windows")
+result <- cmsy_run(input, stocks = "GRB_34", device = "screen")
+
+# Versions and links of everything used, for the methods section of a report
+result$sources
 }
 }
 \references{

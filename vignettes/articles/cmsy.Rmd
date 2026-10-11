@@ -238,6 +238,32 @@ tables <- cmsy_tables(result, lang = "en")
 
 `cmsy_tables()` makes the two tables of CMSY papers, the priors table and the results table shown in Step 5, rounded, with ranges as "low-high" and column names in the chosen language, saved in `tables/cmsy/`.
 
+## ⚙️ The settings of CMSY++
+
+CMSY++ has a set of general settings, such as the catch observation error `CV.C`, the process error `sigmaR` and the number of MCMC chains and iterations. `cmsy_run()` keeps the CMSY++ values unless they are changed; `cmsy_defaults()` lists each one with its CMSY++ default, the value used and what it does:
+
+```{r}
+show_table(cmsy_defaults(lang = "en")[, c("setting", "cmsy_default", "applies_to", "description")], n = 30)
+```
+
+Settings marked "BSM" only matter with abundance data (CPUE or biomass); with FAO catch data only those marked "all" affect the results. To change some, give only those in `settings`; the others keep their CMSY++ values, and every value is checked (name, range, enough MCMC draws):
+
+```{r}
+cmsy_defaults(list(sigmaR = 0.15, n.iter = 100000, n.burnin = 50000))[c(3, 17, 18), c("setting", "cmsy_default", "used", "changed")]
+```
+
+```{r, eval = FALSE}
+result <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE,
+                   settings = list(sigmaR = 0.15, n.iter = 100000, n.burnin = 50000))
+result$settings[result$settings$changed, ]          # the changed settings
+```
+
+The settings used are saved in `settings_used.csv` of the run folder and recorded in `result$sources`. The chart and output switches of CMSY++ (`mgraphs`, `kobe.plot`, `retros`, ...) are set by the `plots` argument of `cmsy_run()`, not in `settings`.
+
+## 🖥️ Windows, macOS and Linux
+
+The same code runs on all three systems: `cmsy_system()` detects the system and makes the changes it needs (on macOS, no `windows()` and no `antialias = "cleartype"`; see Step 1), and the JAGS installer is chosen for the system and R version. Each change to the CMSY code is checked by the GitHub Actions workflow "CMSY-cross-platform" on Windows, macOS and Linux: it downloads and installs JAGS with `cmsy_install_jags()`, runs CMSY++ for real, runs all CMSY tests and keeps the output of each system.
+
 ## ⏱️ Progress bars and silent
 
 `cmsy_run()`, `cmsy_plot()`, `cmsy_forecast()` and `cmsy_area()` show progress bars such as

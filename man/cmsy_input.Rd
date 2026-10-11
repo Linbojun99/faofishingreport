@@ -94,17 +94,31 @@ SeaLifeBase page of the species), `data_url` (the FishBase or SeaLifeBase table 
 read from), `rule_url` (the CMSY++ user guide) and `fao_data_url` (the FAO data release).
 }
 \examples{
-\dontrun{
+\donttest{
 FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-input <- cmsy_input(FAO34$area_data)
-head(input$stocks)
 
-# Some species only, named in English, by scientific name or by FAO code
-input <- cmsy_input(FAO34$area_data, species = c("European pilchard(=Sardine)", "Sardinella aurita", "BOG"))
+# All species of the area that CMSY++ can assess with catch only
+input <- cmsy_input(FAO34$area_data, table = FALSE)
+input
+head(input$stocks[, c("Stock", "species_en", "first_year", "Resilience", "r.low", "r.hi", "r_source")])
+table(input$excluded$reason)                      # why the others are left out
 
-# Expert priors for one species (user guide Tables 1 and 3)
-input <- cmsy_input(FAO34$area_data,
-                    priors = data.frame(alpha3 = "PIL", endb.low = 0.2, endb.hi = 0.6))
+# Some species only, by English name, scientific name or FAO 3-alpha code
+input <- cmsy_input(FAO34$area_data, species = c("European pilchard(=Sardine)", "Sardinella aurita", "GRB"),
+                    table = FALSE)
+
+# Expert B/k priors (user guide Tables 1 and 3): sardine thought to be depleted in the last year
+input <- cmsy_input(FAO34$area_data, species = "PIL", table = FALSE,
+                    priors = data.frame(species = "Sardina pilchardus", endb.low = 0.2, endb.hi = 0.5))
+input$id[, c("Stock", "endb.low", "endb.hi")]
+
+# A start year chosen by the user, and a resilience for species without a FishBase prior
+input <- cmsy_input(FAO34$area_data, table = FALSE, default_resilience = "Medium",
+                    priors = data.frame(alpha3 = "PIL", StartYear = 1973))
+
+# One stock per country instead of one per area
+by_country <- cmsy_input(FAO34$area_data, species = "PIL", by = "country", table = FALSE)
+by_country$stocks[, c("Stock", "country", "first_year", "last_year")]
 }
 }
 \references{

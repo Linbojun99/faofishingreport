@@ -1,3 +1,14 @@
+# Tests that run CMSY++ need JAGS. They run locally (not on CRAN) and on CI when
+# FAOFISHINGREPORT_CMSY_TESTS is "true" (.github/workflows/cmsy-cross-platform.yaml).
+skip_if_no_cmsy <- function() {
+  if (!identical(Sys.getenv("FAOFISHINGREPORT_CMSY_TESTS"), "true")) {
+    skip_on_cran()
+    skip_on_ci()
+  }
+  sys <- cmsy_system(silent = TRUE)
+  skip_if(is.na(sys$jags) || !all(sys$packages$ok), "JAGS or CMSY++ packages not installed")
+}
+
 test_that("bundled CMSY++ files match the recorded checksums", {
   sources <- cmsy_sources()
   bundled <- sources[sources$bundled, ]
@@ -122,10 +133,7 @@ test_that("cmsy_input() makes catch-only CMSY++ input files with prior sources",
 })
 
 test_that("cmsy_run() runs the bundled CMSY++ code", {
-  skip_on_cran()
-  skip_on_ci()
-  sys <- cmsy_system(silent = TRUE)
-  skip_if(is.na(sys$jags) || !all(sys$packages$ok), "JAGS or CMSY++ packages not installed")
+  skip_if_no_cmsy()
   dir <- withr::local_tempdir()
   withr::local_dir(dir)
   data <- data.frame(
@@ -136,6 +144,12 @@ test_that("cmsy_run() runs the bundled CMSY++ code", {
   )
   input <- cmsy_input(data, table = FALSE)
   result <- cmsy_run(input, seed = 1, parallel = 1, table = FALSE, plots = "analysis", silent = TRUE)
+  quick <- cmsy_run(input, seed = 1, parallel = 1, table = FALSE, plots = "analysis", silent = TRUE, out_dir = "quick",
+                    settings = list(n.iter = 6000, n.burnin = 3000))
+  expect_equal(quick$summary$run_status, "ok")
+  expect_equal(quick$settings$used[quick$settings$setting == "n.iter"], "6000")
+  expect_match(quick$sources$version[quick$sources$component == "CMSY++ settings"], "n.iter = 6000")
+  expect_length(quick$details$PIL_34$r, 2 * (6000 - 3000) / 10)
   expect_equal(result$summary$run_status, "ok")
   expect_true(result$summary$status %in% c("maximally sustainably fished", "overfished"))
   expect_true(file.exists(file.path(result$summary$folder, "PIL_34_AN.jpg")))
@@ -146,6 +160,10 @@ test_that("cmsy_run() runs the bundled CMSY++ code", {
   expect_length(result$details$PIL_34$r, length(result$details$PIL_34$k))
   expect_true(all(c("start_bk_prior_low", "end_bk_prior_source", "url", "fao_data_url") %in% names(result$summary)))
 
+  expect_false(any(result$settings$changed))
+  expect_true(file.exists(file.path(result$run_dir, "settings_used.csv")))
+  log <- readLines(file.path(result$summary$folder, "log.txt"))
+  expect_true(any(grepl("Results for Management", log)))     # CMSY++ output reached the log
   plain <- cmsy_plot(result, charts = c("kobe", "prior_posterior", "management"), lang = "en", silent = TRUE)
   expect_null(plain$PIL_34_kobe$labels$title)
   expect_equal(plain$PIL_34_kobe$theme$legend.position, "none")
@@ -225,10 +243,7 @@ test_that("progress bars print only when not silent, and auto start keeps ten ye
 })
 
 test_that("cmsy_area() runs the main species of an area into sorted folders", {
-  skip_on_cran()
-  skip_on_ci()
-  sys <- cmsy_system(silent = TRUE)
-  skip_if(is.na(sys$jags) || !all(sys$packages$ok), "JAGS or CMSY++ packages not installed")
+  skip_if_no_cmsy()
   dir <- withr::local_tempdir()
   withr::local_dir(dir)
   withr::local_options(faofishingreport.dpi = 72)
@@ -244,4 +259,34 @@ test_that("cmsy_area() runs the main species of an area into sorted folders", {
   expect_true(file.exists(file.path(result$dir, "figures", "PIL_34", "kobe.png")))
   expect_true(file.exists(file.path(result$dir, "tables", "results_table.csv")))
   expect_true(file.exists(file.path(result$dir, "runs", "PIL_34", "cmsy_output.csv")))
+})
+
+test_that("CMSY++ settings keep their defaults unless changed, and are checked", {
+  d <- cmsy_defaults(lang = "en")
+  expect_equal(nrow(d), length(cmsy_default_settings))
+  expect_false(any(d$changed))
+  expect_equal(d$cmsy_default[d$setting == "n.iter"], "60000")
+  expect_equal(d$cmsy_default[d$setting == "rk.cor.beta"], "2.52, 3.37")
+  changed <- cmsy_defaults(list(sigmaR = 0.2, n.chains = 3L), lang = "zh")
+  expect_equal(changed$setting[changed$changed], c("sigmaR", "n.chains"))
+  expect_error(cmsy_check_settings(list(sigma = 0.2)), "Unknown")
+  expect_error(cmsy_check_settings(list(retros = TRUE)), "arguments of cmsy_run")
+  expect_error(cmsy_check_settings(list(nbk = 4)), "nbk")
+  expect_error(cmsy_check_settings(list(n.burnin = 70000)), "smaller than n.iter")
+  expect_error(cmsy_check_settings(list(rk.cor.beta = 2)), "2 numbers")
+  expect_error(cmsy_check_settings(list(bt4pr = "yes")), "TRUE or FALSE")
+  expect_error(cmsy_check_settings(list(0.2)), "named list")
+  # The settings file sets them, and the changed code uses the MCMC settings
+  sys <- list(os = "windows", os_detected = "macos", device = "file", antialias = "cleartype")
+  env <- new.env()
+  eval(parse(text = cmsy_settings_code("COD_27", sys, "analysis", 1, cmsy_check_settings(list(n.iter = 5000, n.burnin = 2000)))),
+       envir = env)
+  expect_equal(c(env$cmsy_n_iter, env$cmsy_n_burnin, env$cmsy_n_thin, env$CV.C, env$n.chains), c(5000, 2000, 10, 0.15, 2))
+  expect_equal(env$rk.cor.beta, c(2.52, 3.37))
+  expect_true(is.na(env$select.yr))
+  original <- readLines(cmsy_file("CMSY++16.R"), warn = FALSE)
+  expect_true(any(grepl("n.iter = 60000)", cmsy_patch_code(original, "windows"), fixed = TRUE)))
+  code <- cmsy_patch_code(original, "windows", cmsy_check_settings(list(n.iter = 100000, n.burnin = 50000, n.thin = 20)))
+  expect_true(any(grepl("n.iter = 100000)", code, fixed = TRUE)))
+  expect_true(any(grepl("n.burnin = 50000, n.thin = 20,", code, fixed = TRUE)))
 })

@@ -18,7 +18,8 @@
 #'   \item{figures/}{one folder of charts per stock and a `summary/` folder for all stocks (PNG,
 #'     and PowerPoint in `figures_pptx/` when `pptx` is TRUE);}
 #'   \item{tables/}{results, yearly series, the priors and results tables for reports,
-#'     projections and the sources of everything used (`sources.csv`).}
+#'     projections, the CMSY++ settings used (`settings_used.csv`) and the sources of everything
+#'     used (`sources.csv`).}
 #' }
 #'
 #' As in [cmsy_input()], FAO data have catches only (no abundance index), so all stocks are
@@ -42,15 +43,26 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' cmsy_setup()
+#' cmsy_setup()                     # once: JAGS and the R packages CMSY++ needs
+#'
+#' # The ten species with the largest catch of the last ten years in FAO area 34, in Chinese
 #' area34 <- cmsy_area("Atlantic, Eastern Central", top = 10, lang = "zh")
 #' area34$summary[, c("Stock", "species_name", "B_Bmsy", "F_Fmsy", "status")]
+#' area34$dir                       # folder with input/, runs/, figures/ and tables/
 #'
-#' # Several areas, quietly
-#' cmsy_area(c("Atlantic, Eastern Central", "Pacific, Northwest"), top = 5, silent = TRUE)
+#' # Chosen species (scientific name, FAO code, ...), all annotations, five status classes
+#' cmsy_area("Atlantic, Eastern Central", species = c("Brachydeuterus auritus", "PIL"),
+#'           annotations = TRUE, classes = "palomares")
+#'
+#' # Species without a FishBase prior get a resilience (passed on to cmsy_input())
+#' cmsy_area("Atlantic, Eastern Central", top = 20, default_resilience = "Medium")
+#'
+#' # Several areas, quietly, with longer MCMC chains (see cmsy_defaults())
+#' cmsy_area(c("Atlantic, Eastern Central", "Pacific, Northwest"), top = 5, silent = TRUE,
+#'           settings = list(n.iter = 100000, n.burnin = 50000))
 #' }
 cmsy_area <- function(area, top = 10, species = NULL, recent_years = 10, out_dir = "cmsy_areas",
-                      auto_start = TRUE, seed = 1, parallel = NULL,
+                      auto_start = TRUE, seed = 1, parallel = NULL, settings = list(),
                       charts = c(cmsy_stock_charts, cmsy_summary_charts), classes = c("fao", "palomares"),
                       forecast = TRUE, annotations = getOption("faofishingreport.cmsy_annotations", FALSE),
                       lang = NULL, pptx = getOption("faofishingreport.pptx", FALSE),
@@ -59,7 +71,8 @@ cmsy_area <- function(area, top = 10, species = NULL, recent_years = 10, out_dir
     out <- lapply(seq_along(area), function(i) {
       if (!silent) message("\n== ", i, "/", length(area), ": ", area[i], " ==")
       cmsy_area(area[i], top = top, species = species, recent_years = recent_years, out_dir = out_dir,
-                auto_start = auto_start, seed = seed, parallel = parallel, charts = charts, classes = classes,
+                auto_start = auto_start, seed = seed, parallel = parallel, settings = settings, charts = charts,
+                classes = classes,
                 forecast = forecast, annotations = annotations, lang = lang, pptx = pptx, silent = silent, ...)
     })
     return(invisible(stats::setNames(out, area)))
@@ -113,7 +126,7 @@ cmsy_area <- function(area, top = 10, species = NULL, recent_years = 10, out_dir
 
   step(2, "Running CMSY++")
   result <- cmsy_run(input, out_dir = "runs", parallel = parallel, plots = "analysis", seed = seed,
-                     auto_start = auto_start, table = FALSE, lang = lang, silent = silent)
+                     auto_start = auto_start, settings = settings, table = FALSE, lang = lang, silent = silent)
 
   step(3, "Drawing the charts")
   cmsy_plot(result, charts = charts, classes = classes, annotations = annotations, lang = lang, pptx = pptx,
@@ -135,6 +148,7 @@ cmsy_area <- function(area, top = 10, species = NULL, recent_years = 10, out_dir
   fao_write_csv(tables$priors, file.path("tables", "priors_table.csv"))
   fao_write_csv(tables$results, file.path("tables", "results_table.csv"))
   fao_write_csv(result$sources, file.path("tables", "sources.csv"))
+  fao_write_csv(result$settings, file.path("tables", "settings_used.csv"))
   if (!is.null(projection)) {
     fao_write_csv(projection$projection, file.path("tables", "forecast.csv"))
     fao_write_csv(projection$share, file.path("tables", "forecast_share.csv"))

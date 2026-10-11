@@ -49,7 +49,13 @@ needs JAGS 4. JAGS 5.0.0 (`jags = "latest"`) also installs rjags 5-3 from Source
 }
 \examples{
 \dontrun{
+# Check the computer and install what is missing (asks first)
 cmsy_setup()
-cmsy_setup(jags = "latest")   # JAGS 5.0.0 with rjags 5-3
+
+# Install without asking, e.g. on a server or in a script
+cmsy_setup(ask = FALSE)
+
+# JAGS 5.0.0 with rjags 5-3 (from SourceForge) instead of JAGS 4.3.2
+cmsy_setup(jags = "latest")
 }
 }

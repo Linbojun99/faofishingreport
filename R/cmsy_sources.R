@@ -33,8 +33,15 @@
 #' (DSC 2003), Vienna. \url{https://mcmc-jags.sourceforge.io/}
 #' @export
 #' @examples
-#' cmsy_sources()
-#' cmsy_sources("JAGS")[, c("component", "version", "platform", "url")]
+#' # Every component, with version, file, licence and link
+#' src <- cmsy_sources()
+#' src[, c("component", "version", "platform", "file", "license")]
+#'
+#' # The JAGS installers for each system, with their checksums
+#' cmsy_sources("JAGS")[, c("component", "version", "platform", "url", "sha256")]
+#'
+#' # The references to cite
+#' unique(src$citation[nzchar(src$citation)])
 cmsy_sources <- function(component = NULL) {
   sources <- cmsy_registry()
   if (!is.null(component)) {

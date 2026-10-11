@@ -61,9 +61,20 @@
 #' \url{https://www.sealifebase.se}
 #' @export
 #' @examples
+#' # By scientific name, English name or FAO 3-alpha code (Chinese names work as well)
 #' cmsy_priors("Gadus morhua")
-#' cmsy_priors(c("COD", "Atlantic cod"), lang = "both")
-#' head(cmsy_priors()[, c("alpha3", "scientific_name", "resilience", "r_low", "r_high", "r_source")])
+#' cmsy_priors(c("COD", "European pilchard(=Sardine)"), lang = "both")
+#'
+#' # Part of a name finds every matching species
+#' cmsy_priors("sardin")[, c("alpha3", "species_en", "scientific_name", "resilience", "r_low", "r_high")]
+#'
+#' # The sources of a value, to check it online
+#' cmsy_priors("Gadus morhua")[, c("url", "data_url", "rule_url")]
+#'
+#' # How the FAO names were matched, and the species without a prior for r
+#' p <- cmsy_priors()
+#' table(p$match_type)
+#' head(p[is.na(p$r_source), c("alpha3", "species_en", "scientific_name")])
 cmsy_priors <- function(species = NULL, open = FALSE, lang = NULL) {
   lang <- fao_lang(lang)
   priors <- cmsy_priors_table()

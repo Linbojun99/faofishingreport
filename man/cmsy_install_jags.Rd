@@ -37,6 +37,13 @@ package folder `inst/jags/` (installed as `jags/`) is used instead of downloadin
 }
 \examples{
 \dontrun{
+# Download the installer for this system (size and checksum are checked) and open it
 cmsy_install_jags()
+
+# Only download it, e.g. to install it later
+path <- cmsy_install_jags(open = FALSE)
+
+# Download the Windows installer on a Mac, e.g. for a colleague
+cmsy_install_jags(os = "windows", open = FALSE)
 }
 }

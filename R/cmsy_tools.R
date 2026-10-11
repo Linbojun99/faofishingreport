@@ -36,7 +36,18 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' projection <- cmsy_forecast(result, catch = 100000, lang = "zh")
+#' # result <- cmsy_run(...), see cmsy_run()
+#'
+#' # Default scenarios: 0.5, 0.6, 0.8 and 0.95 Fmsy, and the last-year fishing mortality
+#' projection <- cmsy_forecast(result, seed = 1)
+#'
+#' # Twenty years, two F scenarios and a constant catch of 50,000 t, in Chinese
+#' projection <- cmsy_forecast(result, years = 20, f = c(0.8, 1), catch = 50000, seed = 1, lang = "zh")
+#' last <- projection$projection[projection$projection$Year == max(projection$projection$Year), ]
+#' last[, c("Stock", "scenario_label", "B_Bmsy", "B_Bmsy_lcl", "B_Bmsy_ucl", "p_above_bmsy")]
+#'
+#' # Share of the stocks at or above Bmsy (when several stocks were run)
+#' projection$share
 #' }
 cmsy_forecast <- function(result, stocks = NULL, years = 10, f = c(0.5, 0.6, 0.8, 0.95), status_quo = TRUE,
                           catch = NULL, sigma = 0.1, seed = NULL, plot = TRUE, table = TRUE, lang = NULL,
@@ -215,8 +226,19 @@ cmsy_chart_forecast <- function(projection, series, lang, ann) {
 #' @export
 #' @examples
 #' \dontrun{
-#' run2 <- cmsy_run(input, stocks = "GRB_34", auto_start = TRUE)
-#' cmsy_compare(`from 1950` = run1, `start year of CMSY++` = run2, stocks = "GRB_34")
+#' # Sensitivity to the start year
+#' run_1950 <- cmsy_run(input, stocks = "GRB_34", seed = 1)
+#' run_auto <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE)
+#' cmsy_compare(`from 1950` = run_1950, `CMSY++ start year` = run_auto, annotations = "legend")
+#'
+#' # Sensitivity to a CMSY++ setting (see cmsy_defaults())
+#' run_sigma <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE, settings = list(sigmaR = 0.2))
+#' cmsy_compare(default = run_auto, `sigmaR = 0.2` = run_sigma)$last_year
+#'
+#' # With another assessment of the same stock, read from a file with the columns
+#' # Stock, Year, B_Bmsy (optionally F_Fmsy) and source
+#' other <- read.csv("other_assessment.csv")
+#' cmsy_compare(CMSY = run_auto, external = other, annotations = "legend")
 #' }
 cmsy_compare <- function(..., stocks = NULL, external = NULL, lang = NULL,
                          annotations = getOption("faofishingreport.cmsy_annotations", FALSE),
@@ -283,7 +305,13 @@ cmsy_compare <- function(..., stocks = NULL, external = NULL, lang = NULL,
 #' @export
 #' @examples
 #' \dontrun{
-#' tables <- cmsy_tables(result, lang = "zh")
+#' # result <- cmsy_run(...), see cmsy_run()
+#' tables <- cmsy_tables(result, lang = "zh")       # also saved in tables/cmsy/
+#' tables$priors
+#' tables$results
+#'
+#' # Column names in both languages, without saving
+#' cmsy_tables(result, lang = "both", table = FALSE)$results
 #' }
 cmsy_tables <- function(result, stocks = NULL, table = TRUE, lang = NULL, silent = fao_setting("silent")) {
   if (!inherits(result, "cmsy_result")) stop("`result` must be the result of cmsy_run().", call. = FALSE)

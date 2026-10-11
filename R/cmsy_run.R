@@ -37,6 +37,11 @@
 #'        finished, with the elapsed and the estimated remaining time, and messages report the
 #'        run. If TRUE, nothing is printed. The default can be changed for the session with
 #'        `fao_settings(silent = TRUE)`.
+#' @param settings Optional named list of CMSY++ settings that replace its defaults, e.g.
+#'        `list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000)`. See [cmsy_defaults()] for the
+#'        settings, their defaults and what they do. Default is no change: CMSY++ runs with its own
+#'        defaults. The settings used are saved in `settings_used.csv` of the run folder and in
+#'        `result$settings`.
 #' @param timeout Maximum time for one stock, in seconds; a stock still running after it is
 #'        reported as failed. Default is 3600.
 #' @param auto_start A logical value. When the mean (smoothed) catch of the first three years is
@@ -65,18 +70,40 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' cmsy_setup()
+#' cmsy_setup()                                       # once
 #' FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
 #' input <- cmsy_input(FAO34$area_data)
-#' result <- cmsy_run(input, stocks = input$stocks$Stock[1:3], seed = 1)
-#' result$summary
-#' cmsy_plot(result, lang = "zh")
+#'
+#' # Bigeye grunt, with the start year suggested by CMSY++ and a fixed seed
+#' result <- cmsy_run(input, stocks = "Brachydeuterus auritus", auto_start = TRUE, seed = 1)
+#' result$summary[, c("Stock", "first_year", "B_Bmsy", "B_Bmsy_lcl", "B_Bmsy_ucl", "F_Fmsy", "status")]
+#' head(result$series)                                # catch, B/k, biomass, B/Bmsy, F/Fmsy by year
+#'
+#' # Every CMSY++ chart of the user guide, including the retrospective analysis
+#' result <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE,
+#'                    plots = c("analysis", "management", "kobe", "prior_posterior", "retrospective"))
+#'
+#' # Changed CMSY++ settings (see cmsy_defaults()): longer chains and a larger process error
+#' result <- cmsy_run(input, stocks = "GRB_34", seed = 1,
+#'                    settings = list(n.iter = 100000, n.burnin = 50000, sigmaR = 0.15))
+#' result$settings[result$settings$changed, c("setting", "cmsy_default", "used")]
+#'
+#' # The ten main stocks, four at a time, without progress bar or messages
+#' result <- cmsy_run(input, stocks = input$stocks$Stock[1:10], parallel = 4, silent = TRUE)
+#'
+#' # Settings that would be used on Windows, and charts in the system's own windows
+#' result <- cmsy_run(input, stocks = "GRB_34", os = "windows")
+#' result <- cmsy_run(input, stocks = "GRB_34", device = "screen")
+#'
+#' # Versions and links of everything used, for the methods section of a report
+#' result$sources
 #' }
 cmsy_run <- function(input, stocks = NULL, out_dir = "cmsy", parallel = NULL,
                      plots = c("analysis", "management", "kobe"), os = "auto", device = c("file", "screen"),
-                     seed = NULL, auto_start = FALSE, table = TRUE, lang = NULL,
+                     seed = NULL, auto_start = FALSE, settings = list(), table = TRUE, lang = NULL,
                      silent = fao_setting("silent"), timeout = 3600) {
   if (!inherits(input, "cmsy_input")) stop("`input` must be the result of cmsy_input().", call. = FALSE)
+  used_settings <- cmsy_check_settings(settings)
   device <- match.arg(device)
   plots <- match.arg(plots, c("analysis", "management", "kobe", "prior_posterior", "retrospective"), several.ok = TRUE)
   lang <- fao_lang(lang)
@@ -94,7 +121,7 @@ cmsy_run <- function(input, stocks = NULL, out_dir = "cmsy", parallel = NULL,
   run_dir <- file.path(out_dir, input$name)
   dir.create(run_dir, recursive = TRUE, showWarnings = FALSE)
   run_dir <- normalizePath(run_dir)
-  code <- cmsy_patch_code(readLines(cmsy_file("CMSY++16.R"), warn = FALSE), sys$os)
+  code <- cmsy_patch_code(readLines(cmsy_file("CMSY++16.R"), warn = FALSE), sys$os, used_settings)
   code_file <- file.path(run_dir, "CMSY++16_faofishingreport.R")
   writeLines(code, code_file)
   utils::write.csv(sys$changes, file.path(run_dir, "code_changes.csv"), row.names = FALSE)
@@ -108,10 +135,14 @@ cmsy_run <- function(input, stocks = NULL, out_dir = "cmsy", parallel = NULL,
     id <- input$id[input$id$Stock == stock, ]
     if (auto_start) id$StartYear <- cmsy_auto_start(input$catch[input$catch$Stock == stock, ], id)
     utils::write.csv(id, file.path(dir, "id.csv"), row.names = FALSE, na = "NA")
-    writeLines(cmsy_settings_code(stock, sys, plots, seed), file.path(dir, "cmsy_settings.R"))
+    writeLines(cmsy_settings_code(stock, sys, plots, seed, used_settings), file.path(dir, "cmsy_settings.R"))
     # done.txt tells cmsy_run() that the stock has finished, and how
+    # Output and messages go to log.txt from within R, which works the same on every system
     writeLines(c(paste0("setwd(", deparse(dir), ")"),
                  "local({",
+                 "  log <- file(\"log.txt\", open = \"wt\")",
+                 "  sink(log)",
+                 "  sink(log, type = \"message\")",
                  "  status <- \"ok\"",
                  paste0("  tryCatch(source(", deparse(code_file), ", echo = FALSE),"),
                  "           error = function(e) {status <<- paste(\"error:\", conditionMessage(e)); message(\"Error: \", conditionMessage(e))},",
@@ -133,7 +164,9 @@ cmsy_run <- function(input, stocks = NULL, out_dir = "cmsy", parallel = NULL,
   runs <- cmsy_run_jobs(jobs, sys$rscript, parallel, timeout, silent)
 
   result <- cmsy_collect(jobs, runs, input, lang)
-  result$sources <- cmsy_run_sources(sys, input, seed)
+  result$settings <- cmsy_defaults(settings, lang)
+  utils::write.csv(result$settings, file.path(run_dir, "settings_used.csv"), row.names = FALSE, fileEncoding = "UTF-8")
+  result$sources <- cmsy_run_sources(sys, input, seed, result$settings)
   result$changes <- sys$changes
   result$run_dir <- run_dir
   utils::write.csv(result$sources, file.path(run_dir, "sources.csv"), row.names = FALSE)
@@ -165,8 +198,7 @@ cmsy_run_jobs <- function(jobs, rscript, parallel, timeout, silent) {
     while (length(running) < parallel && next_job <= n) {
       dir <- jobs[[next_job]]$dir
       unlink(file.path(dir, "done.txt"))
-      log <- file.path(dir, "log.txt")
-      system2(rscript, shQuote(file.path(dir, "run.R")), stdout = log, stderr = log, wait = FALSE)
+      system2(rscript, shQuote(file.path(dir, "run.R")), stdout = FALSE, stderr = FALSE, wait = FALSE)
       running[[length(running) + 1]] <- list(i = next_job, start = Sys.time())
       next_job <- next_job + 1
     }
@@ -231,7 +263,7 @@ print.cmsy_result <- function(x, ...) {
 
 # A copy of CMSY++16.R changed for this system (see cmsy_changes()). Every change checks that the
 # original text is found, so a different version of the code is not changed by mistake.
-cmsy_patch_code <- function(code, os) {
+cmsy_patch_code <- function(code, os, settings = cmsy_default_settings) {
   replace_line <- function(code, starts, new) {
     hit <- which(startsWith(trimws(code), starts))
     if (length(hit) != 1) stop("CMSY++ code: expected one line starting with \"", starts, "\".", call. = FALSE)
@@ -257,6 +289,15 @@ cmsy_patch_code <- function(code, os) {
   code <- gsub("antialias=\"cleartype\"", "antialias=cmsy_antialias", code, fixed = TRUE)
   if (sum(grepl("snpar::runs.test(resid)", code, fixed = TRUE)) != 1) stop("CMSY++ code: runs.test not found.", call. = FALSE)
   code <- gsub("snpar::runs.test(resid)", "cmsy_runs_test(resid)", code, fixed = TRUE)
+  # MCMC settings of the JAGS call (defaults as in CMSY++16.R). They are written as numbers: the
+  # JAGS chains run in other R processes, which do not see the variables of the settings file
+  number <- function(x) format(x, scientific = FALSE, trim = TRUE)
+  for (from_to in list(c("n.burnin = 30000, n.thin = 10,",
+                         paste0("n.burnin = ", number(settings$n.burnin), ", n.thin = ", number(settings$n.thin), ",")),
+                       c("n.iter = 60000)", paste0("n.iter = ", number(settings$n.iter), ")")))) {
+    if (sum(grepl(from_to[1], code, fixed = TRUE)) != 1) stop("CMSY++ code: MCMC settings not found.", call. = FALSE)
+    code <- gsub(from_to[1], from_to[2], code, fixed = TRUE)
+  }
   # Save the results of the main (not retrospective) analysis for cmsy_plot(); nothing else changes
   retro_line <- which(startsWith(trimws(code), "FFmsy.retrospective[[retrosp.step+1]]<-F.Fmsy"))
   if (length(retro_line) != 1) stop("CMSY++ code: end of the analysis of a stock not found.", call. = FALSE)
@@ -272,7 +313,7 @@ cmsy_patch_code <- function(code, os) {
 }
 
 # Settings file sourced by the changed code, after its own settings section
-cmsy_settings_code <- function(stock, sys, plots, seed) {
+cmsy_settings_code <- function(stock, sys, plots, seed, settings = cmsy_default_settings) {
   flag <- function(x) if (x) "TRUE" else "FALSE"
   device <- if (sys$device == "screen") {
     switch(sys$os, windows = "windows(width, height)", macos = "grDevices::quartz(width = width, height = height)",
@@ -297,6 +338,8 @@ cmsy_settings_code <- function(stock, sys, plots, seed) {
     "write.output <- TRUE",
     "write.pdf    <- FALSE",
     "write.rdata  <- TRUE",
+    "# General settings of CMSY++ (cmsy_defaults(); defaults unless changed with cmsy_run(settings = ))",
+    cmsy_settings_lines(settings),
     if (!is.null(seed)) paste0("set.seed(", as.integer(seed), ")"),
     paste0("cmsy_antialias <- \"", sys$antialias, "\""),
     paste0("cmsy_open_device <- function(width, height) ", device),
@@ -507,7 +550,7 @@ cmsy_log_error <- function(log) {
 }
 
 # Versions and links of everything a run used
-cmsy_run_sources <- function(sys, input, seed) {
+cmsy_run_sources <- function(sys, input, seed, settings = NULL) {
   registry <- cmsy_registry()
   bundled <- registry[registry$bundled & registry$file %in% c("CMSY++16.R", "ffnn.bin", "CMSYUserGuideMarch2021.pdf"), ]
   fishbase <- registry[registry$component %in% c("FishBase", "SeaLifeBase"), ]
@@ -526,6 +569,9 @@ cmsy_run_sources <- function(sys, input, seed) {
     row("Status classes", "FAO 2026", "https://openknowledge.fao.org/server/api/core/bitstreams/09d03e2f-7097-4d59-bf94-db65e95f44fd/content/sofia-2026/the-status-fishery-resources.html",
         "Maximally sustainably fished: B/Bmsy 0.8-1.2; Tier 2 and 3 stocks are not classified as underfished"),
     row("Random seed", if (is.null(seed)) "none" else as.character(seed), ""),
+    row("CMSY++ settings", if (is.null(settings) || !any(settings$changed)) "CMSY++ defaults" else
+      paste(paste0(settings$setting[settings$changed], " = ", settings$used[settings$changed]), collapse = "; "),
+      "settings_used.csv in the run folder"),
     row("Changes to the CMSY++ code", paste(sys$changes$change, collapse = "; "), "code_changes.csv in the run folder"),
     row("Run date", format(Sys.time(), "%Y-%m-%d %H:%M"), "")
   )

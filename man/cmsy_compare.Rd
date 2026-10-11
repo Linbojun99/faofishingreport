@@ -50,7 +50,18 @@ assessments, and gives a table of their last-year values.
 }
 \examples{
 \dontrun{
-run2 <- cmsy_run(input, stocks = "GRB_34", auto_start = TRUE)
-cmsy_compare(`from 1950` = run1, `start year of CMSY++` = run2, stocks = "GRB_34")
+# Sensitivity to the start year
+run_1950 <- cmsy_run(input, stocks = "GRB_34", seed = 1)
+run_auto <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE)
+cmsy_compare(`from 1950` = run_1950, `CMSY++ start year` = run_auto, annotations = "legend")
+
+# Sensitivity to a CMSY++ setting (see cmsy_defaults())
+run_sigma <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE, settings = list(sigmaR = 0.2))
+cmsy_compare(default = run_auto, `sigmaR = 0.2` = run_sigma)$last_year
+
+# With another assessment of the same stock, read from a file with the columns
+# Stock, Year, B_Bmsy (optionally F_Fmsy) and source
+other <- read.csv("other_assessment.csv")
+cmsy_compare(CMSY = run_auto, external = other, annotations = "legend")
 }
 }

@@ -82,7 +82,18 @@ as in the management results of CMSY++. Catch is F times biomass, as CMSY++ defi
 }
 \examples{
 \dontrun{
-projection <- cmsy_forecast(result, catch = 100000, lang = "zh")
+# result <- cmsy_run(...), see cmsy_run()
+
+# Default scenarios: 0.5, 0.6, 0.8 and 0.95 Fmsy, and the last-year fishing mortality
+projection <- cmsy_forecast(result, seed = 1)
+
+# Twenty years, two F scenarios and a constant catch of 50,000 t, in Chinese
+projection <- cmsy_forecast(result, years = 20, f = c(0.8, 1), catch = 50000, seed = 1, lang = "zh")
+last <- projection$projection[projection$projection$Year == max(projection$projection$Year), ]
+last[, c("Stock", "scenario_label", "B_Bmsy", "B_Bmsy_lcl", "B_Bmsy_ucl", "p_above_bmsy")]
+
+# Share of the stocks at or above Bmsy (when several stocks were run)
+projection$share
 }
 }
 \references{

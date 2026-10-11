@@ -278,6 +278,32 @@ tables <- cmsy_tables(result, lang = "zh")
 
 `cmsy_tables()` 生成 CMSY 文献中常见的两张表，即上文第五步中的先验表和结果表。数值已取整，范围写成"下限-上限"，列名使用所选语言，并保存在 `tables/cmsy/`。
 
+## ⚙️ CMSY++ 自带的设置
+
+CMSY++ 代码里有一组"一般设置"，例如渔获量观测误差 `CV.C`、过程误差 `sigmaR`、MCMC 链数和迭代次数。`cmsy_run()` 默认完全沿用 CMSY++ 原来的数值，`cmsy_defaults()` 列出每一项的原默认值、本次实际使用的值和含义：
+
+```{r}
+show_table(cmsy_defaults(lang = "zh")[, c("setting", "cmsy_default", "applies_to", "description")], n = 30)
+```
+
+`applies_to` 为 "BSM" 的设置只在有丰度数据（CPUE 或生物量）时才起作用。FAO 数据只有渔获量，所以真正影响结果的是标为 "all" 的设置。需要改时，用 `settings` 只写要改的几项，其余保持原值；每一项都会先检查（名称、取值范围、迭代次数是否足够）：
+
+```{r}
+cmsy_defaults(list(sigmaR = 0.15, n.iter = 100000, n.burnin = 50000), lang = "zh")[c(3, 17, 18), c("setting", "cmsy_default", "used", "changed")]
+```
+
+```{r, eval = FALSE}
+result <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE,
+                   settings = list(sigmaR = 0.15, n.iter = 100000, n.burnin = 50000))
+result$settings[result$settings$changed, ]          # 改动的设置
+```
+
+实际使用的设置保存在运行目录的 `settings_used.csv`，也记录在 `result$sources` 中。绘图和输出开关（`mgraphs`、`kobe.plot`、`retros` 等）由 `cmsy_run()` 的 `plots` 参数控制，不在 `settings` 里设置。
+
+## 🖥️ Windows、macOS 和 Linux
+
+同一段代码在三个系统上都能直接运行。`cmsy_system()` 自动识别系统，并做相应修改，例如 macOS 上不调用 `windows()`、不使用 `antialias = "cleartype"`，修改清单见第一步。JAGS 安装程序会按系统和 R 版本自动选择。每次修改 CMSY 代码，GitHub Actions 上的 "CMSY-cross-platform" 检验都会在三个系统上分别用 `cmsy_install_jags()` 下载并安装 JAGS、真实运行 CMSY++、运行全部 CMSY 测试，并保存各系统的输出，方便核对。
+
 ## ⏱️ 进度条与 silent
 
 `cmsy_run()`、`cmsy_plot()`、`cmsy_forecast()` 和 `cmsy_area()` 运行时会显示进度条，例如：

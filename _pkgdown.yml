@@ -115,6 +115,7 @@ reference:
   - cmsy_sources
   - cmsy_priors
   - cmsy_input
+  - cmsy_defaults
   - cmsy_run
   - cmsy_plot
   - cmsy_forecast

@@ -96,9 +96,27 @@ cmsy_annotation_types <- c("title", "subtitle", "caption", "legend", "labels")
 #' @export
 #' @examples
 #' \dontrun{
+#' # result <- cmsy_run(...), see cmsy_run()
+#'
+#' # All charts in Chinese, with axis text only (the default)
 #' cmsy_plot(result, lang = "zh")
-#' cmsy_plot(result, stocks = "Sardina pilchardus", charts = c("kobe", "prior_posterior"),
+#'
+#' # Kobe plot and prior-posterior densities of one species, with all annotations
+#' cmsy_plot(result, stocks = "Brachydeuterus auritus", charts = c("kobe", "prior_posterior"),
 #'           annotations = TRUE, lang = "both")
+#'
+#' # Only titles and legends
+#' cmsy_plot(result, annotations = c("title", "legend"))
+#'
+#' # Status of all stocks in the five classes of Palomares et al. (2018), with legends
+#' cmsy_plot(result, charts = c("status", "status_time", "histogram", "map"), classes = "palomares",
+#'           annotations = "legend")
+#'
+#' # The management chart also as editable PowerPoint
+#' cmsy_plot(result, charts = "management", pptx = TRUE)
+#'
+#' # Annotations for the rest of the session
+#' options(faofishingreport.cmsy_annotations = TRUE)
 #' }
 cmsy_plot <- function(result, stocks = NULL, charts = c(cmsy_stock_charts, cmsy_summary_charts),
                       classes = c("fao", "palomares"), annotations = getOption("faofishingreport.cmsy_annotations", FALSE), lang = NULL,

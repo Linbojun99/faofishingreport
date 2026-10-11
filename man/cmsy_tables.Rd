@@ -40,6 +40,12 @@ rounded and ranges written as "low-high", with the column names in the chosen la
 }
 \examples{
 \dontrun{
-tables <- cmsy_tables(result, lang = "zh")
+# result <- cmsy_run(...), see cmsy_run()
+tables <- cmsy_tables(result, lang = "zh")       # also saved in tables/cmsy/
+tables$priors
+tables$results
+
+# Column names in both languages, without saving
+cmsy_tables(result, lang = "both", table = FALSE)$results
 }
 }

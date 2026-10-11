@@ -36,9 +36,18 @@
 #' @seealso [cmsy_setup()] to install what is missing, [cmsy_sources()] for versions and links.
 #' @export
 #' @examples
-#' \dontrun{
-#' cmsy_system()
-#' cmsy_system(os = "windows")   # settings that would be used on Windows
+#' \donttest{
+#' # What this computer has, and the settings cmsy_run() will use on it
+#' sys <- cmsy_system()
+#' sys$changes                      # the changes made to a copy of the CMSY++ code
+#'
+#' # The settings that would be used on Windows or macOS, e.g. to check them for a colleague
+#' cmsy_system(os = "windows", silent = TRUE)$changes
+#' cmsy_system(os = "macos", silent = TRUE)$device_call
+#'
+#' # The JAGS installer recommended here, and the newest JAGS
+#' cmsy_system(silent = TRUE)$jags_installer[, c("version", "file", "url")]
+#' cmsy_system(jags = "latest", silent = TRUE)$jags_installer[, c("version", "file", "requires")]
 #' }
 cmsy_system <- function(os = "auto", device = c("file", "screen"), jags = "recommended",
                         silent = fao_setting("silent")) {
@@ -90,8 +99,14 @@ cmsy_system <- function(os = "auto", device = c("file", "screen"), jags = "recom
 #' @export
 #' @examples
 #' \dontrun{
+#' # Check the computer and install what is missing (asks first)
 #' cmsy_setup()
-#' cmsy_setup(jags = "latest")   # JAGS 5.0.0 with rjags 5-3
+#'
+#' # Install without asking, e.g. on a server or in a script
+#' cmsy_setup(ask = FALSE)
+#'
+#' # JAGS 5.0.0 with rjags 5-3 (from SourceForge) instead of JAGS 4.3.2
+#' cmsy_setup(jags = "latest")
 #' }
 cmsy_setup <- function(jags = "recommended", os = "auto", ask = TRUE, data_dir = fao_data_dir(),
                        silent = fao_setting("silent")) {
@@ -168,7 +183,14 @@ cmsy_setup <- function(jags = "recommended", os = "auto", ask = TRUE, data_dir =
 #' @export
 #' @examples
 #' \dontrun{
+#' # Download the installer for this system (size and checksum are checked) and open it
 #' cmsy_install_jags()
+#'
+#' # Only download it, e.g. to install it later
+#' path <- cmsy_install_jags(open = FALSE)
+#'
+#' # Download the Windows installer on a Mac, e.g. for a colleague
+#' cmsy_install_jags(os = "windows", open = FALSE)
 #' }
 cmsy_install_jags <- function(version = "recommended", os = "auto", open = TRUE,
                               data_dir = fao_data_dir(), silent = fao_setting("silent")) {
@@ -319,7 +341,7 @@ cmsy_changes <- function(os, device) {
       "Lines that install missing packages on every run are removed (cmsy_setup() installs them).",
       "library(snpar) is removed and snpar::runs.test() is replaced by the same approximate runs test (snpar was archived on CRAN on 2022-05-10).",
       "setwd(rstudioapi::getActiveDocumentContext()$path) is removed, so RStudio is not needed; each stock runs in its own folder.",
-      "File names, the stock and the general settings are set by cmsy_run() after the original settings section.",
+      "File names, the stock, the chart switches and the general settings (CMSY++ defaults unless changed with cmsy_run(settings = ), including the MCMC iterations of the JAGS call) are set by cmsy_run() after the original settings section.",
       paste0("The test grepl(\"win\", sysname), which is also true on macOS (\"Darwin\"), is replaced; windows(): ", device_text, "."),
       if (os == "windows") "antialias = \"cleartype\" is kept (Windows)." else
         "antialias = \"cleartype\" (Windows only) is changed to \"default\" (user guide, step 12).",
