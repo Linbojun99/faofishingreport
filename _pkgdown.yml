@@ -63,6 +63,7 @@ reference:
   - download_fao_data
   - load_fao_data
   - fao_data_dir
+  - load_fao_divisions
 - title: "🌊 Fishing areas"
   desc: Total catch, main species and main countries of an FAO fishing area.
   contents:

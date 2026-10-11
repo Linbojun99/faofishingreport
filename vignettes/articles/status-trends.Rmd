@@ -188,6 +188,18 @@ P/D high.
 |---|---|---|
 | `definition` | Groups counted as pelagic and demersal | `"de_leiva_moreno"` |
 | `pelagic`, `demersal` | Your own ISSCAAP groups instead | `NULL` |
+| `by` | `"area"`, or `"division"` for the catch data of `load_fao_divisions()` | `"area"` |
+
+De Leiva Moreno et al. (2000) compared the divisions of the Mediterranean and Black Sea. The same
+units are available with `load_fao_divisions()` (see [💾 FAO data](data.html)):
+
+```{r, eval = FALSE}
+pelagic_demersal(load_fao_divisions("GFCM"), by = "division")
+```
+
+In release 2026.1.0, the mean P/D of the 1980s is below 1 in the Ionian (0.6) and the Levant
+(0.4), about 4 in the Adriatic and about 18 in the Black Sea, within the ranges de Leiva Moreno
+et al. (2000) found for oligotrophic, mesotrophic and eutrophic seas.
 
 ## 📖 References
 

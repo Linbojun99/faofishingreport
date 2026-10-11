@@ -185,6 +185,18 @@ FAO 没有为 ISSCAAP 物种类群、大类和收入分组提供中文名称；�
 `inst/extdata/group_names_zh.csv`，所有图表标签保存在 `inst/extdata/chart_labels.csv`。
 如需修改措辞，可在包的源代码中编辑这些文件，然后重新安装。
 
+## 🗺️ 按分区的渔获
+
+FAO 还为四个区域发布了按**分区**（区域渔业组织使用的 FAO 渔区下一级单元）统计的渔获：GFCM（37 区，如 37.1.1 巴利阿里、37.2.1 亚得里亚海、37.4.2 黑海）、CECAF（34 区）、东南大西洋（47 区）和 RECOFI（海湾、阿曼海和阿拉伯海西南部，属于 51 区的一部分）。`load_fao_divisions()` 第一次使用时下载最新版本（约 5 MB），保存在数据文件夹中，并按上面的格式返回，另外多三列：`Division`、`Division..Name.` 和 `Region`。
+
+```{r, eval = FALSE}
+med <- load_fao_divisions("GFCM")
+pelagic_demersal(med, by = "division")          # 每个分区一条 P/D 序列
+mean_temperature_catch(med, by = "division")    # 每个分区的渔获平均温度和海表温度
+```
+
+对 GFCM、CECAF 和东南大西洋，各分区渔获之和与 FAO 渔区的渔获几乎完全一致。有些代码不是具体海域："37.0.0 Tunas" 是按整个渔区报告的金枪鱼，"37.9.0 Not known" 是分区不明的渔获。
+
 ## ⚠️ 数据注意事项
 
 - **近几年的数据常为估算值。** 某个国家尚未上报时，FAO 会估算其产量。在 34 渔区，2024 年约三分之一的产量

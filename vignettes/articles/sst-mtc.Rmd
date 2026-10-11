@@ -105,6 +105,21 @@ count for their sea part only. The areas are those of the FAO map in the package
 areas). Values over the Arctic Sea and the Antarctic areas partly reflect sea ice rather than
 measured water temperature.
 
+### Subareas and divisions
+
+`fao_area_sst(level = "division")` gives the SST of the FAO subareas and divisions, the units of
+the catch data by division (`load_fao_divisions()`, see [💾 FAO data](data.html)). The built-in
+ERSST v5 table covers the subareas and divisions of areas 34, 37, 47 and 51; downloaded products
+and your own NetCDF files give all of them.
+
+```{r, message = TRUE}
+div <- fao_area_sst(level = "division")
+show_table(subset(div, startsWith(area_code, "37.") & year == 2024)[, c("area_code", "area_en", "sst_mean", "n_cells")], n = 12)
+```
+
+Many divisions are small for a 2° grid: the Sea of Marmara and the Sea of Azov have one or two
+cells. A finer product, given as the path of its NetCDF files, suits divisions better.
+
 ## 🐟 Mean temperature of the catch
 
 The mean temperature of the catch (MTC; Cheung et al. 2013) is the average preferred temperature
@@ -125,6 +140,20 @@ The first run downloads the FishBase and SeaLifeBase tables it needs (about 23 M
 shows the MTC with the SST of the area (and its range within the area) and, below, the share of
 the catch that has a preferred temperature. Years in which this share is below `min_coverage`
 (50% by default) are faded and left out of the trends.
+
+### By division
+
+With catch data by division, `by = "division"` gives the MTC of each division, compared with the
+SST of the division:
+
+```{r, eval = FALSE}
+med <- load_fao_divisions("GFCM")
+mtc_divisions <- mean_temperature_catch(med, by = "division")
+```
+
+Divisions without a boundary on the FAO map use the SST of their subarea (column `sst_unit`),
+codes that are not places (e.g. 37.0.0 Tunas) have no SST, and the function says which divisions
+have fewer than 5 grid cells.
 
 ### ⚠️ What the package does, and what you must check
 

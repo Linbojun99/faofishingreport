@@ -165,6 +165,15 @@ FAO 数据中每个物种都有一个 ISSCAAP 类群，所以函数按类群划�
 |---|---|---|
 | `definition` | 哪些类群算中上层鱼和底层鱼 | `"de_leiva_moreno"` |
 | `pelagic`、`demersal` | 改用自己指定的 ISSCAAP 类群 | `NULL` |
+| `by` | `"area"`，或 `"division"`（用于 `load_fao_divisions()` 的分区渔获数据） | `"area"` |
+
+de Leiva Moreno et al. (2000) 比较的是地中海和黑海的各个分区。用 `load_fao_divisions()` 可以得到同样的分区（见 [💾 FAO 数据](data.html)）：
+
+```{r, eval = FALSE}
+pelagic_demersal(load_fao_divisions("GFCM"), by = "division")
+```
+
+在 2026.1.0 版数据中，1980 年代的平均 P/D 在爱奥尼亚海（0.6）和黎凡特海（0.4）低于 1，在亚得里亚海约为 4，在黑海约为 18，分别落在 de Leiva Moreno et al. (2000) 给出的贫营养、中营养和富营养海域的范围内。
 
 ## 📖 参考文献
 

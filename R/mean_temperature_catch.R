@@ -89,6 +89,18 @@
 #' (Pyper and Peterman 1998). In the Adriatic Sea, the relation of MTC with SST was no longer
 #' significant once autocorrelation was accounted for (Kamberi et al. 2025).
 #'
+#' @section Divisions:
+#' With `by = "division"` and catch data by division (`load_fao_divisions()`, e.g. the GFCM
+#' divisions of the Mediterranean and Black Sea; Tsikliras and Stergiou 2014 used GFCM data of the
+#' western, central and eastern Mediterranean), the MTC
+#' is calculated for each division and compared with the SST of the division
+#' (`fao_area_sst(level = "division")`). Divisions without a boundary on the FAO map use the SST of
+#' their subarea (e.g. 34.1.9 "Northern coastal, not known" uses 34.1, 51.3.1 Oman Sea uses 51.3);
+#' the column `sst_unit` gives the unit used. Codes that are not places (e.g. 37.0.0 Tunas, 37.9.0
+#' Not known) have no SST. On the 2° grid of the built-in ERSST v5, some divisions have only a few
+#' cells (the function says which); a finer SST product, given as the path of its NetCDF files,
+#' suits them better.
+#'
 #' @section Interpretation:
 #' A change in the MTC can come from a warmer or cooler ocean, but also from changes in the
 #' species fished, fishing grounds, gear, markets, management and reporting. For example, in the
@@ -121,12 +133,15 @@
 #'        and `sst_p90`). Default is the `sst` setting of `fao_settings()`, "ersst5" unless
 #'        changed. The SST data used is printed, shown in the chart legend and given in the
 #'        column `sst_source` of the yearly table.
+#' @param by "area" (default) for the FAO major areas, or "division" for the divisions of the
+#'        catch data of `load_fao_divisions()` (see Divisions).
 #' @param data_dir The directory where downloaded data is stored. Default is `fao_data_dir()`.
 #' @return Invisibly, a list of three data frames:
 #'   \describe{
-#'     \item{yearly}{one row per area and year: MTC, coverage (percent), whether the coverage is
-#'       below `min_coverage`, SST (mean and 10th-90th percentile range in the area) and its
-#'       product, number of items used, total catch and catch of the items used;}
+#'     \item{yearly}{one row per area (or division) and year: MTC, coverage (percent), whether the
+#'       coverage is below `min_coverage`, SST (mean and 10th-90th percentile range in the area),
+#'       its product and the unit of the SST table used (`sst_unit`), number of items used, total
+#'       catch and catch of the items used;}
 #'     \item{trend}{one row per area and period: slopes of the MTC and SST (°C per decade), the
 #'       Mann-Kendall test of the MTC, and the correlation of MTC and SST for the series and
 #'       for their year-to-year differences;}
@@ -212,6 +227,9 @@
 #' download_sst_data("cobe2")
 #' mean_temperature_catch(FAO34$area_data, sst = "cobe2", label = "FAO34_cobe2")
 #'
+#' # The GFCM divisions of the Mediterranean and Black Sea
+#' mean_temperature_catch(load_fao_divisions("GFCM"), by = "division")
+#'
 #' # The period studied by Cheung et al. (2013)
 #' mean_temperature_catch(subset(FAO34$area_data, Year >= 1970 & Year <= 2006),
 #'                        label = "FAO34_1970_2006")
@@ -223,20 +241,24 @@
 mean_temperature_catch <- function(area_data, version = "latest", min_coverage = 50, trend_from = 1970,
                                    use_match = c("exact", "synonym", "WoRMS valid name (exact)",
                                                  "WoRMS valid name (synonym)", "manual"),
-                                   match = NULL, sst = fao_setting("sst"),
+                                   match = NULL, sst = fao_setting("sst"), by = c("area", "division"),
                                    plot = TRUE, table = TRUE, lang = NULL,
                                    pptx = getOption("faofishingreport.pptx", FALSE), label = NULL,
                                    data_dir = fao_data_dir()) {
+  by <- match.arg(by)
   lang <- fao_lang(lang)
-  name <- fao_summary_name(fao_summary_label(area_data, label), "mtc")
+  name <- fao_summary_name(fao_summary_label(area_data, label), if (by == "division") "mtc_divisions" else "mtc")
   matched <- if (is.null(match)) {
     fishbase_match(area_data, version = version, table = FALSE, lang = "en", label = label, data_dir = data_dir)
   } else fao_mtc_match_table(match)
 
+  # The spatial units: FAO major areas, or divisions (catch data of load_fao_divisions())
+  units <- fao_spatial_units(area_data, by)
   catch <- stats::aggregate(list(Tonnes = area_data$Production),
-                            by = list(area_en = area_data$FAO.major.fishing.area..Name.,
-                                      species_en = area_data$ASFIS.species..Name., Year = area_data$Year),
+                            by = list(area_en = units$name, species_en = area_data$ASFIS.species..Name.,
+                                      Year = area_data$Year),
                             FUN = sum, na.rm = TRUE)
+  unit_codes <- stats::setNames(units$code, units$name)
   row <- match(catch$species_en, matched$species_en)
   catch$temp <- matched$temp_pref_mean[row]
   matched_ok <- if ("status" %in% names(matched)) matched$status %in% "matched" else rep(TRUE, nrow(matched))
@@ -244,18 +266,31 @@ mean_temperature_catch <- function(area_data, version = "latest", min_coverage =
   # Items whose match the user has marked as checked (the `checked` column of a checked table)
   catch$checked <- catch$used & !is.na(row) & fao_mtc_is_checked(matched$checked, nrow(matched))[row]
 
-  areas <- names(sort(tapply(catch$Tonnes, catch$area_en, sum), decreasing = TRUE))
+  areas <- if (by == "area") names(sort(tapply(catch$Tonnes, catch$area_en, sum), decreasing = TRUE)) else
+    unique(catch$area_en)[order(unit_codes[unique(catch$area_en)])]
   years <- seq(min(catch$Year), max(catch$Year))
   yearly <- do.call(rbind, lapply(areas, function(a) fao_mtc_yearly(catch[catch$area_en == a, ], years)))
-  area_table <- fao_group_table()$area
-  yearly$area_code <- area_table$area_code[match(yearly$area_en, area_table$name_en)]
+  yearly$area_code <- unname(unit_codes[yearly$area_en])
   yearly$low_coverage <- is.na(yearly$coverage_pct) | yearly$coverage_pct < min_coverage
-  sst_table <- fao_mtc_sst(sst, data_dir)
+  sst_table <- fao_mtc_sst(sst, data_dir, if (by == "division") "division" else "area")
   sst_name <- if (is.null(sst_table)) NULL else if ("source" %in% names(sst_table)) sst_table$source[1] else "user table"
   yearly$sst_source <- if (is.null(sst_name)) NA_character_ else sst_name
-  sst_row <- if (is.null(sst_table)) rep(NA_integer_, nrow(yearly)) else {
-    key <- if ("area_code" %in% names(sst_table)) "area_code" else "area_en"
-    match(paste(yearly[[key]], yearly$year), paste(sst_table[[key]], sst_table$year))
+  # The unit of the SST table used: the area or division itself, else (divisions without a boundary
+  # on the FAO map) its subarea; NA for codes that are not places (e.g. 37.0.0 Tunas)
+  yearly$sst_unit <- if (is.null(sst_table) || !"area_code" %in% names(sst_table)) NA_character_ else
+    if (by == "division") fao_division_sst_unit(yearly$area_code, unique(sst_table$area_code)) else yearly$area_code
+  sst_row <- if (is.null(sst_table)) rep(NA_integer_, nrow(yearly)) else if ("area_code" %in% names(sst_table)) {
+    match(paste(yearly$sst_unit, yearly$year), paste(sst_table$area_code, sst_table$year))
+  } else {
+    match(paste(yearly$area_en, yearly$year), paste(sst_table$area_en, sst_table$year))
+  }
+  if (by == "division" && !is.null(sst_table) && "n_cells" %in% names(sst_table)) {
+    cells <- sst_table$n_cells[match(yearly$sst_unit, sst_table$area_code)]
+    few <- unique(yearly$area_en[!is.na(cells) & cells < 5])
+    if (length(few) > 0) {
+      message("The SST of ", paste(few, collapse = ", "), " rests on fewer than 5 grid cells of ", sst_name,
+              "; a finer SST product suits small divisions better (see ?fao_area_sst).")
+    }
   }
   for (column in c("sst_mean", "sst_p10", "sst_p90")) {
     yearly[[column]] <- if (column %in% names(sst_table)) as.numeric(sst_table[[column]][sst_row]) else NA_real_
@@ -264,10 +299,11 @@ mean_temperature_catch <- function(area_data, version = "latest", min_coverage =
   trend <- do.call(rbind, lapply(areas, function(a) fao_mtc_trend(yearly[yearly$area_en == a, ], trend_from)))
   species <- do.call(rbind, lapply(areas, function(a) fao_mtc_species(catch[catch$area_en == a, ], matched, use_match)))
 
-  area_names <- stats::setNames(fao_translate(areas, "area", lang), areas)
+  area_names <- stats::setNames(if (by == "area") fao_translate(areas, "area", lang) else areas, areas)
   yearly$area <- unname(area_names[yearly$area_en])
   yearly <- yearly[, c("area", "area_en", "area_code", "year", "mtc", "coverage_pct", "low_coverage",
-                       "sst_mean", "sst_p10", "sst_p90", "sst_source", "n_items", "catch_tonnes", "catch_used_tonnes")]
+                       "sst_mean", "sst_p10", "sst_p90", "sst_source", "sst_unit", "n_items", "catch_tonnes",
+                       "catch_used_tonnes")]
   trend <- cbind(area = unname(area_names[trend$area_en]), trend)
   species <- cbind(area = unname(area_names[species$area_en]),
                    species_name = fao_translate(species$species_en, "species", lang), species)
@@ -348,10 +384,10 @@ fao_mtc_is_checked <- function(checked, n) {
 }
 
 # SST to compare with: a product (see fao_sst_products()), none, or a table given by the user
-fao_mtc_sst <- function(sst, data_dir) {
+fao_mtc_sst <- function(sst, data_dir, level = "area") {
   if (isFALSE(sst)) return(NULL)
   if (is.null(sst)) sst <- "ersst5"
-  if (is.character(sst)) return(fao_area_sst(sst = sst, data_dir = data_dir))
+  if (is.character(sst)) return(fao_area_sst(sst = sst, level = level, data_dir = data_dir))
   if (!is.data.frame(sst) || !all(c("year", "sst_mean") %in% names(sst)) ||
       !any(c("area_code", "area_en") %in% names(sst))) {
     stop("sst must be \"ersst5\" (built in), a product downloaded with download_sst_data(), the path of ",

@@ -85,6 +85,17 @@ fao_area_sst("34", sst = "hadisst1")
 
 每个格点按它与各个 FAO 主要渔区重叠的面积（在球面上计算）加权，计入它所覆盖的每个渔区。位于两个渔区交界处的格点由两边共享，沿岸格点只计算海洋部分。渔区边界来自包内的 FAO 渔区地图（19 个海洋渔区）。北冰洋和南极渔区的数值有一部分反映的是海冰，而不是实测的水温。
 
+### 亚区和分区
+
+`fao_area_sst(level = "division")` 给出 FAO 亚区和分区的海表温度，对应按分区的渔获数据（`load_fao_divisions()`，见 [💾 FAO 数据](data.html)）。内置的 ERSST v5 表包含 34、37、47 和 51 区的亚区和分区；下载的产品和你自己的 NetCDF 文件会给出全部亚区和分区。
+
+```{r, message = TRUE}
+div <- fao_area_sst(level = "division")
+show_table(subset(div, startsWith(area_code, "37.") & year == 2024)[, c("area_code", "area_en", "sst_mean", "n_cells")], n = 12)
+```
+
+很多分区对 2° 网格来说太小：马尔马拉海和亚速海只有一两个格点。用分辨率更高的产品（给出其 NetCDF 文件路径）更适合分区。
+
 ## 🐟 渔获平均温度
 
 渔获平均温度（MTC；Cheung et al. 2013）是渔获物种偏好温度的平均值，按渔获量加权：
@@ -100,6 +111,17 @@ mtc$trend      # 斜率（°C/十年）、Mann-Kendall 检验、与 SST 的相�
 ```
 
 第一次运行时会下载所需的 FishBase 和 SeaLifeBase 表格（约 23 MB）。图的上半部分是 MTC 与渔区 SST（及区内范围），下半部分是有偏好温度的渔获所占的比例。这个比例低于 `min_coverage`（默认 50%）的年份会淡化显示，并且不参与趋势计算。
+
+### 按分区
+
+有了按分区的渔获数据，`by = "division"` 会给出每个分区的渔获平均温度，并与该分区的海表温度对比：
+
+```{r, eval = FALSE}
+med <- load_fao_divisions("GFCM")
+mtc_divisions <- mean_temperature_catch(med, by = "division")
+```
+
+在 FAO 地图上没有边界的分区使用所在亚区的海表温度（见 `sst_unit` 列）；不是具体海域的代码（如 37.0.0 金枪鱼）没有海表温度；海温格点少于 5 个的分区，函数会给出提示。
 
 ### ⚠️ 包做什么，你必须核对什么
 

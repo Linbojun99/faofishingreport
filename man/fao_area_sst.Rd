@@ -7,6 +7,7 @@
 fao_area_sst(
   area = NULL,
   sst = fao_setting("sst"),
+  level = c("area", "division"),
   variable = NULL,
   data_dir = fao_data_dir()
 )
@@ -18,6 +19,10 @@ Central"). Default is NULL, all areas.}
 \item{sst}{The SST data: "ersst5" (built in), the name of a product downloaded with
 `download_sst_data()`, or the path of a NetCDF file or of a folder of NetCDF files.
 Default is the `sst` setting of `fao_settings()`, "ersst5" unless changed.}
+
+\item{level}{"area" (default) for the 19 FAO major marine areas, or "division" for the FAO
+subareas and divisions (e.g. "37.1.1", Balearic), as in the catch data of
+`load_fao_divisions()` (see Subareas and divisions).}
 
 \item{variable}{The name of the SST variable in your NetCDF files. Default is NULL, found from
 its name.}
@@ -59,6 +64,18 @@ always says which SST data it uses.
 }
 }
 
+\section{Subareas and divisions}{
+
+With `level = "division"`, the table has one row per FAO subarea and division of the FAO map in
+the package (`inst/extdata/FAO_AREAS_CWP.shp`): `area_code` is its code (e.g. "34.1.1" or the
+subarea "34.2") and `area_en` its name. The built-in ERSST v5 table covers the subareas and
+divisions of areas 34, 37, 47 and 51, those of the catch data by division
+(`load_fao_divisions()`); tables from downloaded products or your own files cover all of them.
+Many divisions are small for a 2° grid (see `n_cells`; e.g. the Sea of Azov or the Sea of
+Marmara have none or a few cells), so a finer SST product, given as the path of its NetCDF
+files, suits divisions better.
+}
+
 \section{How the area means are computed}{
 
 \itemize{
@@ -95,6 +112,10 @@ lines(sst_p90 ~ year, data = sst34, lty = 2)
 fao_area_sst("34", sst = "D:/data/HadISST_sst.nc")
 # ... or for the whole session, including mean_temperature_catch()
 fao_settings(sst = "D:/data/HadISST_sst.nc")
+
+# Subareas and divisions, e.g. those of the Mediterranean and Black Sea
+div <- fao_area_sst(level = "division")
+subset(div, startsWith(area_code, "37.") & year == 2024)
 }
 }
 \references{
