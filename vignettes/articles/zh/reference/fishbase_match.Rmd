@@ -185,23 +185,23 @@ every time the function runs, so a team sharing `data_dir` shares them.
 ## 参考文献
 
 Branch, T.A., Watson, R., Fulton, E.A. et al. (2010). The trophic fingerprint of marine
-fisheries. Nature 468: 431-435. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1038/nature09528
+fisheries. Nature 468: 431-435. [doi:10.1038/nature09528](https://doi.org/10.1038/nature09528)
 
 Cheung, W.W.L., Watson, R. and Pauly, D. (2013). Signature of ocean warming in global
-fisheries catch. Nature 497: 365-368. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1038/nature12156
+fisheries catch. Nature 497: 365-368. [doi:10.1038/nature12156](https://doi.org/10.1038/nature12156)
 
 Liang, C. and Pauly, D. (2017). Fisheries impacts on China's coastal ecosystems: unmasking a
-pervasive 'fishing down' effect. PLoS ONE 12: e0173296. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1371/journal.pone.0173296
+pervasive 'fishing down' effect. PLoS ONE 12: e0173296. [doi:10.1371/journal.pone.0173296](https://doi.org/10.1371/journal.pone.0173296)
 
 Liang, C., Xian, W. and Pauly, D. (2018). Impacts of ocean warming on China's fisheries
 catches: an application of "mean temperature of the catch" concept. Frontiers in Marine
-Science 5: 26. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.3389/fmars.2018.00026
+Science 5: 26. [doi:10.3389/fmars.2018.00026](https://doi.org/10.3389/fmars.2018.00026)
 
 Pauly, D., Christensen, V., Dalsgaard, J., Froese, R. and Torres, F. (1998). Fishing down
-marine food webs. Science 279: 860-863. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1126/science.279.5352.860
+marine food webs. Science 279: 860-863. [doi:10.1126/science.279.5352.860](https://doi.org/10.1126/science.279.5352.860)
 
 Tsikliras, A.C. and Stergiou, K.I. (2014). Mean temperature of the catch increases quickly in
-the Mediterranean Sea. Marine Ecology Progress Series 515: 281-284. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.3354/meps11005
+the Mediterranean Sea. Marine Ecology Progress Series 515: 281-284. [doi:10.3354/meps11005](https://doi.org/10.3354/meps11005)
 
 FAO (2026). Nomenclature, revision, and references of the ASFIS list (version 2026). Rome, FAO.
 <https://www.fao.org/fishery/static/ASFIS/ASFIS_References_2026_EN.pdf>
@@ -219,7 +219,7 @@ Palomares, M.L.D. and Pauly, D. (Eds.) SeaLifeBase. World Wide Web electronic pu
 <https://www.sealifebase.se>
 
 WoRMS Editorial Board. World Register of Marine Species. Flanders Marine Institute (VLIZ).
-<https://www.marinespecies.org>, \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.14284/170
+<https://www.marinespecies.org>, [doi:10.14284/170](https://doi.org/10.14284/170)
 
 ## 示例
 

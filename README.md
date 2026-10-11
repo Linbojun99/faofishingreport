@@ -31,10 +31,11 @@ in English, Chinese or both.
 - 🔬 **Analyses from the literature**: catch shocks (Cottrell et al. 2019; Gephart et al. 2017),
   fishery collapses (Mullon et al. 2005; Worm et al. 2006) with a random null model, synchrony
   and portfolio effect (Loreau & de Mazancourt 2008).
-- 🌡️ **FishBase and sea temperature**: FishBase and SeaLifeBase traits matched to FAO species,
-  sea surface temperature of the FAO areas, and the mean temperature of the catch
+- 🌡️ **FishBase and sea temperature**: FishBase and SeaLifeBase traits matched to FAO species
+  (data snapshots of the [rfishbase](https://github.com/ropensci/rfishbase) project), sea surface temperature of the FAO areas, and the mean temperature of the catch
   (Cheung et al. 2013).
-- 📉 **CMSY++ stock assessment** of the main species (Froese et al. 2023), with JAGS set up for
+- 📉 **CMSY++ stock assessment** of the main species (Froese et al. 2023; code of its authors from
+  <https://github.com/SISTA16/cmsyPlusPlus>, bundled unchanged), with JAGS set up for
   your computer, charts, projections and tables of reference points and priors.
 - 📝 **Word assessment report in one call**: `fao_report()` writes a report in Chinese or English
   (cover, abstract, data and methods, results, conclusions, references, appendix), with every

@@ -265,7 +265,7 @@ Froese, R., Winker, H., Coro, G., Palomares, M.L.D., Tsikliras, A.C., Dimarchopo
 Touloumis, K., Demirel, N., Vianna, G.M.S., Scarcella, G., Schijns, R., Liang, C. and Pauly,
 D. (2023). New developments in the analysis of catch time series as the basis for fish stock
 assessments: the CMSY++ method. Acta Ichthyologica et Piscatoria 53: 173-189.
-\Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.3897/aiep.53.105910
+[doi:10.3897/aiep.53.105910](https://doi.org/10.3897/aiep.53.105910)
 
 Froese, R., Demirel, N., Coro, G. and Winker, H. (2021). User Guide for CMSY++. GEOMAR,
 Germany, 17 pp. <https://oceanrep.geomar.de/id/eprint/52147/>

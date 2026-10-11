@@ -19,7 +19,7 @@ data_source("zh")
 
 FAO捕捞统计给出每个物种条目的渔获量，以及它在ASFIS名录中的英文名和学名，但不包含任何生物学信息。这些特征可以从FishBase（鱼类）和SeaLifeBase（其他水生动物和植物）获得：营养级、偏好温度、栖息类型、最大体长、对捕捞的脆弱性、恢复力和先验r。本包在两处用到它们：[渔获平均温度](sst-mtc.html)用偏好温度，[CMSY++先验](cmsy.html)用恢复力和先验r。
 
-数据来自FishBase和SeaLifeBase数据表的固定副本（版本），由rfishbase项目以parquet文件发布（Boettiger等2012）。本包只按已发表的规则把它们与FAO物种条目匹配，每个匹配结果都附有核对所需的链接。
+数据来自FishBase和SeaLifeBase数据表的固定副本（版本），由rOpenSci的rfishbase项目以parquet文件发布（Boettiger等2012；源代码：<https://github.com/ropensci/rfishbase>，数据文件：<https://data.source.coop/cboettig/fishbase/>）。本包只按已发表的规则把它们与FAO物种条目匹配，每个匹配结果都附有核对所需的链接。
 
 | 函数 | 作用 | 是否联网 |
 |---|---|---|
@@ -369,8 +369,9 @@ fao_report(34, mtc = TRUE, mtc_version = "latest")    # FishBase 最新版本
 ## 📖 参考文献
 
 Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase: exploring, manipulating and
-visualizing FishBase data from R. *Journal of Fish Biology* 81: 2030–2039.
-[doi:10.1111/j.1095-8649.2012.03464.x](https://doi.org/10.1111/j.1095-8649.2012.03464.x)
+visualizing FishBase data from R. *Journal of Fish Biology* 81(6): 2030–2039.
+[doi:10.1111/j.1095-8649.2012.03464.x](https://doi.org/10.1111/j.1095-8649.2012.03464.x).
+Source code: <https://github.com/ropensci/rfishbase>
 
 Branch, T.A., Watson, R., Fulton, E.A., Jennings, S., McGilliard, C.R., Pablico, G.T., Ricard, D.
 and Tracey, S.R. (2010). The trophic fingerprint of marine fisheries. *Nature* 468: 431–435.

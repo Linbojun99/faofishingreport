@@ -8,6 +8,10 @@ Creative Commons Attribution 4.0 International licence (CC BY 4.0,
 <https://creativecommons.org/licenses/by/4.0/>). The same code is on GitHub at
 <https://github.com/SISTA16/cmsyPlusPlus> (no licence stated there).
 
+faofishingreport is not affiliated with or endorsed by the authors of CMSY++. Questions on the
+method go to them; problems with how faofishingreport runs it go to
+<https://github.com/Linbojun99/faofishingreport/issues>.
+
 | File | Content | MD5 |
 |---|---|---|
 | `CMSY++16.R` | CMSY++ R code, version of January 2021 | `9ed00c053d05a10024170be1a48f8d85` |

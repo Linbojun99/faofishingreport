@@ -182,10 +182,10 @@ first with `download_fao_data(version = ...)`; `check_fao_update()` lists them.
 ## 参考文献
 
 Garibaldi, L. (2012). The FAO global capture production database: a six-decade effort to catch
-the trend. Marine Policy 36: 760-768. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1016/j.marpol.2011.10.024
+the trend. Marine Policy 36: 760-768. [doi:10.1016/j.marpol.2011.10.024](https://doi.org/10.1016/j.marpol.2011.10.024)
 
 Zeller, D. and Pauly, D. (2018). The 'presentist bias' in time-series data: implications for
-fisheries science and policy. Marine Policy 90: 14-19. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1016/j.marpol.2018.01.015
+fisheries science and policy. Marine Policy 90: 14-19. [doi:10.1016/j.marpol.2018.01.015](https://doi.org/10.1016/j.marpol.2018.01.015)
 
 ## 示例
 

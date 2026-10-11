@@ -13,8 +13,10 @@
 #' priors (see [cmsy_priors()]).
 #'
 #' The CMSY++ files bundled with the package are the unmodified March 2021 release from GEOMAR's
-#' repository OceanRep (record 52147), published under the CC BY 4.0 licence. [cmsy_run()]
-#' applies a few documented changes to a copy of the code before running it (see [cmsy_system()]).
+#' repository OceanRep (record 52147), published under the CC BY 4.0 licence; the same code is on
+#' GitHub at <https://github.com/SISTA16/cmsyPlusPlus>. [cmsy_run()] applies a few documented
+#' changes to a copy of the code before running it (see [cmsy_system()]); they do not change the
+#' method. faofishingreport is not affiliated with or endorsed by the authors of CMSY++.
 #'
 #' @param component Optional text to keep only matching components, e.g. "JAGS" or "CMSY".
 #' @return A data frame with one row per file or package.

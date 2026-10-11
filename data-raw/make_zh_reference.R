@@ -34,7 +34,7 @@ rd_text <- function(x) {
 
 rd_md <- function(x) {
   t <- tag(x)
-  if (is.character(x) && !t %in% c("\\dots", "\\ldots")) return(rd_unescape(paste(x, collapse = "")))
+  if (is.character(x) && !t %in% c("\\dots", "\\ldots", "USERMACRO")) return(rd_unescape(paste(x, collapse = "")))
   inner <- function(i = 1) rd_md(x[[i]])
   switch(t,
     "\\code" = , "\\verb" = , "\\samp" = , "\\env" = , "\\option" = , "\\command" = , "\\file" = , "\\pkg" =
@@ -60,6 +60,13 @@ rd_md <- function(x) {
     "\\preformatted" = paste0("\n```\n", rd_text(x), "\n```\n"),
     "\\tabular" = rd_md_table(x[[2]]),
     "\\Sexpr" = "",
+    # \doi{} and other user macros are given as the macro and its argument, then the expansion
+    # (a \Sexpr, dropped above)
+    "USERMACRO" = if (identical(attr(x, "macro"), "\\doi")) {
+      paste0("[doi:", x[[2]], "](https://doi.org/", x[[2]], ")")
+    } else {
+      ""
+    },
     "COMMENT" = "",
     rd_md_list(x)
   )

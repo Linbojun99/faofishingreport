@@ -26,8 +26,8 @@
 #' \url{https://www.sealifebase.se}
 #'
 #' Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase: exploring, manipulating and
-#' visualizing FishBase data from R. Journal of Fish Biology 81: 2030-2039.
-#' \doi{10.1111/j.1095-8649.2012.03464.x}
+#' visualizing FishBase data from R. Journal of Fish Biology 81(6): 2030-2039.
+#' \doi{10.1111/j.1095-8649.2012.03464.x}. Source code: \url{https://github.com/ropensci/rfishbase}
 #' @export
 #' @examples
 #' \dontrun{
@@ -110,8 +110,8 @@ check_fishbase_update <- function(server = c("fishbase", "sealifebase"), data_di
 #' \url{https://www.sealifebase.se}
 #'
 #' Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase: exploring, manipulating and
-#' visualizing FishBase data from R. Journal of Fish Biology 81: 2030-2039.
-#' \doi{10.1111/j.1095-8649.2012.03464.x}
+#' visualizing FishBase data from R. Journal of Fish Biology 81(6): 2030-2039.
+#' \doi{10.1111/j.1095-8649.2012.03464.x}. Source code: \url{https://github.com/ropensci/rfishbase}
 #' @export
 #' @examples
 #' \dontrun{
@@ -169,8 +169,8 @@ download_fishbase_data <- function(server = c("fishbase", "sealifebase"), versio
 #' \url{https://www.sealifebase.se}
 #'
 #' Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase: exploring, manipulating and
-#' visualizing FishBase data from R. Journal of Fish Biology 81: 2030-2039.
-#' \doi{10.1111/j.1095-8649.2012.03464.x}
+#' visualizing FishBase data from R. Journal of Fish Biology 81(6): 2030-2039.
+#' \doi{10.1111/j.1095-8649.2012.03464.x}. Source code: \url{https://github.com/ropensci/rfishbase}
 #' @export
 #' @examples
 #' \dontrun{

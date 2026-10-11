@@ -22,8 +22,10 @@ priors (see \code{\link[=cmsy_priors]{cmsy_priors()}}).
 }
 \details{
 The CMSY++ files bundled with the package are the unmodified March 2021 release from GEOMAR's
-repository OceanRep (record 52147), published under the CC BY 4.0 licence. \code{\link[=cmsy_run]{cmsy_run()}}
-applies a few documented changes to a copy of the code before running it (see \code{\link[=cmsy_system]{cmsy_system()}}).
+repository OceanRep (record 52147), published under the CC BY 4.0 licence; the same code is on
+GitHub at \url{https://github.com/SISTA16/cmsyPlusPlus}. \code{\link[=cmsy_run]{cmsy_run()}} applies a few documented
+changes to a copy of the code before running it (see \code{\link[=cmsy_system]{cmsy_system()}}); they do not change the
+method. faofishingreport is not affiliated with or endorsed by the authors of CMSY++.
 }
 \examples{
 # Every component, with version, file, licence and link

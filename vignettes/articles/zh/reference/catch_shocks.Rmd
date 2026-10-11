@@ -188,11 +188,11 @@ al. 2017).
 ## 参考文献
 
 Cottrell, R.S., Nash, K.L., Halpern, B.S. et al. (2019). Food production shocks across land and
-sea. Nature Sustainability 2: 130-137. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1038/s41893-018-0210-1
+sea. Nature Sustainability 2: 130-137. [doi:10.1038/s41893-018-0210-1](https://doi.org/10.1038/s41893-018-0210-1)
 
 Gephart, J.A., Deutsch, L., Pace, M.L., Troell, M. and Seekell, D.A. (2017). Shocks to fish
 production: identification, trends, and consequences. Global Environmental Change 42: 24-32.
-\Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1016/j.gloenvcha.2016.11.003
+[doi:10.1016/j.gloenvcha.2016.11.003](https://doi.org/10.1016/j.gloenvcha.2016.11.003)
 
 ## 示例
 

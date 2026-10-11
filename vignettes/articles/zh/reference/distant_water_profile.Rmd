@@ -171,7 +171,7 @@ partly counted in its adjacent area 61.
 ## 参考文献
 
 FAO (2024). The State of World Fisheries and Aquaculture 2024. Blue Transformation in action.
-Rome, FAO. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.4060/cd0683en
+Rome, FAO. [doi:10.4060/cd0683en](https://doi.org/10.4060/cd0683en)
 
 Garibaldi, L. and Limongelli, L. (2003). Trends in oceanic captures and clustering of large
 marine ecosystems: two studies based on the FAO capture database. FAO Fisheries Technical Paper
@@ -183,7 +183,7 @@ trend analysis and fisheries potential. FAO Fisheries Technical Paper 359. Rome,
 
 Swartz, W., Sala, E., Tracey, S., Watson, R. and Pauly, D. (2010). The spatial expansion and
 ecological footprint of fisheries (1950 to present). PLoS ONE 5: e15143.
-\Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1371/journal.pone.0015143
+[doi:10.1371/journal.pone.0015143](https://doi.org/10.1371/journal.pone.0015143)
 
 ## 示例
 

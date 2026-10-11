@@ -210,13 +210,13 @@ and Miller 2007), with the same start years and lengths as the real series, for 
 ## 参考文献
 
 Mullon, C., Freon, P. and Cury, P. (2005). The dynamics of collapse in world fisheries. Fish
-and Fisheries 6: 111-120. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1111/j.1467-2979.2005.00181.x
+and Fisheries 6: 111-120. [doi:10.1111/j.1467-2979.2005.00181.x](https://doi.org/10.1111/j.1467-2979.2005.00181.x)
 
 Wilberg, M.J. and Miller, T.J. (2007). Comment on "Impacts of biodiversity loss on ocean
-ecosystem services". Science 316: 1285. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1126/science.1137946
+ecosystem services". Science 316: 1285. [doi:10.1126/science.1137946](https://doi.org/10.1126/science.1137946)
 
 Worm, B., Barbier, E.B., Beaumont, N. et al. (2006). Impacts of biodiversity loss on ocean
-ecosystem services. Science 314: 787-790. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1126/science.1132294
+ecosystem services. Science 314: 787-790. [doi:10.1126/science.1132294](https://doi.org/10.1126/science.1132294)
 
 ## 示例
 

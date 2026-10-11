@@ -197,20 +197,20 @@ simpler correlation-based measures above.
 
 Carlson, S.M. and Satterthwaite, W.H. (2011). Weakened portfolio effect in a collapsed salmon
 population complex. Canadian Journal of Fisheries and Aquatic Sciences 68: 1579-1589.
-\Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1139/f2011-084
+[doi:10.1139/f2011-084](https://doi.org/10.1139/f2011-084)
 
 Lepš, J., Götzenberger, L., Valencia, E. and de Bello, F. (2019). Accounting for long-term
 directional trends on year-to-year synchrony in species fluctuations. Ecography 42: 1728-1741.
-\Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1111/ecog.04528
+[doi:10.1111/ecog.04528](https://doi.org/10.1111/ecog.04528)
 
 Loreau, M. and de Mazancourt, C. (2008). Species synchrony and its drivers: neutral and nonneutral
-community dynamics in fluctuating environments. American Naturalist 172: E48-E66. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1086/589746
+community dynamics in fluctuating environments. American Naturalist 172: E48-E66. [doi:10.1086/589746](https://doi.org/10.1086/589746)
 
 Ong, J.J.L., Walter, J.A., Jensen, O.P. and Pinsky, M.L. (2021). Global hotspots of coherent
-marine fishery catches. Ecological Applications 31: e02321. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1002/eap.2321
+marine fishery catches. Ecological Applications 31: e02321. [doi:10.1002/eap.2321](https://doi.org/10.1002/eap.2321)
 
 Thibaut, L.M. and Connolly, S.R. (2013). Understanding diversity-stability relationships: towards
-a unified model of portfolio effects. Ecology Letters 16: 140-150. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1111/ele.12019
+a unified model of portfolio effects. Ecology Letters 16: 140-150. [doi:10.1111/ele.12019](https://doi.org/10.1111/ele.12019)
 
 ## 示例
 

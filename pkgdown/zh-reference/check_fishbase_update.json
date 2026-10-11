@@ -1,6 +1,6 @@
 {
   "topic": "check_fishbase_update",
-  "rd_md5": "9895010ae87d28b15f856999929f5f82",
+  "rd_md5": "78ae40840811e089685764549e61732a",
   "stale": false,
   "en": {
     "title": "Check for the Latest FishBase and SeaLifeBase Releases",

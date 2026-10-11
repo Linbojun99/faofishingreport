@@ -53,13 +53,15 @@ A data frame with one row per file or package.
 
 ## 详细说明
 
-随本包提供的CMSY++文件是GEOMAR的存储库OceanRep（记录52147）中未经修改的2021年3月版本，以CC BY 4.0许可证发布。`cmsy_run()`在运行前会对代码副本做少量有记录的修改（见`cmsy_system()`）。
+随本包提供的CMSY++文件是GEOMAR的存储库OceanRep（记录52147）中未经修改的2021年3月版本，以CC BY 4.0许可证发布；同样的代码也发布在GitHub：<https://github.com/SISTA16/cmsyPlusPlus>。`cmsy_run()`在运行前会对代码副本做少量有记录的修改（见`cmsy_system()`），不改变方法本身。本包与CMSY++的作者无关联，也未得到其认可。
 
 <details class="fao-en"><summary>English</summary>
 
 The CMSY++ files bundled with the package are the unmodified March 2021 release from GEOMAR's
-repository OceanRep (record 52147), published under the CC BY 4.0 licence. `cmsy_run()`
-applies a few documented changes to a copy of the code before running it (see `cmsy_system()`).
+repository OceanRep (record 52147), published under the CC BY 4.0 licence; the same code is on
+GitHub at <https://github.com/SISTA16/cmsyPlusPlus>. `cmsy_run()` applies a few documented
+changes to a copy of the code before running it (see `cmsy_system()`); they do not change the
+method. faofishingreport is not affiliated with or endorsed by the authors of CMSY++.
 
 </details>
 
@@ -69,7 +71,7 @@ Froese, R., Winker, H., Coro, G., Palomares, M.L.D., Tsikliras, A.C., Dimarchopo
 Touloumis, K., Demirel, N., Vianna, G.M.S., Scarcella, G., Schijns, R., Liang, C. and Pauly,
 D. (2023). New developments in the analysis of catch time series as the basis for fish stock
 assessments: the CMSY++ method. Acta Ichthyologica et Piscatoria 53: 173-189.
-\Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.3897/aiep.53.105910
+[doi:10.3897/aiep.53.105910](https://doi.org/10.3897/aiep.53.105910)
 
 Froese, R., Demirel, N., Coro, G. and Winker, H. (2021). User Guide for CMSY++. GEOMAR,
 Germany, 17 pp. <https://oceanrep.geomar.de/id/eprint/52147/>

@@ -26,8 +26,8 @@ fishbase_sources()
 }
 \references{
 Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase: exploring, manipulating and
-visualizing FishBase data from R. Journal of Fish Biology 81: 2030-2039.
-\doi{10.1111/j.1095-8649.2012.03464.x}
+visualizing FishBase data from R. Journal of Fish Biology 81(6): 2030-2039.
+\doi{10.1111/j.1095-8649.2012.03464.x}. Source code: \url{https://github.com/ropensci/rfishbase}
 
 Branch, T.A., Watson, R., Fulton, E.A. et al. (2010). The trophic fingerprint of marine
 fisheries. Nature 468: 431-435. \doi{10.1038/nature09528}

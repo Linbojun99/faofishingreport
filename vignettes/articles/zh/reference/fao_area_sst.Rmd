@@ -129,21 +129,21 @@ depends on the product.
 ## 参考文献
 
 Hirahara, S., Ishii, M. and Fukuda, Y. (2014). Centennial-scale sea surface temperature
-analysis and its uncertainty. Journal of Climate 27: 57-75. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1175/JCLI-D-12-00837.1
+analysis and its uncertainty. Journal of Climate 27: 57-75. [doi:10.1175/JCLI-D-12-00837.1](https://doi.org/10.1175/JCLI-D-12-00837.1)
 
 Huang, B., Thorne, P.W., Banzon, V.F., Boyer, T., Chepurin, G., Lawrimore, J.H., Menne, M.J.,
 Smith, T.M., Vose, R.S. and Zhang, H.-M. (2017). Extended Reconstructed Sea Surface
 Temperature, Version 5 (ERSSTv5): Upgrades, Validations, and Intercomparisons. Journal of
-Climate 30: 8179-8205. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1175/JCLI-D-16-0836.1
+Climate 30: 8179-8205. [doi:10.1175/JCLI-D-16-0836.1](https://doi.org/10.1175/JCLI-D-16-0836.1)
 
 Huang, B., Liu, C., Banzon, V., Freeman, E., Graham, G., Hankins, B., Smith, T. and Zhang,
 H.-M. (2021). Improvements of the Daily Optimum Interpolation Sea Surface Temperature (DOISST)
-Version 2.1. Journal of Climate 34: 2923-2939. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1175/JCLI-D-20-0166.1
+Version 2.1. Journal of Climate 34: 2923-2939. [doi:10.1175/JCLI-D-20-0166.1](https://doi.org/10.1175/JCLI-D-20-0166.1)
 
 Rayner, N.A., Parker, D.E., Horton, E.B., Folland, C.K., Alexander, L.V., Rowell, D.P., Kent,
 E.C. and Kaplan, A. (2003). Global analyses of sea surface temperature, sea ice, and night
 marine air temperature since the late nineteenth century. Journal of Geophysical Research 108
-(D14): 4407. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1029/2002JD002670
+(D14): 4407. [doi:10.1029/2002JD002670](https://doi.org/10.1029/2002JD002670)
 
 HadISST1 dataset description, with the warning of 10 March 2016 and a link to the analysis by
 D. Chelton and C. Risien (<https://ir.library.oregonstate.edu/xmlui/handle/1957/58385>):

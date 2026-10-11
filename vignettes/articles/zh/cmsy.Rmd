@@ -25,6 +25,10 @@ CMSY++（Froese et al. 2023）是CMSY（Froese et al. 2017）的后续版本，�
 **FishStat只有渔获量，没有CPUE。**FAO捕捞产量数据不含CPUE、调查生物量等丰度指数，所以每个种群都只能走CMSY++的仅渔获量路线（CMSY，`btype = "None"`），不会运行贝叶斯Schaefer模型（BSM）。这时结果主要取决于B/k先验。独立检验发现，在默认先验下，仅渔获量方法对种群状态的判断精度有限（Free et al. 2020；Ovando et al. 2021；Kell et al. 2022）。因此结果只是**指示性的**，不能替代正式的种群评估。按照FAO（2026）的做法，状态只分两类：**最大可持续捕捞**（最后一年B/Bmsy ≥ 0.8）和**过度捕捞**（B/Bmsy < 0.8），不使用仅渔获量结果判定“低度捕捞”。
 :::
 
+::: {.alert .alert-info}
+**CMSY++免责说明与来源。**CMSY++由Rainer Froese等人开发（Froese et al. 2021, 2023）。本包与CMSY++的作者无关联，也未得到其认可。本包内置的是作者发布的2021年3月版原始文件（GEOMAR OceanRep，记录[52147](https://oceanrep.geomar.de/id/eprint/52147/)，CC BY 4.0），同样的代码也发布在GitHub：<https://github.com/SISTA16/cmsyPlusPlus>。`cmsy_run()`运行的是它的一份副本，所做的修改都列在每个运行文件夹的`code_changes.csv`中（操作系统设置、不自动安装R包），不改变方法本身。方法上的问题请咨询CMSY++的作者；本包运行CMSY++时出现的问题请提交到[faofishingreport的Issues](https://github.com/Linbojun99/faofishingreport/issues)。评估结果需由使用者自行核对和解释。
+:::
+
 ## ⚙️ 通用参数 {#common-arguments}
 
 下面这些参数在所有带有它们的CMSY函数中含义相同；后面各函数的参数表只列出其他参数。
@@ -534,8 +538,9 @@ release_info <- fao_data_info()
 ```
 
 Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase: exploring, manipulating and
-visualizing FishBase data from R. *Journal of Fish Biology* 81: 2030–2039.
-[doi:10.1111/j.1095-8649.2012.03464.x](https://doi.org/10.1111/j.1095-8649.2012.03464.x)
+visualizing FishBase data from R. *Journal of Fish Biology* 81(6): 2030–2039.
+[doi:10.1111/j.1095-8649.2012.03464.x](https://doi.org/10.1111/j.1095-8649.2012.03464.x).
+Source code: <https://github.com/ropensci/rfishbase>
 
 FAO (`r sub("[.].*", "", release_info$release)`). *Global Capture Production
 `r release_info$years[1]`–`r release_info$years[2]`*, release `r release_info$release`. In:

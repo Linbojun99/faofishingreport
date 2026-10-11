@@ -359,55 +359,55 @@ not the stock in the area.
 
 Alajmi, A., Ben-Hasan, A., Alrushaid, T., Vahabnezhad, A. and Pauly, D. (2024). Mean
 temperature of the catch index can be masked by changes in catch composition unrelated to
-ocean warming. Fisheries Management and Ecology 31: e12659. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1111/fme.12659
+ocean warming. Fisheries Management and Ecology 31: e12659. [doi:10.1111/fme.12659](https://doi.org/10.1111/fme.12659)
 
 Cheung, W.W.L., Watson, R. and Pauly, D. (2013). Signature of ocean warming in global
-fisheries catch. Nature 497: 365-368. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1038/nature12156
+fisheries catch. Nature 497: 365-368. [doi:10.1038/nature12156](https://doi.org/10.1038/nature12156)
 
 Dimarchopoulou, D., Makino, M., Prayoga, M.R., Zeller, D., Vianna, G.M.S. and Humphries, A.T.
 (2022). Responses in fisheries catch data to a warming ocean along a latitudinal gradient in
 the western Pacific Ocean. Environmental Biology of Fishes 105: 1347-1362.
-\Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1007/s10641-021-01162-z
+[doi:10.1007/s10641-021-01162-z](https://doi.org/10.1007/s10641-021-01162-z)
 
-FAO (2024). The State of World Fisheries and Aquaculture 2024. Rome: FAO. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.4060/cd0683en
+FAO (2024). The State of World Fisheries and Aquaculture 2024. Rome: FAO. [doi:10.4060/cd0683en](https://doi.org/10.4060/cd0683en)
 
 Froese, R. (2020). Personal communication: R code (PrefTempBatch_5.R) to estimate preferred
 temperature from AquaMaps (version 10/2019). FishBase reference 123201.
 <https://www.fishbase.se/references/FBRefSummary.php?ID=123201>
 
 Garibaldi, L. (2012). The FAO global capture production database: a six-decade effort to catch
-the trend. Marine Policy 36: 760-768. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1016/j.marpol.2011.10.024
+the trend. Marine Policy 36: 760-768. [doi:10.1016/j.marpol.2011.10.024](https://doi.org/10.1016/j.marpol.2011.10.024)
 
 Grenié, M., Berti, E., Carvajal-Quintero, J., Dädlow, G.M.L., Sagouis, A. and Winter, M.
 (2023). Harmonizing taxon names in biodiversity data: a review of tools, databases and best
-practices. Methods in Ecology and Evolution 14: 12-25. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1111/2041-210X.13802
+practices. Methods in Ecology and Evolution 14: 12-25. [doi:10.1111/2041-210X.13802](https://doi.org/10.1111/2041-210X.13802)
 
 Kamberi, E., Hala, E. and Möllmann, C. (2025). Impact of large-scale oceanic variability on
 Adriatic fisheries evidenced through the 'mean temperature of the catch' approach. Frontiers
-in Marine Science 12: 1719738. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.3389/fmars.2025.1719738
+in Marine Science 12: 1719738. [doi:10.3389/fmars.2025.1719738](https://doi.org/10.3389/fmars.2025.1719738)
 
 Lavin, C.P., Pauly, D., Dimarchopoulou, D., Liang, C. and Costello, M.J. (2023). Fishery catch
 is affected by geographic expansion, fishing down food webs and climate change in Aotearoa, New
-Zealand. PeerJ 11: e16070. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.7717/peerj.16070
+Zealand. PeerJ 11: e16070. [doi:10.7717/peerj.16070](https://doi.org/10.7717/peerj.16070)
 
 Liang, C., Xian, W. and Pauly, D. (2018). Impacts of ocean warming on China's fisheries
 catches: an application of "mean temperature of the catch" concept. Frontiers in Marine
-Science 5: 26. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.3389/fmars.2018.00026
+Science 5: 26. [doi:10.3389/fmars.2018.00026](https://doi.org/10.3389/fmars.2018.00026)
 
 Pyper, B.J. and Peterman, R.M. (1998). Comparison of methods to account for autocorrelation in
 correlation analyses of fish data. Canadian Journal of Fisheries and Aquatic Sciences 55:
-2127-2140. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1139/f98-104
+2127-2140. [doi:10.1139/f98-104](https://doi.org/10.1139/f98-104)
 
 Tsikliras, A.C. and Stergiou, K.I. (2014). Mean temperature of the catch increases quickly in
-the Mediterranean Sea. Marine Ecology Progress Series 515: 281-284. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.3354/meps11005
+the Mediterranean Sea. Marine Ecology Progress Series 515: 281-284. [doi:10.3354/meps11005](https://doi.org/10.3354/meps11005)
 
 Tsikliras, A.C., Peristeraki, P., Tserpes, G. and Stergiou, K.I. (2015). Mean temperature of
 the catch (MTC) in the Greek Seas based on landings and survey data. Frontiers in Marine
-Science 2: 23. \Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.3389/fmars.2015.00023
+Science 2: 23. [doi:10.3389/fmars.2015.00023](https://doi.org/10.3389/fmars.2015.00023)
 
 Yue, S., Pilon, P., Phinney, B. and Cavadias, G. (2002). The influence of autocorrelation on
 the ability to detect trend in hydrological series. Hydrological Processes 16: 1807-1829.
-\Sexpr[results=rd]{tools:::Rd_expr_doi("#1")}10.1002/hyp.1095
+[doi:10.1002/hyp.1095](https://doi.org/10.1002/hyp.1095)
 
 Froese, R. and Pauly, D. (Eds.) FishBase. <https://www.fishbase.se>; Palomares, M.L.D. and
 Pauly, D. (Eds.) SeaLifeBase. <https://www.sealifebase.se>; WoRMS Editorial Board. World

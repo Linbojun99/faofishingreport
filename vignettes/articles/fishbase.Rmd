@@ -23,7 +23,8 @@ places: the preferred temperature for the [mean temperature of the catch](sst-mt
 resilience and prior r for the [CMSY++ priors](cmsy.html).
 
 The data come from fixed copies (releases) of the FishBase and SeaLifeBase tables, which the
-rfishbase project publishes as parquet files (Boettiger et al. 2012). The package matches them to
+rfishbase project of rOpenSci publishes as parquet files (Boettiger et al. 2012; source code at
+<https://github.com/ropensci/rfishbase>, files at <https://data.source.coop/cboettig/fishbase/>). The package matches them to
 the FAO species items only by published rules, and every match carries the links needed to check
 it.
 
@@ -498,8 +499,9 @@ fao_report(34, mtc = TRUE, mtc_version = "latest")    # newest FishBase release
 ## 📖 References
 
 Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase: exploring, manipulating and
-visualizing FishBase data from R. *Journal of Fish Biology* 81: 2030–2039.
-[doi:10.1111/j.1095-8649.2012.03464.x](https://doi.org/10.1111/j.1095-8649.2012.03464.x)
+visualizing FishBase data from R. *Journal of Fish Biology* 81(6): 2030–2039.
+[doi:10.1111/j.1095-8649.2012.03464.x](https://doi.org/10.1111/j.1095-8649.2012.03464.x).
+Source code: <https://github.com/ropensci/rfishbase>
 
 Branch, T.A., Watson, R., Fulton, E.A., Jennings, S., McGilliard, C.R., Pablico, G.T., Ricard, D.
 and Tracey, S.R. (2010). The trophic fingerprint of marine fisheries. *Nature* 468: 431–435.

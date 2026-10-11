@@ -30,6 +30,10 @@ beforehand; building the article does not run CMSY++.
 **FishStat has catches only, no CPUE.** The FAO capture statistics have no abundance index (CPUE or survey biomass), so every stock is assessed with the catch-only part of CMSY++ (CMSY, `btype = "None"`) and the Bayesian Schaefer model (BSM) does not run. The results then depend mostly on the B/k priors, and independent tests found that catch-only methods classify stock status poorly with default priors (Free et al. 2020; Ovando et al. 2021; Kell et al. 2022). The results are **indicative** and do not replace stock assessments. As in FAO (2026), the status has two classes only: **maximally sustainably fished** (B/Bmsy at least 0.8 in the last year) or **overfished** (below 0.8); catch-only results do not make a stock "underfished".
 :::
 
+::: {.alert .alert-info}
+**Disclaimer and source of CMSY++.** CMSY++ was developed by Rainer Froese and colleagues (Froese et al. 2021, 2023). faofishingreport is not affiliated with or endorsed by the authors of CMSY++. The package bundles the authors' unmodified March 2021 release (GEOMAR OceanRep, record [52147](https://oceanrep.geomar.de/id/eprint/52147/), CC BY 4.0), whose code is also published on GitHub at <https://github.com/SISTA16/cmsyPlusPlus>. `cmsy_run()` runs a copy of it with only the changes listed in `code_changes.csv` of each run folder (operating-system settings, no automatic package installation), which leave the method unchanged. Questions on the method go to the authors of CMSY++; problems with how this package runs it go to the [faofishingreport issues](https://github.com/Linbojun99/faofishingreport/issues). Users are responsible for checking and interpreting the results.
+:::
+
 ## ⚙️ Common arguments {#common-arguments}
 
 These arguments have the same meaning in all CMSY functions that have them; the tables of each
@@ -562,8 +566,9 @@ release_info <- fao_data_info()
 ```
 
 Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase: exploring, manipulating and
-visualizing FishBase data from R. *Journal of Fish Biology* 81: 2030–2039.
-[doi:10.1111/j.1095-8649.2012.03464.x](https://doi.org/10.1111/j.1095-8649.2012.03464.x)
+visualizing FishBase data from R. *Journal of Fish Biology* 81(6): 2030–2039.
+[doi:10.1111/j.1095-8649.2012.03464.x](https://doi.org/10.1111/j.1095-8649.2012.03464.x).
+Source code: <https://github.com/ropensci/rfishbase>
 
 FAO (`r sub("[.].*", "", release_info$release)`). *Global Capture Production
 `r release_info$years[1]`–`r release_info$years[2]`*, release `r release_info$release`. In:

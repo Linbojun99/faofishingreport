@@ -10,8 +10,8 @@
 #'   `description`, `source` (citation or licence) and `link`.
 #' @references
 #' Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase: exploring, manipulating and
-#' visualizing FishBase data from R. Journal of Fish Biology 81: 2030-2039.
-#' \doi{10.1111/j.1095-8649.2012.03464.x}
+#' visualizing FishBase data from R. Journal of Fish Biology 81(6): 2030-2039.
+#' \doi{10.1111/j.1095-8649.2012.03464.x}. Source code: \url{https://github.com/ropensci/rfishbase}
 #'
 #' Branch, T.A., Watson, R., Fulton, E.A. et al. (2010). The trophic fingerprint of marine
 #' fisheries. Nature 468: 431-435. \doi{10.1038/nature09528}
@@ -63,8 +63,11 @@ fishbase_sources <- function(print = TRUE) {
       "Palomares, M.L.D. and Pauly, D. (Eds.) SeaLifeBase. www.sealifebase.se. Licence CC BY-NC 4.0 (FishBase.org team)",
       "https://www.sealifebase.se"),
     c("data", "Snapshots", "Versioned copies of the FishBase and SeaLifeBase tables as parquet files, the files downloaded by the package",
-      "Published by the rfishbase project (Boettiger et al. 2012, J. Fish Biol. 81: 2030-2039, doi:10.1111/j.1095-8649.2012.03464.x)",
+      "Published by the rfishbase project of rOpenSci (Boettiger et al. 2012, J. Fish Biol. 81(6): 2030-2039, doi:10.1111/j.1095-8649.2012.03464.x)",
       "https://data.source.coop/cboettig/fishbase/"),
+    c("data", "rfishbase", "R package that publishes the snapshots and reads them; faofishingreport reads the same files directly, without depending on it",
+      "Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). J. Fish Biol. 81(6): 2030-2039. Source code and documentation: https://github.com/ropensci/rfishbase, https://docs.ropensci.org/rfishbase/",
+      "https://github.com/ropensci/rfishbase"),
     c("data", "WoRMS", "Valid names of species and taxa, looked up online for names not found in FishBase or SeaLifeBase",
       "WoRMS Editorial Board. World Register of Marine Species. VLIZ. doi:10.14284/170. Licence CC BY",
       "https://www.marinespecies.org"),
@@ -113,7 +116,8 @@ fb_download_notice <- function(server, version, tables, data_dir) {
   message("  Databases: ", paste(paste(fb_server_name(server), version), collapse = ", "),
           " (FishBase: fishes; SeaLifeBase: other aquatic animals and plants)")
   message("  Tables:    ", if (is.null(tables)) "all" else paste(tables, collapse = ", "))
-  message("  From:      https://data.source.coop/cboettig/fishbase/ (snapshots published by the rfishbase project)")
+  message("  From:      https://data.source.coop/cboettig/fishbase/ (snapshots published by the rfishbase project, ",
+          "https://github.com/ropensci/rfishbase)")
   message("  Licence:   CC BY-NC 4.0, FishBase.org team: cite FishBase (Froese & Pauly, Eds.) and SeaLifeBase ",
           "(Palomares & Pauly, Eds.) with the release; no commercial use")
   message("  Used by:   fishbase_match(), which matches FAO species items only by published rules ",
