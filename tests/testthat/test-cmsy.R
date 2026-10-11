@@ -54,6 +54,10 @@ test_that("the JAGS installer fits the system and R version", {
   expect_setequal(unique(table$system), c("Windows", "macOS", "Linux"))
   expect_equal(cmsy_jags_versions("windows", r_version = "4.4.1", silent = TRUE)$installer[1:2],
                c("JAGS-4.3.2.exe", "JAGS-4.3.1.exe"))
+  # Version text of JAGS builds, as rjags reports it
+  expect_equal(cmsy_jags_number("5.0.0 (vecLib-gcd-aarch64)"), "5.0.0")
+  expect_equal(cmsy_jags_number("5.0.0-beta"), "5.0.0")
+  expect_equal(cmsy_jags_number(" 4.3.2 "), "4.3.2")
 })
 
 test_that("the CMSY++ code is changed for each system as the user guide says", {

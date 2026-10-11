@@ -172,7 +172,6 @@ cmsy_plot <- function(result, stocks = NULL, charts = c(cmsy_stock_charts, cmsy_
       subtitle <- cmsy_subtitle(s, lang)
       p <- cmsy_finish(p, ann, paste0(title, "\n", cmsy_label(paste0("chart_", chart), lang)), subtitle, caption)
       size <- cmsy_chart_size(chart)
-      if (inherits(p, "patchwork") && !isTRUE(fao_setting("grid"))) p <- p & ggplot2::theme(panel.grid = ggplot2::element_blank())
       fao_save_plot(p, file.path("cmsy", cmsy_safe_name(s$Stock), chart), width = size[1], height = size[2], pptx = pptx)
       plots[[paste0(s$Stock, "_", chart)]] <- p
     }
@@ -656,9 +655,16 @@ cmsy_chart_trend <- function(series, lang, ann) {
 }
 
 
-# Several charts in one figure (patchwork); panel letters A, B, ... are added with "labels"
+# Several charts in one figure (patchwork); panel letters A, B, ... are added with "labels". The
+# themes are added to each panel before they are combined: `figure & theme()` fails with some
+# versions of patchwork and ggplot2 4 together (as on R 4.3 for Windows)
 cmsy_compose <- function(panels, ncol, ann) {
-  panels <- lapply(panels, function(p) p + ggplot2::theme(legend.position = "none"))
+  grid <- isTRUE(fao_setting("grid"))
+  panels <- lapply(panels, function(p) {
+    p <- p + ggplot2::theme(legend.position = "none")
+    if (!grid) p <- p + ggplot2::theme(panel.grid = ggplot2::element_blank())
+    p
+  })
   out <- patchwork::wrap_plots(panels, ncol = ncol)
   if ("labels" %in% ann) out <- out + patchwork::plot_annotation(tag_levels = "A")
   out

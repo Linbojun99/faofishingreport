@@ -283,8 +283,10 @@ cmsy_jags_installed <- function() {
   rjags <- as.character(utils::packageVersion("rjags"))
   script <- tempfile(fileext = ".R")
   on.exit(unlink(script), add = TRUE)
+  # The version text of JAGS, as rjags shows it when attached: rjags::jags.version() fails on
+  # builds that add details to it, such as "5.0.0 (vecLib-gcd-aarch64)" of JAGS 5 for macOS
   writeLines(c("v <- tryCatch({suppressMessages(loadNamespace('rjags'));",
-               "  paste0('JAGS:', as.character(rjags::jags.version()))},",
+               "  paste0('JAGS:', .Call('get_version', PACKAGE = 'rjags'))},",
                "  error = function(e) paste0('ERROR:', conditionMessage(e)))",
                "cat(v, '\\n')"), script)
   old_libs <- Sys.getenv("R_LIBS", unset = NA)
@@ -293,11 +295,18 @@ cmsy_jags_installed <- function() {
   out <- suppressWarnings(system2(cmsy_rscript(), shQuote(script), stdout = TRUE, stderr = TRUE))
   line <- grep("^(JAGS|ERROR):", out, value = TRUE)
   if (length(line) > 0 && startsWith(line[1], "JAGS:")) {
-    list(jags = trimws(sub("^JAGS:", "", line[1])), rjags = rjags, message = "")
+    list(jags = cmsy_jags_number(sub("^JAGS:", "", line[1])), rjags = rjags, message = "")
   } else {
     list(jags = NA_character_, rjags = rjags,
          message = trimws(paste(sub("^ERROR:", "", c(line, out)[1]), collapse = " ")))
   }
+}
+
+# Version number in the version text of JAGS: "5.0.0 (vecLib-gcd-aarch64)" and "5.0.0-beta" give "5.0.0"
+cmsy_jags_number <- function(text) {
+  text <- trimws(text)
+  number <- regmatches(text, regexpr("^[0-9]+(\\.[0-9]+)*", text))
+  if (length(number) == 1) number else text
 }
 
 # Package libraries of this session, for R child processes (R_LIBS)
