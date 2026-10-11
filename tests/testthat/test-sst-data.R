@@ -16,7 +16,7 @@ write_sst_nc <- function(file, lon, lat, dates, values, units = "degC", origin =
 test_that("the products are described, and ERSST v5 is the one built in", {
   products <- fao_sst_products()
   expect_equal(products$product, c("ersst5", "hadisst1", "cobe2", "oisst21"))
-  expect_false(any(is.na(products[, c("name", "grid", "data_sources", "licence", "citation", "doi")])))
+  expect_false(any(is.na(products[, c("name", "grid", "data_sources", "licence", "citation", "doi", "homepage")])))
   expect_equal(products$product[products$built_in], "ersst5")
   expect_equal(products$product[which.min(products$mb_per_year)], "ersst5")
 })

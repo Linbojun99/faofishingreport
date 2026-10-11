@@ -9,8 +9,8 @@ fao_sst_products()
 \value{
 A data frame with one row per product: `product` (the name used as `sst`), `name`,
   `provider`, `grid`, `first_year` (first complete year), `data_sources`, `sea_ice`, `licence`,
-  `citation`, `doi`, `download` (server and dataset), `mb_per_year` (approximate download size)
-  and `built_in`.
+  `citation`, `doi`, `homepage` (web page of the product), `download` (server and dataset),
+  `mb_per_year` (approximate download size) and `built_in`.
 }
 \description{
 This function lists the sea surface temperature (SST) products that the package knows: the
@@ -27,8 +27,9 @@ also be used by giving its path (see `fao_area_sst()`).
   \item{hadisst1}{Met Office Hadley Centre HadISST1 (Rayner et al. 2003): 1° x 1°, monthly,
     from 1870. In situ observations (Met Office Marine Data Bank, with GTS reports from 1982;
     ICOADS monthly medians for 1871-1995), reconstructed by reduced-space optimal
-    interpolation. The Met Office has warned (2016) that problems found in the dataset may limit
-    its use where high resolution or SST gradients matter.}
+    interpolation. The dataset description carries a warning (10 March 2016) that problems
+    found in an analysis by D. Chelton and C. Risien may limit its use where high resolution or
+    SST gradients matter (see References).}
   \item{cobe2}{Japan Meteorological Agency COBE-SST2 (Hirahara et al. 2014): 1° x 1°, monthly,
     from 1850. In situ SST and sea-ice observations; satellite observations are used to
     reconstruct variability in regions with few observations.}
@@ -37,7 +38,8 @@ also be used by giving its path (see `fao_area_sst()`).
     package). Satellite (AVHRR), ship, buoy and Argo observations. Only from 1982.}
 }
 Only the table of ERSST v5 comes with the package, to keep it small; its data are also the
-smallest to download (about 0.8 MB per year, against 3 to 11 MB for the others).
+smallest to download (about 0.8 MB per year, against 3 to 11 MB for the others). The web page
+of each product is given in the column `homepage`.
 }
 \examples{
 fao_sst_products()[, c("product", "name", "grid", "first_year", "built_in")]
@@ -59,4 +61,13 @@ Rayner, N.A., Parker, D.E., Horton, E.B., Folland, C.K., Alexander, L.V., Rowell
 E.C. and Kaplan, A. (2003). Global analyses of sea surface temperature, sea ice, and night
 marine air temperature since the late nineteenth century. Journal of Geophysical Research 108
 (D14): 4407. \doi{10.1029/2002JD002670}
+
+HadISST1 dataset description, with the warning of 10 March 2016 and a link to the analysis by
+D. Chelton and C. Risien (\url{https://ir.library.oregonstate.edu/xmlui/handle/1957/58385}):
+\url{https://coastwatch.pfeg.noaa.gov/erddap/info/erdHadISST/index.html}
+
+Web pages of the products: ERSST v5 \url{https://www.ncei.noaa.gov/products/extended-reconstructed-sst};
+HadISST1 \url{https://www.metoffice.gov.uk/hadobs/hadisst/}; COBE-SST2
+\url{https://psl.noaa.gov/data/gridded/data.cobe2.html}; OISST v2.1
+\url{https://www.ncei.noaa.gov/products/optimum-interpolation-sst}
 }

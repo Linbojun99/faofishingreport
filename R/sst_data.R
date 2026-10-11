@@ -111,8 +111,9 @@ fao_area_sst <- function(area = NULL, sst = fao_setting("sst"), variable = NULL,
 #'   \item{hadisst1}{Met Office Hadley Centre HadISST1 (Rayner et al. 2003): 1° x 1°, monthly,
 #'     from 1870. In situ observations (Met Office Marine Data Bank, with GTS reports from 1982;
 #'     ICOADS monthly medians for 1871-1995), reconstructed by reduced-space optimal
-#'     interpolation. The Met Office has warned (2016) that problems found in the dataset may limit
-#'     its use where high resolution or SST gradients matter.}
+#'     interpolation. The dataset description carries a warning (10 March 2016) that problems
+#'     found in an analysis by D. Chelton and C. Risien may limit its use where high resolution or
+#'     SST gradients matter (see References).}
 #'   \item{cobe2}{Japan Meteorological Agency COBE-SST2 (Hirahara et al. 2014): 1° x 1°, monthly,
 #'     from 1850. In situ SST and sea-ice observations; satellite observations are used to
 #'     reconstruct variability in regions with few observations.}
@@ -121,12 +122,13 @@ fao_area_sst <- function(area = NULL, sst = fao_setting("sst"), variable = NULL,
 #'     package). Satellite (AVHRR), ship, buoy and Argo observations. Only from 1982.}
 #' }
 #' Only the table of ERSST v5 comes with the package, to keep it small; its data are also the
-#' smallest to download (about 0.8 MB per year, against 3 to 11 MB for the others).
+#' smallest to download (about 0.8 MB per year, against 3 to 11 MB for the others). The web page
+#' of each product is given in the column `homepage`.
 #'
 #' @return A data frame with one row per product: `product` (the name used as `sst`), `name`,
 #'   `provider`, `grid`, `first_year` (first complete year), `data_sources`, `sea_ice`, `licence`,
-#'   `citation`, `doi`, `download` (server and dataset), `mb_per_year` (approximate download size)
-#'   and `built_in`.
+#'   `citation`, `doi`, `homepage` (web page of the product), `download` (server and dataset),
+#'   `mb_per_year` (approximate download size) and `built_in`.
 #' @references
 #' Hirahara, S., Ishii, M. and Fukuda, Y. (2014). Centennial-scale sea surface temperature
 #' analysis and its uncertainty. Journal of Climate 27: 57-75. \doi{10.1175/JCLI-D-12-00837.1}
@@ -144,6 +146,15 @@ fao_area_sst <- function(area = NULL, sst = fao_setting("sst"), variable = NULL,
 #' E.C. and Kaplan, A. (2003). Global analyses of sea surface temperature, sea ice, and night
 #' marine air temperature since the late nineteenth century. Journal of Geophysical Research 108
 #' (D14): 4407. \doi{10.1029/2002JD002670}
+#'
+#' HadISST1 dataset description, with the warning of 10 March 2016 and a link to the analysis by
+#' D. Chelton and C. Risien (\url{https://ir.library.oregonstate.edu/xmlui/handle/1957/58385}):
+#' \url{https://coastwatch.pfeg.noaa.gov/erddap/info/erdHadISST/index.html}
+#'
+#' Web pages of the products: ERSST v5 \url{https://www.ncei.noaa.gov/products/extended-reconstructed-sst};
+#' HadISST1 \url{https://www.metoffice.gov.uk/hadobs/hadisst/}; COBE-SST2
+#' \url{https://psl.noaa.gov/data/gridded/data.cobe2.html}; OISST v2.1
+#' \url{https://www.ncei.noaa.gov/products/optimum-interpolation-sst}
 #' @export
 #' @examples
 #' fao_sst_products()[, c("product", "name", "grid", "first_year", "built_in")]
@@ -160,6 +171,7 @@ fao_sst_products <- function() {
     licence = vapply(p, `[[`, character(1), "licence"),
     citation = vapply(p, `[[`, character(1), "citation"),
     doi = vapply(p, `[[`, character(1), "doi"),
+    homepage = vapply(p, `[[`, character(1), "homepage"),
     download = vapply(p, `[[`, character(1), "download"),
     mb_per_year = vapply(p, `[[`, numeric(1), "mb_per_year"),
     built_in = names(p) == "ersst5",
@@ -259,6 +271,7 @@ fao_sst_registry <- list(
     sea_ice = "Derived from sea-ice concentration (about -1.8 C under ice)",
     licence = "NOAA data: may be used and redistributed for free",
     citation = "Huang et al. (2017) Journal of Climate 30: 8179-8205", doi = "10.1175/JCLI-D-16-0836.1",
+    homepage = "https://www.ncei.noaa.gov/products/extended-reconstructed-sst",
     download = "NOAA CoastWatch ERDDAP, dataset nceiErsstv5", mb_per_year = 0.78,
     url = function(year) {
       paste0("https://coastwatch.pfeg.noaa.gov/erddap/griddap/nceiErsstv5.nc?sst%5B(", year, "-01-01):1:(",
@@ -273,6 +286,7 @@ fao_sst_registry <- list(
     sea_ice = "Estimated from sea-ice concentration; ice-covered cells (-1000) set to -1.8 C by this package",
     licence = "Crown copyright, Open Government Licence",
     citation = "Rayner et al. (2003) Journal of Geophysical Research 108(D14): 4407", doi = "10.1029/2002JD002670",
+    homepage = "https://www.metoffice.gov.uk/hadobs/hadisst/",
     download = "NOAA CoastWatch ERDDAP, dataset erdHadISST", mb_per_year = 3.1,
     url = function(year) {
       paste0("https://coastwatch.pfeg.noaa.gov/erddap/griddap/erdHadISST.nc?sst%5B(", year, "-01-15):1:(",
@@ -287,6 +301,7 @@ fao_sst_registry <- list(
     sea_ice = "Derived from sea-ice concentration",
     licence = "Free; NOAA PSL asks users to acknowledge data provided by the NOAA PSL, Boulder, Colorado, USA",
     citation = "Hirahara et al. (2014) Journal of Climate 27: 57-75", doi = "10.1175/JCLI-D-12-00837.1",
+    homepage = "https://psl.noaa.gov/data/gridded/data.cobe2.html",
     download = "NOAA PSL THREDDS, Datasets/COBE2/sst.mon.mean.nc", mb_per_year = 3.4,
     url = function(year) {
       paste0("https://psl.noaa.gov/thredds/ncss/grid/Datasets/COBE2/sst.mon.mean.nc?var=sst&time_start=",
@@ -301,6 +316,7 @@ fao_sst_registry <- list(
     sea_ice = "Proxy SST from sea-ice concentration in the marginal ice zone",
     licence = "NOAA data, free; NOAA PSL asks users to acknowledge data provided by the NOAA PSL, Boulder, Colorado, USA",
     citation = "Huang et al. (2021) Journal of Climate 34: 2923-2939", doi = "10.1175/JCLI-D-20-0166.1",
+    homepage = "https://www.ncei.noaa.gov/products/optimum-interpolation-sst",
     download = "NOAA PSL THREDDS, Datasets/noaa.oisst.v2.highres/sst.mon.mean.nc", mb_per_year = 11,
     url = function(year) {
       paste0("https://psl.noaa.gov/thredds/ncss/grid/Datasets/noaa.oisst.v2.highres/sst.mon.mean.nc?var=sst",
