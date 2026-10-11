@@ -1,3 +1,16 @@
+# faofishingreport 0.5.0
+
+## Documentation
+
+* A new tutorial, in English and Chinese, takes a complete assessment of the Northwest Pacific (FAO area 61) from an empty R session to a finished report: getting the data and knowing its release, every analysis of the package step by step, how to read each chart and what it shows for the area (with the numbers computed when the page is built), the files the package saves and how to read them back, and the report as Word, LaTeX and PDF. Its CMSY++ charts are made by `data-raw/tutorial61_figures.R`.
+
+## Changes
+
+* `fishing_area_data()`, `fishing_area_species()`, `fishing_area_country()`, `species_country()`, `country_species()` and `country_analysis()` no longer print their intermediate tables in the console (they are returned and saved in `tables/`); `options(faofishingreport.verbose = TRUE)` prints them again.
+* The colour bars of the maps are wider, so their labels no longer overlap.
+* The trend segments of the older charts use `linewidth`, so ggplot2 no longer warns that `size` is deprecated for lines.
+* The Chinese data-source box at the top of the website articles has no spaces between Chinese and Latin text.
+
 # faofishingreport 0.4.0
 
 ## New features
