@@ -80,7 +80,7 @@ JAGS is a separate program that rjags uses for the MCMC. On Windows and macOS ea
 | Windows | 4.5, 4.6 | `JAGS-4.3.2.exe` | 4-17 (CRAN) |
 | Windows | 4.2 to 4.4 | `JAGS-4.3.1.exe` | 4-17 (CRAN) |
 | macOS | 4.3 and later | `JAGS-4.3.2.pkg` | 4-17 (CRAN) |
-| macOS | 4.2 | `JAGS-4.3.1.pkg` | 4-17 (CRAN) |
+| macOS | 4.2 | `JAGS-4.3.1.pkg` | 4-15 or later (the CRAN binary for R 4.2 stays at 4-15) |
 | Linux | any | the system package (e.g. `sudo apt-get install jags`) or `JAGS-4.3.2.tar.gz` | 4-17 (CRAN, built from source) |
 | Windows | 4.5, 4.6 | `JAGS-5.0.0.exe` (optional, newest) | 5-3 (SourceForge, not yet on CRAN) |
 | macOS | 4.3 and later | `JAGS-5.0.0-universal.pkg` (optional) | 5-3 (SourceForge: binary for R 4.6, else from source) |
@@ -292,7 +292,23 @@ The settings used are saved in `settings_used.csv` of the run folder and recorde
 
 ## 🖥️ Windows, macOS and Linux
 
-The same code runs on all three systems: `cmsy_system()` detects the system and makes the changes it needs (on macOS, no `windows()` and no `antialias = "cleartype"`; see Step 1), and the JAGS installer is chosen for the system and R version. Each change to the CMSY code is checked by the GitHub Actions workflow "CMSY-cross-platform" on Windows, macOS and Linux: it downloads and installs JAGS with `cmsy_install_jags()`, runs CMSY++ for real, runs all CMSY tests and keeps the output of each system.
+The same code runs on all three systems: `cmsy_system()` detects the system and makes the changes it needs (on macOS, no `windows()` and no `antialias = "cleartype"`; see Step 1), and the JAGS installer is chosen for the system and R version. Each change to the CMSY code is checked by the GitHub Actions workflow "CMSY-cross-platform" on Windows, macOS and Linux: it downloads and installs the matching JAGS with `cmsy_download_jags()`, runs CMSY++ for real, runs all CMSY tests and keeps the output of each system.
+
+Results of the check in October 2026 (all 170 tests pass for each combination; same seed; `cmsy_area()` on bigeye grunt GRB_34 and sardine PIL_34 of area 34):
+
+| System | R | JAGS | rjags | GRB_34 B/Bmsy | GRB_34 F/Fmsy | PIL_34 B/Bmsy | PIL_34 F/Fmsy |
+|---|---|---|---|---|---|---|---|
+| Windows | 4.6.1 | 4.3.2 | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
+| Windows | 4.4.3 | 4.3.1 | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
+| Windows | 4.3.3 | 4.3.1 | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
+| Windows | 4.2.3 | 4.3.1 | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
+| macOS (Apple silicon) | 4.6.1 | 4.3.2 | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
+| Ubuntu | 4.6.1 | 4.3.2 (apt) | 4-17 | 1.422 | 0.639 | 0.706 | 1.391 |
+| macOS (Apple silicon) | 4.2.3 | 4.3.1 | 4-15 | 1.366 | 0.663 | 0.745 | 1.306 |
+| Windows | 4.6.1 | 5.0.0 | 5-3 | 1.392 | 0.672 | 0.740 | 1.317 |
+| macOS (Apple silicon) | 4.6.1 | 5.0.0 | 5-3 | 1.392 | 0.672 | 0.740 | 1.317 |
+
+With the same JAGS 4.3.x and rjags 4-17, the results are identical on all three systems. JAGS 5 or an older rjags draws different MCMC samples, so the numbers differ slightly (B/Bmsy of GRB_34 from 1.37 to 1.42, all inside its 95% interval 1.08–1.65), but the status of both stocks is the same: GRB_34 maximally sustainably fished, PIL_34 overfished. To repeat a result exactly, use the same JAGS and rjags versions; they are recorded in `result$sources` and `tables/sources.csv`.
 
 ## ⏱️ Progress bars and silent
 

@@ -38,7 +38,7 @@ In short (JAGS 4, the default):
   macOS \tab 4.2 \tab JAGS-4.3.1.pkg \cr
   Linux \tab any \tab package manager (e.g. `apt-get install jags`) or JAGS-4.3.2.tar.gz \cr
 }
-All of them work with rjags 4-17 from CRAN. JAGS 5.0.0 (`version = "latest"` in
+All of them work with rjags 4 from CRAN (4-17; the CRAN binary for R 4.2 on macOS is 4-15). JAGS 5.0.0 (`version = "latest"` in
 [cmsy_download_jags()] and `jags = "latest"` in [cmsy_setup()]) needs rjags 5-3, which is not
 yet on CRAN and is downloaded from SourceForge.
 

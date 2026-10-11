@@ -20,7 +20,8 @@ cmsy_jags_compat <- data.frame(
   r_to = c("4.6.99", "4.4.99", NA, "4.2.99", NA, "4.6.99", NA, NA),
   installer = c("JAGS-4.3.2.exe", "JAGS-4.3.1.exe", "JAGS-4.3.2.pkg", "JAGS-4.3.1.pkg", "JAGS-4.3.2.tar.gz",
                 "JAGS-5.0.0.exe", "JAGS-5.0.0-universal.pkg", "JAGS-5.0.0.tar.gz"),
-  rjags = c("4-17 (CRAN)", "4-17 (CRAN)", "4-17 (CRAN)", "4-17 (CRAN)", "4-17 (CRAN, built from source)",
+  rjags = c("4-17 (CRAN)", "4-17 (CRAN)", "4-17 (CRAN)", "4-15 or later (CRAN; its binary for R 4.2 is 4-15)",
+            "4-17 (CRAN, built from source)",
             "5-3 (SourceForge, Windows binary)", "5-3 (SourceForge: binary for R 4.6, else source)",
             "5-3 (SourceForge, source)"),
   default = c(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE),
@@ -28,10 +29,10 @@ cmsy_jags_compat <- data.frame(
     "JAGS README: the Windows binary of 4.3.2 \"was built with Rtools45 and is suitable for interfacing with R 4.5.x\"; Rtools45 builds serve R 4.5.0 to 4.6.x (JAGS 5 README); run on R 4.6 by the package's CI",
     "JAGS README: earlier releases \"are built with earlier versions of the Rtools tool chain\"; 4.3.1 (April 2022) is the build for R before 4.5; run on R 4.2, 4.3 and 4.4 by the package's CI",
     "JAGS README: \"JAGS-4.3.2.pkg for compatibility with R version 4.3.0 and later\"; run on R 4.6 (Apple silicon) by the package's CI",
-    "JAGS README: \"JAGS-4.3.1.pkg for compatibility with R versions 4.0.x to 4.2.x\"; run on R 4.2 by the package's CI",
+    "JAGS README: \"JAGS-4.3.1.pkg for compatibility with R versions 4.0.x to 4.2.x\"; run on R 4.2 (Apple silicon, with rjags 4-15) by the package's CI",
     "Install JAGS with the package manager (e.g. Debian/Ubuntu: sudo apt-get install jags) or from source; rjags is then built for the installed JAGS and any R version; run on Ubuntu by the package's CI",
-    "JAGS 5 README: \"For compatibility with R 4.5.0 to R 4.6.x, use binaries in the Rtools45 subfolder\"; needs rjags 5-x, not yet on CRAN",
-    "JAGS 5 README: universal installer built for R for macOS 4.3.0 and later (it also contains JAGS 4.3.2); needs rjags 5-x: SourceForge has binaries for R 4.6, other R versions build it from source",
+    "JAGS 5 README: \"For compatibility with R 4.5.0 to R 4.6.x, use binaries in the Rtools45 subfolder\"; needs rjags 5-x, not yet on CRAN; run on R 4.6 by the package's CI",
+    "JAGS 5 README: universal installer built for R for macOS 4.3.0 and later (it also contains JAGS 4.3.2); needs rjags 5-x: SourceForge has binaries for R 4.6, other R versions build it from source; run on R 4.6 (Apple silicon) by the package's CI",
     "JAGS 5 source code; needs rjags 5-x from source"),
   readme = unname(cmsy_sf_readme[c("windows4", "windows4", "macos4", "macos4", "source4", "windows5", "macos5", "source5")]),
   stringsAsFactors = FALSE
@@ -55,7 +56,7 @@ cmsy_jags_compat <- data.frame(
 #'   macOS \tab 4.2 \tab JAGS-4.3.1.pkg \cr
 #'   Linux \tab any \tab package manager (e.g. `apt-get install jags`) or JAGS-4.3.2.tar.gz \cr
 #' }
-#' All of them work with rjags 4-17 from CRAN. JAGS 5.0.0 (`version = "latest"` in
+#' All of them work with rjags 4 from CRAN (4-17; the CRAN binary for R 4.2 on macOS is 4-15). JAGS 5.0.0 (`version = "latest"` in
 #' [cmsy_download_jags()] and `jags = "latest"` in [cmsy_setup()]) needs rjags 5-3, which is not
 #' yet on CRAN and is downloaded from SourceForge.
 #'
