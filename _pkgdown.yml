@@ -95,6 +95,8 @@ reference:
   - catch_synchrony
   - distant_water_profile
   - compare_releases
+  - pelagic_demersal
+  - fao_pd_groups
 - title: "🌡️ FishBase and temperature"
   desc: Species traits from FishBase and SeaLifeBase, sea surface temperature, and the mean temperature of the catch.
   contents:

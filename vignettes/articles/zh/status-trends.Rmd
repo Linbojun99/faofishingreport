@@ -1,7 +1,7 @@
 ---
 title: "📈 类群结构、资源状态与趋势"
 description: >
-  species_group_composition()、stock_status()、peak_trend()、area_overview() 和 regime_shift()：捕捞了什么，各种群如何发展，以及何时发生了变化。
+  species_group_composition()、stock_status()、peak_trend()、area_overview()、regime_shift() 和 pelagic_demersal()：捕捞了什么，各种群如何发展，以及何时发生了变化。
 ---
 
 ```{r setup, include = FALSE}
@@ -139,7 +139,46 @@ head(shifts$yearly[order(-shifts$yearly$n_species), ], 5)
 | `top_n` | 分析的主要物种数 | `20` |
 | `h_value` | 最短时段长度（比例或年数） | `0.15` |
 
+## 🐟 中上层鱼/底层鱼渔获比
+
+`pelagic_demersal()` 计算每个 FAO 海洋渔区中上层鱼渔获量与底层鱼渔获量之比（P/D），按年和按十年给出。Caddy (1993) 提出，营养盐增加有利于以浮游生物为食、寿命短的中上层鱼，而不利于底层鱼；de Leiva Moreno et al. (2000) 用 P/D 作为欧洲周边海域营养水平的替代指标。
+
+```{r, figures = "pelagic_demersal_ratio"}
+pd <- pelagic_demersal(FAO34$area_data)
+```
+
+```{r}
+show_table(pd$decades[, c("period", "pd_mean", "pd_min", "pd_max", "counted_pct")])
+show_table(pd$groups[, c("group", "counted_as", "catch_pct")], n = 12)
+```
+
+FAO 数据中每个物种都有一个 ISSCAAP 类群，所以函数按类群划分。`fao_pd_groups()` 列出两种已发表的定义如何计算每个类群：
+
+| `definition` | 中上层鱼 | 底层鱼 |
+|---|---|---|
+| `"de_leiva_moreno"`（默认） | 鲱、沙丁鱼、鳀类（小型中上层鱼） | 鲆鲽类、鳕类、其他沿岸鱼类、其他底层鱼类、海洋甲壳类 |
+| `"grainger_garcia"` | 小型中上层鱼、金枪鱼和旗鱼类、其他中上层鱼类 | 鲆鲽类、鳕类、其他沿岸鱼类、其他底层鱼类、鲨鳐类、未鉴定的海洋鱼类 |
+
+也可以用 `pelagic = ...` 和 `demersal = ...` 指定自己的类群。已发表的研究是逐个物种划分的，不是按 ISSCAAP 类群，所以它们的数值只能粗略对比：de Leiva Moreno et al. (2000) 中，贫营养海域低于 1，中营养海域约 1 至 3.5，富营养海域约 6 至 20。除了营养盐，捕捞和市场（底层鱼需求更高）、缺氧、小型中上层鱼本身的自然波动以及报告方式都会改变 P/D，详见 `?pelagic_demersal`。34 区上升流海域的小型中上层鱼产量很高，所以 P/D 一直较高。
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `definition` | 哪些类群算中上层鱼和底层鱼 | `"de_leiva_moreno"` |
+| `pelagic`、`demersal` | 改用自己指定的 ISSCAAP 类群 | `NULL` |
+
 ## 📖 参考文献
+
+Caddy, J.F. (1993). Toward a comparative evaluation of human impacts on fishery ecosystems of
+enclosed and semi-enclosed seas. *Reviews in Fisheries Science* 1: 57–95.
+[doi:10.1080/10641269309388535](https://doi.org/10.1080/10641269309388535)
+
+de Leiva Moreno, J.I., Agostini, V.N., Caddy, J.F. and Carocci, F. (2000). Is the pelagic-demersal
+ratio from fishery landings a useful proxy for nutrient availability? A preliminary data
+exploration for the semi-enclosed seas around Europe. *ICES Journal of Marine Science* 57:
+1091–1102. [doi:10.1006/jmsc.2000.0705](https://doi.org/10.1006/jmsc.2000.0705)
+
+Grainger, R.J.R. and Garcia, S.M. (1996). *Chronicles of marine fishery landings (1950-1994):
+trend analysis and fisheries potential*. FAO Fisheries Technical Paper 359. Rome: FAO.
 
 Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global catch data for inferences
 on the world's marine fisheries. *Fish and Fisheries* 14: 293–311.

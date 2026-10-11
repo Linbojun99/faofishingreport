@@ -96,3 +96,9 @@ cv_detrended,Coefficient of variation,变异系数
 correlation,Correlation,相关系数
 synchrony_note_linear,Series detrended with a linear trend (Ong et al. 2021),各序列已去除线性趋势（Ong et al. 2021）
 synchrony_note_none,Series not detrended,各序列未去除趋势
+pelagic,Pelagic fishes,中上层鱼类
+demersal,Demersal fishes,底层鱼类
+other_catch,Other catch,其他渔获
+pd_class,Pelagic or demersal,中上层或底层
+pd_ratio,Pelagic/demersal ratio (P/D),中上层鱼/底层鱼渔获比 (P/D)
+pd_ratio_note,Log scale; dashed line: P/D = 1,对数刻度；虚线：P/D = 1
