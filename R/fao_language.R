@@ -228,6 +228,16 @@ fao_ensure_dirs <- function(...) {
   for (dir in c(...)) dir.create(dir, recursive = TRUE, showWarnings = FALSE)
 }
 
+# PowerPoint output needs the eoffice package (in Suggests, since on macOS it needs XQuartz)
+fao_check_eoffice <- function() {
+  if (!requireNamespace("eoffice", quietly = TRUE)) {
+    stop("PowerPoint output needs the eoffice package: install.packages(\"eoffice\")",
+         if (Sys.info()[["sysname"]] == "Darwin") ". On macOS it also needs XQuartz (https://www.xquartz.org)." else ".",
+         " Or use fao_settings(pptx = FALSE) to save PNG files only.", call. = FALSE)
+  }
+  invisible(TRUE)
+}
+
 # Saves a chart as PNG in figures/png/, and also as editable PowerPoint in figures/pptx/ when pptx = TRUE.
 # `name` is the path inside those folders without extension, e.g. "species/Bonga_shad_country_ranked".
 fao_save_plot <- function(plot, name, width, height, pptx = FALSE) {
@@ -244,6 +254,7 @@ fao_save_plot <- function(plot, name, width, height, pptx = FALSE) {
   ggplot2::ggsave(filename = png_file, plot = plot, device = ragg::agg_png, dpi = fao_setting("dpi"),
                   width = width, height = height)
   if (isTRUE(pptx)) {
+    fao_check_eoffice()
     pptx_file <- file.path("figures", "pptx", paste0(name, ".pptx"))
     fao_ensure_dirs(dirname(pptx_file))
     eoffice::topptx(figure = plot, filename = pptx_file, width = width, height = height)

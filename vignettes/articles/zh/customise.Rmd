@@ -46,7 +46,7 @@ fao_settings()
 | `map_land`, `map_ocean` | 无数据国家的颜色、海洋的颜色 | `"grey90"`，无 |
 | `grid` | 背景网格线（地图上为经纬网） | `FALSE` |
 | `dpi` | PNG 文件的分辨率 | `600` |
-| `pptx` | 同时保存可编辑的 PowerPoint 文件 | `FALSE` |
+| `pptx` | 同时保存可编辑的 PowerPoint 文件（需要 eoffice 包） | `FALSE` |
 | `data_dir` | 下载的 FAO 数据所在的文件夹 | R 用户数据文件夹 |
 
 `fao_settings(reset = TRUE)` 恢复全部默认设置。设置名称或取值有误时会立即报错，并列出可用的选项。
@@ -193,6 +193,8 @@ fao_settings(grid = TRUE)
 fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
 fao_settings(grid = FALSE)
 ```
+
+PowerPoint 文件由 eoffice 包生成，安装 faofishingreport 时不会自动安装它：需要时运行一次 `install.packages("eoffice")`（macOS 上 eoffice 还需要安装 [XQuartz](https://www.xquartz.org)）。
 
 ```{r, eval = FALSE}
 fao_settings(dpi = 300)      # PNG 文件更小
