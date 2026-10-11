@@ -52,6 +52,9 @@ navbar:
     articles:
       text: Articles
       menu:
+      - text: "🎓 Tutorial: FAO area 61 from zero to a report"
+        href: articles/tutorial-61.html
+      - text: -------
       - text: "💾 FAO data: download and customise"
         href: articles/data.html
       - text: "🌊 Fishing area analysis"
@@ -190,6 +193,7 @@ articles:
   navbar: ~
   contents:
   - articles/get-started
+  - articles/tutorial-61
   - articles/data
   - articles/fishing-areas
   - articles/species-countries
@@ -205,6 +209,7 @@ articles:
   contents:
   - articles/zh/index
   - articles/zh/get-started
+  - articles/zh/tutorial-61
   - articles/zh/data
   - articles/zh/fishing-areas
   - articles/zh/species-countries

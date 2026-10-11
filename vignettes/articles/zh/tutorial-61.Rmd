@@ -1,0 +1,611 @@
+---
+title: "🎓 教程：西北太平洋（FAO 61区）从零到报告"
+description: >
+  一个完整的实例：获取FAO数据，用本包的几乎全部函数一步步分析FAO 61渔区，看懂并解读每张图，找到本包保存的文件，并把评估报告导出为Word、LaTeX和PDF。
+---
+
+```{r setup, include = FALSE}
+source("../_setup.R")
+# CMSY++的图表和结果由data-raw/tutorial61_figures.R事先生成（构建网站时没有JAGS）
+fig_dir <- normalizePath(file.path("..", "figures", "tutorial-61", "zh"))
+show_png <- function(file) {
+  knitr::asis_output(sprintf('<figure class="fao-figure"><img src="%s" alt="%s" loading="lazy"></figure>',
+                             knitr::image_uri(file.path(fig_dir, file)), file))
+}
+pct <- function(x, digits = 1) paste0(formatC(x, format = "f", digits = digits), "%")
+mt <- function(x, digits = 1) paste0(formatC(x / 1e4, format = "f", digits = digits), "万t")
+```
+
+```{r}
+fao_settings(lang = "zh")   # 本文所有图表使用中文
+```
+
+```{r data-source, echo = FALSE, results = "asis"}
+data_source("zh")
+```
+
+本教程以**西北太平洋（FAO 61区）**为例，完整演示一个FAO主要渔区的评估：从一个空白的R会话开始，直到写出一份完整的报告。它按你自己工作时的顺序，用到了本包的几乎每一个函数，并说明**每张图显示什么、怎么看，以及它说明了该渔区的什么情况**。如果你从未用过本包，请从头到尾阅读，边读边运行代码；如果你已经熟悉本包，可以用目录直接跳到需要的步骤。
+
+61区是很好的教学例子：按渔获量计，它是世界上最大的渔区；这里有几个著名的暴涨暴跌物种（拟沙丁鱼和狭鳕）；一个国家（中国）占了大部分渔获量；还有很大一部分渔获量没有鉴定到种。下文中的每个数字都是在生成本页时由数据算出的，因此与图表一致。
+
+| 步骤 | 做什么 | 函数 |
+|---|---|---|
+| [1](#prepare) | 准备R、项目文件夹和设置 | `fao_settings()`、`fao_font()` |
+| [2](#data) | 获取FAO数据，了解其版本，保存自己的副本 | `check_fao_update()`、`download_fao_data()`、`load_fao_data()`、`fao_data_info()` |
+| [3](#area) | 渔区的渔获量：趋势、阶段、占全球的比例 | `fishing_area_data()` |
+| [4](#species) | 主要物种 | `fishing_area_species()` |
+| [5](#countries) | 主要国家 | `fishing_area_country()` |
+| [6](#one) | 一个物种，一个国家 | `species_country()`、`country_species()`、`country_analysis()` |
+| [7](#status) | 类群结构、资源状态、趋势与突变 | `species_group_composition()`、`stock_status()`、`peak_trend()`、`regime_shift()`、`area_overview()` |
+| [8](#quality) | 数据质量、多样性与船队 | `data_quality()`、`diversity_concentration()`、`country_group_summary()`、`coastal_distant()` |
+| [9](#literature) | 文献中的方法 | `catch_shocks()`、`collapse_analysis()`、`catch_synchrony()`、`pelagic_demersal()`、`distant_water_profile()` |
+| [10](#temperature) | 物种特征与温度 | `fishbase_match()`、`fao_area_sst()`、`mean_temperature_catch()` |
+| [11](#cmsy) | 主要物种的资源评估 | `cmsy_setup()`、`cmsy_area()` |
+| [12](#report) | Word、LaTeX和PDF格式的报告 | `fao_report()` |
+| [13](#files) | 所有文件保存在哪里，以及如何重新读取 | |
+
+::: callout-note
+**图表的解读方式。**每张图下方，“🔎 怎么看这张图”说明坐标轴、颜色和线条的含义，“61区的结果”给出该渔区的结果。图表描述的是**报告的渔获量**：它们说明的是上岸并上报给FAO的渔获量，而不是海里有多少鱼。得出每一个结论时都要记住这一点。
+:::
+
+## 1. 🧰 准备工作 {#prepare}
+
+安装一次本包，同时安装它用到的所有包（详见[🚀 快速入门](get-started.html)），然后在每次会话开始时加载它：
+
+```{r, eval = FALSE}
+install.packages("remotes")
+remotes::install_github("Linbojun99/faofishingreport", dependencies = TRUE)
+```
+
+```{r}
+library(faofishingreport)
+```
+
+**在项目文件夹中工作。**每个函数都把图表和表格保存在*工作目录*（`getwd()`返回的文件夹）中。每项评估建一个文件夹，例如建一个RStudio项目，或者自己设置：
+
+```{r, eval = FALSE}
+dir.create("~/fao61", showWarnings = FALSE)
+setwd("~/fao61")
+getwd()
+```
+
+**为本次会话一次性选好设置**：用`fao_settings()`设置图表的语言、风格和输出格式。不带参数调用它，可以查看当前的设置。
+
+```{r}
+fao_settings(lang = "zh", theme = "classic", dpi = 100, pptx = FALSE)
+```
+
+| 设置 | 本文取值 | 作用 |
+|---|---|---|
+| `lang` | `"zh"` | 图表文字和名称使用中文；`"en"`为英文，`"both"`为中英双语 |
+| `theme` | `"classic"` | 图表风格（见[🎨 自定义图表与地图](customise.html)） |
+| `dpi` | `100` | PNG文件的分辨率（印刷用300） |
+| `pptx` | `FALSE` | `TRUE`时把每张图同时保存为可编辑的PowerPoint文件 |
+
+图表字体会按你的操作系统选择（`fao_font()`显示所用的字体）：Windows上为SimSun，macOS上为Songti SC，Linux上为Noto Serif CJK SC，以保证中文名称能正常显示。
+
+## 2. 💾 获取数据 {#data}
+
+### 2.1 检查FAO的最新版本
+
+FAO每年发布一次全球捕捞产量（Global Capture Production）统计。本包自带一个较新的版本；`check_fao_update()`把它与网上的最新版本比较，`download_fao_data()`下载并转换一个版本（约5 MB，通常不到一分钟）：
+
+```{r, eval = FALSE}
+check_fao_update()     # 比较网上的最新版本与你电脑上的数据
+download_fao_data()    # 下载最新版本（只有FAO发布了新版本时才需要）
+```
+
+### 2.2 加载数据，并确认所用的版本
+
+`load_fao_data()`返回你电脑上可用的最新版本（下载过的版本，否则为本包自带的版本），每个国家、物种条目、渔区和年份一行：
+
+```{r}
+fao <- load_fao_data()
+dim(fao)
+show_table(fao[fao$FAO.major.fishing.area..Name. == "Pacific, Northwest" & fao$Year == 2024, ], n = 5)
+```
+
+| 列 | 含义 |
+|---|---|
+| `Country..Name.` | 上报国家（FAO英文名） |
+| `ASFIS.species..Name.` | FAO物种条目（一个种、属、科，或“Marine fishes nei”这样的类群；*nei* = not elsewhere included，即“未另列明”） |
+| `FAO.major.fishing.area..Name.` | FAO主要渔区 |
+| `Year`、`Production` | 年份和渔获量（吨，活重） |
+| `Production.Type` | 数值是怎样得来的：国家上报、FAO估算…… |
+
+**务必记录所用的版本**：FAO每发布一个新版本都会修订以前的年份，所以报告必须说明它依据的是哪个版本。`fao_data_info()`给出版本号、相关日期、下载链接和引用格式：
+
+```{r}
+info <- fao_data_info()
+info
+```
+
+### 2.3 数据保存在哪里
+
+下载的版本保存在本包的数据文件夹`fao_data_dir()`中，以后每次会话都会再用。要在多台电脑之间或团队内共用一个文件夹，在`~/.Renviron`中设置环境变量`FAOFISHINGREPORT_DATA_DIR`（见[💾 FAO数据：下载与自定义](data.html)）。某个渔区的数据可以像任何R对象一样另存一份副本：
+
+```{r}
+fao_data_dir()
+area61_raw <- fao[fao$FAO.major.fishing.area..Name. == "Pacific, Northwest", ]
+saveRDS(area61_raw, "area61_data.rds")                 # 在R中读取：readRDS("area61_data.rds")
+write.csv(area61_raw, "area61_data.csv", row.names = FALSE, fileEncoding = "UTF-8")   # 用Excel打开
+```
+
+## 3. 🌊 渔区的渔获量 {#area}
+
+`fishing_area_data()`的输入是一个FAO主要渔区的名称，它提取该渔区的数据，绘制总渔获量及其阶段，以及该渔区占全球海洋渔获量的比例：
+
+```{r, figures = "fishing_trend|fishing_percentage"}
+NWP <- fishing_area_data("Pacific, Northwest")
+area61 <- NWP$area_data
+```
+
+```{r, include = FALSE}
+total <- tapply(area61$Production, area61$Year, sum, na.rm = TRUE)
+last_year <- max(area61$Year)
+peak_year <- as.integer(names(which.max(total)))
+periods <- NWP$coefs_data
+world <- tapply(fao$Production[fao$FAO.major.fishing.area..Name. %in% fao_area_sst()$area_en],
+                fao$Year[fao$FAO.major.fishing.area..Name. %in% fao_area_sst()$area_en], sum, na.rm = TRUE)
+share <- 100 * total / world[names(total)]
+```
+
+**`fishing_trend.png`：总渔获量及其阶段**
+
+🔎 *怎么看这张图*：灰色面积是该渔区每年的渔获量（百万吨）。竖直虚线是**突变点**，即平均渔获量发生变化的年份，用Bai-Perron检验（`strucchange::breakpoints()`）找出；每条虚线处开始一个新的阶段。灰色水平线段是各阶段的平均渔获量。
+
+*61区的结果*：渔获量从`r min(area61$Year)`年的`r mt(total[1])`增长到`r peak_year`年的峰值`r mt(max(total))`，`r last_year`年为`r mt(total[as.character(last_year)])`。检验共找出`r nrow(periods)`个阶段：`r paste0(periods$start_year, "–", periods$end_year, "年（平均", mt(periods$intercept), "）", collapse = "；")`。1950–1980年代的增长、1980年代末和1990年代的高位平台，以及`r periods$start_year[nrow(periods)]`年以来较低而平稳的渔获量，是报告中需要解释的三件事。
+
+**`fishing_percentage.png`：占全球海洋渔获量的比例**
+
+🔎 *怎么看这张图*：每个点是当年该渔区渔获量占所有FAO海洋渔区渔获量的百分比；红线是这些比例的平均值。内陆水域不计算在内。
+
+*61区的结果*：该渔区占全球海洋渔获量的`r pct(min(share))`至`r pct(max(share))`，平均为`r pct(mean(share))`，`r last_year`年为`r pct(share[as.character(last_year)])`。比例高于其平均值，说明该渔区的增长快于（或下降慢于）世界其他海域。
+
+::: callout-tip
+`NWP`是一个列表：`NWP$area_data`（该渔区的数据，后面各步都要用到）、`NWP$coefs_data`（各阶段：起止年份和平均渔获量）和`NWP$act_world_map`（地图数据）。用`saveRDS(NWP, "NWP.rds")`保存，以后可以接着分析而不必重新计算。
+:::
+
+## 4. 🐟 主要物种 {#species}
+
+`fishing_area_species()`按渔获量给物种条目排序（`rank_range = c(1, 10)`：最大的十个），绘制它们的渔获量随时间的变化，并找出每个物种的阶段：
+
+```{r, figures = "area_species"}
+sp <- fishing_area_species(area61, rank_range = c(1, 10))
+```
+
+```{r, include = FALSE}
+ranked <- sp$area_species_ranked_total
+ranked <- ranked[order(-ranked$Total_Tonnes), ]
+sp_last5 <- area61[area61$Year > last_year - 5, ]
+sp5 <- sort(tapply(sp_last5$Production, sp_last5$ASFIS.species..Name., sum, na.rm = TRUE) / 5, decreasing = TRUE)
+sard <- tapply(area61$Production[area61$ASFIS.species..Name. == "Pacific sardine"],
+               area61$Year[area61$ASFIS.species..Name. == "Pacific sardine"], sum, na.rm = TRUE)
+```
+
+**`area_species.png`：主要物种放在一起**，以及**`area_species_wrap.png`：每个物种一个分面**
+
+🔎 *怎么看这些图*：第一张图把十个物种条目放在同一个纵轴上，以便比较它们的大小。第二张图给每个物种一个单独的分面和纵轴，这样小物种也看得清：折线是每年的渔获量，竖直虚线和灰色线段是该物种的阶段，倾斜的虚线是线性趋势，百分比是该物种在该渔区历年渔获量中所占的比例。
+
+*61区的结果*：最近五年最大的条目是`r paste0(fao_translate(names(sp5)[1:5], "species", "zh"), "（每年", mt(sp5[1:5]), "）", collapse = "、")`。有三个特点很突出：
+
+- **“Marine fishes nei”（未分类的海洋鱼类）是最大的条目。**它不是一个物种，而是各国上报时没有说明种类的鱼。“nei”的占比大，限制了物种图所能说明的内容（见[数据质量](#quality)）。
+- **暴涨暴跌。**拟沙丁鱼（Pacific sardine）的渔获量从几乎为零增长到`r names(which.max(sard))`年的峰值`r mt(max(sard))`，又在二十年内回落到很低的水平，这是沙丁鱼类种群随海洋环境大幅波动的著名例子；近年它的渔获量又有所回升。
+- **狭鳕**的渔获量在1980年代末达到峰值，1990年代随着前苏联和日本渔获量的下降而减少。
+
+::: callout-note
+改变`rank_range`就会改变显示的物种，例如`rank_range = c(11, 20)`显示其后的十个。只有在`timeseries_analysis = FALSE`时，分面中的折线才会被平滑，同时也不再显示阶段。
+:::
+
+::: callout-note
+FAO物种名录（ASFIS）中有些物种条目没有中文名（如Pacific sardine，即拟沙丁鱼），图表和表格中这些物种显示英文名。
+:::
+
+## 5. 🌏 主要国家 {#countries}
+
+`fishing_area_country()`对国家做同样的分析，并加上一张各国渔获量的地图：
+
+```{r, figures = "area_country"}
+co <- fishing_area_country(area61, rank_range = c(1, 8))
+```
+
+```{r, include = FALSE}
+co_last5 <- tapply(sp_last5$Production, sp_last5$Country..Name., sum, na.rm = TRUE) / 5
+co_last5 <- sort(co_last5, decreasing = TRUE)
+china <- tapply(area61$Production[area61$Country..Name. == "China"], area61$Year[area61$Country..Name. == "China"], sum)
+japan <- tapply(area61$Production[area61$Country..Name. == "Japan"], area61$Year[area61$Country..Name. == "Japan"], sum)
+ahead <- names(china)[china > japan[names(china)]]
+overtake <- min(as.integer(ahead[as.integer(ahead) > as.integer(names(which.max(japan)))]))
+```
+
+🔎 *怎么看这些图*：与物种的图一样：每个国家一个分面，显示其阶段、趋势和历年渔获量占比；地图按各国在该渔区的总渔获量着色。
+
+*61区的结果*：最近五年，`r paste0(fao_translate(names(co_last5)[1:4], "country", "zh"), "（", pct(100 * co_last5[1:4] / sum(co_last5)), "）", collapse = "、")`占了大部分渔获量。**中国**的渔获量从`r names(china)[1]`年的`r mt(china[1])`增长到`r names(which.max(china))`年的峰值`r mt(max(china))`；**日本**直到`r overtake - 1`年都是该渔区渔获量最大的国家（峰值为`r names(which.max(japan))`年的`r mt(max(japan))`；从`r overtake`年起中国每年的渔获量都超过日本），`r last_year`年的渔获量为`r mt(japan[length(japan)])`。**前苏联**的分面到1991年结束，**俄罗斯联邦**的分面从1992年开始：FAO把它们作为两个国家分别记录，所以应把两者的阶段放在一起看。
+
+## 6. 🔍 一个物种，一个国家 {#one}
+
+### 6.1 谁在捕捞某个物种：`species_country()`
+
+```{r, figures = "Alaska_pollock"}
+pollock <- species_country(area61, "Alaska pollock(=Walleye poll.)", rank_range = c(1, 5))
+```
+
+🔎 *怎么看这些图*：这些图把一个物种条目的渔获量按国家分解：排名图和小多图（每个国家一个分面，带阶段）、按时期显示各国占比的饼图，以及一张地图。物种名称必须按FAO数据中的写法给出（`unique(area61$ASFIS.species..Name.)`列出全部名称；`fao_translate()`给出中文名）。
+
+*61区的结果*：西北太平洋的狭鳕主要由前苏联（后为俄罗斯联邦）、日本和大韩民国捕捞；日本的渔获量在1970年代初达到峰值，苏联在1980年代末达到峰值，波兰在1980年代末和1990年代也捕捞狭鳕。
+
+### 6.2 一个国家捕什么：`country_species()`和`country_analysis()`
+
+`country_species()`把一个国家在该渔区的渔获量按物种分解；`country_analysis()`考察同一个国家在**所有**FAO渔区的渔获量，看它在哪里捕捞：
+
+```{r, figures = "Japan"}
+japan_61 <- country_species(area61, "Japan", rank_range = c(1, 10))
+japan_all <- country_analysis("Japan", rank_range = c(1, 10))
+```
+
+🔎 *怎么看这些图*：`Japan_species_*`图：日本在61区捕捞的物种。`Japananalysis_*`图：日本在所有渔区捕捞的物种、它在各渔区的渔获量（`Japanyearly_area_production.png`，每个渔区一条线），以及它作业渔区的地图。
+
+*结果*：日本在61区的渔获量，1980年代以拟沙丁鱼为主；此后的主要物种是鲐鱼、再次回升的拟沙丁鱼、虾夷扇贝和日本鳀（狭鳕主要在1990年代以前较重要）；61区一直是日本最大的渔区，远超其他渔区，而日本在这里的渔获量自1980年代末以来持续下降。
+
+## 7. 📈 类群结构、资源状态、趋势与突变 {#status}
+
+### 7.1 物种类群：`species_group_composition()`
+
+```{r, figures = "group"}
+groups <- species_group_composition(area61)
+```
+
+🔎 *怎么看这张图*：物种条目按FAO的ISSCAAP类群归类（如“鲱、沙丁鱼、鳀类”“鳕、无须鳕、黑线鳕类”）。堆积面积图显示每个类群的渔获量，`_share`图显示其占渔获量的百分比；最大的几个类群单独标出名称，其余合并为“其余类群”。
+
+*61区的结果*：1980年代，鳕、无须鳕、黑线鳕类（主要是狭鳕）和鲱、沙丁鱼、鳀类（主要是拟沙丁鱼和日本鳀）所占的份额最大；2000年代以来，渔获量分布在更多的类群中，其他沿岸鱼类、其他中上层鱼类、鱿鱼和虾类的份额增大。
+
+### 7.2 资源状态图：`stock_status()`
+
+```{r, figures = "stock_status"}
+status <- stock_status(area61)
+```
+
+```{r, include = FALSE}
+st_last <- status$yearly[status$yearly$Year == last_year, ]
+st_pct <- function(label, column = "stocks_pct") sum(st_last[[column]][st_last$status_label %in% label])
+```
+
+🔎 *怎么看这些图*：每个“种群”是该渔区一个物种条目的渔获量序列。每一年，按种群渔获量相对于其自身峰值的比例划分状态（Kleisner等，2013）：**开发中**（峰值之前，低于峰值的一半）、**充分开发**（高于峰值的一半）、**过度开发**（峰值之后，为峰值的10%–50%）、**崩溃**（峰值之后，低于10%）和**恢复中**（崩溃之后回升到10%–50%）。`_stocks`图统计种群数，`_catch`图按渔获量加权。
+
+*61区的结果*：在`r nrow(status$stocks)`个种群中，按种群数计，`r last_year`年有`r pct(st_pct("崩溃"))`处于崩溃状态，`r pct(st_pct("过度开发"))`处于过度开发状态。按渔获量加权，情况就不同了：崩溃种群只占渔获量的`r pct(st_pct("崩溃", "catch_pct"))`，因为它们都很小；过度开发种群占`r pct(st_pct("过度开发", "catch_pct"))`，充分开发种群占`r pct(st_pct("充分开发", "catch_pct"))`。许多小种群已经远低于其峰值，而现在很大一部分渔获量来自低于其峰值一半的种群。
+
+::: callout-warning
+**不能得出的结论。**资源状态图只使用渔获量。渔获量下降可能是因为鱼变少了，也可能是因为捕捞减少、管理措施、市场或上报方式的变化（例如某个物种改为以“nei”上报）。用它来提出问题，而不要把它当作资源评估；`smooth = TRUE`按3年滑动平均划分状态，可以减小个别异常年份的影响。
+:::
+
+### 7.3 各物种的峰值与趋势：`peak_trend()`
+
+```{r, figures = "peak_trend"}
+pt <- peak_trend(area61)
+show_table(pt[, c("name", "peak_year", "pct_of_peak", "growth_pct_per_year", "trend")], n = 10)
+```
+
+🔎 *怎么看这张图*：对每个主要物种给出：峰值渔获量出现的年份，最后一年的渔获量相当于峰值的百分比，最近十年的年均增长率，以及这一趋势的Mann-Kendall检验（*P* < 0.05时为`"up"`（上升）或`"down"`（下降），否则为`"none"`）。
+
+### 7.4 同步突变：`regime_shift()`
+
+```{r, figures = "regime_shift"}
+shifts <- regime_shift(area61)
+```
+
+```{r, include = FALSE}
+rs_top <- shifts$yearly[order(-shifts$yearly$n_species), ][1:3, ]
+```
+
+🔎 *怎么看这张图*：每个主要物种的突变点按第4步的方法找出；柱状图统计每一年有多少个物种的平均渔获量在该年发生了变化。许多物种在同一年一起变化，说明存在共同的原因：海洋环境（生态系统转变，regime shift）、管理措施的改变，或上报方式的改变。
+
+*61区的结果*：同时出现突变点最多的年份是`r paste0(rs_top$Year, "年（", rs_top$n_species, "个物种）", collapse = "、")`。
+
+### 7.5 全部FAO渔区的比较：`area_overview()`
+
+```{r, figures = "marine_areas"}
+overview <- area_overview()
+```
+
+🔎 *怎么看这张图*：每个FAO海洋渔区的渔获量随时间的变化，以及它们的峰值年份和近期趋势。它显示了61区在各渔区中的位置：61区是渔获量最大的渔区。
+
+## 8. 🔍 数据质量、多样性与船队 {#quality}
+
+### 8.1 数据有多可靠？`data_quality()`
+
+```{r, figures = "data_quality"}
+quality <- data_quality(area61)
+```
+
+```{r, include = FALSE}
+tq <- quality$taxon_level[quality$taxon_level$Year == last_year, ]
+tq$pct <- 100 * tq$Tonnes / sum(tq$Tonnes)
+sq <- quality$data_status[quality$data_status$Year == last_year, ]
+sq$pct <- 100 * sq$Tonnes / sum(sq$Tonnes)
+```
+
+🔎 *怎么看这些图*：`_taxon_share`：鉴定到种、属、科，或只归到目及以上类群（如“Marine fishes nei”）的渔获量占比。`_status_share`：各国官方上报的渔获量占比，以及由FAO或该国估算的渔获量占比。
+
+*61区的结果*：`r last_year`年，`r pct(tq$pct[tq$category == "种"])`的渔获量鉴定到种，`r pct(tq$pct[tq$category == "目及以上"])`只归到目或更高的类群。因此，上面的物种图只描述了一部分渔获量，而鉴定水平的变化看起来会像是物种的变化。这是61区的报告中需要说明的主要局限之一。
+
+### 8.2 多样性与集中度：`diversity_concentration()`
+
+```{r, figures = "diversity"}
+div <- diversity_concentration(area61)
+```
+
+```{r, include = FALSE}
+dl <- div[div$Year == last_year, ]
+```
+
+🔎 *怎么看这张图*：七个指标，每个指标一个分面：上报渔获量的物种条目数和国家数、物种的香农多样性指数、物种和国家的赫芬达尔-赫希曼指数（HHI），以及最大的五个物种和五个国家所占的份额。HHI从接近0（渔获量分散在许多物种或国家上）到10000（全部来自一个）；高于2500为“高度集中”。
+
+*61区的结果*：`r last_year`年，有`r dl$n_species`个物种条目和`r dl$n_countries`个国家上报了渔获量；国家的HHI为`r round(dl$hhi_countries)`，属于高度集中，原因是中国的份额很大；而物种的HHI（`r round(dl$hhi_species)`）说明渔获量分散在许多物种上。
+
+### 8.3 谁在捕捞：`country_group_summary()`和`coastal_distant()`
+
+```{r, figures = "country_income|coastal_distant"}
+income <- country_group_summary(area61)
+fleets <- coastal_distant(area61)
+```
+
+🔎 *怎么看这些图*：`country_income`：按世界银行收入分组统计的各国渔获量。`coastal_distant`：根据FAO渔区边界和国家轮廓，分为**沿岸国**（领土与该渔区接壤）和**远洋捕捞国**的渔获量。
+
+*61区的结果*：几乎全部渔获量都由沿岸国捕捞：西北太平洋周边的国家在自己的水域捕捞，远洋捕捞的渔获量只在1980年代和1990年代占很小的份额。
+
+## 9. 🔬 文献中的方法 {#literature}
+
+这些分析采用已发表的方法；[🔬 渔获骤变、渔业崩溃、同步性与远洋捕捞](literature-analyses.html)详细介绍了每一种方法。
+
+### 9.1 渔获骤变：`catch_shocks()`
+
+```{r, figures = "shocks"}
+shocks_country <- catch_shocks(area61)
+shocks_species <- catch_shocks(area61, by = "species", label = "area61_species")
+```
+
+🔎 *怎么看这些图*：**骤变**是指某条序列的渔获量远低于其前几年所预示水平的年份（Cottrell等，2019）。柱状图给出每年发生骤变的序列所占的百分比；`_series`图显示各条序列及其骤变，`_by_country`和`_by_continent`图按分组统计骤变。
+
+*61区的结果*：按国家划分序列（`by = c("country", "area")`，默认设置）时，61区只有`r nrow(shocks_country$series)`条序列，因此每次骤变都占很大的百分比，图很粗糙。按物种划分则有`r nrow(shocks_species$series)`条序列和`r nrow(shocks_species$shocks)`次骤变，对单个渔区来说信息更丰富。**按问题选择序列**：研究国家的食物供给用国家序列，研究生态用物种序列。
+
+### 9.2 渔业崩溃：`collapse_analysis()`
+
+```{r, figures = "collapse"}
+set.seed(1)   # 与随机序列的比较要用到随机数
+collapses <- collapse_analysis(area61)
+show_table(collapses$summary)
+```
+
+🔎 *怎么看这张图*：一条序列（一个国家捕捞的一个物种）在达到最高值之后，如果渔获量连续四年低于最高值的十分之一，即为**崩溃**（Mullon等，2005）。柱状图按年份以及崩溃前下降的形态（平台型、平滑型或波动型）统计崩溃次数。函数还会在没有趋势的随机序列上重复同样的分析，因为单是随机的涨落就会产生一些“崩溃”（Wilberg和Miller，2007）：只有超出这一零模型的部分才有意义。
+
+### 9.3 同步性与组合效应：`catch_synchrony()`
+
+```{r, figures = "synchrony"}
+sync <- catch_synchrony(area61)
+```
+
+🔎 *怎么看这些图*：`_cv`：每个物种以及总渔获量（红色）的变异系数（年际波动）。`_correlation`：各物种之间如何共同变化。同步性指数φ在各物种相互补偿时为0，在同涨同落时为1（Loreau和de Mazancourt，2008）。
+
+*61区的结果*：φ = `r sprintf("%.2f", sync$summary$synchrony_phi)`：总渔获量的波动（变异系数`r sprintf("%.2f", sync$summary$cv_total)`）远小于各物种的波动（平均变异系数`r sprintf("%.2f", sync$summary$mean_cv_series)`）：各物种的变异平均比它们的总和大`r pct(sync$summary$portfolio_effect_pct, 0)`。这种**组合效应**意味着一个物种减少时，其他物种会补上它的位置。在图中的主要物种里，拟沙丁鱼的波动远大于其他物种。
+
+### 9.4 中上层/底层比：`pelagic_demersal()`
+
+```{r, figures = "pelagic_demersal"}
+pd <- pelagic_demersal(area61)
+show_table(pd$decades[, c("period", "pd_mean", "pd_min", "pd_max")])
+```
+
+🔎 *怎么看这些图*：P/D是小型中上层鱼的渔获量除以底层鱼和甲壳类的渔获量（Caddy，1993；de Leiva Moreno等，2000），用对数坐标表示；虚线为P/D = 1。在半封闭海域，P/D上升与营养盐增加有关；在61区这样的开阔海域，它主要反映小型中上层鱼的大幅波动。
+
+*61区的结果*：P/D一直低于1；最高值出现在1980年代，即拟沙丁鱼暴涨的年代，2010年代以来又有所回升。
+
+### 9.5 一个远洋船队：`distant_water_profile()`
+
+```{r, figures = "distant_water"}
+china_dw <- distant_water_profile("China")
+```
+
+🔎 *怎么看这些图*：一个国家在与其相邻的FAO渔区（“邻近渔区”）和其他渔区（“远洋渔区”）的渔获量、远洋渔获所占的比例、每年作业的渔区数，以及它进入每个渔区的时间（Swartz等，2010）。
+
+```{r, include = FALSE}
+dw <- china_dw$yearly[order(china_dw$yearly$Year), ]
+dw_last <- dw[dw$Year == max(dw$Year), ]
+```
+
+*结果*：61区是中国唯一的邻近渔区，提供了中国的大部分渔获量。中国的远洋渔获量从1990年代末开始增长，`r dw_last$Year`年达到`r mt(dw_last$distant_tonnes)`（占其渔获量的`r pct(dw_last$distant_pct)`），分布在`r dw_last$n_distant_areas`个远洋FAO渔区。FAO指出，2022年中国只对在中国上岸的渔获给出了物种和渔区，其部分远洋渔获被记为61区的“Marine fishes nei”（FAO，2024）：近年的远洋渔获有一部分计入了61区，这也抬高了[数据质量](#quality)中看到的“nei”占比。
+
+## 10. 🌡️ 物种特征与温度 {#temperature}
+
+### 10.1 FishBase物种特征：`fishbase_match()`
+
+```{r}
+traits <- fishbase_match(area61, version = "builtin")
+show_table(traits[, c("species_en", "catch_pct", "match_type", "trophic_level", "temp_pref_mean")], n = 8)
+```
+
+🔎 *怎么看这张表*：每个FAO物种条目按已发表的规则与FishBase或SeaLifeBase匹配（学名完全相同、同物异名、WoRMS、更高分类阶元的平均值）；`match_type`说明用的是哪条规则，每一行都附有核对用的链接。`version = "builtin"`使用本包内置的表格，因此不联网也能运行。匹配结果只是初步结果：请用链接核对主要物种（见[🐠 FishBase与SeaLifeBase物种特征](fishbase.html)）。
+
+### 10.2 海表温度与渔获平均温度
+
+```{r, figures = "mtc"}
+sst61 <- fao_area_sst("Pacific, Northwest")
+mtc <- mean_temperature_catch(area61, version = "builtin")
+show_table(mtc$trend[, c("period_start", "period_end", "mtc_slope_per_decade", "trend", "sst_slope_per_decade", "cor_mtc_sst")])
+```
+
+🔎 *怎么看这张图*：**渔获平均温度**（MTC，红线）是渔获物种偏好温度的平均值，按渔获量加权（Cheung等，2013）；蓝线是该渔区的海表温度（SST），浅色带是它在渔区内的范围。下半部分是偏好温度已知的渔获量所占的比例；低于50%的年份淡化显示。MTC上升，说明暖水物种在渔获中所占的比例变大。
+
+```{r, include = FALSE}
+my <- mtc$yearly[!is.na(mtc$yearly$mtc) & !mtc$yearly$low_coverage, ]
+low <- my[my$year <= 1990, ][which.min(my$mtc[my$year <= 1990]), ]
+high <- my[my$year > 1990, ][which.max(my$mtc[my$year > 1990]), ]
+last_mtc <- my[nrow(my), ]
+pref <- function(name) round(mtc$species$temp_pref_mean[match(name, mtc$species$species_en)], 1)
+```
+
+*61区的结果*：MTC在`r low$year`年降到最低的`r round(low$mtc, 1)` °C，当时冷水性的狭鳕（偏好温度`r pref("Alaska pollock(=Walleye poll.)")` °C）在渔获中的比例不断增加；之后上升到`r high$year`年的`r round(high$mtc, 1)` °C，此后又回落到`r last_mtc$year`年的`r round(last_mtc$mtc, 1)` °C。拟沙丁鱼（`r pref("Pacific sardine")` °C）等暖水性物种渔获量的兴衰也使MTC上下波动。该渔区的SST在`r mtc$trend$period_start[1]`–`r mtc$trend$period_end[1]`年间每十年升高`r round(mtc$trend$sst_slope_per_decade[1], 2)` °C。因此，61区的MTC反映的既是海洋，也同样是渔业及其目标物种，要结合物种图来看。
+
+## 11. 📉 主要物种的资源评估 {#cmsy}
+
+`cmsy_area()`对渔获量最大的几个物种运行CMSY++仅渔获量资源评估（Froese等，2023）。它需要先安装一次JAGS程序（`cmsy_setup()`，见[📉 CMSY++仅渔获量资源评估](cmsy.html)），运行需要几分钟；下面的图是事先用同样的代码生成的。
+
+```{r, eval = FALSE}
+cmsy_setup()                                            # 只需一次：安装JAGS和所需的R包
+nwp_cmsy <- cmsy_area("Pacific, Northwest", top = 10)   # 十个主要物种
+nwp_cmsy$summary                                        # B/Bmsy、F/Fmsy、MSY和资源状态
+```
+
+```{r, include = FALSE}
+cmsy_summary <- utils::read.csv(file.path(fig_dir, "cmsy_summary.csv"), stringsAsFactors = FALSE)
+```
+
+```{r, echo = FALSE}
+show_png("kobe_all.png")
+```
+
+🔎 *怎么看Kobe图*：每个圆圈是一个种群在最后一年的状态：横轴是生物量与产生最大可持续产量的生物量之比（B/Bmsy），纵轴是捕捞压力与产生最大可持续产量的捕捞压力之比（F/Fmsy）；圆圈的大小表示渔获量。绿色（右下）：健康；红色（左上）：已过度捕捞且仍在过度捕捞；橙色和黄色：两者之一。B/Bmsy = 0.8处的虚线，按照FAO对仅渔获量结果的分级，把“最大可持续捕捞”与“过度捕捞”分开。
+
+*61区的结果*：在评估的`r nrow(cmsy_summary)`个种群中，有`r sum(cmsy_summary$B_Bmsy < 0.8, na.rm = TRUE)`个在最后一年低于0.8 Bmsy。
+
+```{r, echo = FALSE}
+show_table(cmsy_summary[, intersect(names(cmsy_summary), c("Stock", "species", "B_Bmsy", "F_Fmsy", "MSY", "status"))])
+```
+
+```{r, echo = FALSE}
+show_png("overview.png")
+```
+
+🔎 *怎么看这张图*：每个种群一行：最后一年的B/Bmsy及其95%置信限（横条），颜色表示状态。横条越长，说明数据越难确定该种群的资源量。
+
+```{r, echo = FALSE}
+show_png("status_time.png")
+```
+
+🔎 *怎么看这张图*：逐年各状态类别的种群所占比例，可以看出该渔区的种群是否同步变化，例如是否在同一时期一起下降。
+
+```{r, echo = FALSE}
+show_png("management_first.png")
+```
+
+🔎 *怎么看这张图*：渔获量最大的种群（`r cmsy_summary$species[1]`）的“管理图”：左上为渔获量和MSY，右上为相对捕捞死亡率F/Fmsy，左下为相对资源量B/Bmsy及Bmsy和0.8 Bmsy两条线，右下为该种群在Kobe图中的变化路径；阴影为95%置信限。全部CMSY++图表见[📉 CMSY++资源评估](cmsy.html)。
+
+::: callout-warning
+FAO捕捞统计没有丰度指数，所以这些都是**仅渔获量**评估，结果在很大程度上由先验决定：只具有指示意义，绝不能替代完整的资源评估。CMSY++的代码来自其作者（<https://github.com/SISTA16/cmsyPlusPlus>）；见[📉 CMSY++仅渔获量资源评估](cmsy.html)中的免责说明。
+:::
+
+## 12. 📝 Word、LaTeX和PDF格式的报告 {#report}
+
+`fao_report()`运行该渔区的各项分析，把整个评估写成一份报告：封面、摘要、数据与方法、附图表的结果、结论、参考文献和附录。这里生成一份中文Word报告，在默认章节之外加入渔获骤变和渔获平均温度：
+
+```{r}
+report <- fao_report(61, lang = "zh", shocks = TRUE, mtc = TRUE)
+report
+```
+
+Word文件的各级标题：
+
+```{r}
+doc <- officer::docx_summary(officer::read_docx(report$file[["docx"]]))
+headings <- doc$text[doc$style_name %in% c("FAO Heading 1", "FAO Heading 2")]
+headings
+```
+
+同一份中文报告的LaTeX和PDF版本，并加入CMSY++（沿用第11步的结果，不必再次运行CMSY++）：
+
+```{r, eval = FALSE}
+fao_report(61, lang = "zh", format = c("docx", "latex", "pdf"), shocks = TRUE, mtc = TRUE,
+           cmsy = nwp_cmsy)
+```
+
+| 文件 | 内容 |
+|---|---|
+| `reports/FAO61_report_zh.docx` | Word报告，供编辑和补充 |
+| `reports/FAO61_report_zh.tex`和`reports/FAO61_report_zh_figures/` | LaTeX源文件及其图片 |
+| `reports/FAO61_report_zh.pdf` | PDF（需要XeLaTeX，例如通过tinytex安装） |
+
+::: callout-note
+报告是一份**初稿**：文字由模板填入分析结果生成。请通读全文，补充灰色的“【待补充：……】”备注（其他数据来源、讨论、其他参考文献），并对照上面的图表核对每一条结论。全部选项见[📝 一键生成评估报告（Word、LaTeX、PDF）](report.html)。
+:::
+
+## 13. 🗂️ 文件保存在哪里，如何重新读取 {#files}
+
+每个函数都把结果写入工作目录：
+
+| 文件夹 | 内容 | 由哪个函数写入 |
+|---|---|---|
+| `figures/png/` | `fishing_trend.png`、`fishing_percentage.png` | `fishing_area_data()` |
+| `figures/png/area/` | `area_species*.png`、`area_country*.png` | `fishing_area_species()`、`fishing_area_country()` |
+| `figures/png/` | `area_country_map.png`、`<species>_country_map.png` | `fishing_area_country()`和`species_country()`的地图 |
+| `figures/png/species/` | `<species>_country_*.png` | `species_country()` |
+| `figures/png/country/` | `<country>_species_*.png`、`<country>analysis_*.png`、`<country>yearly_area_production*.png` | `country_species()`、`country_analysis()` |
+| `figures/png/summary/` | `<label>_<analysis>*.png`，如`Pacific__Northwest_stock_status_stocks.png` | 汇总分析和文献方法 |
+| `figures/pptx/...` | 同样的图表，保存为PowerPoint文件 | `pptx = TRUE`时 |
+| `tables/` | CSV表格（UTF-8编码，可用Excel打开） | 设置`table = TRUE`的所有函数 |
+| `reports/` | 报告，以及存放CMSY++结果的`reports/cmsy/` | `fao_report()` |
+| `cmsy_areas/` | 各渔区的CMSY++运行结果、图表和表格 | `cmsy_area()` |
+
+本教程保存的文件：
+
+```{r}
+head(list.files("figures/png", recursive = TRUE), 20)
+length(list.files("figures/png", recursive = TRUE))
+head(list.files("tables"), 10)
+```
+
+**重新读取结果。**每个函数还会把结果返回给R（像上面那样赋值给变量）。要改天接着分析，可以把结果保存下来再读回，或者读取CSV表格：
+
+```{r}
+saveRDS(list(NWP = NWP, status = status, mtc = mtc), "area61_results.rds")
+results <- readRDS("area61_results.rds")
+names(results)
+head(read.csv("tables/Pacific__Northwest_stock_status_stocks.csv"), 3)
+```
+
+FAO发布新版本后，运行`download_fao_data()`，再运行同样的代码：每张图、每个表格和每个数字都会用新数据重新计算，`fao_data_info()`给出新的引用格式。
+
+## 14. 🎨 按需定制
+
+同样的分析可以改用中文或中英双语图表，也可以换一种风格或地图投影：
+
+```{r, eval = FALSE}
+fao_settings(lang = "zh")                  # 中文图表和名称
+fao_settings(lang = "both")                # 同一张图上显示中文和英文
+fao_settings(theme = "minimal", palette = "npg", map_projection = "robinson", map_center = 180)
+fao_settings(reset = TRUE)                 # 恢复默认设置
+```
+
+全部设置见[🎨 自定义图表与地图](customise.html)。
+
+## ✅ 小结
+
+| 步骤 | 函数 | 主要输出 |
+|---|---|---|
+| 数据 | `load_fao_data()`、`fao_data_info()` | 数据及需要引用的版本 |
+| 渔区 | `fishing_area_data()` | 总渔获量、阶段、占全球的比例 |
+| 物种、国家 | `fishing_area_species()`、`fishing_area_country()`、`species_country()`、`country_species()`、`country_analysis()` | 谁捕捞什么，以及各自的阶段 |
+| 资源状态 | `species_group_composition()`、`stock_status()`、`peak_trend()`、`regime_shift()`、`area_overview()` | 类群结构、资源状态、趋势、突变 |
+| 数据质量、船队 | `data_quality()`、`diversity_concentration()`、`country_group_summary()`、`coastal_distant()` | 数据有多可靠，渔获有多集中 |
+| 文献方法 | `catch_shocks()`、`collapse_analysis()`、`catch_synchrony()`、`pelagic_demersal()`、`distant_water_profile()` | 渔获骤变、崩溃、同步性、P/D、远洋船队 |
+| 温度 | `fishbase_match()`、`fao_area_sst()`、`mean_temperature_catch()` | 物种特征、SST、MTC |
+| 资源评估 | `cmsy_area()` | B/Bmsy、F/Fmsy、MSY |
+| 报告 | `fao_report()` | Word、LaTeX、PDF |
+
+## 📖 参考文献
+
+```{r references-release, include = FALSE}
+release_info <- fao_data_info()
+```
+
+- Bai, J. and Perron, P. (2003). Computation and analysis of multiple structural change models. *Journal of Applied Econometrics*, 18(1), 1–22. [doi:10.1002/jae.659](https://doi.org/10.1002/jae.659)
+- Caddy, J. F. (1993). Toward a comparative evaluation of human impacts on fishery ecosystems of enclosed and semi-enclosed seas. *Reviews in Fisheries Science*, 1(1), 57–95. [doi:10.1080/10641269309388535](https://doi.org/10.1080/10641269309388535)
+- Cheung, W. W. L., Watson, R. and Pauly, D. (2013). Signature of ocean warming in global fisheries catch. *Nature*, 497, 365–368. [doi:10.1038/nature12156](https://doi.org/10.1038/nature12156)
+- Cottrell, R. S., Nash, K. L., Halpern, B. S., Remenyi, T. A., Corney, S. P., Fleming, A., Fulton, E. A., Hornborg, S., Johne, A., Watson, R. A. and Blanchard, J. L. (2019). Food production shocks across land and sea. *Nature Sustainability*, 2, 130–137. [doi:10.1038/s41893-018-0210-1](https://doi.org/10.1038/s41893-018-0210-1)
+- de Leiva Moreno, J. I., Agostini, V. N., Caddy, J. F. and Carocci, F. (2000). Is the pelagic-demersal ratio from fishery landings a useful proxy for nutrient availability? *ICES Journal of Marine Science*, 57(4), 1091–1102. [doi:10.1006/jmsc.2000.0705](https://doi.org/10.1006/jmsc.2000.0705)
+- FAO (2024). *The State of World Fisheries and Aquaculture 2024. Blue Transformation in action*. Rome: FAO. [doi:10.4060/cd0683en](https://doi.org/10.4060/cd0683en)
+- `r release_info$citation`
+- Froese, R., Winker, H., Coro, G., Palomares, M. L. D., Tsikliras, A. C., Dimarchopoulou, D., Touloumis, K., Demirel, N., Vianna, G. M. S., Scarcella, G., Schijns, R., Liang, C. and Pauly, D. (2023). New developments in the analysis of catch time series as the basis for fish stock assessments: the CMSY++ method. *Acta Ichthyologica et Piscatoria*, 53, 173–189. [doi:10.3897/aiep.53.105910](https://doi.org/10.3897/aiep.53.105910)
+- Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global catch data for inferences on the world's marine fisheries. *Fish and Fisheries*, 14(3), 293–311. [doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
+- Loreau, M. and de Mazancourt, C. (2008). Species synchrony and its drivers: neutral and nonneutral community dynamics in fluctuating environments. *The American Naturalist*, 172(2), E48–E66. [doi:10.1086/589746](https://doi.org/10.1086/589746)
+- Mullon, C., Fréon, P. and Cury, P. (2005). The dynamics of collapse in world fisheries. *Fish and Fisheries*, 6(2), 111–120. [doi:10.1111/j.1467-2979.2005.00181.x](https://doi.org/10.1111/j.1467-2979.2005.00181.x)
+- Swartz, W., Sala, E., Tracey, S., Watson, R. and Pauly, D. (2010). The spatial expansion and ecological footprint of fisheries (1950 to present). *PLoS ONE*, 5(12), e15143. [doi:10.1371/journal.pone.0015143](https://doi.org/10.1371/journal.pone.0015143)
+- Wilberg, M. J. and Miller, T. J. (2007). Comment on "Impacts of biodiversity loss on ocean ecosystem services". *Science*, 316, 1285. [doi:10.1126/science.1137946](https://doi.org/10.1126/science.1137946)

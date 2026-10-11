@@ -54,10 +54,10 @@ data_source <- function(lang = "en") {
   licence <- '<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>'
   html <- if (lang == "zh") {
     sprintf(paste0('\U0001F4E6 <strong>\u6570\u636e\u6765\u6e90</strong>\uff1a',
-                   '<a href="%s">FAO \u5168\u7403\u6355\u635e\u4ea7\u91cf</a>\uff08Global Capture Production\uff09',
-                   '<strong>%s</strong> \u7248\uff08FAO \u4e8e %s \u53d1\u5e03\uff0c%s \u5e74\uff09\uff0c',
-                   '\u4e0b\u8f7d\u5730\u5740 %s\uff0c\u8bb8\u53ef\u8bc1 %s\u3002',
-                   '\u7528 <code>fao_data_info()</code> \u67e5\u770b\u4f60\u4f7f\u7528\u7684\u7248\u672c\u548c\u5f15\u7528\u683c\u5f0f\u3002'),
+                   '<a href="%s">FAO\u5168\u7403\u6355\u635e\u4ea7\u91cf</a>\uff08Global Capture Production\uff09',
+                   '<strong>%s</strong>\u7248\uff08FAO\u4e8e%s\u53d1\u5e03\uff0c%s\u5e74\uff09\uff0c',
+                   '\u4e0b\u8f7d\u5730\u5740%s\uff0c\u8bb8\u53ef\u8bc1%s\u3002',
+                   '\u7528<code>fao_data_info()</code>\u67e5\u770b\u4f60\u4f7f\u7528\u7684\u7248\u672c\u548c\u5f15\u7528\u683c\u5f0f\u3002'),
             page, info$release, info$release_date, years, file, licence)
   } else {
     sprintf(paste0('\U0001F4E6 <strong>Data</strong>: <a href="%s">FAO Global Capture Production</a>, ',
