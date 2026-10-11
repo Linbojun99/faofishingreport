@@ -32,6 +32,12 @@ fao_translate(x, type = c("country", "species", "area"), lang = "zh")
 
 A character vector of translated names.
 
+## See also
+
+Other settings and language:
+[`fao_font()`](https://linbojun99.github.io/faofishingreport/reference/fao_font.md),
+[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+
 ## Examples
 
 ``` r

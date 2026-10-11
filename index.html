@@ -180,6 +180,10 @@
 <td>Load the newest downloaded release, or the bundled data</td>
 </tr>
 <tr>
+<td><code><a href="reference/fao_data_info.html">fao_data_info()</a></code></td>
+<td>The FAO release used, its download link and citation</td>
+</tr>
+<tr>
 <td><code><a href="reference/fao_data_dir.html">fao_data_dir()</a></code></td>
 <td>Folder where downloaded releases are stored</td>
 </tr>
@@ -316,11 +320,26 @@
 <p>The <a href="https://linbojun99.github.io/faofishingreport/">website</a> has a guide for every part of the package: <a href="https://linbojun99.github.io/faofishingreport/articles/get-started.html">🚀 Get started</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/data.html">💾 FAO data</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/fishing-areas.html">🌊 Fishing areas</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/species-countries.html">🐟 Species and countries</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/status-trends.html">📈 Status and trends</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/quality-diversity-fleets.html">🔍 Quality, diversity and fleets</a> · <a href="https://linbojun99.github.io/faofishingreport/articles/customise.html">🎨 Customise</a></p>
 </div>
 <div class="section level2">
+<h2 id="bar_chart-data-source">📊 Data source<a class="anchor" aria-label="anchor" href="#bar_chart-data-source"></a>
+</h2>
+<p>The package comes with the FAO <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link">Global Capture Production</a> statistics, <strong>release 2026.1.0</strong> (published by FAO on 30 March 2026; catches 1950–2024), downloaded on 10 October 2026 from <a href="https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip" class="external-link uri">https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip</a>.</p>
+<ul>
+<li>All releases: <a href="https://www.fao.org/fishery/static/Data/" class="external-link uri">https://www.fao.org/fishery/static/Data/</a>. <code><a href="reference/check_fao_update.html">check_fao_update()</a></code> and <code><a href="reference/download_fao_data.html">download_fao_data()</a></code> find and download newer ones.</li>
+<li>Species names: FAO <a href="https://www.fao.org/fishery/static/ASFIS/ASFIS_sp.zip" class="external-link">ASFIS list</a>; Chinese names of countries, species and areas from the FAO code lists in the release.</li>
+<li>Licence: <a href="https://creativecommons.org/licenses/by/4.0/" class="external-link">CC BY 4.0</a>, with the <a href="https://www.fao.org/contact-us/terms/db-terms-of-use/en" class="external-link">FAO terms of use</a>.</li>
+<li>
+<code><a href="reference/fao_data_info.html">fao_data_info()</a></code> shows the release your analyses use and how to cite it.</li>
+</ul>
+</div>
+<div class="section level2">
 <h2 id="pencil-citation">📝 Citation<a class="anchor" aria-label="anchor" href="#pencil-citation"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"faofishingreport"</span><span class="op">)</span></span></code></pre></div>
-<p>Please also cite FAO as the source of the data: FAO Fisheries and Aquaculture, Global Capture Production (FishStat). FAO data are licensed under <a href="https://creativecommons.org/licenses/by/4.0/" class="external-link">CC BY 4.0</a>.</p>
+<p>Please also cite the FAO data, e.g. with the citation given by <code><a href="reference/fao_data_info.html">fao_data_info()</a></code>:</p>
+<blockquote>
+<p>FAO. 2026. Global Capture Production 1950-2024, release 2026.1.0. In: Fisheries and Aquaculture [online]. Rome. [Cited 10 October 2026]. <a href="https://www.fao.org/fishery/collection/capture/en" class="external-link uri">https://www.fao.org/fishery/collection/capture/en</a>. Licence: CC BY 4.0.</p>
+</blockquote>
 </div>
 <div class="section level2">
 <h2 id="balance_scale-license">⚖️ License<a class="anchor" aria-label="anchor" href="#balance_scale-license"></a>

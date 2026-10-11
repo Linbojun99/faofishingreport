@@ -10,6 +10,8 @@ Check for, download and load FAO Global Capture Production releases.
   : Download an FAO Global Capture Production Release
 - [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)
   : Load FAO Global Capture Production Data
+- [`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
+  : Information on the FAO Data Used
 - [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md)
   : Directory for Downloaded FAO Data
 

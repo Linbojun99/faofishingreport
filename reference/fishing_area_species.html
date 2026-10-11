@@ -183,29 +183,35 @@
 
 <dt id="arg-h-value">h_value<a class="anchor" aria-label="anchor" href="#arg-h-value"></a></dt>
 <dd><p>The minimum segment size, which must be greater than the
-number of regressors. For the model `ts_data ~ 1`, this means `h_value`
+number of regressors. For the model <code>ts_data ~ 1</code>, this means <code>h_value</code>
 should be greater than 1. The default value is 0.15.</p></dd>
 
 
 <dt id="arg-zh">ZH<a class="anchor" aria-label="anchor" href="#arg-zh"></a></dt>
-<dd><p>A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the same as `lang = "zh"`.</p></dd>
+<dd><p>A logical value to Chinese. Default is "FALSE". <code>ZH = TRUE</code> is the same as <code>lang = "zh"</code>.</p></dd>
 
 
 <dt id="arg-lang">lang<a class="anchor" aria-label="anchor" href="#arg-lang"></a></dt>
 <dd><p>The language of the chart text and names: "en" (English), "zh" (Chinese) or "both"
-(Chinese and English). Default is NULL, which uses "zh" if `ZH = TRUE`, and otherwise the language
-set with `fao_settings()` ("en" unless changed).</p></dd>
+(Chinese and English). Default is NULL, which uses "zh" if <code>ZH = TRUE</code>, and otherwise the language
+set with <code><a href="fao_settings.html">fao_settings()</a></code> ("en" unless changed).</p></dd>
 
 
 <dt id="arg-pptx">pptx<a class="anchor" aria-label="anchor" href="#arg-pptx"></a></dt>
-<dd><p>A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are
-also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
-changed for all functions with `fao_settings(pptx = TRUE)`.</p></dd>
+<dd><p>A logical value. Charts are always saved as PNG in <code>figures/png/</code>; if TRUE they are
+also saved as editable PowerPoint files in <code>figures/pptx/</code>. Default is FALSE, which can be
+changed for all functions with <code>fao_settings(pptx = TRUE)</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>NULL. The function saves the generated plots to the specified directory if plot = TRUE.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Other fishing area analyses:
+<code><a href="fishing_area_country.html">fishing_area_country()</a></code>,
+<code><a href="fishing_area_data.html">fishing_area_data()</a></code></p></div>
     </div>
 
     <div class="section level2">

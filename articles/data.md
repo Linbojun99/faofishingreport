@@ -1,5 +1,14 @@
 # 💾 FAO data: download and customise
 
+📦 **Data**: [FAO Global Capture
+Production](https://www.fao.org/fishery/collection/capture/en), release
+**2026.1.0** (published by FAO on 2026-03-30; catches 1950–2024),
+downloaded from
+[Capture_2026.1.0.zip](https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip).
+Licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
+shows the release you use and how to cite it.
+
 ## 📚 The data
 
 faofishingreport uses the **FAO Global Capture Production** statistics:
@@ -129,6 +138,32 @@ data <- load_fao_data()                  # newest
 data <- load_fao_data("2023.1.1")        # a downloaded release
 ```
 
+### 📝 Release information and citation
+
+[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
+tells which release the analyses use, when FAO published it, the years
+it covers, the file it was downloaded from, the licence and a citation
+for reports. It takes the same `version` as
+[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md):
+
+``` r
+
+fao_data_info()
+#> FAO Global Capture Production
+#>   Release:   2026.1.0 (published by FAO on 2026-03-30)
+#>   Years:     1950-2024
+#>   File:      https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip
+#>   Obtained:  bundled with faofishingreport, downloaded from FAO on 2026-10-10
+#>   Licence:   CC BY 4.0 (https://www.fao.org/contact-us/terms/db-terms-of-use/en)
+#>   Citation:  FAO. 2026. Global Capture Production 1950-2024, release 2026.1.0. In: Fisheries and Aquaculture [online]. Rome. [Cited 10 October 2026]. https://www.fao.org/fishery/collection/capture/en. Licence: CC BY 4.0.
+```
+
+``` r
+
+fao_data_info()$citation           # the citation only
+fao_data_info("2025.1.0")          # a downloaded release
+```
+
 ## 📋 Data format
 
 Every release is converted to the same eight columns, so all analyses
@@ -140,13 +175,13 @@ show_table(data, n = 6)
 ```
 
 | Country..Name. | ASFIS.species..Name. | FAO.major.fishing.area..Name. | Unit..Name. | Unit | Year | Production | Production.Type |
-|:---|:---|:---|:---|:---|---:|---:|:---|
-| Afghanistan | Freshwater fishes nei | Asia - Inland waters | Tonnes - live weight | TLW, Number | 1,950 | 100 | actual |
-| Afghanistan | Freshwater fishes nei | Asia - Inland waters | Tonnes - live weight | TLW, Number | 1,951 | 100 | actual |
-| Afghanistan | Freshwater fishes nei | Asia - Inland waters | Tonnes - live weight | TLW, Number | 1,952 | 100 | actual |
-| Afghanistan | Freshwater fishes nei | Asia - Inland waters | Tonnes - live weight | TLW, Number | 1,953 | 100 | actual |
-| Afghanistan | Freshwater fishes nei | Asia - Inland waters | Tonnes - live weight | TLW, Number | 1,954 | 100 | actual |
-| Afghanistan | Freshwater fishes nei | Asia - Inland waters | Tonnes - live weight | TLW, Number | 1,955 | 200 | actual |
+|:---|:---|:---|:---|:---|:---|---:|:---|
+| Afghanistan | Freshwater fishes nei | Asia - Inland waters | Tonnes - live weight | TLW, Number | 1950 | 100 | actual |
+| Afghanistan | Freshwater fishes nei | Asia - Inland waters | Tonnes - live weight | TLW, Number | 1951 | 100 | actual |
+| Afghanistan | Freshwater fishes nei | Asia - Inland waters | Tonnes - live weight | TLW, Number | 1952 | 100 | actual |
+| Afghanistan | Freshwater fishes nei | Asia - Inland waters | Tonnes - live weight | TLW, Number | 1953 | 100 | actual |
+| Afghanistan | Freshwater fishes nei | Asia - Inland waters | Tonnes - live weight | TLW, Number | 1954 | 100 | actual |
+| Afghanistan | Freshwater fishes nei | Asia - Inland waters | Tonnes - live weight | TLW, Number | 1955 | 200 | actual |
 
 | Column | Content |
 |----|----|

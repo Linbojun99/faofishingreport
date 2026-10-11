@@ -16,7 +16,7 @@ check_fao_update(data_dir = fao_data_dir(), quiet = FALSE)
 - data_dir:
 
   The directory where downloaded releases are stored. Default is
-  \`fao_data_dir()\`.
+  [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md).
 
 - quiet:
 
@@ -24,10 +24,18 @@ check_fao_update(data_dir = fao_data_dir(), quiet = FALSE)
 
 ## Value
 
-Invisibly, a list with \`latest\` (newest online version), \`bundled\`
-(version bundled with the package), \`local\` (newest downloaded
-version, or NA if none), \`update_available\` (logical) and \`releases\`
-(a data frame of all online releases).
+Invisibly, a list with `latest` (newest online version), `bundled`
+(version bundled with the package), `local` (newest downloaded version,
+or NA if none), `update_available` (logical) and `releases` (a data
+frame of all online releases).
+
+## See also
+
+Other FAO data:
+[`download_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fao_data.md),
+[`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md),
+[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md),
+[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)
 
 ## Examples
 

@@ -128,8 +128,11 @@ fishing_area_data(
 - fill_scale:
 
   The colour palette of the map. Default is NULL, which uses
-  \`map_palette\` of \`fao_settings()\` ("deep-orange" unless changed);
-  see \`?fao_settings\` for the choices.
+  `map_palette` of
+  [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+  ("deep-orange" unless changed); see
+  [`?fao_settings`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+  for the choices.
 
 - axis_title_size_map:
 
@@ -145,33 +148,41 @@ fishing_area_data(
 
 - ZH:
 
-  A logical value to Chinese. Default is "FALSE". \`ZH = TRUE\` is the
-  same as \`lang = "zh"\`.
+  A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the
+  same as `lang = "zh"`.
 
 - lang:
 
   The language of the chart text: "en" (English), "zh" (Chinese) or
-  "both" (Chinese and English). Default is NULL, which uses "zh" if \`ZH
-  = TRUE\`, and otherwise the language set with \`fao_settings()\` ("en"
-  unless changed).
+  "both" (Chinese and English). Default is NULL, which uses "zh" if
+  `ZH = TRUE`, and otherwise the language set with
+  [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+  ("en" unless changed).
 
 - data_version:
 
   The FAO data release to use: "latest" (default) uses the newest of the
-  releases downloaded with \`download_fao_data()\` and the data bundled
-  with the package; "bundled" uses the data bundled with the package; or
-  a release such as "2026.1.0".
+  releases downloaded with
+  [`download_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fao_data.md)
+  and the data bundled with the package; "bundled" uses the data bundled
+  with the package; or a release such as "2026.1.0".
 
 - pptx:
 
-  A logical value. Charts are always saved as PNG in \`figures/png/\`;
-  if TRUE they are also saved as editable PowerPoint files in
-  \`figures/pptx/\`. Default is FALSE, which can be changed for all
-  functions with \`fao_settings(pptx = TRUE)\`.
+  A logical value. Charts are always saved as PNG in `figures/png/`; if
+  TRUE they are also saved as editable PowerPoint files in
+  `figures/pptx/`. Default is FALSE, which can be changed for all
+  functions with `fao_settings(pptx = TRUE)`.
 
 ## Value
 
 A data frame containing data for the specified fishing area.
+
+## See also
+
+Other fishing area analyses:
+[`fishing_area_country()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_country.md),
+[`fishing_area_species()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_species.md)
 
 ## Examples
 

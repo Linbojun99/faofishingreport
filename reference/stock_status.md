@@ -27,8 +27,9 @@ stock_status(
 
 - area_data:
 
-  FAO catch data: \`fishing_area_data()\$area_data\`, or any subset of
-  \`load_fao_data()\` (e.g. one country, or several fishing areas).
+  FAO catch data: `fishing_area_data()$area_data`, or any subset of
+  [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)
+  (e.g. one country, or several fishing areas).
 
 - taxon_levels:
 
@@ -56,23 +57,25 @@ stock_status(
 - plot:
 
   A logical value. If TRUE (default), charts are saved in
-  \`figures/png/summary/\`.
+  `figures/png/summary/`.
 
 - table:
 
-  A logical value. If TRUE (default), tables are saved in \`tables/\`.
+  A logical value. If TRUE (default), tables are saved in `tables/`.
 
 - lang:
 
   The language of the chart text and names: "en" (English), "zh"
   (Chinese) or "both" (Chinese and English). Default is NULL, which uses
-  the language set with \`fao_settings()\` ("en" unless changed).
+  the language set with
+  [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+  ("en" unless changed).
 
 - pptx:
 
   A logical value. If TRUE, charts are also saved as editable PowerPoint
-  files in \`figures/pptx/summary/\`. Default is FALSE, which can be
-  changed for all functions with \`fao_settings(pptx = TRUE)\`.
+  files in `figures/pptx/summary/`. Default is FALSE, which can be
+  changed for all functions with `fao_settings(pptx = TRUE)`.
 
 - label:
 
@@ -81,9 +84,9 @@ stock_status(
 
 ## Value
 
-Invisibly, a list with \`yearly\` (number of stocks and catch by status
-and year), \`stocks\` (one row per stock) and \`status\` (the status of
-each stock in each year).
+Invisibly, a list with `yearly` (number of stocks and catch by status
+and year), `stocks` (one row per stock) and `status` (the status of each
+stock in each year).
 
 ## Details
 
@@ -91,24 +94,23 @@ A "stock" is the yearly catch of one FAO species item, summed over all
 countries in the data (usually one fishing area). Each year of a stock
 is classified as:
 
-- Developing: before the year of peak catch, with catch at most 50% of
-  the peak;
+- Developing: before the year of peak catch, with catch at most 50\\
 
-- Exploited: catch above 50% of the peak;
+- Exploited: catch above 50\\
 
-- Over-exploited: after the peak, catch between 10% and 50% of the peak;
+- Over-exploited: after the peak, catch between 10\\
 
-- Collapsed: after the peak, catch below 10% of the peak;
+- Collapsed: after the peak, catch below 10\\
 
 - Rebuilding: after the peak and after a collapse, catch back between
-  10% and 50% of the peak.
+  10\\
 
 Only series that meet the inclusion criteria are classified: items
 identified to species, genus or family (pooled groups such as "Marine
-fishes nei" are excluded), at least \`min_years\` years from the first
-to the last year with catch, at least \`min_consecutive\` consecutive
-years with catch, and a total catch of at least \`min_catch\` tonnes.
-Years after the last reported catch count as zero catch.
+fishes nei" are excluded), at least `min_years` years from the first to
+the last year with catch, at least `min_consecutive` consecutive years
+with catch, and a total catch of at least `min_catch` tonnes. Years
+after the last reported catch count as zero catch.
 
 The method uses catch data only. A falling catch can also come from
 changes in management, markets or reporting, so the results are
@@ -120,6 +122,18 @@ Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global
 catch data for inferences on the world's marine fisheries. Fish and
 Fisheries 14: 293-311.
 [doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
+
+## See also
+
+Other summary analyses:
+[`area_overview()`](https://linbojun99.github.io/faofishingreport/reference/area_overview.md),
+[`coastal_distant()`](https://linbojun99.github.io/faofishingreport/reference/coastal_distant.md),
+[`country_group_summary()`](https://linbojun99.github.io/faofishingreport/reference/country_group_summary.md),
+[`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md),
+[`diversity_concentration()`](https://linbojun99.github.io/faofishingreport/reference/diversity_concentration.md),
+[`peak_trend()`](https://linbojun99.github.io/faofishingreport/reference/peak_trend.md),
+[`regime_shift()`](https://linbojun99.github.io/faofishingreport/reference/regime_shift.md),
+[`species_group_composition()`](https://linbojun99.github.io/faofishingreport/reference/species_group_composition.md)
 
 ## Examples
 

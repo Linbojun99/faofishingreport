@@ -169,8 +169,8 @@ If the plot parameter is TRUE, it will also generate and save plots to the figur
 
 
 <dt id="arg-fill-scale">fill_scale<a class="anchor" aria-label="anchor" href="#arg-fill-scale"></a></dt>
-<dd><p>The colour palette of the map. Default is NULL, which uses `map_palette` of
-`fao_settings()` ("deep-orange" unless changed); see `?fao_settings` for the choices.</p></dd>
+<dd><p>The colour palette of the map. Default is NULL, which uses <code>map_palette</code> of
+<code><a href="fao_settings.html">fao_settings()</a></code> ("deep-orange" unless changed); see <code><a href="fao_settings.html">?fao_settings</a></code> for the choices.</p></dd>
 
 
 <dt id="arg-axis-title-size-map">axis_title_size_map<a class="anchor" aria-label="anchor" href="#arg-axis-title-size-map"></a></dt>
@@ -186,30 +186,36 @@ If the plot parameter is TRUE, it will also generate and save plots to the figur
 
 
 <dt id="arg-zh">ZH<a class="anchor" aria-label="anchor" href="#arg-zh"></a></dt>
-<dd><p>A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the same as `lang = "zh"`.</p></dd>
+<dd><p>A logical value to Chinese. Default is "FALSE". <code>ZH = TRUE</code> is the same as <code>lang = "zh"</code>.</p></dd>
 
 
 <dt id="arg-lang">lang<a class="anchor" aria-label="anchor" href="#arg-lang"></a></dt>
 <dd><p>The language of the chart text: "en" (English), "zh" (Chinese) or "both"
-(Chinese and English). Default is NULL, which uses "zh" if `ZH = TRUE`, and otherwise the language
-set with `fao_settings()` ("en" unless changed).</p></dd>
+(Chinese and English). Default is NULL, which uses "zh" if <code>ZH = TRUE</code>, and otherwise the language
+set with <code><a href="fao_settings.html">fao_settings()</a></code> ("en" unless changed).</p></dd>
 
 
 <dt id="arg-data-version">data_version<a class="anchor" aria-label="anchor" href="#arg-data-version"></a></dt>
 <dd><p>The FAO data release to use: "latest" (default) uses the newest of the
-releases downloaded with `download_fao_data()` and the data bundled with the package;
+releases downloaded with <code><a href="download_fao_data.html">download_fao_data()</a></code> and the data bundled with the package;
 "bundled" uses the data bundled with the package; or a release such as "2026.1.0".</p></dd>
 
 
 <dt id="arg-pptx">pptx<a class="anchor" aria-label="anchor" href="#arg-pptx"></a></dt>
-<dd><p>A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are
-also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
-changed for all functions with `fao_settings(pptx = TRUE)`.</p></dd>
+<dd><p>A logical value. Charts are always saved as PNG in <code>figures/png/</code>; if TRUE they are
+also saved as editable PowerPoint files in <code>figures/pptx/</code>. Default is FALSE, which can be
+changed for all functions with <code>fao_settings(pptx = TRUE)</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A data frame containing data for the specified fishing area.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Other fishing area analyses:
+<code><a href="fishing_area_country.html">fishing_area_country()</a></code>,
+<code><a href="fishing_area_species.html">fishing_area_species()</a></code></p></div>
     </div>
 
     <div class="section level2">

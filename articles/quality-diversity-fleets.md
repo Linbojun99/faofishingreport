@@ -1,5 +1,14 @@
 # 🔍 Data quality, diversity and fleets
 
+📦 **Data**: [FAO Global Capture
+Production](https://www.fao.org/fishery/collection/capture/en), release
+**2026.1.0** (published by FAO on 2026-03-30; catches 1950–2024),
+downloaded from
+[Capture_2026.1.0.zip](https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip).
+Licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
+shows the release you use and how to cite it.
+
 ``` r
 
 FAO34 <- fishing_area_data("Atlantic, Eastern Central")
@@ -42,17 +51,17 @@ show_table(quality$countries, digits = 1)
 ```
 
 | country      | country_en   | catch_last_5_years | estimated_pct | species_level_pct |
-|:-------------|:-------------|-------------------:|--------------:|------------------:|
-| Morocco      | Morocco      |        7,094,636.3 |           0.0 |              80.5 |
-| Mauritania   | Mauritania   |        3,371,495.3 |          58.6 |              76.0 |
-| Senegal      | Senegal      |        2,322,403.4 |          19.7 |              73.4 |
-| Nigeria      | Nigeria      |        2,207,354.6 |          41.1 |              32.7 |
-| Guinea       | Guinea       |        1,715,820.0 |          13.2 |              41.6 |
-| Ghana        | Ghana        |        1,668,263.9 |           3.9 |              84.9 |
-| Sierra Leone | Sierra Leone |        1,026,560.0 |         100.0 |              64.3 |
-| Cameroon     | Cameroon     |          990,473.0 |         100.0 |              45.4 |
-| Belize       | Belize       |          954,073.3 |          82.4 |              46.7 |
-| Georgia      | Georgia      |          635,110.0 |         100.0 |              37.5 |
+|:-------------|:-------------|:-------------------|--------------:|------------------:|
+| Morocco      | Morocco      | 7094636.3          |           0.0 |              80.5 |
+| Mauritania   | Mauritania   | 3371495.3          |          58.6 |              76.0 |
+| Senegal      | Senegal      | 2322403.4          |          19.7 |              73.4 |
+| Nigeria      | Nigeria      | 2207354.6          |          41.1 |              32.7 |
+| Guinea       | Guinea       | 1715820.0          |          13.2 |              41.6 |
+| Ghana        | Ghana        | 1668263.9          |           3.9 |              84.9 |
+| Sierra Leone | Sierra Leone | 1026560.0          |         100.0 |              64.3 |
+| Cameroon     | Cameroon     | 990473.0           |         100.0 |              45.4 |
+| Belize       | Belize       | 954073.3           |          82.4 |              46.7 |
+| Georgia      | Georgia      | 635110.0           |         100.0 |              37.5 |
 
 | Argument | Meaning                                  | Default |
 |----------|------------------------------------------|---------|
@@ -86,11 +95,11 @@ show_table(subset(diversity, Year %in% c(1970, 1990, 2010, max(Year))), digits =
 ```
 
 |  | Year | n_species | n_countries | shannon_species | hhi_species | hhi_countries | top5_species_pct | top5_countries_pct |
-|:---|---:|---:|---:|---:|---:|---:|---:|---:|
-| 1970 | 1,970 | 59 | 42 | 3.17 | 782.75 | 1,035.68 | 60.22 | 58.63 |
-| 1990 | 1,990 | 93 | 44 | 3.00 | 1,085.65 | 2,066.01 | 60.17 | 77.37 |
-| 2010 | 2,010 | 151 | 49 | 3.17 | 869.69 | 948.69 | 55.39 | 54.35 |
-| 2024 | 2,024 | 358 | 40 | 3.74 | 495.43 | 1,238.71 | 41.71 | 66.04 |
+|:---|:---|---:|---:|---:|---:|---:|---:|---:|
+| 1970 | 1970 | 59 | 42 | 3.17 | 782.75 | 1,035.68 | 60.22 | 58.63 |
+| 1990 | 1990 | 93 | 44 | 3.00 | 1,085.65 | 2,066.01 | 60.17 | 77.37 |
+| 2010 | 2010 | 151 | 49 | 3.17 | 869.69 | 948.69 | 55.39 | 54.35 |
+| 2024 | 2024 | 358 | 40 | 3.74 | 495.43 | 1,238.71 | 41.71 | 66.04 |
 
 **Reading the indicators.** A higher Shannon index means more species
 items and a more even catch; its maximum is $`\ln S`$ for $`S`$ items.

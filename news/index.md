@@ -9,6 +9,14 @@
   34, in English with a Chinese version (switch with the button at the
   top right).
 - New logo.
+- [`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
+  shows which FAO release the analyses use, when FAO published it, the
+  years it covers, the file it was downloaded from, its licence and a
+  citation for reports. Every page of the website shows the release used
+  and its download link.
+- Function reference pages of the website link to the previous and next
+  function and list the other functions of their group; help pages link
+  to related functions (“See also”).
 - `fao_settings(data_dir = ...)` keeps downloaded FAO data in a chosen
   folder, e.g. one shared by a team;
   [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md)

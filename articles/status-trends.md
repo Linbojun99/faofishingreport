@@ -1,5 +1,14 @@
 # 📈 Composition, stock status and trends
 
+📦 **Data**: [FAO Global Capture
+Production](https://www.fao.org/fishery/collection/capture/en), release
+**2026.1.0** (published by FAO on 2026-03-30; catches 1950–2024),
+downloaded from
+[Capture_2026.1.0.zip](https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip).
+Licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
+shows the release you use and how to cite it.
+
 The summary analyses take any catch data: a fishing area from
 [`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md),
 or any subset of
@@ -123,17 +132,17 @@ show_table(status$stocks, digits = 0)
 ```
 
 | species_name | species_en | first_year | peak_year | peak_tonnes | last_year_tonnes | pct_of_peak | status_last_year |
-|:---|:---|---:|---:|---:|---:|---:|:---|
-| European pilchard(=Sardine) | European pilchard(=Sardine) | 1,950 | 2,018 | 1,354,617 | 712,716 | 53 | Exploited |
-| Jack and horse mackerels nei | Jack and horse mackerels nei | 1,950 | 2,010 | 574,747 | 337,644 | 59 | Exploited |
-| Sardinellas nei | Sardinellas nei | 1,950 | 2,018 | 542,915 | 177,899 | 33 | Over-exploited |
-| Atlantic chub mackerel | Atlantic chub mackerel | 1,950 | 2,019 | 485,443 | 469,019 | 97 | Exploited |
-| Round sardinella | Round sardinella | 1,950 | 1,991 | 453,410 | 158,263 | 35 | Over-exploited |
-| Bonga shad | Bonga shad | 1,950 | 2,017 | 406,850 | 354,470 | 87 | Exploited |
-| European anchovy | European anchovy | 1,950 | 1,990 | 347,231 | 169,929 | 49 | Rebuilding |
-| Madeiran sardinella | Madeiran sardinella | 1,950 | 2,021 | 311,565 | 228,673 | 73 | Exploited |
-| Skipjack tuna | Skipjack tuna | 1,950 | 2,018 | 246,590 | 170,738 | 69 | Exploited |
-| Yellowfin tuna | Yellowfin tuna | 1,955 | 1,990 | 155,112 | 129,746 | 84 | Exploited |
+|:---|:---|:---|:---|---:|:---|---:|:---|
+| European pilchard(=Sardine) | European pilchard(=Sardine) | 1950 | 2018 | 1,354,617 | 712716.3 | 53 | Exploited |
+| Jack and horse mackerels nei | Jack and horse mackerels nei | 1950 | 2010 | 574,747 | 337644.0 | 59 | Exploited |
+| Sardinellas nei | Sardinellas nei | 1950 | 2018 | 542,915 | 177898.6 | 33 | Over-exploited |
+| Atlantic chub mackerel | Atlantic chub mackerel | 1950 | 2019 | 485,443 | 469019.2 | 97 | Exploited |
+| Round sardinella | Round sardinella | 1950 | 1991 | 453,410 | 158263.0 | 35 | Over-exploited |
+| Bonga shad | Bonga shad | 1950 | 2017 | 406,850 | 354469.8 | 87 | Exploited |
+| European anchovy | European anchovy | 1950 | 1990 | 347,231 | 169928.9 | 49 | Rebuilding |
+| Madeiran sardinella | Madeiran sardinella | 1950 | 2021 | 311,565 | 228673.1 | 73 | Exploited |
+| Skipjack tuna | Skipjack tuna | 1950 | 2018 | 246,590 | 170738.4 | 69 | Exploited |
+| Yellowfin tuna | Yellowfin tuna | 1955 | 1990 | 155,112 | 129746.4 | 84 | Exploited |
 
 ``` r
 
@@ -189,17 +198,17 @@ show_table(species_trend[, c("name", "peak_year", "pct_of_peak", "growth_pct_per
 ```
 
 | name | peak_year | pct_of_peak | growth_pct_per_year | kendall_tau | p_value | trend |
-|:---|---:|---:|---:|---:|---:|:---|
-| Total | 2,018 | 92.38 | 1.52 | 0.07 | 0.79 | none |
-| European pilchard(=Sardine) | 2,018 | 52.61 | -2.86 | -0.11 | 0.65 | none |
-| Marine fishes nei | 1,995 | 60.48 | 3.37 | 0.16 | 0.53 | none |
-| Jack and horse mackerels nei | 2,010 | 58.75 | 0.91 | -0.24 | 0.33 | none |
-| Sardinellas nei | 2,018 | 32.77 | -6.89 | -0.64 | 0.01 | down |
-| Round sardinella | 1,991 | 34.91 | -3.51 | -0.51 | 0.04 | down |
-| Atlantic chub mackerel | 2,019 | 96.62 | 4.56 | 0.56 | 0.03 | up |
-| Bonga shad | 2,017 | 87.13 | 1.98 | 0.02 | 0.93 | none |
-| Skipjack tuna | 2,018 | 69.24 | -2.45 | -0.24 | 0.33 | none |
-| European anchovy | 1,990 | 48.94 | 16.82 | 0.78 | 0.00 | up |
+|:---|:---|---:|:---|---:|---:|:---|
+| Total | 2018 | 92.38 | 1.5238166 | 0.07 | 0.79 | none |
+| European pilchard(=Sardine) | 2018 | 52.61 | -2.8645343 | -0.11 | 0.65 | none |
+| Marine fishes nei | 1995 | 60.48 | 3.3702218 | 0.16 | 0.53 | none |
+| Jack and horse mackerels nei | 2010 | 58.75 | 0.9056879 | -0.24 | 0.33 | none |
+| Sardinellas nei | 2018 | 32.77 | -6.8868239 | -0.64 | 0.01 | down |
+| Round sardinella | 1991 | 34.91 | -3.5065382 | -0.51 | 0.04 | down |
+| Atlantic chub mackerel | 2019 | 96.62 | 4.5615490 | 0.56 | 0.03 | up |
+| Bonga shad | 2017 | 87.13 | 1.9803198 | 0.02 | 0.93 | none |
+| Skipjack tuna | 2018 | 69.24 | -2.4519403 | -0.24 | 0.33 | none |
+| European anchovy | 1990 | 48.94 | 16.8173573 | 0.78 | 0.00 | up |
 
 ``` r
 
@@ -241,27 +250,27 @@ show_table(overview[, c("name", "peak_year", "peak_tonnes", "last_year_tonnes", 
 ```
 
 | name | peak_year | peak_tonnes | last_year_tonnes | pct_of_peak | trend |
-|:---|---:|---:|---:|---:|:---|
-| Total | 1,996 | 87,687,040 | 80,930,379 | 92 | none |
-| Pacific, Northwest | 1,997 | 24,020,927 | 19,067,991 | 79 | down |
-| Atlantic, Northeast | 1,976 | 13,172,602 | 7,842,194 | 60 | none |
-| Pacific, Southeast | 1,994 | 20,422,424 | 9,453,525 | 46 | none |
-| Pacific, Western Central | 2,024 | 14,105,189 | 14,105,189 | 100 | up |
-| Indian Ocean, Eastern | 2,017 | 6,910,165 | 6,401,680 | 93 | none |
-| Atlantic, Eastern Central | 2,018 | 5,520,055 | 5,099,475 | 92 | none |
-| Indian Ocean, Western | 2,024 | 6,223,934 | 6,223,934 | 100 | up |
-| Atlantic, Northwest | 1,968 | 4,612,569 | 1,407,262 | 31 | down |
-| Pacific, Northeast | 1,987 | 3,401,535 | 2,551,441 | 75 | down |
-| Atlantic, Southeast | 1,978 | 3,299,221 | 1,475,796 | 45 | down |
-| Atlantic, Southwest | 1,997 | 2,664,636 | 1,970,437 | 74 | none |
-| Atlantic, Western Central | 1,984 | 2,505,870 | 1,077,647 | 43 | down |
-| Pacific, Eastern Central | 2,024 | 2,349,505 | 2,349,505 | 100 | up |
-| Mediterranean and Black Sea | 1,986 | 2,046,352 | 1,026,111 | 50 | down |
-| Pacific, Southwest | 1,991 | 929,232 | 381,353 | 41 | down |
-| Atlantic, Antarctic | 1,987 | 510,151 | 466,707 | 91 | up |
-| Indian Ocean, Antarctic | 1,972 | 189,586 | 10,861 | 6 | none |
-| Pacific, Antarctic | 1,983 | 10,678 | 2,666 | 25 | none |
-| Arctic Sea | 2,023 | 20,094 | 16,604 | 83 | up |
+|:---|:---|---:|:---|---:|:---|
+| Total | 1996 | 87,687,040 | 80930379.329 | 92 | none |
+| Pacific, Northwest | 1997 | 24,020,927 | 19067991.408 | 79 | down |
+| Atlantic, Northeast | 1976 | 13,172,602 | 7842194.162 | 60 | none |
+| Pacific, Southeast | 1994 | 20,422,424 | 9453525.210 | 46 | none |
+| Pacific, Western Central | 2024 | 14,105,189 | 14105189.055 | 100 | up |
+| Indian Ocean, Eastern | 2017 | 6,910,165 | 6401679.921 | 93 | none |
+| Atlantic, Eastern Central | 2018 | 5,520,055 | 5099475.194 | 92 | none |
+| Indian Ocean, Western | 2024 | 6,223,934 | 6223934.387 | 100 | up |
+| Atlantic, Northwest | 1968 | 4,612,569 | 1407262.000 | 31 | down |
+| Pacific, Northeast | 1987 | 3,401,535 | 2551440.501 | 75 | down |
+| Atlantic, Southeast | 1978 | 3,299,221 | 1475796.444 | 45 | down |
+| Atlantic, Southwest | 1997 | 2,664,636 | 1970436.942 | 74 | none |
+| Atlantic, Western Central | 1984 | 2,505,870 | 1077647.351 | 43 | down |
+| Pacific, Eastern Central | 2024 | 2,349,505 | 2349505.260 | 100 | up |
+| Mediterranean and Black Sea | 1986 | 2,046,352 | 1026111.034 | 50 | down |
+| Pacific, Southwest | 1991 | 929,232 | 381352.879 | 41 | down |
+| Atlantic, Antarctic | 1987 | 510,151 | 466706.916 | 91 | up |
+| Indian Ocean, Antarctic | 1972 | 189,586 | 10861.059 | 6 | none |
+| Pacific, Antarctic | 1983 | 10,678 | 2665.606 | 25 | none |
+| Arctic Sea | 2023 | 20,094 | 16604.000 | 83 | up |
 
 ## 🔀 Synchronous breakpoints
 
@@ -290,27 +299,27 @@ show_table(shifts$breakpoints[, c("species", "first_year", "n_breakpoints", "bre
 ```
 
 | species | first_year | n_breakpoints | breakpoint_years |
-|:---|---:|---:|:---|
-| European pilchard(=Sardine) | 1,950 | 3 | 1971, 1987, 2014 |
-| Marine fishes nei | 1,950 | 2 | 1964, 2008 |
-| Jack and horse mackerels nei | 1,950 | 3 | 1969, 1984, 2004 |
-| Sardinellas nei | 1,950 | 4 | 1970, 1981, 1996, 2010 |
-| Round sardinella | 1,950 | 3 | 1974, 1985, 2012 |
-| Atlantic chub mackerel | 1,950 | 3 | 1968, 1996, 2014 |
-| Bonga shad | 1,950 | 4 | 1969, 1980, 1997, 2013 |
-| Skipjack tuna | 1,950 | 3 | 1971, 1990, 2011 |
-| European anchovy | 1,950 | 3 | 1974, 1987, 2013 |
-| Yellowfin tuna | 1,955 | 3 | 1965, 1975, 1999 |
-| Madeiran sardinella | 1,950 | 2 | 1990, 2010 |
-| Octopuses, etc. nei | 1,950 | 4 | 1967, 1986, 2002, 2013 |
-| Bigeye tuna | 1,950 | 3 | 1969, 1991, 2002 |
-| Porgies, seabreams nei | 1,950 | 4 | 1964, 1977, 2000, 2011 |
-| Cuttlefish, bobtail squids nei | 1,950 | 4 | 1964, 1982, 2002, 2013 |
-| West African croakers nei | 1,950 | 4 | 1961, 1972, 1987, 2013 |
-| Largehead hairtail | 1,959 | 5 | 1971, 1982, 1992, 2001, 2011 |
-| Sea catfishes nei | 1,950 | 3 | 1976, 2001, 2014 |
-| Bigeye grunt | 1,950 | 3 | 1965, 1976, 2014 |
-| Common octopus | 1,962 | 3 | 1972, 1984, 2000 |
+|:---|:---|---:|:---|
+| European pilchard(=Sardine) | 1950 | 3 | 1971, 1987, 2014 |
+| Marine fishes nei | 1950 | 2 | 1964, 2008 |
+| Jack and horse mackerels nei | 1950 | 3 | 1969, 1984, 2004 |
+| Sardinellas nei | 1950 | 4 | 1970, 1981, 1996, 2010 |
+| Round sardinella | 1950 | 3 | 1974, 1985, 2012 |
+| Atlantic chub mackerel | 1950 | 3 | 1968, 1996, 2014 |
+| Bonga shad | 1950 | 4 | 1969, 1980, 1997, 2013 |
+| Skipjack tuna | 1950 | 3 | 1971, 1990, 2011 |
+| European anchovy | 1950 | 3 | 1974, 1987, 2013 |
+| Yellowfin tuna | 1955 | 3 | 1965, 1975, 1999 |
+| Madeiran sardinella | 1950 | 2 | 1990, 2010 |
+| Octopuses, etc. nei | 1950 | 4 | 1967, 1986, 2002, 2013 |
+| Bigeye tuna | 1950 | 3 | 1969, 1991, 2002 |
+| Porgies, seabreams nei | 1950 | 4 | 1964, 1977, 2000, 2011 |
+| Cuttlefish, bobtail squids nei | 1950 | 4 | 1964, 1982, 2002, 2013 |
+| West African croakers nei | 1950 | 4 | 1961, 1972, 1987, 2013 |
+| Largehead hairtail | 1959 | 5 | 1971, 1982, 1992, 2001, 2011 |
+| Sea catfishes nei | 1950 | 3 | 1976, 2001, 2014 |
+| Bigeye grunt | 1950 | 3 | 1965, 1976, 2014 |
+| Common octopus | 1962 | 3 | 1972, 1984, 2000 |
 
 ``` r
 

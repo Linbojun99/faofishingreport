@@ -93,6 +93,7 @@ PowerPoint 到 `figures/pptx/`），表格保存在 `tables/`。
 | [`check_fao_update()`](https://linbojun99.github.io/faofishingreport/reference/check_fao_update.md) | 对比 FAO 线上最新版本与本机数据 |
 | [`download_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fao_data.md) | 下载某个版本并转换成本包的数据格式 |
 | [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md) | 读取最新的数据（下载的或包自带的） |
+| [`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md) | 所用 FAO 数据的版本、下载链接和引用格式 |
 | [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) | 下载数据的保存目录 |
 
 **🌊 渔区分析**
@@ -152,6 +153,28 @@ PowerPoint 到 `figures/pptx/`），表格保存在 `tables/`。
 
 每个函数的参数说明见[函数参考](https://linbojun99.github.io/faofishingreport/reference/index.md)（英文）。
 
+## 📊 数据来源
+
+本包自带 FAO
+[全球捕捞产量](https://www.fao.org/fishery/collection/capture/en)（Global
+Capture Production）统计 **2026.1.0 版**（FAO 于 2026 年 3 月 30
+日发布，包含 1950–2024 年的产量），于 2026 年 10 月 10 日下载自
+<https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip>。
+
+- 全部版本：<https://www.fao.org/fishery/static/Data/>，用
+  [`check_fao_update()`](https://linbojun99.github.io/faofishingreport/reference/check_fao_update.md)
+  和
+  [`download_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fao_data.md)
+  查找并下载新版本。
+- 物种名称：FAO [ASFIS
+  物种名录](https://www.fao.org/fishery/static/ASFIS/ASFIS_sp.zip)；国家、物种、渔区的中文名来自该版本数据附带的
+  FAO 代码表。
+- 许可证：[CC BY
+  4.0](https://creativecommons.org/licenses/by/4.0/)，并遵守 [FAO
+  数据库使用条款](https://www.fao.org/contact-us/terms/db-terms-of-use/en)。
+- [`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
+  显示你的分析所用的版本及引用格式。
+
 ## 📝 引用
 
 ``` r
@@ -159,9 +182,14 @@ PowerPoint 到 `figures/pptx/`），表格保存在 `tables/`。
 citation("faofishingreport")
 ```
 
-使用结果发表时，请同时注明数据来源：FAO Fisheries and Aquaculture,
-Global Capture Production (FishStat)。FAO 数据采用 [CC BY
-4.0](https://creativecommons.org/licenses/by/4.0/) 许可。
+使用结果发表时，请同时引用 FAO 数据，例如
+[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
+给出的格式：
+
+> FAO. 2026. Global Capture Production 1950-2024, release 2026.1.0. In:
+> Fisheries and Aquaculture \[online\]. Rome. \[Cited 10 October 2026\].
+> <https://www.fao.org/fishery/collection/capture/en>. Licence: CC BY
+> 4.0.
 
 ## ⚖️ 许可证
 

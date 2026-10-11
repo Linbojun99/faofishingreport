@@ -2,9 +2,10 @@
 
 This function sets, for the rest of the R session, how all functions of
 the package draw and save charts and maps. Call it without arguments to
-see the current settings, or with \`reset = TRUE\` to go back to the
+see the current settings, or with `reset = TRUE` to go back to the
 defaults. Each setting is stored as the R option
-\`faofishingreport.\<name\>\`, so it can also be set with \`options()\`.
+`faofishingreport.<name>`, so it can also be set with
+[`options()`](https://rdrr.io/r/base/options.html).
 
 ## Usage
 
@@ -16,18 +17,18 @@ fao_settings(..., reset = FALSE)
 
 - ...:
 
-  Settings to change, as \`name = value\`:
+  Settings to change, as `name = value`:
 
   lang
 
   :   Default language of charts: "en" (default), "zh" or "both". The
-      \`lang\` argument of a function still takes precedence.
+      `lang` argument of a function still takes precedence.
 
   theme
 
   :   Chart theme: "bw" (default), "classic", "minimal", "light",
       "linedraw", "gray" or "dark", or a ggplot2 theme object such as
-      \`ggplot2::theme_bw(base_size = 14)\`. Maps and pie charts keep a
+      `ggplot2::theme_bw(base_size = 14)`. Maps and pie charts keep a
       minimal theme.
 
   base_size
@@ -36,15 +37,18 @@ fao_settings(..., reset = FALSE)
 
   font
 
-  :   Font family for chart text; see \`fao_font()\`.
+  :   Font family for chart text; see
+      [`fao_font()`](https://linbojun99.github.io/faofishingreport/reference/fao_font.md).
 
   palette
 
   :   Colours of categories (countries, species, groups): a palette of
       the ggsci package ("npg" (default), "lancet", "nejm", "jama",
       "aaas", "jco", "d3", ...), of RColorBrewer ("Set1", "Set2",
-      "Dark2", "Paired", ...), of base R (\`grDevices::palette.pals()\`,
-      e.g. "Okabe-Ito" or "Tableau 10"; or \`grDevices::hcl.pals()\`,
+      "Dark2", "Paired", ...), of base R
+      ([`grDevices::palette.pals()`](https://rdrr.io/r/grDevices/palette.html),
+      e.g. "Okabe-Ito" or "Tableau 10"; or
+      [`grDevices::hcl.pals()`](https://rdrr.io/r/grDevices/palettes.html),
       e.g. "viridis" or "Dark 3"), or a vector of colours.
 
   map_palette
@@ -53,8 +57,9 @@ fao_settings(..., reset = FALSE)
       ("deep-orange" (default), "blue", "teal", "red", ...), an
       RColorBrewer palette ("YlOrRd", "Blues", ...), a viridis option
       ("viridis", "magma", "plasma", "inferno", "cividis", "mako",
-      "rocket", "turbo"), a \`grDevices::hcl.pals()\` name, or a vector
-      of colours.
+      "rocket", "turbo"), a
+      [`grDevices::hcl.pals()`](https://rdrr.io/r/grDevices/palettes.html)
+      name, or a vector of colours.
 
   map_center
 
@@ -68,7 +73,7 @@ fao_settings(..., reset = FALSE)
   :   Map projection: "longlat" (default, plain longitude-latitude),
       "robinson", "mollweide", "equal_earth", "winkel_tripel" or
       "mercator", or any PROJ string or EPSG code (e.g. "EPSG:3857";
-      then \`map_center\` is not applied).
+      then `map_center` is not applied).
 
   map_land
 
@@ -95,10 +100,12 @@ fao_settings(..., reset = FALSE)
 
   data_dir
 
-  :   Folder where \`download_fao_data()\` saves FAO releases and where
-      all functions look for them, e.g. a folder shared by a team.
-      Default is NULL, the user data folder of R; see
-      \`fao_data_dir()\`.
+  :   Folder where
+      [`download_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/download_fao_data.md)
+      saves FAO releases and where all functions look for them, e.g. a
+      folder shared by a team. Default is NULL, the user data folder of
+      R; see
+      [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md).
 
 - reset:
 
@@ -108,6 +115,12 @@ fao_settings(..., reset = FALSE)
 ## Value
 
 Invisibly, a list of the current settings.
+
+## See also
+
+Other settings and language:
+[`fao_font()`](https://linbojun99.github.io/faofishingreport/reference/fao_font.md),
+[`fao_translate()`](https://linbojun99.github.io/faofishingreport/reference/fao_translate.md)
 
 ## Examples
 

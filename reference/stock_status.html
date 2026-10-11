@@ -75,8 +75,8 @@ share of catch in each status over time.</p>
 
 
 <dl><dt id="arg-area-data">area_data<a class="anchor" aria-label="anchor" href="#arg-area-data"></a></dt>
-<dd><p>FAO catch data: `fishing_area_data()$area_data`, or any subset of
-`load_fao_data()` (e.g. one country, or several fishing areas).</p></dd>
+<dd><p>FAO catch data: <code>fishing_area_data()$area_data</code>, or any subset of
+<code><a href="load_fao_data.html">load_fao_data()</a></code> (e.g. one country, or several fishing areas).</p></dd>
 
 
 <dt id="arg-taxon-levels">taxon_levels<a class="anchor" aria-label="anchor" href="#arg-taxon-levels"></a></dt>
@@ -102,23 +102,23 @@ they are classified. Default is FALSE.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>
-<dd><p>A logical value. If TRUE (default), charts are saved in `figures/png/summary/`.</p></dd>
+<dd><p>A logical value. If TRUE (default), charts are saved in <code>figures/png/summary/</code>.</p></dd>
 
 
 <dt id="arg-table">table<a class="anchor" aria-label="anchor" href="#arg-table"></a></dt>
-<dd><p>A logical value. If TRUE (default), tables are saved in `tables/`.</p></dd>
+<dd><p>A logical value. If TRUE (default), tables are saved in <code>tables/</code>.</p></dd>
 
 
 <dt id="arg-lang">lang<a class="anchor" aria-label="anchor" href="#arg-lang"></a></dt>
 <dd><p>The language of the chart text and names: "en" (English), "zh" (Chinese) or
 "both" (Chinese and English). Default is NULL, which uses the language set with
-`fao_settings()` ("en" unless changed).</p></dd>
+<code><a href="fao_settings.html">fao_settings()</a></code> ("en" unless changed).</p></dd>
 
 
 <dt id="arg-pptx">pptx<a class="anchor" aria-label="anchor" href="#arg-pptx"></a></dt>
 <dd><p>A logical value. If TRUE, charts are also saved as editable PowerPoint files in
-`figures/pptx/summary/`. Default is FALSE, which can be changed for all functions with
-`fao_settings(pptx = TRUE)`.</p></dd>
+<code>figures/pptx/summary/</code>. Default is FALSE, which can be changed for all functions with
+<code>fao_settings(pptx = TRUE)</code>.</p></dd>
 
 
 <dt id="arg-label">label<a class="anchor" aria-label="anchor" href="#arg-label"></a></dt>
@@ -128,21 +128,21 @@ country) of the data.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Invisibly, a list with `yearly` (number of stocks and catch by status and year),
-        `stocks` (one row per stock) and `status` (the status of each stock in each year).</p>
+    <p>Invisibly, a list with <code>yearly</code> (number of stocks and catch by status and year),
+<code>stocks</code> (one row per stock) and <code>status</code> (the status of each stock in each year).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>A "stock" is the yearly catch of one FAO species item, summed over all countries in the data
-(usually one fishing area). Each year of a stock is classified as:</p><ul><li><p>Developing: before the year of peak catch, with catch at most 50% of the peak;</p></li>
-<li><p>Exploited: catch above 50% of the peak;</p></li>
-<li><p>Over-exploited: after the peak, catch between 10% and 50% of the peak;</p></li>
-<li><p>Collapsed: after the peak, catch below 10% of the peak;</p></li>
-<li><p>Rebuilding: after the peak and after a collapse, catch back between 10% and 50% of the peak.</p></li>
+(usually one fishing area). Each year of a stock is classified as:</p><ul><li><p>Developing: before the year of peak catch, with catch at most 50\<!-- % of the peak; --></p></li>
+<li><p>Exploited: catch above 50\<!-- % of the peak; --></p></li>
+<li><p>Over-exploited: after the peak, catch between 10\<!-- % and 50\\% of the peak; --></p></li>
+<li><p>Collapsed: after the peak, catch below 10\<!-- % of the peak; --></p></li>
+<li><p>Rebuilding: after the peak and after a collapse, catch back between 10\<!-- % and 50\\% of the peak. --></p></li>
 </ul><p>Only series that meet the inclusion criteria are classified: items identified to species,
-genus or family (pooled groups such as "Marine fishes nei" are excluded), at least `min_years`
-years from the first to the last year with catch, at least `min_consecutive` consecutive years
-with catch, and a total catch of at least `min_catch` tonnes. Years after the last reported
+genus or family (pooled groups such as "Marine fishes nei" are excluded), at least <code>min_years</code>
+years from the first to the last year with catch, at least <code>min_consecutive</code> consecutive years
+with catch, and a total catch of at least <code>min_catch</code> tonnes. Years after the last reported
 catch count as zero catch.</p>
 <p>The method uses catch data only. A falling catch can also come from changes in management,
 markets or reporting, so the results are indicative and do not replace stock assessments.</p>
@@ -152,6 +152,18 @@ markets or reporting, so the results are indicative and do not replace stock ass
     <p>Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global catch data for
 inferences on the world's marine fisheries. Fish and Fisheries 14: 293-311.
 <a href="https://doi.org/10.1111/j.1467-2979.2012.00469.x" class="external-link">doi:10.1111/j.1467-2979.2012.00469.x</a></p>
+    </div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p>Other summary analyses:
+<code><a href="area_overview.html">area_overview()</a></code>,
+<code><a href="coastal_distant.html">coastal_distant()</a></code>,
+<code><a href="country_group_summary.html">country_group_summary()</a></code>,
+<code><a href="data_quality.html">data_quality()</a></code>,
+<code><a href="diversity_concentration.html">diversity_concentration()</a></code>,
+<code><a href="peak_trend.html">peak_trend()</a></code>,
+<code><a href="regime_shift.html">regime_shift()</a></code>,
+<code><a href="species_group_composition.html">species_group_composition()</a></code></p></div>
     </div>
 
     <div class="section level2">

@@ -1,5 +1,14 @@
 # 🎨 Customise charts and maps
 
+📦 **Data**: [FAO Global Capture
+Production](https://www.fao.org/fishery/collection/capture/en), release
+**2026.1.0** (published by FAO on 2026-03-30; catches 1950–2024),
+downloaded from
+[Capture_2026.1.0.zip](https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip).
+Licence [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+[`fao_data_info()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_info.md)
+shows the release you use and how to cite it.
+
 All charts and maps follow a few settings, set once per R session with
 [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md).
 Run it without arguments to see the current settings:

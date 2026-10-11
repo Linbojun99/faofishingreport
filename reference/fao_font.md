@@ -17,12 +17,17 @@ fao_font(family = NULL)
 - family:
 
   Optional font family to use from now on, e.g. "Microsoft YaHei". The
-  choice can also be set with \`options(faofishingreport.font =
-  "...")\`.
+  choice can also be set with `options(faofishingreport.font = "...")`.
 
 ## Value
 
 The font family name.
+
+## See also
+
+Other settings and language:
+[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md),
+[`fao_translate()`](https://linbojun99.github.io/faofishingreport/reference/fao_translate.md)
 
 ## Examples
 
