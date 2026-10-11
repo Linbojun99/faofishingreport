@@ -5,12 +5,34 @@
 #' and the trend over the last `recent_years` years: the average annual growth rate, and a
 #' Mann-Kendall trend test (Kendall's tau between year and catch).
 #'
+#' Catch series are autocorrelated, which makes the usual Mann-Kendall test find too many trends,
+#' so the variance of the test is corrected with the effective sample size of an AR(1) process
+#' (Yue and Wang 2004), from the lag-1 autocorrelation of the detrended series corrected for its
+#' small-sample bias (Kendall 1954; `lag1_autocorrelation`); `p_value_iid` is the p value of the
+#' usual test, for comparison. Over ten years the autocorrelation is poorly known and the
+#' correction is only partial: strongly autocorrelated series still show trends too often. `trend` tests each series on its own
+#' (`p_value` < 0.05): with many series, some trends are found by chance, and `q_value` gives the
+#' p values adjusted for the number of series in the result, the total excepted (Benjamini and
+#' Hochberg 1995). Read trends with `p_value` < 0.05 as exploratory, and give as significant
+#' the trends with `q_value` < 0.05, as [fao_report()] does for the main species and countries.
+#'
 #' @inheritParams summary_params
 #' @param by What to compare: "species" (default), "country" or "area".
 #' @param top_n The number of species, countries or areas with the largest total catch to include.
 #'        Default is 10; use `Inf` for all.
 #' @param recent_years The number of most recent years used for the trend. Default is 10.
 #' @return Invisibly, a data frame with one row per series (the first row is the total).
+#' @references
+#' Benjamini, Y. and Hochberg, Y. (1995). Controlling the false discovery rate: a practical and
+#' powerful approach to multiple testing. Journal of the Royal Statistical Society: Series B 57:
+#' 289-300. \doi{10.1111/j.2517-6161.1995.tb02031.x}
+#'
+#' Kendall, M.G. (1954). Note on bias in the estimation of autocorrelation. Biometrika 41: 403-404.
+#' \doi{10.1093/biomet/41.3-4.403}
+#'
+#' Yue, S. and Wang, C.Y. (2004). The Mann-Kendall test modified by effective sample size to
+#' detect trend in serially correlated hydrological series. Water Resources Management 18:
+#' 201-218. \doi{10.1023/B:WARM.0000043140.61082.60}
 #' @family summary analyses
 #' @export
 #' @examples
@@ -47,11 +69,8 @@ peak_trend <- function(area_data, by = c("species", "country", "area"), top_n = 
     recent <- years > last_year - recent_years
     first <- catch[recent][1]
     last <- catch[length(catch)]
-    # Series with fewer than three recent years have no trend
-    test <- tryCatch(
-      suppressWarnings(stats::cor.test(years[recent], catch[recent], method = "kendall", exact = FALSE)),
-      error = function(e) list(estimate = NA_real_, p.value = NA_real_)
-    )
+    # Series with fewer than four recent years have no trend
+    test <- fao_mann_kendall(years[recent], catch[recent])
     data.frame(
       name_en = n,
       peak_year = years[which.max(catch)],
@@ -59,14 +78,18 @@ peak_trend <- function(area_data, by = c("species", "country", "area"), top_n = 
       last_year_tonnes = last,
       pct_of_peak = 100 * last / max(catch),
       growth_pct_per_year = if (first > 0) 100 * ((last / first)^(1 / (sum(recent) - 1)) - 1) else NA,
-      kendall_tau = unname(test$estimate),
-      p_value = test$p.value,
-      trend = ifelse(!is.na(test$p.value) & test$p.value < 0.05,
-                     ifelse(test$estimate > 0, "up", "down"), "none"),
+      kendall_tau = unname(test["tau"]),
+      p_value = unname(test["p"]),
+      p_value_iid = unname(test["p_iid"]),
+      lag1_autocorrelation = unname(test["r1"]),
+      trend = ifelse(!is.na(test["p"]) & test["p"] < 0.05, ifelse(test["tau"] > 0, "up", "down"), "none"),
       stringsAsFactors = FALSE
     )
   }))
   is_total <- seq_len(nrow(result)) == 1
+  result$q_value <- NA_real_
+  result$q_value[!is_total] <- stats::p.adjust(result$p_value[!is_total], method = "BH")
+  result <- result[, c(setdiff(names(result), c("trend", "q_value")), "q_value", "trend")]
   result$name <- result$name_en
   result$name[!is_total] <- fao_translate(result$name_en[!is_total], by, lang)
   result <- result[, c("name", setdiff(names(result), "name"))]

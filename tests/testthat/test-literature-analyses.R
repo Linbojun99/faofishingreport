@@ -50,7 +50,7 @@ test_that("a sudden fall in catch is found as a shock by both published methods"
   expect_false(years[3] %in% fao_find_shocks(years, early, fao_shock_settings("cottrell2019"))$Year)
 })
 
-test_that("shock frequencies are shocks per series with catch", {
+test_that("shock frequencies are shocks per series analysed in the year", {
   withr::local_dir(withr::local_tempdir())
   years <- 1961:2013
   set.seed(2)
@@ -166,4 +166,36 @@ test_that("the distant-water profile splits a country's catch by adjacent and di
   expect_error(suppressMessages(distant_water_profile("Atlantis", plot = FALSE, table = FALSE, data_version = "bundled")),
                "No catch")
   expect_length(list.files(), 0)
+})
+
+
+test_that("the shock frequency counts the series whose catch fell to zero", {
+  set.seed(1)
+  series <- function(species, drop) {
+    catch <- 1000 + round(stats::rnorm(35, 0, 20))
+    if (drop) catch[31] <- 0
+    data.frame(Country..Name. = "Norway", ASFIS.species..Name. = species, FAO.major.fishing.area..Name. = "Atlantic, Northeast",
+               Unit..Name. = "Tonnes - live weight", Unit = "TLW", Year = 1990:2024, Production = catch,
+               Production.Type = "actual", stringsAsFactors = FALSE)
+  }
+  data <- rbind(series("Atlantic cod", TRUE), series("Atlantic herring", TRUE), series("Atlantic mackerel", FALSE))
+  shocks <- catch_shocks(data, by = "species", plot = FALSE, table = FALSE)
+  y <- shocks$by_year[shocks$by_year$Year == 2020, ]
+  expect_equal(y$n_series, 3)
+  expect_equal(y$n_shocks, 2)
+  expect_equal(y$shock_frequency_pct, 100 * 2 / 3)
+  expect_true(all(shocks$by_year$shock_frequency_pct <= 100, na.rm = TRUE))
+})
+
+
+test_that("moving windows start as soon as the series are as long as the window", {
+  set.seed(7)
+  windows <- function(n) {
+    years <- 2000 + seq_len(n)
+    data <- rbind(fake_catch("Chile", "Anchoveta(=Peruvian anchovy)", "Pacific, Southeast", years, 1000 + stats::rnorm(n, 0, 100)),
+                  fake_catch("Chile", "Chilean jack mackerel", "Pacific, Southeast", years, 500 + stats::rnorm(n, 0, 50)))
+    out <- suppressMessages(catch_synchrony(data, window = 20, plot = FALSE, table = FALSE))
+    if (is.null(out$windows)) 0 else nrow(out$windows)
+  }
+  expect_equal(c(windows(19), windows(20), windows(21), windows(22)), c(0, 1, 2, 3))
 })

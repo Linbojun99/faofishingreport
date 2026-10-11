@@ -42,7 +42,8 @@ Invisibly, a list of two data frames:
 coastal, deep-sea and not specified fishing, all marine fishing, inland fishing, work area
 unspecified and in total; women, men and sex unknown; full time, part time, occasional and
 working time unknown; the share of women and of each working time among those known, the
-share with sex or working time unknown, and the share in estimated values;}
+share with sex or working time unknown, and the share in estimated values; NA in the
+years without any record (not reported), between the first and last years reported;}
 \item{notes}{FAO's notes on the countries.}
 }
 Charts are saved in \verb{figures/png/summary/}: \verb{<label>_employment.png} (people by work area,

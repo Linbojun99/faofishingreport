@@ -74,7 +74,9 @@
 #' @section Trends and comparison with SST:
 #' Trends are calculated over all years and over the years from `trend_from`, using only years
 #' whose coverage is at least `min_coverage`: the slope of a linear regression (°C per decade)
-#' and a Mann-Kendall test (Kendall's tau between year and MTC), as in `peak_trend()`. The MTC is
+#' and a Mann-Kendall test (Kendall's tau between year and MTC) with its variance corrected for
+#' autocorrelation (Yue and Wang 2004; `kendall_p_iid` is the p value of the usual test), as in
+#' `peak_trend()`. The MTC is
 #' compared with the SST of the area by their slopes and by the Pearson correlation of the two
 #' series and of their year-to-year differences.
 #'
@@ -82,8 +84,9 @@
 #' each large marine ecosystem with models that also included fishing effort, a large-scale ocean
 #' index and autocorrelation, and related the rates of MTC and SST across ecosystems; regional
 #' studies used lagged correlations, regressions and models (Tsikliras and Stergiou 2014; Liang
-#' et al. 2018; Kamberi et al. 2025). Both series are autocorrelated, so the p-values given here,
-#' which treat years as independent, are too small (Yue et al. 2002; Pyper and Peterman 1998).
+#' et al. 2018; Kamberi et al. 2025). Both series are autocorrelated: the Mann-Kendall test takes
+#' this into account, but the p-values of the regression slope and of the correlations treat years
+#' as independent and are too small (Yue et al. 2002; Pyper and Peterman 1998).
 #' Two series that both rise over time are correlated even when they are not related; the
 #' correlation of differences avoids this, but can miss a relation that acts only over decades
 #' (Pyper and Peterman 1998). In the Adriatic Sea, the relation of MTC with SST was no longer
@@ -202,6 +205,10 @@
 #' Tsikliras, A.C., Peristeraki, P., Tserpes, G. and Stergiou, K.I. (2015). Mean temperature of
 #' the catch (MTC) in the Greek Seas based on landings and survey data. Frontiers in Marine
 #' Science 2: 23. \doi{10.3389/fmars.2015.00023}
+#'
+#' Yue, S. and Wang, C.Y. (2004). The Mann-Kendall test modified by effective sample size to
+#' detect trend in serially correlated hydrological series. Water Resources Management 18:
+#' 201-218. \doi{10.1023/B:WARM.0000043140.61082.60}
 #'
 #' Yue, S., Pilon, P., Phinney, B. and Cavadias, G. (2002). The influence of autocorrelation on
 #' the ability to detect trend in hydrological series. Hydrological Processes 16: 1807-1829.
@@ -430,16 +437,16 @@ fao_mtc_trend <- function(x, trend_from) {
     year <- x$year[sel]
     # A constant series gives an "essentially perfect fit" warning; its slope is 0
     fit <- if (sum(!is.na(mtc)) >= 3) suppressWarnings(summary(stats::lm(mtc ~ year)))$coefficients else NULL
-    kendall <- test(year, mtc, "kendall")
+    kendall <- fao_mann_kendall(year, mtc)
     series <- test(mtc, sst, "pearson")
     differences <- test(diff(mtc), diff(sst), "pearson")
     data.frame(
       area_en = x$area_en[1], period_start = p[1], period_end = p[2], n_years = sum(!is.na(mtc)),
       mtc_slope_per_decade = if (is.null(fit)) NA_real_ else 10 * fit["year", "Estimate"],
       mtc_slope_p = if (is.null(fit)) NA_real_ else fit["year", "Pr(>|t|)"],
-      kendall_tau = kendall[["estimate"]], kendall_p = kendall[["p"]],
+      kendall_tau = kendall[["tau"]], kendall_p = kendall[["p"]], kendall_p_iid = kendall[["p_iid"]],
       trend = ifelse(!is.na(kendall[["p"]]) & kendall[["p"]] < 0.05,
-                     ifelse(kendall[["estimate"]] > 0, "up", "down"), "none"),
+                     ifelse(kendall[["tau"]] > 0, "up", "down"), "none"),
       sst_slope_per_decade = slope(ifelse(is.na(mtc), NA, sst), year),
       cor_mtc_sst = series[["estimate"]], cor_mtc_sst_p = series[["p"]],
       cor_differences = differences[["estimate"]], cor_differences_p = differences[["p"]],

@@ -129,3 +129,48 @@ test_that("your own NetCDF file gives the table of every area, computed once and
   withr::local_options(faofishingreport.sst = file)
   expect_equal(suppressMessages(fao_area_sst("34")), again)
 })
+
+
+test_that("NetCDF time axes follow their calendar and the time of their origin", {
+  expect_equal(fao_sst_dates(12, "hours since 2000-01-01 12:00:00"), as.Date("2000-01-02"))
+  expect_equal(fao_sst_dates(0:1, "days since 1970-01-01T00:00:00Z"), as.Date(c("1970-01-01", "1970-01-02")))
+  expect_equal(format(fao_sst_dates(seq(15, 345, by = 30), "days since 2000-01-01", "360_day"), "%Y-%m"),
+               sprintf("2000-%02d", 1:12))
+  expect_equal(format(fao_sst_dates(c(0, 59, 365), "days since 2001-01-01", "noleap"), "%Y-%m"),
+               c("2001-01", "2001-03", "2002-01"))
+  expect_error(fao_sst_dates(0, "days since 2000-01-01", "julian"), "Unsupported calendar")
+})
+
+test_that("grid cell weights are saved by grid and cover the cells asked for", {
+  dir <- withr::local_tempdir()
+  lon <- c(-25, -15, -5, 5)
+  lat <- c(-15, -5)
+  first <- fao_sst_weights(lon, lat, c(TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE), dir)
+  other <- fao_sst_weights(lon, lat, c(FALSE, FALSE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE), dir)
+  expect_setequal(unique(first$cell), 1:2)
+  expect_setequal(unique(other$cell), 3:4)     # same grid and number of cells, other cells
+  both <- fao_sst_weights(lon, lat, c(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE), dir)
+  expect_equal(both[order(both$cell, both$area_code), c("cell", "weight")],
+               rbind(first, other)[order(c(first$cell, other$cell), c(first$area_code, other$area_code)), c("cell", "weight")],
+               ignore_attr = TRUE)
+  fao_sst_weights(lon + 1, lat, c(TRUE, rep(FALSE, 7)), dir)
+  expect_length(list.files(file.path(dir, "sst", "weights")), 2)
+})
+
+test_that("cells without values in the first year are used in the years they have values", {
+  skip_if_not_installed("ncdf4")
+  withr::local_options(faofishingreport.data_dir = withr::local_tempdir())
+  file <- withr::local_tempfile(fileext = ".nc")
+  lon <- seq(5, 355, by = 10)
+  lat <- seq(85, -85, by = -10)
+  dates <- c(sprintf("2000-%02d-15", 1:12), sprintf("2001-%02d-15", 1:12))
+  values <- array(20, c(length(lon), length(lat), length(dates)))
+  values[, lat == 5, 1:12] <- NA                 # no values at 0-10 N in 2000
+  values[, lat == 5, 13:24] <- 30                # 30 degrees C there in 2001
+  write_sst_nc(file, lon, lat, dates, values)
+  sst <- suppressMessages(fao_area_sst(sst = file))
+  area34 <- sst[sst$area_code == "34", ]
+  expect_equal(area34$sst_mean[area34$year == 2000], 20)
+  expect_gt(area34$sst_mean[area34$year == 2001], 20)
+  expect_gt(area34$n_cells[area34$year == 2001], area34$n_cells[area34$year == 2000])
+})

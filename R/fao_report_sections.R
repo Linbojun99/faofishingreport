@@ -91,6 +91,10 @@ fao_report_args <- function(dots, sections) {
            "an extension that is not part of the report. Run ", sections[[prefix]]$fun, "(by = \"division\") on its own.",
            call. = FALSE)
     }
+    if (arg == "rank_years" && sections[[prefix]]$fun %in% c("fishing_area_species", "fishing_area_country")) {
+      stop("fao_report(): ", name, " cannot be set: the report ranks the main species and countries by the catch of ",
+           "the last five years, in its tables and charts alike.", call. = FALSE)
+    }
     if (!arg %in% allowed) {
       stop("fao_report(): ", name, " would set ", arg, ", which is not an argument of ", sections[[prefix]]$fun,
            "(). Its arguments: ", paste(allowed, collapse = ", "), call. = FALSE)
@@ -106,6 +110,8 @@ fao_report_allowed_args <- function(fun) {
   # by = "division" of pelagic_demersal() and mean_temperature_catch() needs the catch data by
   # division of load_fao_divisions(), an extension that is not part of the report
   if (fun %in% c("pelagic_demersal", "mean_temperature_catch")) args <- setdiff(args, "by")
+  # the charts of the main species and countries rank them by the last five years, as the tables
+  if (fun %in% c("fishing_area_species", "fishing_area_country")) args <- setdiff(args, "rank_years")
   setdiff(unique(args), c("...", "area", "area_data", "area_name", "lang", "pptx", "table"))
 }
 
@@ -215,8 +221,8 @@ fao_section_total_values <- function(ctx) {
   list_text <- function(x) fao_report_list(x, lang)
   total <- tapply(data$Production, data$Year, sum)
   years <- as.integer(names(total))
-  test <- suppressWarnings(stats::cor.test(years, as.numeric(total), method = "kendall", exact = FALSE))
-  overall <- if (test$p.value < 0.05) ifelse(test$estimate > 0, "overall_up", "overall_down") else "overall_none"
+  test <- fao_mann_kendall(years, as.numeric(total))
+  overall <- if (isTRUE(test[["p"]] < 0.05)) ifelse(test[["tau"]] > 0, "overall_up", "overall_down") else "overall_none"
   recent <- ctx$results$total$trend[1, ]
   coefs <- ctx$results$total$value$coefs_data
   stages <- if (!is.null(coefs) && nrow(coefs) > 1) {
@@ -259,14 +265,14 @@ fao_section_total_write <- function(x, ctx) {
 # ---- Main species and countries of the last five years --------------------------------------
 fao_section_species_run <- function(ctx, args) {
   out <- ctx$step("main species", fao_section_call(ctx, "fishing_area_species", args, list(
-    area_data = ctx$area_data, rank_range = c(1, ctx$top_n), table = FALSE, lang = ctx$lang)))
+    area_data = ctx$area_data, rank_range = c(1, ctx$top_n), rank_years = 5, table = FALSE, lang = ctx$lang)))
   out$trend <- suppressMessages(peak_trend(ctx$area_data, by = "species", top_n = Inf, plot = FALSE, table = FALSE, lang = "en"))
   out
 }
 
 fao_section_countries_run <- function(ctx, args) {
   out <- ctx$step("main countries", fao_section_call(ctx, "fishing_area_country", args, list(
-    area_data = ctx$area_data, rank_range = c(1, ctx$top_n), table = FALSE, lang = ctx$lang)))
+    area_data = ctx$area_data, rank_range = c(1, ctx$top_n), rank_years = 5, table = FALSE, lang = ctx$lang)))
   out$trend <- suppressMessages(peak_trend(ctx$area_data, by = "country", top_n = Inf, plot = FALSE, table = FALSE, lang = "en"))
   out
 }
@@ -278,8 +284,14 @@ fao_section_top <- function(ctx, column, trend_table) {
   sums <- sort(tapply(window$Production, window[[column]], sum), decreasing = TRUE)
   top <- utils::head(sums[sums > 0], ctx$top_n)
   trend <- trend_table[match(names(top), trend_table$name_en), ]
+  # The trends of the main items are a family of tests: their p values (corrected for
+  # autocorrelation) are adjusted for the number of items (Benjamini-Hochberg), and only the
+  # trends with q < 0.05 are given as significant
+  q <- stats::p.adjust(trend$p_value, method = "BH")
+  formal <- ifelse(!is.na(q) & q < 0.05, ifelse(trend$kendall_tau > 0, "up", "down"), "none")
   data.frame(name_en = names(top), mean = as.numeric(top) / 5, share = 100 * as.numeric(top) / sum(window$Production),
-             peak_year = trend$peak_year, pct_of_peak = trend$pct_of_peak, trend = trend$trend, stringsAsFactors = FALSE)
+             peak_year = trend$peak_year, pct_of_peak = trend$pct_of_peak, trend = formal,
+             p_value = trend$p_value, q_value = q, stringsAsFactors = FALSE)
 }
 
 fao_section_trend_parts <- function(kind, trend, names, lang) {
@@ -359,26 +371,29 @@ fao_section_countries_write <- function(x, ctx) {
   fao_report_figure(x, "countries_wrap", fao_section_chart(ctx, "countries", "area_country_wrap"), text("fig_countries_wrap"))
 }
 
-# ---- ISSCAAP groups of the last year ---------------------------------------------------------
+# ---- Species groups of the last year (ISSCAAP, or major groups with groups_group = "major") ----
 fao_section_groups_values <- function(ctx) {
   lang <- ctx$lang
+  group <- if (is.null(ctx$args$groups$group)) "isscaap" else match.arg(ctx$args$groups$group[1], c("isscaap", "major"))
   data <- ctx$area_data
-  last <- data[data$Year == max(data$Year), ]
-  groups <- fao_group_table()$species
-  group_of <- groups[[paste0("isscaap_", if (lang == "zh") "zh" else "en")]][match(last$ASFIS.species..Name., groups$name_en)]
+  last <- fao_add_groups(data[data$Year == max(data$Year), ])
+  group_of <- fao_pick(last[[paste0(group, "_en")]], last[[paste0(group, "_zh")]], lang)
+  group_of[is.na(group_of)] <- fao_label("unknown", lang)
   sums <- sort(tapply(last$Production, group_of, sum), decreasing = TRUE)
   share <- 100 * sums / sum(last$Production)
   value <- function(i, what) {
     if (length(sums) < i) return("-")
     if (what == "name") names(sums)[i] else fao_report_pct(share[i])
   }
-  list(g1 = value(1, "name"), g1_share = value(1, "share"), g2 = value(2, "name"), g2_share = value(2, "share"),
+  list(groups_variant = if (group == "major") "_major" else "",
+       g1 = value(1, "name"), g1_share = value(1, "share"), g2 = value(2, "name"), g2_share = value(2, "share"),
        g3 = value(3, "name"), g3_share = value(3, "share"))
 }
 
 fao_section_groups_write <- function(x, ctx) {
-  x <- fao_report_par(x, ctx$text("groups_p1", fig_groups = fao_report_ref(x, "figures", "groups")))
-  fao_report_figure(x, "groups", fao_section_chart(ctx, "groups", "_share[.]png$"), ctx$text("fig_groups"))
+  variant <- ctx$values$groups_variant
+  x <- fao_report_par(x, ctx$text(paste0("groups_p1", variant), fig_groups = fao_report_ref(x, "figures", "groups")))
+  fao_report_figure(x, "groups", fao_section_chart(ctx, "groups", "_share[.]png$"), ctx$text(paste0("fig_groups", variant)))
 }
 
 # ---- Stock status plots ----------------------------------------------------------------------
@@ -551,9 +566,12 @@ fao_section_collapse_values <- function(ctx) {
   }
   groups <- result$by_group[result$by_group$grouping == "species_group" & result$by_group$n_series >= 3, ]
   groups <- utils::head(groups[order(-groups$pct_collapsed), ], 3)
+  # with null_model = FALSE there are no random series to compare with: texts without them
+  has_null <- "null_pct_of_series" %in% names(s) && any(!is.na(s$null_pct_of_series))
+  variant <- if (has_null) method else paste0(method, "_nonull")
   values <- list(
-    collapse_methods = fao_report_text(paste0("methods_collapse_", method), lang),
-    collapse_method = method, n_collapse_series = s$n_series[1],
+    collapse_methods = fao_report_text(paste0("methods_collapse_", variant), lang),
+    collapse_method = method, collapse_variant = variant, n_collapse_series = s$n_series[1],
     collapse_groups = fao_report_list(vapply(seq_len(nrow(groups)), function(i) {
       fao_report_text("collapse_group", lang, list(name = groups$group_name[i], collapsed = groups$n_collapsed[i],
                                                    n = groups$n_series[i], pct = fao_report_pct(groups$pct_collapsed[i])))
@@ -563,29 +581,35 @@ fao_section_collapse_values <- function(ctx) {
     row <- function(type) s[s$type == type, ]
     values <- c(values, list(
       n_collapsed = row("collapsed")$n, collapse_pct = fao_report_pct(row("collapsed")$pct_of_series),
-      collapse_null_pct = fao_report_pct(row("collapsed")$null_pct_of_series),
-      collapse_compare = compare(row("collapsed")$pct_of_series, row("collapsed")$null_pct_of_series),
       plateau_pct = fao_report_pct(row("plateau")$pct_of_collapses), smooth_pct = fao_report_pct(row("smooth")$pct_of_collapses),
       erratic_pct = fao_report_pct(row("erratic")$pct_of_collapses)))
+    if (has_null) {
+      values$collapse_null_pct <- fao_report_pct(row("collapsed")$null_pct_of_series)
+      values$collapse_compare <- compare(row("collapsed")$pct_of_series, row("collapsed")$null_pct_of_series)
+    }
   } else {
     current <- s[s$type == "collapsed in the last year", ]
     ever <- s[s$type == "collapsed at least once", ]
-    values <- c(values, list(
-      collapse_pct_current = fao_report_pct(current$pct_of_series), collapse_null_current = fao_report_pct(current$null_pct_of_series),
-      collapse_pct_ever = fao_report_pct(ever$pct_of_series), collapse_null_ever = fao_report_pct(ever$null_pct_of_series)))
+    values <- c(values, list(collapse_pct_current = fao_report_pct(current$pct_of_series),
+                             collapse_pct_ever = fao_report_pct(ever$pct_of_series)))
+    if (has_null) {
+      values$collapse_null_current <- fao_report_pct(current$null_pct_of_series)
+      values$collapse_null_ever <- fao_report_pct(ever$null_pct_of_series)
+    }
   }
-  values$collapse_conclusion <- fao_report_text(paste0("concl_collapse_", method), lang, c(values, list(last_year = max(ctx$area_data$Year))))
+  values$collapse_conclusion <- fao_report_text(paste0("concl_collapse_", variant), lang, c(values, list(last_year = max(ctx$area_data$Year))))
   values
 }
 
 fao_section_collapse_write <- function(x, ctx) {
   method <- ctx$values$collapse_method
-  x <- fao_report_par(x, ctx$text(paste0("collapse_p_", method), fig_collapse = fao_report_ref(x, "figures", "collapse"),
+  variant <- ctx$values$collapse_variant
+  x <- fao_report_par(x, ctx$text(paste0("collapse_p_", variant), fig_collapse = fao_report_ref(x, "figures", "collapse"),
                                   fig_collapse_group = fao_report_ref(x, "figures", "collapse_group")))
   x <- fao_report_figure(x, "collapse", fao_section_chart(ctx, "collapse", paste0("_collapse_", method, "[.]png$")),
-                         ctx$text(paste0("fig_collapse_", method)))
+                         ctx$text(paste0("fig_collapse_", variant)))
   x <- fao_report_figure(x, "collapse_group", fao_section_chart(ctx, "collapse", "_by_group[.]png$"), ctx$text("fig_collapse_group"))
-  fao_report_par(x, ctx$text("collapse_note"))
+  fao_report_par(x, ctx$text(if (variant == method) "collapse_note" else "collapse_note_nonull"))
 }
 
 # ---- Synchrony and portfolio effect ------------------------------------------------------------
@@ -599,13 +623,20 @@ fao_section_synchrony_values <- function(ctx) {
   w <- result$windows
   level <- function(phi) fao_report_text(if (phi < 0.3) "sync_low" else if (phi < 0.6) "sync_moderate" else "sync_high", lang)
   window_label <- function(i) paste0(w$first_year[i], "\u2013", w$last_year[i])
-  top <- utils::head(result$series[order(-result$series$share_of_variability_pct), ], 2)
+  top <- utils::head(result$series[order(-result$series$variance_contribution_pct), ], 2)
   name_of <- if (by == "species") {
     function(en) fao_report_species_names(en, lang, fao_group_table()$species)$plain
   } else {
     function(en) if (lang == "zh") fao_translate(en, "country", "zh") else en
   }
+  # the portfolio effect can be positive (the total varies less than its series), about zero, or
+  # negative (the total varies more, e.g. when the series are fully synchronous)
+  effect <- if (s$portfolio_effect_pct >= 1) "lower" else if (s$portfolio_effect_pct <= -1) "higher" else "similar"
+  numbers <- list(cv_total = sprintf("%.3f", s$cv_total), mean_cv = sprintf("%.3f", s$mean_cv_series),
+                  portfolio = sprintf("%.0f", s$portfolio_effect_pct))
   values <- list(
+    sync_cv = fao_report_text(paste0("sync_cv_", effect), lang, numbers),
+    sync_effect = fao_report_text(paste0("sync_effect_", effect), lang, numbers),
     sync_unit = fao_report_text(paste0("sync_unit_", by), lang), sync_by = by,
     sync_detrend = fao_report_text(paste0("sync_detrend_", detrend), lang),
     sync_window = if (is.null(args$window)) 20 else args$window,
@@ -614,7 +645,7 @@ fao_section_synchrony_values <- function(ctx) {
     portfolio = sprintf("%.0f", s$portfolio_effect_pct), mean_r = sprintf("%.3f", s$mean_pairwise_correlation),
     positive_r = fao_report_pct(s$positive_correlations_pct),
     sync_top = fao_report_list(vapply(seq_len(nrow(top)), function(i) {
-      fao_report_text("sync_source", lang, list(name = name_of(top$series_en[i]), pct = fao_report_pct(top$share_of_variability_pct[i])))
+      fao_report_text("sync_source", lang, list(name = name_of(top$series_en[i]), pct = fao_report_pct(top$variance_contribution_pct[i])))
     }, character(1)), lang),
     phi_max_window = "-", phi_max = "-", phi_min_window = "-", phi_min = "-", phi_last_window = "-", phi_last = "-"
   )
@@ -657,8 +688,22 @@ fao_section_pelagic_values <- function(ctx) {
     }
     if (lang == "zh") paste0(decades$first_year[i] %/% 10 * 10, " \u5e74\u4ee3") else paste0("the ", decades$first_year[i] %/% 10 * 10, "s")
   }
+  # groups chosen with pelagic_pelagic or pelagic_demersal: the methods name the groups used
+  args <- ctx$args$pelagic
+  custom <- !is.null(args$pelagic) || !is.null(args$demersal)
+  groups_of <- function(class) {
+    used <- if (!is.null(args[[class]])) args[[class]] else fao_pd_groups()$isscaap_en[fao_pd_groups()[[definition]] == class]
+    table <- fao_isscaap_groups()
+    # the English group names have commas, so they are separated by semicolons
+    paste(fao_pick(used, table$isscaap_zh[match(used, table$isscaap_en)], lang), collapse = if (lang == "zh") "\u3001" else "; ")
+  }
   list(
-    pelagic_methods = fao_report_text(paste0("methods_pelagic_", definition), lang),
+    pelagic_methods = if (custom) {
+      fao_report_text("methods_pelagic_custom", lang, list(pd_pelagic_groups = groups_of("pelagic"),
+                                                           pd_demersal_groups = groups_of("demersal")))
+    } else {
+      fao_report_text(paste0("methods_pelagic_", definition), lang)
+    },
     pd_last = sprintf("%.2f", last$pd_ratio), pel_last = fao_report_catch(last$pelagic_tonnes, lang),
     dem_last = fao_report_catch(last$demersal_tonnes, lang),
     pd_max_period = period(which.max(decades$pd_mean)), pd_max = sprintf("%.2f", max(decades$pd_mean, na.rm = TRUE)),
@@ -695,7 +740,10 @@ fao_section_mtc_values <- function(ctx) {
   species <- utils::head(species[order(-species$weight_pct), ], 3)
   sst <- if (is.null(args$sst)) fao_setting("sst") else args$sst
   sst_product <- if (is.character(sst) && length(sst) == 1) sst else "user"
-  slope <- sprintf("%.2f", abs(trend$mtc_slope_per_decade))
+  # "increased by" and "decreased by" give the direction; without a significant trend the slope
+  # keeps its sign
+  slope <- trend$mtc_slope_per_decade
+  slope <- if (trend$trend %in% c("up", "down")) sprintf("%.2f", abs(slope)) else sub("^-(0[.]00)$", "\\1", sprintf("%.2f", slope))
   list(
     mtc_min_coverage = if (is.null(args$min_coverage)) 50 else args$min_coverage,
     sst_name = if (identical(sst_product, "ersst5")) fao_report_text("sst_ersst5", lang) else

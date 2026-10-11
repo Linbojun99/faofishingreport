@@ -1,11 +1,11 @@
 {
   "topic": "peak_trend",
-  "rd_md5": "36ac03af60062198d80872562234a199",
+  "rd_md5": "9b86e65efb96938906d373c00bbea58d",
   "stale": false,
   "en": {
     "title": "Peak Catch and Recent Trend",
     "description": "This function finds, for the total catch and for the main species, countries or fishing areas,\nthe year and size of the peak catch, the catch in the last year as a percentage of the peak,\nand the trend over the last `recent_years` years: the average annual growth rate, and a\nMann-Kendall trend test (Kendall's tau between year and catch).",
-    "details": "",
+    "details": "Catch series are autocorrelated, which makes the usual Mann-Kendall test find too many trends,\nso the variance of the test is corrected with the effective sample size of an AR(1) process\n(Yue and Wang 2004), from the lag-1 autocorrelation of the detrended series corrected for its\nsmall-sample bias (Kendall 1954; `lag1_autocorrelation`); `p_value_iid` is the p value of the\nusual test, for comparison. Over ten years the autocorrelation is poorly known and the\ncorrection is only partial: strongly autocorrelated series still show trends too often. `trend` tests each series on its own\n(`p_value` < 0.05): with many series, some trends are found by chance, and `q_value` gives the\np values adjusted for the number of series in the result, the total excepted (Benjamini and\nHochberg 1995). Read trends with `p_value` < 0.05 as exploratory, and give as significant\nthe trends with `q_value` < 0.05, as `fao_report()` does for the main species and countries.",
     "value": "Invisibly, a data frame with one row per series (the first row is the total).",
     "arguments": {
       "area_data": "FAO catch data: `fishing_area_data()$area_data`, or any subset of\n`load_fao_data()` (e.g. one country, or several fishing areas).",
@@ -23,7 +23,7 @@
   "zh": {
     "title": "峰值渔获量与近期趋势",
     "description": "该函数针对总渔获量以及主要物种、国家或渔区，找出峰值渔获量出现的年份和数值、最后一年渔获量占峰值的百分比，以及最近`recent_years`年的趋势：年均增长率，以及Mann-Kendall趋势检验（年份与渔获量之间的Kendall τ）。",
-    "details": "",
+    "details": "渔获量序列存在自相关，会使常规的Mann-Kendall检验发现过多的趋势，因此用AR(1)过程的有效样本量校正检验的方差（Yue和Wang，2004）；所用的自相关是去趋势序列的滞后1期自相关，并校正了其小样本偏差（Kendall，1954；`lag1_autocorrelation`）。`p_value_iid`是常规检验的p值，供比较。只有十年数据时，自相关难以估计准确，校正也只是部分的：自相关很强的序列仍然会过于频繁地显示出趋势。`trend`对每条序列单独检验（`p_value` < 0.05）：序列很多时，有些趋势是偶然发现的，`q_value`给出按结果中的序列数（总量除外）校正后的p值（Benjamini和Hochberg，1995）。应把`p_value` < 0.05的趋势视为探索性结果，把`q_value` < 0.05的趋势作为显著趋势报告，`fao_report()`对主要物种和国家就是这样做的。",
     "value": "以不可见方式返回一个数据框，每个序列一行（第一行为总渔获量）。",
     "arguments": {
       "area_data": "FAO渔获数据：`fishing_area_data()$area_data`，或`load_fao_data()`的任意子集（例如一个国家，或几个渔区）。",

@@ -7,6 +7,7 @@
 fishing_area_species(
   area_data,
   rank_range = c(1, 10),
+  rank_years = NULL,
   plot = TRUE,
   table = TRUE,
   timeseries_analysis = TRUE,
@@ -39,6 +40,10 @@ fishing_area_species(
 \item{area_data}{A data frame containing the fishing area data.}
 
 \item{rank_range}{A numeric vector of length 2 specifying the rank range of species to be analyzed.}
+
+\item{rank_years}{The number of recent years whose catch ranks the species items, e.g. 5 for the
+last five years (as in the tables of \code{\link[=fao_report]{fao_report()}}). Default is NULL: the catch of all years.
+The charts show the whole series either way.}
 
 \item{plot}{A logical value indicating whether to generate and save plots.}
 

@@ -118,8 +118,10 @@ The two methods differ in the smoother, the threshold and the baseline:
 
 Two summaries follow from the shocks:
 
-- the **shock frequency** of a year: the number of shocks divided by the number of series with
-  catch in that year, in percent (Cottrell et al. 2019);
+- the **shock frequency** of a year: the number of shocks divided by the number of series
+  analysed in that year, in percent (Cottrell et al. 2019); a series counts from its first year
+  with catch to the last year, also in years in which its catch fell to zero, so that a shock to
+  zero is counted in both;
 - the **shock rate** of a group (an area, a country, a continent or a species group): the number
   of shocks divided by the number of series in the group (Gephart et al. 2017).
 
@@ -218,7 +220,7 @@ catch_shocks(load_fao_data(), by = "country", method = "gephart2017")
 | Element | Content |
 |---|---|
 | `shocks` | One row per shock: the series, `Year`, `catch_tonnes`, `baseline_tonnes`, `loss_tonnes`, `loss_pct`, `cooks_distance` and `recovery_years` |
-| `by_year` | Each year: `n_series` (series with catch), `n_shocks` and `shock_frequency_pct` |
+| `by_year` | Each year: `n_series` (series analysed in that year, including those whose catch fell to zero), `n_shocks` and `shock_frequency_pct` |
 | `by_group` | Shock rate by `grouping` (country, area, species, continent, species group): `n_series`, `n_shocks` and `shocks_per_series` |
 | `series` | The series analysed: `first_year`, `last_year`, `n_years`, `total_tonnes` and `n_shocks` |
 
@@ -431,11 +433,14 @@ with(sync$summary, c(cv_total = cv_total, decomposition = sqrt(synchrony_phi) * 
 ```
 
 The second line checks the decomposition of Thibaut and Connolly (2013): the CV of the total is
-$\sqrt{\varphi}$ times the weighted mean CV. For each series, `share_of_variability_pct` is its
-share of $\sum_i \sigma_i$:
+$\sqrt{\varphi}$ times the weighted mean CV. For each series, `variance_contribution_pct` is its
+contribution to the variance of the total catch, its covariance with the total divided by the
+variance of the total (the contributions add up to 100%, and a series that damps the total has a
+negative one); `sd_share_pct` is only its share of $\sum_i \sigma_i$, which ignores how the series
+vary together:
 
 ```{r}
-show_table(sync$series[, c("series", "mean_tonnes", "sd_tonnes", "cv", "share_of_variability_pct")], digits = 2)
+show_table(sync$series[, c("series", "mean_tonnes", "sd_tonnes", "cv", "sd_share_pct", "variance_contribution_pct")], digits = 2)
 show_table(data.frame(subset(sync$windows, first_year %% 10 == 0), row.names = NULL), digits = 2)
 ```
 
@@ -496,7 +501,7 @@ of the `r countries$summary$n_series` countries compensate each other even more
 | Element | Content |
 |---|---|
 | `summary` | `n_series`, `first_year`, `last_year`, `detrend`, `synchrony_phi`, `cv_total`, `weighted_mean_cv`, `mean_cv_series`, `portfolio_effect_pct`, `mean_pairwise_correlation` and `positive_correlations_pct` |
-| `series` | Each series: `mean_tonnes`, `sd_tonnes` (after detrending), `cv` and `share_of_variability_pct` |
+| `series` | Each series: `mean_tonnes`, `sd_tonnes` (after detrending), `cv`, `sd_share_pct` and `variance_contribution_pct` |
 | `windows` | The measures in each moving window: `first_year`, `last_year`, `mid_year`, `n_series`, `synchrony_phi`, `cv_total`, `mean_cv_series` and `portfolio_effect_pct` (`NULL` when the data have fewer than `window` + 2 years) |
 | `correlation` | Matrix of the pairwise correlations of the detrended series |
 

@@ -369,10 +369,12 @@ country_species <- function(area_data, country_name, rank_range = c(1, 10),plot=
   country_species_table <- country_data %>%
     dplyr::mutate(Decade = fao_decade(Year))
 
-  # 计算每个年代的平均产量
+  # Mean yearly catch of each decade: its catch divided by the years of the data in that decade, the
+  # same for every item (years without catch count as zero, and rows of several areas are added)
+  decade_years <- table(fao_decade(unique(area_data$Year)))
   decade_avg_production_country <- country_species_table %>%
     dplyr::group_by(Decade, ASFIS.species..Name.) %>%
-    dplyr::summarize(avg_production = mean(Production, na.rm = TRUE))
+    dplyr::summarize(avg_production = sum(Production, na.rm = TRUE) / decade_years[[Decade[1]]])
 
   # 计算最近5年的产量
   recent_production_country <- country_species_table %>%

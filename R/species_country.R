@@ -144,6 +144,9 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
     dplyr::ungroup() %>%
     dplyr::mutate(Country..Name. = factor(Country..Name., levels = unique(Country..Name.[order(-Total_Tonnes)])))
 
+  # The tables join the countries with the ranking, so they keep the names of the ranking ("Other
+  # nei"); the pie charts below name it "Other countries"
+  table_data <- species_data
   species_data <- species_data %>%
     mutate(Country..Name. = replace(Country..Name., Country..Name. == Othernei, Other))
 
@@ -426,7 +429,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
 }
 
 
-    unique_country_count <- species_data %>%
+    unique_country_count <- table_data %>%
       dplyr::group_by(Country..Name.) %>%
       dplyr::summarise(total_tonnes = sum(Production, na.rm = TRUE)) %>%
       dplyr::filter(total_tonnes > 0) %>%
@@ -434,13 +437,15 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
 
     fao_verbose_message(paste("The total number of country with non-zero catch over the years is:", unique_country_count))
 
-    species_country_table <- species_data %>%
+    species_country_table <- table_data %>%
       dplyr::mutate(Decade = fao_decade(Year))
 
-    # 计算每个年代的平均产量
+    # Mean yearly catch of each decade: its catch divided by the years of the data in that decade, the
+    # same for every item (years without catch count as zero, and rows of several areas are added)
+    decade_years <- table(fao_decade(unique(area_data$Year)))
     decade_avg_production_country <- species_country_table %>%
       dplyr::group_by(Decade, Country..Name.) %>%
-      dplyr::summarize(avg_production = mean(Production, na.rm = TRUE))
+      dplyr::summarize(avg_production = sum(Production, na.rm = TRUE) / decade_years[[Decade[1]]])
 
     # 计算最近5年的产量
     recent_production_country <- species_country_table %>%

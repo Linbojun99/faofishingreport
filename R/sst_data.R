@@ -438,8 +438,10 @@ fao_sst_from_files <- function(path, variable, data_dir, level = "area") {
   }))
   if (length(files) == 0) stop("No NetCDF files (.nc) in ", paste(path, collapse = ", "), call. = FALSE)
   files <- sort(normalizePath(files))
-  signature <- paste(c(files, file.size(files), as.numeric(file.mtime(files)), if (is.null(variable)) "" else variable),
-                     collapse = "\n")
+  # "method 2": tables computed before the weights covered every cell and dates followed the calendar
+  # (version 0.7.0) are computed again
+  signature <- paste(c("method 2", files, file.size(files), as.numeric(file.mtime(files)),
+                       if (is.null(variable)) "" else variable), collapse = "\n")
   signature_file <- tempfile()
   writeLines(signature, signature_file)
   key <- substr(unname(tools::md5sum(signature_file)), 1, 10)
@@ -555,7 +557,8 @@ fao_sst_nc_meta <- function(file, variable = NULL) {
   list(file = file, variable = variable, dims = dims, lengths = lengths,
        lon_name = lon_name, lat_name = lat_name, time_name = time_name,
        lon = sort(lon180), lat = sort(lat), lon_order = order(lon180), lat_order = order(lat),
-       dates = fao_sst_dates(nc$dim[[time_name]]$vals, nc$dim[[time_name]]$units),
+       dates = fao_sst_dates(nc$dim[[time_name]]$vals, nc$dim[[time_name]]$units,
+                             fao_sst_calendar(nc, time_name)),
        kelvin = isTRUE(grepl("^(K|kelvin|degK|deg_K|degrees_K|degree_kelvin)$", units, ignore.case = TRUE)),
        title = if (is.character(title)) title else "",
        grid = paste0(format(abs(lon[2] - lon[1])), " x ", format(abs(lat[2] - lat[1])), " degrees"))
@@ -590,14 +593,49 @@ fao_sst_nc_read <- function(meta, steps) {
   out
 }
 
-# Dates of a NetCDF time axis ("seconds since 1970-01-01T00:00:00Z", "days since 1891-1-1", ...)
-fao_sst_dates <- function(values, units) {
+# Calendar of the time axis of a NetCDF file ("standard" when not given)
+fao_sst_calendar <- function(nc, time_name) {
+  att <- ncdf4::ncatt_get(nc, time_name, "calendar")
+  if (isTRUE(att$hasatt)) as.character(att$value) else "standard"
+}
+
+# Dates of a NetCDF time axis ("seconds since 1970-01-01T00:00:00Z", "days since 1891-1-1",
+# "hours since 2000-01-01 12:00:00", ...), with the time of the origin and the calendar of the
+# file (CF conventions: standard, gregorian, proleptic_gregorian, noleap or 365_day, all_leap or
+# 366_day, 360_day). Only the year and month of the dates are used, so in the 360-day calendar the
+# 29th and 30th days are given as the 28th.
+fao_sst_dates <- function(values, units, calendar = "standard") {
   unit <- tolower(sub(" since .*$", "", units))
   seconds <- c(seconds = 1, second = 1, s = 1, minutes = 60, minute = 60, hours = 3600, hour = 3600,
                days = 86400, day = 86400)[unit]
   if (is.na(seconds)) stop("Unsupported time units in the NetCDF file: ", units, call. = FALSE)
-  origin <- as.POSIXct(sub("^.* since ([0-9]+-[0-9]+-[0-9]+).*$", "\\1", units), format = "%Y-%m-%d", tz = "UTC")
-  as.Date(origin + as.numeric(values) * unname(seconds))
+  origin <- regmatches(units, regexec(paste0(" since\\s+(-?[0-9]+)-([0-9]+)-([0-9]+)",
+                                             "(?:[T ]+([0-9]+):([0-9]+)(?::([0-9.]+))?)?"), units, perl = TRUE))[[1]]
+  if (length(origin) == 0) stop("Unsupported time units in the NetCDF file: ", units, call. = FALSE)
+  part <- suppressWarnings(as.numeric(origin[-1]))
+  part[is.na(part)] <- 0
+  # days since the origin, then the date in the calendar of the file
+  days <- (part[4] * 3600 + part[5] * 60 + part[6]) / 86400 + as.numeric(values) * unname(seconds) / 86400
+  calendar <- tolower(trimws(calendar))
+  if (calendar %in% c("standard", "gregorian", "proleptic_gregorian", "")) {
+    origin_date <- as.Date(sprintf("%04d-%02d-%02d", part[1], part[2], part[3]))
+    return(origin_date + floor(days + 1e-9))
+  }
+  month_days <- switch(calendar,
+                       "360_day" = rep(30, 12),
+                       noleap = , "365_day" = c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31),
+                       all_leap = , "366_day" = c(31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31),
+                       stop("Unsupported calendar in the NetCDF file: ", calendar,
+                            " (supported: standard, gregorian, proleptic_gregorian, noleap, 365_day, all_leap, ",
+                            "366_day, 360_day)", call. = FALSE))
+  year_days <- sum(month_days)
+  start <- c(0, cumsum(month_days))
+  total <- part[1] * year_days + start[part[2]] + part[3] - 1 + floor(days + 1e-9)
+  year <- total %/% year_days
+  rest <- total - year * year_days
+  month <- findInterval(rest, start[1:12])
+  day <- rest - start[month] + 1
+  as.Date(sprintf("%04d-%02d-%02d", year, month, pmin(day, 28)))
 }
 
 # Monthly means of one year from all files (daily or monthly steps): a longitude x latitude x 12
@@ -652,7 +690,10 @@ fao_sst_compute <- function(files, variable, data_dir, product, source, date, qu
   lon <- if (n > 1) colMeans(matrix(first$lon, nrow = n)) else first$lon
   lat <- if (n > 1) colMeans(matrix(first$lat, nrow = n)) else first$lat
 
+  # The weights cover every cell that has values in any year so far: a cell without values in the
+  # first years (e.g. under sea ice) is added in the year it has values
   weights <- NULL
+  covered <- rep(FALSE, length(lon) * length(lat))
   bar <- if (!quiet && length(years) > 1) utils::txtProgressBar(min = 0, max = length(years), style = 3) else NULL
   if (!is.null(bar)) on.exit(close(bar), add = TRUE)
   rows <- list()
@@ -661,7 +702,11 @@ fao_sst_compute <- function(files, variable, data_dir, product, source, date, qu
     months <- fao_sst_year_months(metas, years[k])
     if (is.null(months)) next
     if (n > 1) months <- fao_sst_block_mean(months, first$lon, first$lat, n)$sst
-    if (is.null(weights)) weights <- fao_sst_weights(lon, lat, as.vector(apply(!is.na(months), c(1, 2), any)), data_dir, level)
+    sea <- as.vector(apply(!is.na(months), c(1, 2), any))
+    if (is.null(weights) || any(sea & !covered)) {
+      covered <- covered | sea
+      weights <- fao_sst_weights(lon, lat, covered, data_dir, level)
+    }
     rows[[length(rows) + 1]] <- fao_sst_area_stats(months, weights, years[k])
   }
   if (length(rows) == 0) stop("The NetCDF files have no complete year (12 months).", call. = FALSE)
@@ -693,15 +738,33 @@ fao_sst_block_mean <- function(x, lon, lat, n) {
 
 # Weight of each grid cell in each FAO major area (or in each subarea and division): the area of
 # their overlap in km2, computed on the sphere (planar areas in degrees are wrong for cells that
-# cross the 180 degree meridian). `sea` marks the cells with values. Saved in the sst folder of
-# data_dir.
+# cross the 180 degree meridian). `sea` marks the cells with values. The weights of a cell do not
+# depend on the other cells, so they are saved by grid (all its longitudes and latitudes) in the sst
+# folder of data_dir with the cells computed so far, and cells new to a grid are added.
 fao_sst_weights <- function(lon, lat, sea, data_dir, level = "area") {
-  key <- paste(c("km2", if (level == "division") "division", length(lon), length(lat), lon[1], lat[1], sum(sea)), collapse = "_")
-  file <- file.path(data_dir, "sst", "weights", paste0(gsub("[^A-Za-z0-9_]", "_", key), ".rds"))
-  if (file.exists(file)) return(readRDS(file))
+  key <- paste(c("km2v2", if (level == "division") "division", length(lon), length(lat), rlang::hash(list(lon, lat))),
+               collapse = "_")
+  file <- file.path(data_dir, "sst", "weights", paste0(key, ".rds"))
+  saved <- if (file.exists(file)) readRDS(file) else NULL
+  done <- if (is.null(saved)) integer(0) else attr(saved, "cells")
+  cells <- which(sea)
+  new <- setdiff(cells, done)
+  if (length(new) > 0) {
+    weights <- rbind(saved, fao_sst_cell_weights(lon, lat, new, level))
+    attr(weights, "cells") <- sort(union(done, new))
+    dir.create(dirname(file), recursive = TRUE, showWarnings = FALSE)
+    saveRDS(weights, file)
+    saved <- weights
+  }
+  out <- saved[saved$cell %in% cells, ]
+  rownames(out) <- NULL
+  out
+}
+
+# Overlap (km2) of the grid cells `cells` with the FAO areas (or subareas and divisions)
+fao_sst_cell_weights <- function(lon, lat, cells, level) {
   half_lon <- abs(lon[2] - lon[1]) / 2
   half_lat <- abs(lat[2] - lat[1]) / 2
-  cells <- which(sea)
   i <- (cells - 1) %% length(lon) + 1
   j <- (cells - 1) %/% length(lon) + 1
   boxes <- lapply(seq_along(cells), function(k) {
@@ -722,10 +785,7 @@ fao_sst_weights <- function(lon, lat, sea, data_dir, level = "area") {
   weight <- as.numeric(sf::st_area(overlap)) / 1e6
   weights <- data.frame(cell = overlap$cell, area_code = as.character(overlap$F_CODE), area_en = overlap$NAME_EN,
                         weight = weight, stringsAsFactors = FALSE)
-  weights <- weights[weights$weight > 0, ]
-  dir.create(dirname(file), recursive = TRUE, showWarnings = FALSE)
-  saveRDS(weights, file)
-  weights
+  weights[weights$weight > 0, ]
 }
 
 # Weighted quantile: the smallest value whose cumulative weight reaches the probability

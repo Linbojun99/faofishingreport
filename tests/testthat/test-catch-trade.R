@@ -151,3 +151,28 @@ test_that("charts and tables are saved", {
   expect_setequal(list.files("tables"), c("Norway_catch_trade.csv", "Norway_catch_trade_by_group.csv",
                                           "Norway_catch_trade_groups.csv"))
 })
+
+
+test_that("trade that is not reported or missing is NA, not zero", {
+  trade <- trade_data()
+  trade$Quantity[trade$ISSCAAP.group..Name. == "Herrings, sardines, anchovies" & trade$Year == 2024] <- NA
+  trade <- trade[!(trade$Year == 2023 & trade$ISSCAAP.group..Name. == "Cods, hakes, haddocks"), ]
+  result <- suppressMessages(catch_trade("Norway", data = trade_catch_data(), trade = trade, plot = FALSE, table = FALSE))
+  g <- result$by_group
+  herring <- g[g$isscaap_en == "Herrings, sardines, anchovies", ]
+  expect_true(is.na(herring$export_tonnes[herring$year == 2024]))
+  expect_true(is.na(herring$export_catch_pct[herring$year == 2024]))
+  # a group without trade in a year when the country reported other trade: zero
+  cod <- g[g$isscaap_en == "Cods, hakes, haddocks", ]
+  expect_equal(cod$export_tonnes[cod$year == 2023], 0)
+  # no trade at all in a year between the first and last years with trade: not known
+  catch <- trade_catch_data()
+  catch <- rbind(catch, transform(catch[catch$Year == 2023, ], Year = 2022L))
+  gap <- trade_data()
+  gap$Year[gap$Year == 2023] <- 2022L
+  result <- suppressMessages(catch_trade("Norway", data = catch, trade = gap, plot = FALSE, table = FALSE))
+  expect_equal(result$yearly$year, 2022:2024)
+  expect_true(is.na(result$yearly$export_tonnes[result$yearly$year == 2023]))
+  expect_true(is.na(result$yearly$export_catch_pct[result$yearly$year == 2023]))
+  expect_equal(result$yearly$catch_tonnes[result$yearly$year == 2023], 1500)
+})

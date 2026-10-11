@@ -94,7 +94,9 @@
 #'        ([cmsy_area()]), and the report has a part on the assessment, with the results of
 #'        every species and appendix tables of the reference points, priors and their sources.
 #'        Default is FALSE. The result of an earlier [cmsy_area()] run can also be given, to
-#'        write the report without running CMSY++ again. CMSY++ needs JAGS: see [cmsy_setup()].
+#'        write the report without running CMSY++ again; it must be of the same area and FAO
+#'        release as the report (`data_version`), else the report stops. CMSY++ needs JAGS: see
+#'        [cmsy_setup()].
 #' @return Invisibly, a list of class `fao_report` with the paths of the files written (`file`,
 #'         named by format: `docx`, `latex`, `pdf`), the
 #'         sections in the report (`sections`) and
@@ -173,10 +175,12 @@ fao_report <- function(area, ..., file = NULL, format = "docx", lang = NULL, tit
   ctx$data_version <- data_version
   ctx$cmsy_result <- if (inherits(cmsy, "cmsy_result")) cmsy
   ctx$cmsy_dir <- file.path(dirname(file), "cmsy")
+  info <- fao_data_info(data_version)
+  # A CMSY++ result given to the report must be of this area and of the FAO release of the report
+  if (!is.null(ctx$cmsy_result)) fao_report_check_cmsy(ctx$cmsy_result, area$name, info$release)
 
   message("Analysing ", area$name, " ...")
   fao_report_run(ctx)
-  info <- fao_data_info(data_version)
   values <- fao_report_base_values(ctx)
   for (name in ctx$on) values <- c(values, ctx$sections[[name]]$values(ctx))
   values$release <- info$release
@@ -432,11 +436,12 @@ fao_report_decade_table <- function(data, values, kind, lang) {
   top <- if (kind == "species") values$species_table$name_en else values$country_table$name_en
   names <- if (kind == "species") values$species_names$plain else values$country_names
   scale <- if (lang == "zh") 1e4 else 1e3
+  # the years of each decade are those of the data of the area, the same whatever items are chosen
+  years <- tapply(data$Year, 10 * (data$Year %/% 10), function(y) length(unique(y)))
   data <- data[data[[column]] %in% top, ]
   decade <- 10 * (data$Year %/% 10)
   sums <- tapply(data$Production, list(data[[column]], decade), sum)
   sums[is.na(sums)] <- 0
-  years <- tapply(data$Year, decade, function(y) length(unique(y)))
   means <- sweep(sums, 2, years[colnames(sums)], "/")[top, , drop = FALSE]
   table <- data.frame(name = names, matrix(sprintf("%.1f", means / scale), nrow = nrow(means)),
                       stringsAsFactors = FALSE)

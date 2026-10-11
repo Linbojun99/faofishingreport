@@ -51,12 +51,36 @@ the year and size of the peak catch, the catch in the last year as a percentage 
 and the trend over the last \code{recent_years} years: the average annual growth rate, and a
 Mann-Kendall trend test (Kendall's tau between year and catch).
 }
+\details{
+Catch series are autocorrelated, which makes the usual Mann-Kendall test find too many trends,
+so the variance of the test is corrected with the effective sample size of an AR(1) process
+(Yue and Wang 2004), from the lag-1 autocorrelation of the detrended series corrected for its
+small-sample bias (Kendall 1954; \code{lag1_autocorrelation}); \code{p_value_iid} is the p value of the
+usual test, for comparison. Over ten years the autocorrelation is poorly known and the
+correction is only partial: strongly autocorrelated series still show trends too often. \code{trend} tests each series on its own
+(\code{p_value} < 0.05): with many series, some trends are found by chance, and \code{q_value} gives the
+p values adjusted for the number of series in the result, the total excepted (Benjamini and
+Hochberg 1995). Read trends with \code{p_value} < 0.05 as exploratory, and give as significant
+the trends with \code{q_value} < 0.05, as \code{\link[=fao_report]{fao_report()}} does for the main species and countries.
+}
 \examples{
 \dontrun{
 FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
 peak_trend(FAO34$area_data, by = "species", lang = "zh")
 peak_trend(FAO34$area_data, by = "country", lang = "zh")
 }
+}
+\references{
+Benjamini, Y. and Hochberg, Y. (1995). Controlling the false discovery rate: a practical and
+powerful approach to multiple testing. Journal of the Royal Statistical Society: Series B 57:
+289-300. \doi{10.1111/j.2517-6161.1995.tb02031.x}
+
+Kendall, M.G. (1954). Note on bias in the estimation of autocorrelation. Biometrika 41: 403-404.
+\doi{10.1093/biomet/41.3-4.403}
+
+Yue, S. and Wang, C.Y. (2004). The Mann-Kendall test modified by effective sample size to
+detect trend in serially correlated hydrological series. Water Resources Management 18:
+201-218. \doi{10.1023/B:WARM.0000043140.61082.60}
 }
 \seealso{
 Other summary analyses:

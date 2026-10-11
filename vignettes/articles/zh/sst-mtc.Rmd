@@ -131,7 +131,7 @@ mtc$trend      # 斜率（°C/十年）、Mann-Kendall检验、与SST的相关
 
 偏好温度来自FishBase和SeaLifeBase（`TempPrefMean`），由`fishbase_match()`与FAO物种条目对应；数据怎样获取、怎样匹配，见[🐠 FishBase与SeaLifeBase物种特征](fishbase.html)。默认`version = "latest"`时，联网的情况下第一次运行会下载所需的FishBase和SeaLifeBase表格（约23 MB）；不联网时使用已下载的最新版本，没有下载过则使用包内置的表格。`version = "builtin"`总是使用内置表格，不需要下载。
 
-图的上半部分是MTC与渔区SST（及区内范围），下半部分是有偏好温度的渔获所占的比例（覆盖率）。覆盖率低于`min_coverage`的年份会淡化显示，并且不参与趋势计算。趋势分别按全部年份和`trend_from`之后的年份计算：线性回归斜率（°C/十年）、Mann-Kendall检验（Mann 1945；Kendall 1975，与`peak_trend()`相同），以及MTC与SST原序列和逐年差分的Pearson相关。
+图的上半部分是MTC与渔区SST（及区内范围），下半部分是有偏好温度的渔获所占的比例（覆盖率）。覆盖率低于`min_coverage`的年份会淡化显示，并且不参与趋势计算。趋势分别按全部年份和`trend_from`之后的年份计算：线性回归斜率（°C/十年）、经自相关校正的Mann-Kendall检验（Mann 1945；Kendall 1975；Yue and Wang 2004，与`peak_trend()`相同），以及MTC与SST原序列和逐年差分的Pearson相关。
 
 | 参数 | 含义 | 默认值 |
 |---|---|---|
@@ -182,7 +182,7 @@ mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern
 - **偏好温度。**FishBase说明`TempPrefMean`是根据AquaMaps分布图估算的，计算脚本没有公开（Froese 2020），也没有说明用了哪些格点、用的是表层还是底层温度。有些物种的值远低于其主要渔获海域的温度。例如沙丁鱼（European pilchard）为10.3 °C，而它2015–2024年83%的渔获来自34区。Cheung et al. (2013)用的是基于物种模拟分布得到的温度剖面中位数，大多数区域研究也采用他们的数值（Tsikliras and Stergiou 2014；Liang et al. 2018），而Dimarchopoulou et al. (2022)和Lavin et al. (2023)与本包一样采用FishBase的平均值。所以本包的MTC数值不能直接和已发表的数值比较。
 - **覆盖率。**种以上的类群条目（如"Marine fishes nei"）不参与计算，这与已发表的研究一致。已发表研究的覆盖率从不足30%到超过90%不等（Tsikliras et al. 2015；Liang et al. 2018），没有任何文献规定最低覆盖率，`min_coverage = 50`是本包的约定。随着时间推移，鉴定到种的渔获越来越多，而早年数据并不回溯修订（Garibaldi 2012）；渔获也会在渔区之间重新归属，或以nei上报（FAO 2024）。这些都会改变MTC，而与温度无关。
 - **成因。**除了温度，捕捞对象、渔场、渔具、市场、管理和报告方式的变化也会改变MTC（如Alajmi et al. 2024；Lavin et al. 2023）。把某个变化归因于变暖之前，先用物种表中的`weight_pct`和`contribution_c`看清楚是哪些条目引起的。
-- **统计。**趋势用线性斜率和Mann-Kendall检验；与SST的对比用原序列和逐年差分的相关。两个序列都有自相关，所以p值偏小（Yue et al. 2002；Pyper and Peterman 1998）；逐年差分的相关则可能漏掉只在几十年尺度上起作用的关系。在亚得里亚海，考虑自相关之后，MTC与SST的关系就不再显著（Kamberi et al. 2025）。
+- **统计。**趋势用线性斜率和Mann-Kendall检验；与SST的对比用原序列和逐年差分的相关。两个序列都有自相关：Mann-Kendall检验已做了校正（Yue and Wang 2004），但斜率和相关的p值偏小（Yue et al. 2002；Pyper and Peterman 1998）；逐年差分的相关则可能漏掉只在几十年尺度上起作用的关系。在亚得里亚海，考虑自相关之后，MTC与SST的关系就不再显著（Kamberi et al. 2025）。
 
 ### 输出文件
 
@@ -313,6 +313,10 @@ catch (MTC) in the Greek Seas based on landings and survey data. *Frontiers in M
 
 WoRMS Editorial Board. World Register of Marine Species. Flanders Marine Institute (VLIZ).
 <https://www.marinespecies.org>, [doi:10.14284/170](https://doi.org/10.14284/170)
+
+Yue, S. and Wang, C.Y. (2004). The Mann-Kendall test modified by effective sample size to detect
+trend in serially correlated hydrological series. *Water Resources Management* 18: 201–218.
+[doi:10.1023/B:WARM.0000043140.61082.60](https://doi.org/10.1023/B:WARM.0000043140.61082.60)
 
 Yue, S., Pilon, P., Phinney, B. and Cavadias, G. (2002). The influence of autocorrelation on the
 ability to detect trend in hydrological series. *Hydrological Processes* 16: 1807–1829.

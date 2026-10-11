@@ -25,6 +25,7 @@ This function analyzes the fishing area data and generates plots for specified s
 fishing_area_species(
   area_data,
   rank_range = c(1, 10),
+  rank_years = NULL,
   plot = TRUE,
   table = TRUE,
   timeseries_analysis = TRUE,
@@ -71,6 +72,17 @@ fishing_area_species(
     <details class="fao-en"><summary>English</summary>
 
     A numeric vector of length 2 specifying the rank range of species to be analyzed.
+
+    </details>
+
+`rank_years`
+:   按最近几年的渔获量对物种条目排名时所用的年数，例如5表示最近五年（与`fao_report()`中的表格相同）。默认为NULL：按所有年份的渔获量排名。两种情况下图表都显示完整的序列。
+
+    <details class="fao-en"><summary>English</summary>
+
+    The number of recent years whose catch ranks the species items, e.g. 5 for the
+    last five years (as in the tables of `fao_report()`). Default is NULL: the catch of all years.
+    The charts show the whole series either way.
 
     </details>
 

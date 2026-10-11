@@ -50,7 +50,8 @@ Invisibly, a list with \code{yearly} (one row per country and year: marine and i
 marine, inland and all fishers, catch per fisher of each, the number of fishers as people,
 fish farmers, workers of unspecified work area and their share of all workers, the share of
 fishers in estimated values or with unknown working time, and whether the number of fishers is
-unchanged from the year before) and \code{notes} (FAO's notes on the countries). The chart
+unchanged from the year before; NA in the years in which the country reported no catch or no
+workers) and \code{notes} (FAO's notes on the countries). The chart
 \verb{<label>_catch_per_fisher.png} is saved in \verb{figures/png/summary/} and the table
 \verb{<label>_catch_per_fisher.csv} in \verb{tables/}.
 }

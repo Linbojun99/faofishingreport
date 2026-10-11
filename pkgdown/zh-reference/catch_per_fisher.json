@@ -1,12 +1,12 @@
 {
   "topic": "catch_per_fisher",
-  "rd_md5": "9f68624bb031bced354f0883fe3097ac",
+  "rd_md5": "3baf596b40429ad02a7dd742425b16a1",
   "stale": false,
   "en": {
     "title": "Catch per Fisher",
     "description": "This function divides the catch of a country by its number of fishers, by year: the marine catch\n(FAO marine areas) by the marine fishers (coastal, deep-sea and marine not specified), the\ninland catch by the inland fishers, and the whole catch by all fishers, from the FAO capture\nand employment statistics (`load_fao_data()` and `load_fao_employment()`). FAO reports\nproduction per fisher by region in The State of World Fisheries and Aquaculture (FAO 2012,\ntable 9) and in its studies of fisher numbers (FAO 1999); Scherrer et al. (2024) followed marine\ncatch per fisher worldwide since 1950.",
     "details": "",
-    "value": "Invisibly, a list with `yearly` (one row per country and year: marine and inland catch,\nmarine, inland and all fishers, catch per fisher of each, the number of fishers as people,\nfish farmers, workers of unspecified work area and their share of all workers, the share of\nfishers in estimated values or with unknown working time, and whether the number of fishers is\nunchanged from the year before) and `notes` (FAO's notes on the countries). The chart\n`<label>_catch_per_fisher.png` is saved in `figures/png/summary/` and the table\n`<label>_catch_per_fisher.csv` in `tables/`.",
+    "value": "Invisibly, a list with `yearly` (one row per country and year: marine and inland catch,\nmarine, inland and all fishers, catch per fisher of each, the number of fishers as people,\nfish farmers, workers of unspecified work area and their share of all workers, the share of\nfishers in estimated values or with unknown working time, and whether the number of fishers is\nunchanged from the year before; NA in the years in which the country reported no catch or no\nworkers) and `notes` (FAO's notes on the countries). The chart\n`<label>_catch_per_fisher.png` is saved in `figures/png/summary/` and the table\n`<label>_catch_per_fisher.csv` in `tables/`.",
     "arguments": {
       "country_name": "One or more countries, as named in the FAO data (e.g. \"Norway\").",
       "weights": "\"headcount\" (default) counts fishers as people; \"fte\" as full-time equivalents.",
@@ -28,7 +28,7 @@
     "title": "人均渔获",
     "description": "本函数逐年用一个国家的渔获量除以其渔民人数：海洋渔获量（FAO海洋渔区）除以海洋渔民（沿海、深海和未细分的海洋捕捞），内陆渔获量除以内陆渔民，全部渔获量除以全部渔民；数据来自FAO捕捞产量和就业统计（`load_fao_data()`和`load_fao_employment()`）。FAO在The State of World Fisheries and Aquaculture中按区域报告了人均产量（FAO，2012，表9），在其渔民人数研究中也有报告（FAO，1999）；Scherrer等（2024）追踪了全世界1950年以来的海洋人均渔获。",
     "details": "",
-    "value": "以不可见方式返回一个列表，包括`yearly`（每个国家每年一行：海洋和内陆渔获量；海洋、内陆和全部渔民人数（按`weights`计）及各自的人均渔获；按人数计的渔民人数、养殖从业者人数、未说明工作领域的从业者人数及其占全部从业者的比例；渔民中估计值所占的比例和工作时间未知者所占的比例；以及渔民人数是否与上一年相同）和`notes`（FAO对这些国家的注释）。图表`<label>_catch_per_fisher.png`保存在`figures/png/summary/`，表格`<label>_catch_per_fisher.csv`保存在`tables/`。",
+    "value": "以不可见方式返回一个列表，包括`yearly`（每个国家每年一行：海洋和内陆渔获量；海洋、内陆和全部渔民人数（按`weights`计）及各自的人均渔获；按人数计的渔民人数、养殖从业者人数、未说明工作领域的从业者人数及其占全部从业者的比例；渔民中估计值所占的比例和工作时间未知者所占的比例；以及渔民人数是否与上一年相同；该国没有报告渔获量或从业者的年份为NA）和`notes`（FAO对这些国家的注释）。图表`<label>_catch_per_fisher.png`保存在`figures/png/summary/`，表格`<label>_catch_per_fisher.csv`保存在`tables/`。",
     "arguments": {
       "country_name": "一个或多个国家，名称与FAO数据中的一致（例如\"Norway\"）。",
       "weights": "\"headcount\"（默认）按人数计算渔民；\"fte\"按全时当量计算。",

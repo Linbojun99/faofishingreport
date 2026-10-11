@@ -30,7 +30,9 @@ regime_shift <- function(area_data, top_n = 20, h_value = 0.15, plot = TRUE, tab
   yearly <- stats::aggregate(list(Tonnes = area_data$Production),
                              by = list(species = area_data$ASFIS.species..Name., Year = area_data$Year),
                              FUN = sum, na.rm = TRUE)
+  # species without any catch have no series to analyse
   totals <- sort(tapply(yearly$Tonnes, yearly$species, sum), decreasing = TRUE)
+  totals <- totals[!is.na(totals) & totals > 0]
   top <- names(totals)[seq_len(min(top_n, length(totals)))]
 
   breaks <- do.call(rbind, lapply(top, function(species) {

@@ -4,6 +4,9 @@
 #'
 #' @param area_data A data frame containing the fishing area data.
 #' @param rank_range A numeric vector of length 2 specifying the rank range of country to be analyzed.
+#' @param rank_years The number of recent years whose catch ranks the countries, e.g. 5 for the
+#'        last five years (as in the tables of [fao_report()]). Default is NULL: the catch of all years.
+#'        The charts show the whole series either way.
 #' @param plot A logical value indicating whether to generate and save plots.
 #' @param table A logical value indicating whether to generate and save tables
 #' @param timeseries_analysis A logical value indicating whether to analysis timeseries.
@@ -47,7 +50,7 @@
 #' \dontrun{
 #' fishing_area_country(FAO34[["area_data"]], c(1, 10), plot=TRUE,table=TRUE,h_value=0.15) #area_data=Fao34
 #' }
-fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, table=TRUE,timeseries_analysis=TRUE,
+fishing_area_country <- function(area_data, rank_range = c(1, 10), rank_years = NULL, plot = TRUE, table=TRUE,timeseries_analysis=TRUE,
                                  line_width = 1.5,
                                  point_size = 1.8,
                                  point_alpha = 0.7,
@@ -94,10 +97,12 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
   area_country_table <- area_country %>%
     dplyr::mutate(Decade = fao_decade(Year))
 
-  # 计算每个年代的平均产量
+  # Mean yearly catch of each decade: its catch divided by the years of the data in that decade, the
+  # same for every item (years without catch count as zero, and rows of several areas are added)
+  decade_years <- table(fao_decade(unique(area_data$Year)))
   decade_avg_production_country <- area_country_table %>%
     dplyr::group_by(Decade, Country..Name.) %>%
-    dplyr::summarize(avg_production = mean(Tonnes, na.rm = TRUE))
+    dplyr::summarize(avg_production = sum(Tonnes, na.rm = TRUE) / decade_years[[Decade[1]]])
 
   # 计算最近5年的产量
   recent_production_country <- area_country_table %>%
@@ -143,9 +148,15 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
   area_country_Total <- area_country_Total %>%
     dplyr::mutate(Percentage = (Total_Tonnes / total_tonnes) * 100)
 
+  # The ranking: the catch of all years, or of the last `rank_years` years
+  rank_data <- if (is.null(rank_years)) area_data else area_data[area_data$Year > last_year - rank_years, ]
+  rank_tonnes <- tapply(rank_data$Production, rank_data$Country..Name., sum, na.rm = TRUE)
+  area_country_Total$Rank_Tonnes <- as.numeric(rank_tonnes[as.character(area_country_Total$Country..Name.)])
+  area_country_Total$Rank_Tonnes[is.na(area_country_Total$Rank_Tonnes)] <- 0
+
   # Adjust these lines to filter country based on the specified rank range
   ranked_country <- area_country_Total %>%
-    dplyr::arrange(desc(Total_Tonnes))
+    dplyr::arrange(desc(Rank_Tonnes), desc(Total_Tonnes))
 
   selected_country <- ranked_country %>%
     dplyr::slice(rank_range[1]:rank_range[2])
@@ -157,20 +168,20 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
 
   plot_data <- plot_data %>%
     dplyr::left_join(selected_country, by = "Country..Name.") %>%
-    dplyr::mutate(Country..Name. = forcats::fct_reorder(Country..Name., -Total_Tonnes))
+    dplyr::mutate(Country..Name. = forcats::fct_reorder(Country..Name., -Rank_Tonnes))
 
   # 根据排名范围筛选数据
   decade_avg_production_country_ranked <- decade_avg_production_country %>%
     dplyr::inner_join(selected_country, by = "Country..Name.") %>%
-    dplyr::select(-Total_Tonnes, -Percentage)  # 删除不需要的列
+    dplyr::select(-Total_Tonnes, -Percentage, -Rank_Tonnes)  # 删除不需要的列
 
   recent_production_country_ranked <- recent_production_country %>%
     dplyr::inner_join(selected_country, by = "Country..Name.") %>%
-    dplyr::select(-Total_Tonnes, -Percentage)  # 删除不需要的列
+    dplyr::select(-Total_Tonnes, -Percentage, -Rank_Tonnes)  # 删除不需要的列
 
   percentage_of_total_country_ranked <- percentage_of_total_country %>%
     dplyr::inner_join(selected_country, by = "Country..Name.") %>%
-    dplyr::select(-Total_Tonnes, -Percentage)  # 删除不需要的列
+    dplyr::select(-Total_Tonnes, -Percentage, -Rank_Tonnes)  # 删除不需要的列
 
   # 输出结果
   fao_verbose_print(decade_avg_production_country_ranked)
@@ -294,7 +305,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
         ggplot2::geom_text(data = area_country_Total %>%
                              dplyr::filter(Country..Name. %in% selected_country$Country..Name.) %>%
                              dplyr::ungroup() %>%
-                             dplyr::mutate(Country..Name. = factor(Country..Name., levels = unique(Country..Name.[order(-Total_Tonnes)]))),
+                             dplyr::mutate(Country..Name. = factor(Country..Name., levels = unique(Country..Name.[order(-Rank_Tonnes)]))),
                            ggplot2::aes(x = 1957, y = 0, label = paste0(round(Percentage, 2), "%")),
                            hjust = text_hjust, vjust = text_vjust, size = text_size, color = text_color) +
         ggplot2::geom_segment(data = coefs_data,
@@ -329,7 +340,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
         ggplot2::geom_text(data = area_country_Total %>%
                              dplyr::filter(Country..Name. %in% selected_country$Country..Name.) %>%
                              dplyr::ungroup() %>%
-                             dplyr::mutate(Country..Name. = factor(Country..Name., levels = unique(Country..Name.[order(-Total_Tonnes)]))),
+                             dplyr::mutate(Country..Name. = factor(Country..Name., levels = unique(Country..Name.[order(-Rank_Tonnes)]))),
                            ggplot2::aes(x = 1957, y = 0, label = paste0(round(Percentage, 2), "%")),
                            hjust = text_hjust, vjust = text_vjust, size = text_size, color = text_color) +
         fao_base_theme() +

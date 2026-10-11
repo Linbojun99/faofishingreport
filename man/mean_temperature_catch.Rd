@@ -177,7 +177,9 @@ temperature. Look at the coverage chart before reading a trend.
 
 Trends are calculated over all years and over the years from \code{trend_from}, using only years
 whose coverage is at least \code{min_coverage}: the slope of a linear regression (°C per decade)
-and a Mann-Kendall test (Kendall's tau between year and MTC), as in \code{peak_trend()}. The MTC is
+and a Mann-Kendall test (Kendall's tau between year and MTC) with its variance corrected for
+autocorrelation (Yue and Wang 2004; \code{kendall_p_iid} is the p value of the usual test), as in
+\code{peak_trend()}. The MTC is
 compared with the SST of the area by their slopes and by the Pearson correlation of the two
 series and of their year-to-year differences.
 
@@ -185,8 +187,9 @@ These are simple descriptive statistics. Cheung et al. (2013) estimated the rate
 each large marine ecosystem with models that also included fishing effort, a large-scale ocean
 index and autocorrelation, and related the rates of MTC and SST across ecosystems; regional
 studies used lagged correlations, regressions and models (Tsikliras and Stergiou 2014; Liang
-et al. 2018; Kamberi et al. 2025). Both series are autocorrelated, so the p-values given here,
-which treat years as independent, are too small (Yue et al. 2002; Pyper and Peterman 1998).
+et al. 2018; Kamberi et al. 2025). Both series are autocorrelated: the Mann-Kendall test takes
+this into account, but the p-values of the regression slope and of the correlations treat years
+as independent and are too small (Yue et al. 2002; Pyper and Peterman 1998).
 Two series that both rise over time are correlated even when they are not related; the
 correlation of differences avoids this, but can miss a relation that acts only over decades
 (Pyper and Peterman 1998). In the Adriatic Sea, the relation of MTC with SST was no longer
@@ -295,6 +298,10 @@ the Mediterranean Sea. Marine Ecology Progress Series 515: 281-284. \doi{10.3354
 Tsikliras, A.C., Peristeraki, P., Tserpes, G. and Stergiou, K.I. (2015). Mean temperature of
 the catch (MTC) in the Greek Seas based on landings and survey data. Frontiers in Marine
 Science 2: 23. \doi{10.3389/fmars.2015.00023}
+
+Yue, S. and Wang, C.Y. (2004). The Mann-Kendall test modified by effective sample size to
+detect trend in serially correlated hydrological series. Water Resources Management 18:
+201-218. \doi{10.1023/B:WARM.0000043140.61082.60}
 
 Yue, S., Pilon, P., Phinney, B. and Cavadias, G. (2002). The influence of autocorrelation on
 the ability to detect trend in hydrological series. Hydrological Processes 16: 1807-1829.

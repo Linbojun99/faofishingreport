@@ -112,14 +112,15 @@ stock_status(FAO34$area_data, smooth = TRUE, min_catch = 10000, label = "FAO34 s
 `peak_trend()`针对总产量以及主要物种（或国家、渔区），找出**峰值产量**出现的年份和数值、最后一年产量相当于**峰值的百分比**，以及最近`recent_years`年的趋势：
 
 - **年均增长率**（`growth_pct_per_year`）：这段时间首年到末年之间的年均增长率，即$100\,[(C_n/C_1)^{1/(n-1)} - 1]$，其中$C_1$和$C_n$分别是这$n$年中第一年和最后一年的产量；
-- **趋势**：Mann-Kendall趋势检验（Mann 1945；Kendall 1975），即年份与产量之间的Kendall τ；p < 0.05时`trend`为`"up"`（上升）或`"down"`（下降），否则为`"none"`。
+- **趋势**：Mann-Kendall趋势检验（Mann 1945；Kendall 1975），即年份与产量之间的Kendall τ。渔获序列有自相关，普通检验会找出过多的趋势，因此检验的方差按AR(1)过程的有效样本量校正（Yue and Wang 2004），所用的一阶自相关取自去趋势后的序列，并校正了小样本偏差（Kendall 1954；`lag1_autocorrelation`）。`p_value`是校正后的p值，`p_value_iid`是普通检验的p值。`p_value` < 0.05时`trend`为`"up"`（上升）或`"down"`（下降），否则为`"none"`。只有十年数据时，校正只能部分起作用：自相关很强的序列仍会过多地显示趋势。
+- **多条序列**：在十条或更多序列中，总有一些序列偶然显示出趋势。`q_value`按结果中的序列数（不含总产量）校正p值（Benjamini and Hochberg 1995）。`p_value` < 0.05的趋势应视为探索性的结果，`q_value` < 0.05的才作为显著趋势；[📝 评估报告](report.html)对主要种类和主要国家就是这样处理的。
 
 ```{r, figures = TRUE}
 species_trend <- peak_trend(FAO34$area_data, by = "species", top_n = 10)
 ```
 
 ```{r}
-show_table(species_trend[, c("name", "peak_year", "pct_of_peak", "growth_pct_per_year", "kendall_tau", "p_value", "trend")])
+show_table(species_trend[, c("name", "peak_year", "pct_of_peak", "growth_pct_per_year", "kendall_tau", "p_value", "q_value", "trend")])
 ```
 
 ```{r, figures = TRUE}
@@ -240,6 +241,10 @@ release_info <- fao_data_info()
 Bai, J. and Perron, P. (2003). Computation and analysis of multiple structural change models.
 *Journal of Applied Econometrics* 18: 1–22. [doi:10.1002/jae.659](https://doi.org/10.1002/jae.659)
 
+Benjamini, Y. and Hochberg, Y. (1995). Controlling the false discovery rate: a practical and powerful
+approach to multiple testing. *Journal of the Royal Statistical Society: Series B* 57: 289–300.
+[doi:10.1111/j.2517-6161.1995.tb02031.x](https://doi.org/10.1111/j.2517-6161.1995.tb02031.x)
+
 Caddy, J.F. (1993). Toward a comparative evaluation of human impacts on fishery ecosystems of
 enclosed and semi-enclosed seas. *Reviews in Fisheries Science* 1: 57–95.
 [doi:10.1080/10641269309388535](https://doi.org/10.1080/10641269309388535)
@@ -268,6 +273,9 @@ the effects of nitrogen loads and hypoxia on the pelagic-to-demersal ratio and o
 landings composition. *Marine and Coastal Fisheries* 2: 339–361.
 [doi:10.1577/C09-020.1](https://doi.org/10.1577/C09-020.1)
 
+Kendall, M.G. (1954). Note on bias in the estimation of autocorrelation. *Biometrika* 41: 403–404.
+[doi:10.1093/biomet/41.3-4.403](https://doi.org/10.1093/biomet/41.3-4.403)
+
 Kendall, M.G. (1975). *Rank correlation methods*, 4th edition. London: Charles Griffin.
 
 Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global catch data for inferences
@@ -276,6 +284,10 @@ on the world's marine fisheries. *Fish and Fisheries* 14: 293–311.
 
 Mann, H.B. (1945). Nonparametric tests against trend. *Econometrica* 13: 245–259.
 [doi:10.2307/1907187](https://doi.org/10.2307/1907187)
+
+Yue, S. and Wang, C.Y. (2004). The Mann-Kendall test modified by effective sample size to detect
+trend in serially correlated hydrological series. *Water Resources Management* 18: 201–218.
+[doi:10.1023/B:WARM.0000043140.61082.60](https://doi.org/10.1023/B:WARM.0000043140.61082.60)
 
 Zeileis, A., Leisch, F., Hornik, K. and Kleiber, C. (2002). strucchange: an R package for
 testing for structural change in linear regression models. *Journal of Statistical Software*

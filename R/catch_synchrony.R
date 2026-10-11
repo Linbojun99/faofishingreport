@@ -36,7 +36,10 @@
 #' @param min_median,min_nonzero Series need a median catch above `min_median` tonnes a year and
 #'        catch in more than `min_nonzero` of the years. Defaults are 10 and 0.75 (Ong et al. 2021).
 #' @return Invisibly, a list with `summary` (synchrony, CVs and portfolio effect), `series` (mean,
-#'         standard deviation, CV and share of the total variability of each series), `windows`
+#'         standard deviation and CV of each series, the share of its standard deviation in the
+#'         sum of the standard deviations, `sd_share_pct`, and its contribution to the variance
+#'         of the total catch, `variance_contribution_pct`: its covariance with the total divided
+#'         by the variance of the total, negative for a series that damps the total), `windows`
 #'         (the measures in each moving window) and `correlation` (pairwise correlations of the series).
 #' @references
 #' Carlson, S.M. and Satterthwaite, W.H. (2011). Weakened portfolio effect in a collapsed salmon
@@ -100,13 +103,20 @@ catch_synchrony <- function(area_data, by = c("species", "country"), detrend = c
                         positive_correlations_pct = measures$positive_pct)
 
   sds <- apply(residuals, 2, stats::sd)
+  # The variance of the total is the sum of the covariances of the series with the total: the
+  # contribution of a series is its covariance with the total over the variance of the total
+  # (negative for a series that damps the fluctuations of the total). The share of each standard
+  # deviation in their sum ignores the covariances and is not a contribution to the total.
+  total <- rowSums(residuals)
+  contribution <- apply(residuals, 2, function(x) stats::cov(x, total)) / stats::var(total)
   series <- data.frame(series_en = colnames(catch), mean_tonnes = colMeans(catch), sd_tonnes = sds,
-                       cv = sds / colMeans(catch), share_of_variability_pct = 100 * sds / sum(sds),
+                       cv = sds / colMeans(catch), sd_share_pct = 100 * sds / sum(sds),
+                       variance_contribution_pct = 100 * contribution,
                        stringsAsFactors = FALSE, row.names = NULL)
   series <- cbind(series = fao_translate(series$series_en, by, lang), series)
 
   windows <- NULL
-  if (length(years) >= window + 2) {
+  if (length(years) >= window) {
     starts <- seq(1, length(years) - window + 1)
     windows <- do.call(rbind, lapply(starts, function(s) {
       rows <- s:(s + window - 1)

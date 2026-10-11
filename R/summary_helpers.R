@@ -147,3 +147,35 @@ fao_verbose_message <- function(text) {
   if (isTRUE(getOption("faofishingreport.verbose", FALSE))) message(text)
   invisible(text)
 }
+
+# Mann-Kendall trend test with the variance of S corrected for autocorrelation by the effective
+# sample size of an AR(1) process (Yue and Wang 2004, Water Resources Management 18: 201-218):
+# n/n* = 1 + 2 sum_k (1 - k/n) r1^k, where r1 is the lag-1 autocorrelation of the series detrended
+# with Sen's slope, corrected for its small-sample bias, E(r1) = rho - (1 + 3 rho)/n (Kendall 1954,
+# Biometrika 41: 403-404). The variance is never made smaller (n/n* at least 1). Returns Kendall's
+# tau, the corrected p value (`p`), the p value for independent data (`p_iid`), both with the
+# continuity correction of S, and the corrected lag-1 autocorrelation (`r1`).
+fao_mann_kendall <- function(time, x) {
+  keep <- !is.na(time) & !is.na(x)
+  time <- time[keep]
+  x <- x[keep]
+  n <- length(x)
+  none <- c(tau = NA_real_, p = NA_real_, p_iid = NA_real_, r1 = NA_real_)
+  if (n < 4 || length(unique(x)) < 2 || length(unique(time)) < 2) return(none)
+  o <- order(time)
+  time <- time[o]
+  x <- x[o]
+  pairs <- lower.tri(diag(n))
+  s <- sum(sign(outer(x, x, "-"))[pairs] * sign(outer(time, time, "-"))[pairs])
+  ties <- table(x)
+  var_s <- (n * (n - 1) * (2 * n + 5) - sum(ties * (ties - 1) * (2 * ties + 5))) / 18
+  slopes <- (outer(x, x, "-") / outer(time, time, "-"))[pairs]
+  detrended <- x - stats::median(slopes[is.finite(slopes)]) * time
+  r1 <- if (stats::var(detrended) > 0) stats::acf(detrended, lag.max = 1, plot = FALSE)$acf[2] else 0
+  r1 <- min(0.99, max(-0.99, (n * r1 + 1) / (n - 3)))
+  k <- seq_len(n - 1)
+  ratio <- max(1, 1 + 2 * sum((1 - k / n) * r1^k))
+  z <- function(v) (s - sign(s)) / sqrt(v)
+  c(tau = suppressWarnings(stats::cor(time, x, method = "kendall")),
+    p = 2 * stats::pnorm(-abs(z(var_s * ratio))), p_iid = 2 * stats::pnorm(-abs(z(var_s))), r1 = r1)
+}

@@ -152,12 +152,15 @@ catch_synchrony(
 
 ## 返回值
 
-以不可见方式返回一个列表，包括`summary`（同步性、各项CV和组合效应）、`series`（每条序列的平均值、标准差、CV及其占总变异性的比例）、`windows`（每个滑动窗口中的各项指标）和`correlation`（序列之间的两两相关系数）。
+以不可见方式返回一个列表，包括`summary`（同步性、各项CV和组合效应）、`series`（每条序列的平均值、标准差和CV，其标准差占各序列标准差之和的比例`sd_share_pct`，以及其对总渔获量方差的贡献`variance_contribution_pct`：即该序列与总量的协方差除以总量的方差，缓冲总量波动的序列为负值）、`windows`（每个滑动窗口中的各项指标）和`correlation`（序列之间的两两相关系数）。
 
 <details class="fao-en"><summary>English</summary>
 
 Invisibly, a list with `summary` (synchrony, CVs and portfolio effect), `series` (mean,
-standard deviation, CV and share of the total variability of each series), `windows`
+standard deviation and CV of each series, the share of its standard deviation in the
+sum of the standard deviations, `sd_share_pct`, and its contribution to the variance
+of the total catch, `variance_contribution_pct`: its covariance with the total divided
+by the variance of the total, negative for a series that damps the total), `windows`
 (the measures in each moving window) and `correlation` (pairwise correlations of the series).
 
 </details>

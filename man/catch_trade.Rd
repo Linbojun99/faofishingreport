@@ -66,7 +66,10 @@ exports, the share of the country's catch and export value in the groups compare
 share of the export value estimated, and the trade of fishmeal and fish oil not assigned
 to a group compared. With \code{conversion}, also the trade in live weight equivalent, the
 share converted and the apparent supply;}
-\item{by_group}{the same by country, group and year;}
+\item{by_group}{the same by country, group and year. In \code{yearly} and \code{by_group}, a value is
+NA when it is not known: the country reported no catch (or no trade) in that year, or the
+values are missing in the FAO data; it is zero when the country reported that year but not
+this group or trade flow;}
 \item{groups}{one row per country and ISSCAAP group with catch or exports in the last five
 years: whether it is compared, the lowest share of capture in its world production, the
 mean yearly catch, exports and export value of the last five years, and the group's share

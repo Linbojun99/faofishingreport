@@ -51,7 +51,10 @@ country) of the data.}
 }
 \value{
 Invisibly, a list with \code{summary} (synchrony, CVs and portfolio effect), \code{series} (mean,
-standard deviation, CV and share of the total variability of each series), \code{windows}
+standard deviation and CV of each series, the share of its standard deviation in the
+sum of the standard deviations, \code{sd_share_pct}, and its contribution to the variance
+of the total catch, \code{variance_contribution_pct}: its covariance with the total divided
+by the variance of the total, negative for a series that damps the total), \code{windows}
 (the measures in each moving window) and \code{correlation} (pairwise correlations of the series).
 }
 \description{

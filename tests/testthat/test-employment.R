@@ -120,3 +120,25 @@ test_that("charts and tables are saved", {
                                                                  "Norway_catch_per_fisher.png")))))
   expect_setequal(list.files("tables"), c("Norway_employment.csv", "Norway_catch_per_fisher.csv"))
 })
+
+
+test_that("years not reported are missing, not zero", {
+  gap <- data.frame(Country..Name. = "Norway", Work.area..Code. = "C", Work.area = "C", Working.time = "Full time",
+                    Sex = "Male", Year = c(2000, 2002), Number = 100, Number.Type = "actual", stringsAsFactors = FALSE)
+  result <- suppressMessages(employment_summary("Norway", employment = gap, plot = FALSE, table = FALSE))
+  expect_equal(result$yearly$year, 2000:2002)
+  expect_equal(result$yearly$total, c(100, NA, 100))
+  expect_equal(result$yearly$marine_fishing, c(100, NA, 100))
+  expect_true(is.na(result$yearly$full_time_pct[2]))
+  withr::local_dir(withr::local_tempdir())
+  suppressMessages(employment_summary("Norway", employment = gap, plot = TRUE, table = FALSE))
+  expect_true(file.exists(file.path("figures", "png", "summary", "Norway_employment.png")))
+
+  catch <- fisher_catch()
+  catch <- catch[catch$Year != 2023, ]          # no catch reported in 2023
+  fishers <- suppressMessages(catch_per_fisher("Norway", data = catch, employment = employment_data(), plot = FALSE,
+                                               table = FALSE))$yearly
+  expect_true(is.na(fishers$marine_catch_tonnes[fishers$year == 2023]))
+  expect_true(is.na(fishers$catch_per_fisher[fishers$year == 2023]))
+  expect_equal(fishers$catch_per_fisher[fishers$year == 2024], 910 / 115)
+})

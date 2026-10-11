@@ -133,15 +133,25 @@ trend over the last `recent_years` years:
 - **growth rate** (`growth_pct_per_year`): the average yearly growth between the first and the
   last of these years, $100\,[(C_n/C_1)^{1/(n-1)} - 1]$, with $C_1$ and $C_n$ the catch of the
   first and the last of the $n$ years;
-- **trend**: a Mann-Kendall test (Mann 1945; Kendall 1975), Kendall's τ between year and catch;
-  `trend` is `"up"` or `"down"` when p < 0.05, otherwise `"none"`.
+- **trend**: a Mann-Kendall test (Mann 1945; Kendall 1975), Kendall's τ between year and catch.
+  Catch series are autocorrelated, which makes the usual test find too many trends, so its
+  variance is corrected with the effective sample size of an AR(1) process (Yue and Wang 2004),
+  from the lag-1 autocorrelation of the detrended series corrected for its small-sample bias
+  (Kendall 1954; `lag1_autocorrelation`). `p_value` is the corrected p value and `p_value_iid`
+  that of the usual test. `trend` is `"up"` or `"down"` when `p_value` < 0.05, otherwise `"none"`.
+  Over ten years the correction is only partial: strongly autocorrelated series still show trends
+  too often.
+- **many series**: among ten or more series, some show a trend by chance. `q_value` adjusts the
+  p values for the number of series in the result, the total excepted (Benjamini and Hochberg
+  1995). Read trends with `p_value` < 0.05 as exploratory and give as significant those with
+  `q_value` < 0.05; [📝 the report](report.html) does this for its main species and countries.
 
 ```{r, figures = TRUE}
 species_trend <- peak_trend(FAO34$area_data, by = "species", top_n = 10)
 ```
 
 ```{r}
-show_table(species_trend[, c("name", "peak_year", "pct_of_peak", "growth_pct_per_year", "kendall_tau", "p_value", "trend")])
+show_table(species_trend[, c("name", "peak_year", "pct_of_peak", "growth_pct_per_year", "kendall_tau", "p_value", "q_value", "trend")])
 ```
 
 ```{r, figures = TRUE}
@@ -300,6 +310,10 @@ release_info <- fao_data_info()
 Bai, J. and Perron, P. (2003). Computation and analysis of multiple structural change models.
 *Journal of Applied Econometrics* 18: 1–22. [doi:10.1002/jae.659](https://doi.org/10.1002/jae.659)
 
+Benjamini, Y. and Hochberg, Y. (1995). Controlling the false discovery rate: a practical and powerful
+approach to multiple testing. *Journal of the Royal Statistical Society: Series B* 57: 289–300.
+[doi:10.1111/j.2517-6161.1995.tb02031.x](https://doi.org/10.1111/j.2517-6161.1995.tb02031.x)
+
 Caddy, J.F. (1993). Toward a comparative evaluation of human impacts on fishery ecosystems of
 enclosed and semi-enclosed seas. *Reviews in Fisheries Science* 1: 57–95.
 [doi:10.1080/10641269309388535](https://doi.org/10.1080/10641269309388535)
@@ -328,6 +342,9 @@ the effects of nitrogen loads and hypoxia on the pelagic-to-demersal ratio and o
 landings composition. *Marine and Coastal Fisheries* 2: 339–361.
 [doi:10.1577/C09-020.1](https://doi.org/10.1577/C09-020.1)
 
+Kendall, M.G. (1954). Note on bias in the estimation of autocorrelation. *Biometrika* 41: 403–404.
+[doi:10.1093/biomet/41.3-4.403](https://doi.org/10.1093/biomet/41.3-4.403)
+
 Kendall, M.G. (1975). *Rank correlation methods*, 4th edition. London: Charles Griffin.
 
 Kleisner, K., Zeller, D., Froese, R. and Pauly, D. (2013). Using global catch data for inferences
@@ -336,6 +353,10 @@ on the world's marine fisheries. *Fish and Fisheries* 14: 293–311.
 
 Mann, H.B. (1945). Nonparametric tests against trend. *Econometrica* 13: 245–259.
 [doi:10.2307/1907187](https://doi.org/10.2307/1907187)
+
+Yue, S. and Wang, C.Y. (2004). The Mann-Kendall test modified by effective sample size to detect
+trend in serially correlated hydrological series. *Water Resources Management* 18: 201–218.
+[doi:10.1023/B:WARM.0000043140.61082.60](https://doi.org/10.1023/B:WARM.0000043140.61082.60)
 
 Zeileis, A., Leisch, F., Hornik, K. and Kleiber, C. (2002). strucchange: an R package for
 testing for structural change in linear regression models. *Journal of Statistical Software*

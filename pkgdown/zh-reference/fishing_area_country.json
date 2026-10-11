@@ -1,6 +1,6 @@
 {
   "topic": "fishing_area_country",
-  "rd_md5": "c7f6e320c337dea556e3075316e17420",
+  "rd_md5": "4e05e4e83df9949dc5b083ea7d25658f",
   "stale": false,
   "en": {
     "title": "Fishing Area Country Analysis",
@@ -10,6 +10,7 @@
     "arguments": {
       "area_data": "A data frame containing the fishing area data.",
       "rank_range": "A numeric vector of length 2 specifying the rank range of country to be analyzed.",
+      "rank_years": "The number of recent years whose catch ranks the countries, e.g. 5 for the\nlast five years (as in the tables of `fao_report()`). Default is NULL: the catch of all years.\nThe charts show the whole series either way.",
       "plot": "A logical value indicating whether to generate and save plots.",
       "table": "A logical value indicating whether to generate and save tables",
       "timeseries_analysis": "A logical value indicating whether to analysis timeseries.",
@@ -47,6 +48,7 @@
     "arguments": {
       "area_data": "包含渔区数据的数据框，例如`fishing_area_data()`返回的`area_data`。",
       "rank_range": "长度为2的数值向量，指定要分析的国家的排名范围（按历年总产量排序），如`c(1, 10)`为前10名，`c(11, 20)`为其后10名。默认为`c(1, 10)`。",
+      "rank_years": "按最近几年的渔获量对国家排名时所用的年数，例如5表示最近五年（与`fao_report()`中的表格相同）。默认为NULL：按所有年份的渔获量排名。两种情况下图表都显示完整的序列。",
       "plot": "逻辑值，是否生成并保存图表。默认为TRUE。",
       "table": "逻辑值，是否生成表格并保存到`tables/`目录（`country_ranked_table.csv`和`country_coefs_data.csv`）。默认为TRUE。",
       "timeseries_analysis": "逻辑值，决定分面图（`area/area_country_wrap.png`）的内容：为TRUE（默认）时显示线性趋势线和突变点（用水平线段标出相邻突变点之间各时段的平均产量，用虚线标出各时段的起始年份）；为FALSE时改为显示平滑曲线（见`smooth_method`）。带突变点的分面图使用固定的线宽、字号和两列布局，只有`text_hjust`、`text_vjust`、`text_size`和`text_color`对它起作用。无论取值如何，都会计算突变点，并写入返回值和表格。",

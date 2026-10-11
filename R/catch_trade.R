@@ -85,7 +85,10 @@
 #'       share of the export value estimated, and the trade of fishmeal and fish oil not assigned
 #'       to a group compared. With `conversion`, also the trade in live weight equivalent, the
 #'       share converted and the apparent supply;}
-#'     \item{by_group}{the same by country, group and year;}
+#'     \item{by_group}{the same by country, group and year. In `yearly` and `by_group`, a value is
+#'       NA when it is not known: the country reported no catch (or no trade) in that year, or the
+#'       values are missing in the FAO data; it is zero when the country reported that year but not
+#'       this group or trade flow;}
 #'     \item{groups}{one row per country and ISSCAAP group with catch or exports in the last five
 #'       years: whether it is compared, the lowest share of capture in its world production, the
 #'       mean yearly catch, exports and export value of the last five years, and the group's share
@@ -248,10 +251,17 @@ fao_trade_sums <- function(target, catch, trade, counted, by_group) {
   target_key <- key(target$country_en, target$year, target$isscaap_en)
   catch_key <- key(catch$Country..Name., catch$Year, catch$isscaap_en)
   trade_key <- key(trade$Country..Name., trade$Year, trade$ISSCAAP.group..Name.)
-  sum_by <- function(values, keys, keep) {
-    s <- tapply(values[keep], keys[keep], sum, na.rm = TRUE)
+  # A sum is NA when nothing is known: the country reported no catch (or no trade) in that year,
+  # or only missing values; it is zero when the country reported that year, but not this group or flow
+  country_year <- function(country, year) paste(country, year, sep = "\r")
+  target_year <- country_year(target$country_en, target$year)
+  catch_reported <- target_year %in% country_year(catch$Country..Name., catch$Year)
+  trade_reported <- target_year %in% country_year(trade$Country..Name., trade$Year)
+  sum_by <- function(values, keys, keep, reported = trade_reported) {
+    s <- tapply(values[keep], keys[keep], function(v) if (all(is.na(v))) NA_real_ else sum(v, na.rm = TRUE))
     out <- as.numeric(s[target_key])
-    out[is.na(out)] <- 0
+    absent <- !target_key %in% names(s)
+    out[absent] <- ifelse(reported[absent], 0, NA_real_)
     out
   }
   in_group <- trade$ISSCAAP.group..Name. %in% counted
@@ -262,7 +272,7 @@ fao_trade_sums <- function(target, catch, trade, counted, by_group) {
     ifelse(tonnes > 0, flow(f, "Value", priced) / tonnes, NA_real_)
   }
   out <- target
-  out$catch_tonnes <- sum_by(catch$Production, catch_key, catch$isscaap_en %in% counted)
+  out$catch_tonnes <- sum_by(catch$Production, catch_key, catch$isscaap_en %in% counted, catch_reported)
   out$export_tonnes <- flow("Exports", "Quantity")
   out$import_tonnes <- flow("Imports", "Quantity")
   out$reexport_tonnes <- flow("Re-exports", "Quantity")
@@ -288,7 +298,7 @@ fao_trade_sums <- function(target, catch, trade, counted, by_group) {
   if (by_group) return(out)
 
   # Country totals: shares of the whole catch and export value, estimated values, fishmeal and fish oil
-  total_catch <- sum_by(catch$Production, key(catch$Country..Name., catch$Year), rep(TRUE, nrow(catch)))
+  total_catch <- sum_by(catch$Production, key(catch$Country..Name., catch$Year), rep(TRUE, nrow(catch)), catch_reported)
   exports <- trade$Trade.flow == "Exports"
   total_value <- sum_by(trade$Value, trade_key, exports)
   estimated <- trade$Value.Type %in% c("estimate", "partner data")
@@ -338,11 +348,11 @@ fao_trade_messages <- function(yearly, by_group, country, live) {
           pct(last$counted_export_value_pct), " of the export value; exports (", weight, ") equal ",
           pct(last$export_catch_pct), " of their catch; ", pct(last$estimated_export_value_pct),
           " of their export value is estimated or from partner reports.")
-  if (any(yearly$meal_oil_export_tonnes > 0)) {
+  if (any(yearly$meal_oil_export_tonnes > 0, na.rm = TRUE)) {
     message(country, ": fishmeal and fish oil not assigned to a group compared, exported in ", last$year, ": ",
             format(round(last$meal_oil_export_tonnes), big.mark = ","), " tonnes product weight (see meal_oil_export_tonnes).")
   }
-  exceed <- by_group[by_group$exports_exceed_catch, ]
+  exceed <- by_group[which(by_group$exports_exceed_catch), ]
   if (nrow(exceed) > 0) {
     counts <- sort(table(exceed$isscaap_en), decreasing = TRUE)
     message(country, ": exports exceed the catch in ",
@@ -386,7 +396,7 @@ fao_trade_plots <- function(yearly, by_group, name, top_n, min_capture_pct, live
   save(chart(long(yearly, "country"), countries), name, length(countries))
   for (country in unique(by_group$country_en)) {
     x <- by_group[by_group$country_en == country, ]
-    size <- tapply(x$catch_tonnes + x$export_tonnes + x$import_tonnes, x$group, sum)
+    size <- tapply(rowSums(cbind(x$catch_tonnes, x$export_tonnes, x$import_tonnes), na.rm = TRUE), x$group, sum)
     top <- names(sort(size[size > 0], decreasing = TRUE))[seq_len(min(top_n, sum(size > 0)))]
     if (length(top) == 0) next
     file <- if (length(countries) == 1) paste0(name, "_groups") else paste0(name, "_groups_", fao_file_name(country))

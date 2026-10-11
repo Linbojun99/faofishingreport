@@ -126,7 +126,9 @@ distant-water fleets in the area (\code{\link[=distant_water_profile]{distant_wa
 (\code{\link[=cmsy_area]{cmsy_area()}}), and the report has a part on the assessment, with the results of
 every species and appendix tables of the reference points, priors and their sources.
 Default is FALSE. The result of an earlier \code{\link[=cmsy_area]{cmsy_area()}} run can also be given, to
-write the report without running CMSY++ again. CMSY++ needs JAGS: see \code{\link[=cmsy_setup]{cmsy_setup()}}.}
+write the report without running CMSY++ again; it must be of the same area and FAO
+release as the report (\code{data_version}), else the report stops. CMSY++ needs JAGS: see
+\code{\link[=cmsy_setup]{cmsy_setup()}}.}
 }
 \value{
 Invisibly, a list of class \code{fao_report} with the paths of the files written (\code{file},

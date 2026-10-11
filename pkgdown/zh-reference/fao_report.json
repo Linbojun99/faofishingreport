@@ -1,6 +1,6 @@
 {
   "topic": "fao_report",
-  "rd_md5": "075d6353b34c7ab32a277cc40869b55a",
+  "rd_md5": "38a004e7ab3a1cb832c9fb48c37eba44",
   "stale": false,
   "en": {
     "title": "Assessment Report of an FAO Fishing Area",
@@ -26,7 +26,7 @@
       "data_version": "The FAO release to use, as in `load_fao_data()`. Default is \"latest\".",
       "total, species, countries, groups, status, quality, diversity, fleets": "Logical values: whether\nthe report has the section on the total catch and its stages (`fishing_area_data()`),\nthe main species (`fishing_area_species()`), the main fishing countries\n(`fishing_area_country()`), the ISSCAAP groups (`species_group_composition()`), the\nstock status plots (`stock_status()`), the data quality (`data_quality()`), the\ndiversity and concentration of the catch (`diversity_concentration()`) and the\ncoastal and distant-water fleets (`coastal_distant()`). All TRUE by default.",
       "shocks, collapse, synchrony, pelagic, mtc, distant": "Logical values: whether the report has\nthe sections on catch shocks (`catch_shocks()`), fishery collapses\n(`collapse_analysis()`), the synchrony of the catch and the portfolio effect\n(`catch_synchrony()`), the pelagic to demersal ratio (`pelagic_demersal()`), the mean\ntemperature of the catch (`mean_temperature_catch()`) and the profiles of the main\ndistant-water fleets in the area (`distant_water_profile()`). All FALSE by default.",
-      "cmsy": "A logical value. If TRUE, the main species are also assessed with CMSY++\n(`cmsy_area()`), and the report has a part on the assessment, with the results of\nevery species and appendix tables of the reference points, priors and their sources.\nDefault is FALSE. The result of an earlier `cmsy_area()` run can also be given, to\nwrite the report without running CMSY++ again. CMSY++ needs JAGS: see `cmsy_setup()`."
+      "cmsy": "A logical value. If TRUE, the main species are also assessed with CMSY++\n(`cmsy_area()`), and the report has a part on the assessment, with the results of\nevery species and appendix tables of the reference points, priors and their sources.\nDefault is FALSE. The result of an earlier `cmsy_area()` run can also be given, to\nwrite the report without running CMSY++ again; it must be of the same area and FAO\nrelease as the report (`data_version`), else the report stops. CMSY++ needs JAGS: see\n`cmsy_setup()`."
     },
     "sections": {}
   },
@@ -54,7 +54,7 @@
       "data_version": "使用的FAO数据版本，同`load_fao_data()`。默认为\"latest\"。",
       "total, species, countries, groups, status, quality, diversity, fleets": "逻辑值：报告是否包含以下章节：总渔获量及其阶段划分（`fishing_area_data()`）、主要物种（`fishing_area_species()`）、主要捕捞国家（`fishing_area_country()`）、ISSCAAP物种类群（`species_group_composition()`）、资源状态图（`stock_status()`）、数据质量（`data_quality()`）、渔获量的多样性与集中度（`diversity_concentration()`），以及沿岸国与远洋捕捞国（`coastal_distant()`）。默认均为TRUE。",
       "shocks, collapse, synchrony, pelagic, mtc, distant": "逻辑值：报告是否包含以下章节：渔获骤变（`catch_shocks()`）、渔业崩溃（`collapse_analysis()`）、渔获量的同步性与组合效应（`catch_synchrony()`）、中上层/底层比（`pelagic_demersal()`）、渔获平均温度（`mean_temperature_catch()`），以及该渔区主要远洋捕捞国的概况（`distant_water_profile()`）。默认均为FALSE。",
-      "cmsy": "逻辑值。为TRUE时，还会用CMSY++（`cmsy_area()`）评估主要物种，报告中增加资源评估部分，包括每个物种的结果，以及生物学参考点、先验及其来源的附表。默认为FALSE。也可以传入之前`cmsy_area()`运行的结果，这样无需再次运行CMSY++即可生成报告。CMSY++需要JAGS：见`cmsy_setup()`。"
+      "cmsy": "逻辑值。为TRUE时，还会用CMSY++（`cmsy_area()`）评估主要物种，报告中增加资源评估部分，包括每个物种的结果，以及生物学参考点、先验及其来源的附表。默认为FALSE。也可以传入之前`cmsy_area()`运行的结果，这样无需再次运行CMSY++即可生成报告；该结果必须与报告属于同一渔区和同一FAO数据版本（`data_version`），否则停止生成报告。CMSY++需要JAGS：见`cmsy_setup()`。"
     },
     "sections": {},
     "section_titles": {}

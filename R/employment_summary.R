@@ -26,7 +26,8 @@
 #'       coastal, deep-sea and not specified fishing, all marine fishing, inland fishing, work area
 #'       unspecified and in total; women, men and sex unknown; full time, part time, occasional and
 #'       working time unknown; the share of women and of each working time among those known, the
-#'       share with sex or working time unknown, and the share in estimated values;}
+#'       share with sex or working time unknown, and the share in estimated values; NA in the
+#'       years without any record (not reported), between the first and last years reported;}
 #'     \item{notes}{FAO's notes on the countries.}
 #'   }
 #'   Charts are saved in `figures/png/summary/`: `<label>_employment.png` (people by work area,
@@ -93,10 +94,15 @@ employment_summary <- function(country_name = NULL, employment = NULL, plot = TR
 # People by work area, sex and working time of one country (or the world) in each year
 fao_employment_yearly <- function(x, unit) {
   years <- seq(min(x$Year), max(x$Year))
+  # Years without any record were not reported: NA, not zero. In a reported year, a work area,
+  # sex or working time without a record has no people
+  reported <- years %in% x$Year
   by <- function(keep) {
     s <- tapply(x$Number[keep], factor(x$Year[keep], levels = years), sum)
     s[is.na(s)] <- 0
-    as.numeric(s)
+    s <- as.numeric(s)
+    s[!reported] <- NA_real_
+    s
   }
   area <- x$Work.area..Code.
   share <- function(part, whole) ifelse(whole > 0, 100 * part / whole, NA_real_)
@@ -129,11 +135,13 @@ fao_employment_plots <- function(yearly, name, lang, pptx) {
   units <- unique(yearly$country)
   sectors <- c(aquaculture = fao_label("emp_aquaculture", lang), marine_fishing = fao_label("emp_marine", lang),
                inland = fao_label("emp_inland", lang), unspecified = fao_label("emp_unspecified", lang))
-  million <- max(yearly$total) > 5e6
+  million <- max(yearly$total, na.rm = TRUE) > 5e6
+  # stacked bars by year: the years that were not reported stay empty
   long <- do.call(rbind, lapply(names(sectors), function(s) {
     data.frame(country = yearly$country, year = yearly$year, sector = sectors[[s]],
                people = yearly[[s]] / if (million) 1e6 else 1e3, stringsAsFactors = FALSE)
   }))
+  long <- long[!is.na(long$people), ]
   long$country <- factor(long$country, levels = units)
   long$sector <- factor(long$sector, levels = sectors)
   ncol <- min(4, length(units))
@@ -146,7 +154,7 @@ fao_employment_plots <- function(yearly, name, lang, pptx) {
                   height = if (length(units) == 1) 6.5 else 2.8 * ceiling(length(units) / ncol) + 1.4, pptx = pptx)
   }
   p <- ggplot2::ggplot(long, ggplot2::aes(x = .data$year, y = .data$people, fill = .data$sector)) +
-    ggplot2::geom_area(colour = "white", linewidth = 0.2) +
+    ggplot2::geom_col(width = 0.85) +
     ggplot2::scale_fill_manual(values = stats::setNames(c("#1A9641", "#2C7BB6", "#ABD9E9", "grey70"), sectors), name = NULL) +
     ggplot2::scale_x_continuous(breaks = fao_year_breaks(long$year), expand = c(0, 0)) +
     ggplot2::scale_y_continuous(expand = c(0, 0)) +
@@ -231,7 +239,8 @@ fao_employment_plots <- function(yearly, name, lang, pptx) {
 #'   marine, inland and all fishers, catch per fisher of each, the number of fishers as people,
 #'   fish farmers, workers of unspecified work area and their share of all workers, the share of
 #'   fishers in estimated values or with unknown working time, and whether the number of fishers is
-#'   unchanged from the year before) and `notes` (FAO's notes on the countries). The chart
+#'   unchanged from the year before; NA in the years in which the country reported no catch or no
+#'   workers) and `notes` (FAO's notes on the countries). The chart
 #'   `<label>_catch_per_fisher.png` is saved in `figures/png/summary/` and the table
 #'   `<label>_catch_per_fisher.csv` in `tables/`.
 #' @references
@@ -293,7 +302,7 @@ catch_per_fisher <- function(country_name, weights = c("headcount", "fte"), data
 
   unit <- if (weights == "fte") "full-time equivalent fisher" else "fisher"
   for (country in country_name) {
-    x <- yearly[yearly$country_en == country & yearly$fishers > 0, ]
+    x <- yearly[yearly$country_en == country & !is.na(yearly$fishers) & yearly$fishers > 0, ]
     if (nrow(x) == 0) {
       message(country, ": no fishers reported.")
       next
@@ -319,10 +328,13 @@ catch_per_fisher <- function(country_name, weights = c("headcount", "fte"), data
 
 # Catch, fishers and catch per fisher of one country in each year
 fao_fisher_yearly <- function(catch, workers, country, years) {
+  # Years in which the country reported no catch, or no workers, are NA, not zero
   by <- function(values, year, keep) {
     s <- tapply(values[keep], factor(year[keep], levels = years), sum)
     s[is.na(s)] <- 0
-    as.numeric(s)
+    s <- as.numeric(s)
+    s[!years %in% year] <- NA_real_
+    s
   }
   marine <- catch$inland_marine_en %in% "Marine areas"
   area <- workers$Work.area..Code.
@@ -347,7 +359,8 @@ fao_fisher_yearly <- function(catch, workers, country, years) {
                                      out$fishers_headcount)
   out$fishers_time_unknown_pct <- share(by(workers$Number, workers$Year, fisher & workers$Working.time == "Status unspecified"),
                                         out$fishers_headcount)
-  out$fishers_unchanged <- out$fishers_headcount > 0 & c(FALSE, diff(out$fishers_headcount) == 0)
+  out$fishers_unchanged <- !is.na(out$fishers_headcount) & out$fishers_headcount > 0 &
+    c(FALSE, diff(out$fishers_headcount) %in% 0)
   out
 }
 

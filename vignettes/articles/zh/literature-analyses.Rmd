@@ -97,7 +97,7 @@ fao_report(34, shocks = TRUE, collapse = TRUE, synchrony = TRUE, distant = TRUE,
 
 由骤变可以得到两个汇总指标：
 
-- 某一年的**骤变频率**：当年的骤变次数除以当年有产量的序列数，以百分比表示（Cottrell et al. 2019）；
+- 某一年的**骤变频率**：当年的骤变次数除以当年参与分析的序列数，以百分比表示（Cottrell et al. 2019）；序列从其第一个有产量的年份起计入，产量降到零的年份也计入，因此降到零的骤变在分子和分母中都被计入；
 - 某个分组（渔区、国家、大洲或物种类群）的**骤变率**：骤变次数除以该组的序列数（Gephart et al. 2017）。
 
 有两项设置是本包的选择。有产量的年数少于`min_years`（20年）的序列不纳入分析，因为两项研究都没有规定序列的最短长度。已不存在的国家（如苏联）的序列在其最后一个有产量的年份结束，以免把国家的解体算作骤变。
@@ -174,7 +174,7 @@ catch_shocks(load_fao_data(), by = "country", method = "gephart2017")
 | 元素 | 内容 |
 |---|---|
 | `shocks` | 每次骤变一行：所属序列、`Year`、`catch_tonnes`、`baseline_tonnes`、`loss_tonnes`、`loss_pct`、`cooks_distance`和`recovery_years` |
-| `by_year` | 每年的`n_series`（有产量的序列数）、`n_shocks`和`shock_frequency_pct` |
+| `by_year` | 每年的`n_series`（当年参与分析的序列数，包括产量降到零的序列）、`n_shocks`和`shock_frequency_pct` |
 | `by_group` | 按`grouping`（国家、渔区、物种、大洲、物种类群）统计的骤变率：`n_series`、`n_shocks`和`shocks_per_series` |
 | `series` | 参与分析的序列：`first_year`、`last_year`、`n_years`、`total_tonnes`和`n_shocks` |
 
@@ -325,10 +325,10 @@ show_table(sync$summary[, c("n_series", "synchrony_phi", "cv_total", "weighted_m
 with(sync$summary, c(cv_total = cv_total, decomposition = sqrt(synchrony_phi) * weighted_mean_cv))
 ```
 
-第二行验证Thibaut and Connolly (2013)的分解：总产量的变异系数等于$\sqrt{\varphi}$乘以加权平均变异系数。各序列的`share_of_variability_pct`是其在$\sum_i \sigma_i$中所占的比例：
+第二行验证Thibaut and Connolly (2013)的分解：总产量的变异系数等于$\sqrt{\varphi}$乘以加权平均变异系数。各序列的`variance_contribution_pct`是其对总产量方差的贡献，即该序列与总产量的协方差除以总产量的方差（各序列的贡献合计为100%，能抵消总产量波动的序列为负值）；`sd_share_pct`只是其标准差在$\sum_i \sigma_i$中所占的比例，没有考虑各序列之间的共同变化：
 
 ```{r}
-show_table(sync$series[, c("series", "mean_tonnes", "sd_tonnes", "cv", "share_of_variability_pct")], digits = 2)
+show_table(sync$series[, c("series", "mean_tonnes", "sd_tonnes", "cv", "sd_share_pct", "variance_contribution_pct")], digits = 2)
 show_table(data.frame(subset(sync$windows, first_year %% 10 == 0), row.names = NULL), digits = 2)
 ```
 
@@ -371,7 +371,7 @@ show_table(settings[, c("by", "detrend", "n_series", "synchrony_phi", "cv_total"
 | 元素 | 内容 |
 |---|---|
 | `summary` | `n_series`、`first_year`、`last_year`、`detrend`、`synchrony_phi`、`cv_total`、`weighted_mean_cv`、`mean_cv_series`、`portfolio_effect_pct`、`mean_pairwise_correlation`和`positive_correlations_pct` |
-| `series` | 各序列的`mean_tonnes`、`sd_tonnes`（去趋势后）、`cv`和`share_of_variability_pct` |
+| `series` | 各序列的`mean_tonnes`、`sd_tonnes`（去趋势后）、`cv`、`sd_share_pct`和`variance_contribution_pct` |
 | `windows` | 各滑动窗口的指标：`first_year`、`last_year`、`mid_year`、`n_series`、`synchrony_phi`、`cv_total`、`mean_cv_series`和`portfolio_effect_pct`（数据不足`window` + 2年时为`NULL`） |
 | `correlation` | 去趋势后各序列两两相关系数的矩阵 |
 

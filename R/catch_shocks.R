@@ -19,7 +19,8 @@
 #' }
 #' A shock has recovered in the first later year in which catch is back to at least 95% of that
 #' baseline. The yearly shock frequency is the number of shocks in a year divided by the number of
-#' series with catch in that year (Cottrell et al. 2019); the shock rate of an area, country or
+#' series analysed in that year (Cottrell et al. 2019): a series counts from its first year with
+#' catch to the last year, including years in which its catch fell to zero; the shock rate of an area, country or
 #' species group is the number of shocks divided by the number of its series (Gephart et al. 2017).
 #'
 #' Both studies analysed national totals (all species and areas of a country); with `by =
@@ -108,12 +109,11 @@ catch_shocks <- function(area_data, by = c("country", "area"), method = c("cottr
   shocks <- merge(info, shocks, by = "series")
   shocks <- shocks[order(shocks$Year, -shocks$loss_tonnes), ]
 
+  # Series analysed in each year: from their first year with catch to their end, including years
+  # in which the catch fell to zero (which can be shocks), so that shocks and series match
   years <- seq(min(series$first_year), last_year)
-  producing <- vapply(years, function(y) sum(vapply(results, function(r) {
-    i <- match(y, r$years)
-    !is.na(i) && r$catch[i] > 0
-  }, logical(1))), integer(1))
-  by_year <- data.frame(Year = years, n_series = producing,
+  analysed <- vapply(years, function(y) sum(vapply(results, function(r) y %in% r$years, logical(1))), integer(1))
+  by_year <- data.frame(Year = years, n_series = analysed,
                         n_shocks = vapply(years, function(y) sum(shocks$Year == y), integer(1)))
   by_year$shock_frequency_pct <- ifelse(by_year$n_series > 0, 100 * by_year$n_shocks / by_year$n_series, NA_real_)
 
