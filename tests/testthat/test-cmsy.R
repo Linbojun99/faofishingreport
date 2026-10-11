@@ -474,3 +474,23 @@ test_that("the start year suggested by CMSY++ uses the smoothing bandwidth of th
   expect_equal(cmsy_auto_start(catch, id, bw = 10), expected(10))
   expect_false(expected(3) == expected(10))
 })
+
+test_that("the report says when results are completed runs with unchecked B/k priors", {
+  s <- data.frame(Stock = c("A", "B"), start_bk_prior_source = c("CMSY++ neural network", "user"),
+                  int_bk_prior_source = c("CMSY++ neural network", "user"),
+                  end_bk_prior_source = c("CMSY++ neural network", "user"))
+  mixed <- fao_report_cmsy_priors(s, c(TRUE, TRUE), "en")
+  expect_equal(mixed$unchecked, c(TRUE, FALSE))
+  expect_match(mixed$text, "priors of 1 stock were set by the user; for the other 1 stock they were")
+  expect_match(mixed$text, "not of validated stock assessments")
+  nn <- fao_report_cmsy_priors(s[1, ], TRUE, "en")
+  expect_match(nn$text, "completed model runs, not of validated stock assessments")
+  expect_match(fao_report_cmsy_priors(s[1, ], TRUE, "zh")$text, "核实")
+  user <- fao_report_cmsy_priors(s[2, ], TRUE, "en")
+  expect_false(user$unchecked)
+  expect_equal(user$text, "The relative biomass (B/k) priors of all stocks were set by the user.")
+  # a stock with one prior of the neural network is unchecked; failed runs are left out
+  s$end_bk_prior_source[2] <- "CMSY++ neural network"
+  expect_equal(fao_report_cmsy_priors(s, c(TRUE, TRUE), "en")$unchecked, c(TRUE, TRUE))
+  expect_equal(fao_report_cmsy_priors(s, c(FALSE, TRUE), "en")$unchecked, c(FALSE, TRUE))
+})

@@ -106,24 +106,12 @@ fao_report_cmsy_values <- function(result, lang) {
   names(table) <- c(word("col_species"), word("col_scientific"), word("col_years"), word("col_r"), word("col_k"),
                     word("col_msy"), word("col_bbmsy"), word("col_ffmsy"), word("col_status"))
   tables <- fao_report_cmsy_tables(result, lang, names)
-  # A finished run is not a validated assessment: the B/k priors suggested by the neural network
-  # "may not be appropriate for your stock" (CMSY++ user guide) and were not checked stock by stock
-  # unless the user set them
-  default_prior <- function(column) if (column %in% names(s)) !s[[column]] %in% "user" else rep(TRUE, nrow(s))
-  unchecked <- ok & (default_prior("start_bk_prior_source") | default_prior("int_bk_prior_source") |
-                       default_prior("end_bk_prior_source"))
-  priors_text <- if (!any(unchecked)) {
-    text("cmsy_priors_user")
-  } else if (all(unchecked[ok])) {
-    text("cmsy_priors_nn")
-  } else {
-    text("cmsy_priors_mixed", n_user = sum(ok & !unchecked), n_nn = sum(unchecked))
-  }
+  priors <- fao_report_cmsy_priors(s, ok, lang)
   partial <- s$run_status %in% "partial"
   c(counts, tables, list(
     has_cmsy = TRUE, cmsy_top = nrow(s) + nrow(result$input$excluded),
-    cmsy_priors_text = priors_text,
-    cmsy_unchecked = if (any(unchecked)) text("cmsy_unchecked") else "",
+    cmsy_priors_text = priors$text,
+    cmsy_unchecked = if (any(priors$unchecked)) text("cmsy_unchecked") else "",
     partial_note = if (any(partial)) text("cmsy_partial", list = list_text(names$plain[partial])) else "",
     not_assessed = if (length(missing) > 0) text("cmsy_not_assessed", list = list_text(missing)) else "",
     overfished_list = if (any(overfished)) text("cmsy_overfished_list", list = list_text(names$plain[overfished])) else "",
@@ -248,4 +236,26 @@ fao_report_cmsy_section <- function(x, values, text, part = 3) {
   }
   x <- fao_report_par(x, paste0(part, ".", length(values$cmsy_species) + 2, " ", text("h_cmsy_summary")), "FAOHeading2")
   fao_report_par(x, text("cmsy_summary"))
+}
+
+# A finished run is not a validated assessment: the B/k priors suggested by the neural network
+# "may not be appropriate for your stock" (CMSY++ user guide) and were not checked stock by stock
+# unless the user set them. Returns the sentence of the methods on the priors and, per stock,
+# whether its results rest on unchecked priors
+fao_report_cmsy_priors <- function(s, ok, lang) {
+  default_prior <- function(column) if (column %in% names(s)) !s[[column]] %in% "user" else rep(TRUE, nrow(s))
+  unchecked <- ok & (default_prior("start_bk_prior_source") | default_prior("int_bk_prior_source") |
+                       default_prior("end_bk_prior_source"))
+  text <- if (!any(unchecked)) {
+    fao_report_text("cmsy_priors_user", lang)
+  } else if (all(unchecked[ok])) {
+    fao_report_text("cmsy_priors_nn", lang)
+  } else {
+    stocks <- function(n) paste(n, if (n == 1) "stock" else "stocks")
+    n_user <- sum(ok & !unchecked)
+    n_nn <- sum(unchecked)
+    fao_report_text("cmsy_priors_mixed", lang, list(n_user = n_user, n_nn = n_nn, n_user_stocks = stocks(n_user),
+                                                    n_nn_stocks = stocks(n_nn)))
+  }
+  list(text = text, unchecked = unchecked)
 }
