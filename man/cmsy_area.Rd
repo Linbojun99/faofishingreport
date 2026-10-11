@@ -135,3 +135,17 @@ cmsy_area(c("Atlantic, Eastern Central", "Pacific, Northwest"), top = 5, silent 
           settings = list(n.iter = 100000, n.burnin = 50000))
 }
 }
+\references{
+Froese, R., Winker, H., Coro, G., Palomares, M.L.D., Tsikliras, A.C., Dimarchopoulou, D.,
+Touloumis, K., Demirel, N., Vianna, G.M.S., Scarcella, G., Schijns, R., Liang, C. and Pauly,
+D. (2023). New developments in the analysis of catch time series as the basis for fish stock
+assessments: the CMSY++ method. Acta Ichthyologica et Piscatoria 53: 173-189.
+\doi{10.3897/aiep.53.105910}
+
+Froese, R., Demirel, N., Coro, G. and Winker, H. (2021). User Guide for CMSY++. GEOMAR,
+Germany, 17 pp. \url{https://oceanrep.geomar.de/id/eprint/52147/}
+
+FAO (2026). The State of World Fisheries and Aquaculture 2026. Rome, FAO. Section "The status
+of fishery resources", Box 1.3 (assessment tiers and status classes).
+\url{https://openknowledge.fao.org/server/api/core/bitstreams/09d03e2f-7097-4d59-bf94-db65e95f44fd/content/sofia-2026/the-status-fishery-resources.html}
+}

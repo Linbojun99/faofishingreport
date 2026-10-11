@@ -239,6 +239,10 @@ the western Pacific Ocean. Environmental Biology of Fishes 105: 1347-1362.
 
 FAO (2024). The State of World Fisheries and Aquaculture 2024. Rome: FAO. \doi{10.4060/cd0683en}
 
+Froese, R. (2020). Personal communication: R code (PrefTempBatch_5.R) to estimate preferred
+temperature from AquaMaps (version 10/2019). FishBase reference 123201.
+\url{https://www.fishbase.se/references/FBRefSummary.php?ID=123201}
+
 Garibaldi, L. (2012). The FAO global capture production database: a six-decade effort to catch
 the trend. Marine Policy 36: 760-768. \doi{10.1016/j.marpol.2011.10.024}
 

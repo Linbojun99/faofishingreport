@@ -119,6 +119,40 @@ test_that("collapse_analysis() returns its tables without writing files", {
   expect_length(list.files(), 0)
 })
 
+test_that("synchrony is 1 for synchronous series and 0 for compensating ones", {
+  years <- 2000:2019
+  wave <- sin(seq_along(years))
+  same <- cbind(a = 100 + 10 * wave, b = 200 + 20 * wave)
+  opposite <- cbind(a = 100 + 10 * wave, b = 100 - 10 * wave)
+  expect_equal(fao_synchrony(same, years, "none")$phi, 1)
+  expect_equal(fao_synchrony(opposite, years, "none")$phi, 0, tolerance = 1e-10)
+  # A shared trend makes series look synchronous unless it is removed (Leps et al. 2019)
+  set.seed(5)
+  trend <- cbind(a = 10 * seq_along(years) + stats::rnorm(20), b = 10 * seq_along(years) + stats::rnorm(20))
+  expect_gt(fao_synchrony(trend, years, "none")$phi, 0.9)
+  expect_lt(fao_synchrony(trend, years, "linear")$phi, 0.9)
+  # CV of the total = sqrt(phi) x weighted mean CV (Thibaut and Connolly 2013)
+  m <- fao_synchrony(cbind(trend, c = 50 + stats::rnorm(20, 0, 5)), years, "linear")
+  expect_equal(m$cv_total, sqrt(m$phi) * m$weighted_cv)
+  expect_equal(m$portfolio, 100 * (m$mean_cv - m$cv_total) / m$cv_total)
+})
+
+test_that("catch_synchrony() chooses series as Ong et al. (2021) and returns its tables", {
+  withr::local_dir(withr::local_tempdir())
+  years <- 1990:2019
+  set.seed(6)
+  data <- rbind(fake_catch("Chile", "Anchoveta(=Peruvian anchovy)", "Pacific, Southeast", years, 1000 + stats::rnorm(30, 0, 100)),
+                fake_catch("Chile", "Chilean jack mackerel", "Pacific, Southeast", years, 500 + stats::rnorm(30, 0, 50)),
+                fake_catch("Chile", "Pacific sardine", "Pacific, Southeast", years, c(rep(0, 10), rep(300, 20))),
+                fake_catch("Chile", "Araucanian herring", "Pacific, Southeast", years, rep(5, 30)))
+  out <- suppressMessages(catch_synchrony(data, window = 10, plot = FALSE, table = FALSE))
+  expect_named(out, c("summary", "series", "windows", "correlation"))
+  expect_setequal(out$series$series_en, c("Anchoveta(=Peruvian anchovy)", "Chilean jack mackerel"))   # 2/3 non-zero; median 5 t
+  expect_equal(nrow(out$windows), length(years) - 10 + 1)
+  expect_true(out$summary$synchrony_phi >= 0 && out$summary$synchrony_phi <= 1)
+  expect_length(list.files(), 0)
+})
+
 test_that("the distant-water profile splits a country's catch by adjacent and distant areas", {
   withr::local_dir(withr::local_tempdir())
   dw <- suppressMessages(distant_water_profile("Spain", plot = FALSE, table = FALSE, data_version = "bundled"))

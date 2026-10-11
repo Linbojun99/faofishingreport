@@ -8,6 +8,42 @@
 #' @param print A logical value. If TRUE (default), the list is printed.
 #' @return Invisibly, a data frame with one row per data source, table or rule: `type`, `item`,
 #'   `description`, `source` (citation or licence) and `link`.
+#' @references
+#' Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase: exploring, manipulating and
+#' visualizing FishBase data from R. Journal of Fish Biology 81: 2030-2039.
+#' \doi{10.1111/j.1095-8649.2012.03464.x}
+#'
+#' Branch, T.A., Watson, R., Fulton, E.A. et al. (2010). The trophic fingerprint of marine
+#' fisheries. Nature 468: 431-435. \doi{10.1038/nature09528}
+#'
+#' FAO (2026). Nomenclature, revision, and references of the ASFIS list (version 2026). Rome, FAO.
+#' \url{https://www.fao.org/fishery/static/ASFIS/ASFIS_References_2026_EN.pdf}
+#'
+#' Froese, R. and Pauly, D. (Eds.) (2000). FishBase 2000: concepts, design and data sources. ICLARM,
+#' Los Baños, Philippines. \url{https://www.fishbase.se/manual/fishbasethe_food_items_table.htm},
+#' \url{https://www.fishbase.se/manual/fishbasethe_synonyms_table.htm}
+#'
+#' Froese, R. and Pauly, D. (Eds.) FishBase. World Wide Web electronic publication.
+#' \url{https://www.fishbase.se}
+#'
+#' Liang, C. and Pauly, D. (2017). Fisheries impacts on China's coastal ecosystems: unmasking a
+#' pervasive 'fishing down' effect. PLoS ONE 12: e0173296. \doi{10.1371/journal.pone.0173296}
+#'
+#' Liang, C., Xian, W. and Pauly, D. (2018). Impacts of ocean warming on China's fisheries
+#' catches: an application of "mean temperature of the catch" concept. Frontiers in Marine
+#' Science 5: 26. \doi{10.3389/fmars.2018.00026}
+#'
+#' Palomares, M.L.D. and Pauly, D. (Eds.) SeaLifeBase. World Wide Web electronic publication.
+#' \url{https://www.sealifebase.se}
+#'
+#' Pauly, D., Christensen, V., Dalsgaard, J., Froese, R. and Torres, F. (1998). Fishing down
+#' marine food webs. Science 279: 860-863. \doi{10.1126/science.279.5352.860}
+#'
+#' Tsikliras, A.C. and Stergiou, K.I. (2014). Mean temperature of the catch increases quickly in
+#' the Mediterranean Sea. Marine Ecology Progress Series 515: 281-284. \doi{10.3354/meps11005}
+#'
+#' WoRMS Editorial Board. World Register of Marine Species. Flanders Marine Institute (VLIZ).
+#' \url{https://www.marinespecies.org}, \doi{10.14284/170}
 #' @export
 #' @examples
 #' \dontrun{
@@ -34,7 +70,8 @@ fishbase_sources <- function(print = TRUE) {
       "https://www.marinespecies.org"),
     c("table", "species", "Genus, species, family code, habitat (DemersPelag), maximum length (Length), vulnerability to fishing", "FishBase/SeaLifeBase", ""),
     c("table", "estimate", "Trophic level (Troph, seTroph) from diet studies or, when missing, related species and size; preferred temperature (TempPrefMean, AquaMaps distribution; FishBase ref. 123201); prior r",
-      "FishBase manual; AquaMaps", ""),
+      "Froese & Pauly (Eds.) 2000, FishBase 2000: concepts, design and data sources, 'The FOOD ITEMS table', boxes 25-26",
+      "https://www.fishbase.se/manual/fishbasethe_food_items_table.htm"),
     c("table", "families", "Family, order, class and phylum", "FishBase/SeaLifeBase", ""),
     c("table", "synonyms", "Former and other names with their status (accepted name, synonym, misapplied name, ambiguous synonym)", "FishBase/SeaLifeBase", ""),
     c("table", "stocks", "Resilience (High, Medium, Low, Very low)", "FishBase/SeaLifeBase", ""),
@@ -42,7 +79,8 @@ fishbase_sources <- function(print = TRUE) {
     c("rule", "1. exact", "Fishes looked up in FishBase first, others in SeaLifeBase first; the FAO scientific name is a valid species name", fb_rule_sources[["exact"]], ""),
     c("rule", "2. synonym", "The FAO name is a synonym (status 'synonym') of one species; misapplied names never used, ambiguous synonyms not matched", fb_rule_sources[["synonym"]], ""),
     c("rule", "3. WoRMS valid name", "Names not found by rules 1-2 are looked up online in WoRMS; only an exact record with status 'accepted' or a single valid name is used, then matched by rules 1, 2 or 4",
-      "FAO ASFIS list follows WoRMS for most groups (FAO ASFIS nomenclature notes, 2026)", "https://www.fao.org/fishery/en/collection/asfis"),
+      "The FAO ASFIS list follows WoRMS for most groups: FAO (2026) Nomenclature, revision, and references of the ASFIS list (version 2026), pp. 1-3",
+      "https://www.fao.org/fishery/static/ASFIS/ASFIS_References_2026_EN.pdf"),
     c("rule", "4. taxon above species", "Unweighted mean trophic level of the species of the genus, family, order, class or phylum; other values left empty",
       paste0(fb_rule_sources[["group"]], "; MTC studies exclude items above species: Tsikliras & Stergiou 2014 MEPS 515:281; Liang et al. 2018 Front Mar Sci 5:26"), ""),
     c("rule", "5. plants", "Aquatic plants have trophic level 1", fb_rule_sources[["plant"]], ""),

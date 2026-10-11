@@ -35,17 +35,21 @@ is TRUE).
 }
 \description{
 This function prepares the computer for \code{\link[=cmsy_run]{cmsy_run()}}: it installs the missing R packages from
-CRAN, downloads the JAGS installer for this system from its pinned link (checking its size
-and checksum, see \code{\link[=cmsy_sources]{cmsy_sources()}}) and opens it, and checks the bundled CMSY++ files. It asks
-before installing anything when R is used interactively.
+CRAN, downloads the JAGS installer that matches this system and R version (see
+\code{\link[=cmsy_jags_versions]{cmsy_jags_versions()}}; with \code{\link[=cmsy_download_jags]{cmsy_download_jags()}}, which checks its size and checksums) and
+opens it, and checks the bundled CMSY++ files. It asks before installing anything when R is
+used interactively.
 }
 \details{
 JAGS is a separate program, so it cannot be installed from R. On Windows and macOS the
 installer is opened and you click through it; on Linux the commands to install it are shown.
 Restart R after installing JAGS and run \code{cmsy_setup()} again to check.
 
-JAGS 4.3.2 (or 4.3.1 for older R versions) is used by default because rjags on CRAN (4-17)
-needs JAGS 4. JAGS 5.0.0 (\code{jags = "latest"}) also installs rjags 5-3 from SourceForge.
+The JAGS installer must match the R version (see \code{\link[=cmsy_jags_versions]{cmsy_jags_versions()}}): on Windows JAGS
+4.3.2 for R 4.5 and 4.6 and JAGS 4.3.1 for R 4.2 to 4.4; on macOS JAGS 4.3.2 for R 4.3 and
+later and 4.3.1 for R 4.2; on Linux the JAGS of the package manager. JAGS 4 is used by
+default because rjags on CRAN (4-17) needs JAGS 4. JAGS 5.0.0 (\code{jags = "latest"}) also
+installs rjags 5-3 from SourceForge.
 }
 \examples{
 \dontrun{
@@ -58,4 +62,9 @@ cmsy_setup(ask = FALSE)
 # JAGS 5.0.0 with rjags 5-3 (from SourceForge) instead of JAGS 4.3.2
 cmsy_setup(jags = "latest")
 }
+}
+\references{
+Plummer, M. (2003). JAGS: A program for analysis of Bayesian graphical models using Gibbs
+sampling. Proceedings of the 3rd International Workshop on Distributed Statistical Computing
+(DSC 2003), Vienna. \url{https://mcmc-jags.sourceforge.io/}
 }

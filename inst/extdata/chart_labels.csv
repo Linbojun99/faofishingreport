@@ -90,3 +90,17 @@ catch_data,Catch data,渔获数据
 null_model,Random series with no trend (Wilberg & Miller 2007),无趋势随机序列（Wilberg & Miller 2007）
 collapse_note_mullon2005,"Collapse: catch below 1/10 of the maximum for 4 years after the maximum (Mullon et al. 2005)",崩溃：最高渔获之后连续4年低于最高值的1/10（Mullon et al. 2005）
 collapse_note_worm2006,"Collapsed: catch below 10% of the maximum (Worm et al. 2006)",崩溃：渔获低于最高值的10%（Worm et al. 2006）
+synchrony_phi,Synchrony phi (Loreau & de Mazancourt 2008),同步性 φ（Loreau & de Mazancourt 2008）
+portfolio_effect,Portfolio effect (%),组合效应 (%)
+window_mid_year,Middle year of the {n}-year window,{n}年滑动窗口的中间年份
+total_catch,Total catch,总渔获
+cv_detrended,Coefficient of variation,变异系数
+correlation,Correlation,相关系数
+synchrony_note_linear,Series detrended with a linear trend (Ong et al. 2021),各序列已去除线性趋势（Ong et al. 2021）
+synchrony_note_none,Series not detrended,各序列未去除趋势
+pelagic,Pelagic fishes,中上层鱼类
+demersal,Demersal fishes,底层鱼类
+other_catch,Other catch,其他渔获
+pd_class,Pelagic or demersal,中上层或底层
+pd_ratio,Pelagic/demersal ratio (P/D),中上层鱼/底层鱼渔获比 (P/D)
+pd_ratio_note,Log scale; dashed line: P/D = 1,对数刻度；虚线：P/D = 1

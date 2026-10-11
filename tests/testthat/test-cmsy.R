@@ -36,9 +36,24 @@ test_that("the JAGS installer fits the system and R version", {
   expect_equal(cmsy_jags_choice("recommended", "macos", "4.2.3")$file, "JAGS-4.3.1.pkg")
   expect_equal(cmsy_jags_choice("recommended", "linux", "4.6.0")$file, "JAGS-4.3.2.tar.gz")
   expect_equal(cmsy_jags_choice("latest", "macos", "4.6.0")$version, "5.0.0")
-  expect_error(cmsy_jags_choice("5.0.0", "windows", "4.4.0"), "R 4.5 and 4.6")
+  expect_error(cmsy_jags_choice("5.0.0", "windows", "4.4.0"), "No JAGS 5.0.0 build")
+  expect_error(cmsy_jags_choice("recommended", "windows", "4.7.0"), "No build for R 4.7.0")
+  expect_equal(cmsy_jags_choice("recommended", "windows", "4.2.3")$file, "JAGS-4.3.1.exe")
+  expect_equal(cmsy_jags_choice("latest", "windows", "4.6.1")$file, "JAGS-5.0.0.exe")
   expect_equal(cmsy_rjags_choice("4.3.2", "macos", "arm64")$version, "4-17")
-  expect_equal(cmsy_rjags_choice("5.0.0", "macos", "arm64")$file, "rjags_5-3-R4.6.1-arm64.tgz")
+  expect_equal(cmsy_rjags_choice("5.0.0", "macos", "arm64", "4.6.1")$file, "rjags_5-3-R4.6.1-arm64.tgz")
+  expect_equal(cmsy_rjags_choice("5.0.0", "macos", "x86_64", "4.6.0")$file, "rjags_5-3-R4.6.1-x86_64.tgz")
+  expect_equal(cmsy_rjags_choice("5.0.0", "macos", "arm64", "4.4.0")$file, "rjags_5-3.tar.gz")
+  expect_equal(cmsy_rjags_choice("5.0.0", "windows", "x86_64", "4.5.2")$file, "rjags_5-3.zip")
+  # Every installer named in the table is in the registry, with its checksums
+  registry <- cmsy_sources("JAGS")
+  expect_true(all(cmsy_jags_compat$installer %in% registry$file))
+  expect_true(all(!is.na(registry$sha256[registry$file %in% cmsy_jags_compat$installer])))
+  table <- cmsy_jags_versions(silent = TRUE)
+  expect_equal(sum(table$this_computer), 1)
+  expect_setequal(unique(table$system), c("Windows", "macOS", "Linux"))
+  expect_equal(cmsy_jags_versions("windows", r_version = "4.4.1", silent = TRUE)$installer[1:2],
+               c("JAGS-4.3.2.exe", "JAGS-4.3.1.exe"))
 })
 
 test_that("the CMSY++ code is changed for each system as the user guide says", {

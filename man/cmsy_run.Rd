@@ -140,6 +140,7 @@ Froese, R., Winker, H., Coro, G., et al. (2023). New developments in the analysi
 time series as the basis for fish stock assessments: the CMSY++ method. Acta Ichthyologica et
 Piscatoria 53: 173-189. \doi{10.3897/aiep.53.105910}
 
-FAO (2026). The State of World Fisheries and Aquaculture 2026, Box 1.3 (assessment tiers and
-status classes). Rome, FAO.
+FAO (2026). The State of World Fisheries and Aquaculture 2026. Rome, FAO. Section "The status
+of fishery resources", Box 1.3 (assessment tiers and status classes).
+\url{https://openknowledge.fao.org/server/api/core/bitstreams/09d03e2f-7097-4d59-bf94-db65e95f44fd/content/sofia-2026/the-status-fishery-resources.html}
 }

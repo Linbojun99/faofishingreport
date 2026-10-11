@@ -71,6 +71,36 @@ src <- cmsy_sources()
 show_table(src[, c("component", "version", "platform", "file", "license", "url")], n = 30)
 ```
 
+### The R version and the JAGS version must match
+
+JAGS is a separate program that rjags uses for the MCMC. On Windows and macOS each JAGS installer is built for a range of R versions; with the wrong one rjags cannot be loaded and CMSY++ cannot run. rjags on CRAN (4-17) needs JAGS 4. The matches (JAGS 4 is the default):
+
+| System | R version | JAGS installer | rjags |
+|---|---|---|---|
+| Windows | 4.5, 4.6 | `JAGS-4.3.2.exe` | 4-17 (CRAN) |
+| Windows | 4.2 to 4.4 | `JAGS-4.3.1.exe` | 4-17 (CRAN) |
+| macOS | 4.3 and later | `JAGS-4.3.2.pkg` | 4-17 (CRAN) |
+| macOS | 4.2 | `JAGS-4.3.1.pkg` | 4-17 (CRAN) |
+| Linux | any | the system package (e.g. `sudo apt-get install jags`) or `JAGS-4.3.2.tar.gz` | 4-17 (CRAN, built from source) |
+| Windows | 4.5, 4.6 | `JAGS-5.0.0.exe` (optional, newest) | 5-3 (SourceForge, not yet on CRAN) |
+| macOS | 4.3 and later | `JAGS-5.0.0-universal.pkg` (optional) | 5-3 (SourceForge: binary for R 4.6, else from source) |
+
+The rules come from the README of the JAGS downloads (e.g. the Windows build of JAGS 4.3.2 "was built with Rtools45 and is suitable for interfacing with R 4.5.x"; "JAGS-4.3.2.pkg for compatibility with R version 4.3.0 and later"; "JAGS-4.3.1.pkg for compatibility with R versions 4.0.x to 4.2.x"), and each combination is installed and run with CMSY++ by the package's GitHub Actions workflow. `cmsy_jags_versions()` gives the table, marks the row for this computer and gives the evidence and README link of each rule:
+
+```{r}
+jv <- cmsy_jags_versions()
+show_table(jv[, c("system", "r_versions", "jags", "installer", "rjags", "default", "this_computer")], n = 10)
+```
+
+No need to look it up: `cmsy_download_jags()` picks the installer for the system, R version and processor, downloads it and checks its size, MD5 and SHA-256; for JAGS 5 it also downloads rjags 5-3. It can also download for other systems or R versions, e.g. to prepare installers for computers without internet:
+
+```{r, eval = FALSE}
+cmsy_download_jags()                                        # the JAGS for this computer
+cmsy_download_jags(version = "latest")                      # JAGS 5.0.0 and rjags 5-3
+cmsy_download_jags(os = "all", r_version = "4.4.1", dest = "jags_installers")   # all systems, R 4.4
+cmsy_install_jags()                                         # download and open the installer
+```
+
 ## 🐟 Step 3: priors for r from FishBase and SeaLifeBase
 
 A built-in table gives the resilience and prior r of the 3,155 species-level items of the FAO capture statistics in FishBase or SeaLifeBase (release 26.06). It can be searched offline by English, Chinese or scientific name or by 3-alpha code, and every row links to its source page (`open = TRUE` opens the pages):

@@ -57,11 +57,11 @@ SeaLifeBase first, following Branch et al. (2010, Supplementary Information p. 1
 \item \strong{exact}: the FAO scientific name is a valid species name in the database.
 \item \strong{synonym}: the FAO name is listed as a synonym (status "synonym") of one valid
 species in the database's synonym table. Misapplied names are never used, since they are
-misidentifications and not aliases (FishBase manual, SYNONYMS table); names that the
+misidentifications and not aliases (Froese and Pauly 2000, "The SYNONYMS table"); names that the
 table marks as ambiguous, or that point to several species, are not matched.
 \item \strong{WoRMS valid name}: a name not found by rules 1-2 is looked up online in the
 World Register of Marine Species (WoRMS), which the FAO ASFIS list follows for most
-groups (FAO ASFIS nomenclature notes, 2026). Only an exact WoRMS record with status
+groups (FAO 2026, pp. 1-3). Only an exact WoRMS record with status
 "accepted" or with a single valid name is used; the valid name is then matched by rules
 1-2 or 4. Results are saved in \code{worms_lookup.csv} in the \code{fishbase} folder of \code{data_dir}
 and reused when the computer is offline.
@@ -81,7 +81,7 @@ looked up in WoRMS before).
 
 The trophic levels are the FishBase and SeaLifeBase estimates (table "estimate", column
 Troph), which come from diet studies or, when these are missing, from related species and
-body size (FishBase manual). Temperature preferences (column TempPrefMean) are means of the
+body size (Froese and Pauly 2000, "The FOOD ITEMS table", boxes 25-26). Temperature preferences (column TempPrefMean) are means of the
 AquaMaps distribution of the species (FishBase reference 123201); note that Cheung et al.
 (2013) used medians.
 
@@ -126,9 +126,23 @@ Pauly, D., Christensen, V., Dalsgaard, J., Froese, R. and Torres, F. (1998). Fis
 marine food webs. Science 279: 860-863. \doi{10.1126/science.279.5352.860}
 
 Tsikliras, A.C. and Stergiou, K.I. (2014). Mean temperature of the catch increases quickly in
-the Mediterranean Sea. Marine Ecology Progress Series 515: 281-284.
+the Mediterranean Sea. Marine Ecology Progress Series 515: 281-284. \doi{10.3354/meps11005}
 
-Froese, R. and Pauly, D. (Eds.) FishBase. \url{https://www.fishbase.se}; Palomares, M.L.D. and
-Pauly, D. (Eds.) SeaLifeBase. \url{https://www.sealifebase.se}; WoRMS Editorial Board. World
-Register of Marine Species. \url{https://www.marinespecies.org}
+FAO (2026). Nomenclature, revision, and references of the ASFIS list (version 2026). Rome, FAO.
+\url{https://www.fao.org/fishery/static/ASFIS/ASFIS_References_2026_EN.pdf}
+
+Froese, R. and Pauly, D. (Eds.) (2000). FishBase 2000: concepts, design and data sources. ICLARM,
+Los Baños, Philippines. Chapters "The SYNONYMS table"
+(\url{https://www.fishbase.se/manual/fishbasethe_synonyms_table.htm}) and "The FOOD ITEMS
+table", boxes 25 and 26 on trophic levels
+(\url{https://www.fishbase.se/manual/fishbasethe_food_items_table.htm}).
+
+Froese, R. and Pauly, D. (Eds.) FishBase. World Wide Web electronic publication.
+\url{https://www.fishbase.se}
+
+Palomares, M.L.D. and Pauly, D. (Eds.) SeaLifeBase. World Wide Web electronic publication.
+\url{https://www.sealifebase.se}
+
+WoRMS Editorial Board. World Register of Marine Species. Flanders Marine Institute (VLIZ).
+\url{https://www.marinespecies.org}, \doi{10.14284/170}
 }

@@ -93,8 +93,11 @@ reference:
   contents:
   - catch_shocks
   - collapse_analysis
+  - catch_synchrony
   - distant_water_profile
   - compare_releases
+  - pelagic_demersal
+  - fao_pd_groups
 - title: "🌡️ FishBase and temperature"
   desc: Species traits from FishBase and SeaLifeBase, sea surface temperature, and the mean temperature of the catch.
   contents:
@@ -113,6 +116,8 @@ reference:
   - cmsy_area
   - cmsy_system
   - cmsy_setup
+  - cmsy_jags_versions
+  - cmsy_download_jags
   - cmsy_install_jags
   - cmsy_sources
   - cmsy_priors

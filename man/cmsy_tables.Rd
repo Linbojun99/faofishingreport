@@ -29,7 +29,9 @@ been drawn. If TRUE, nothing is printed. The default can be changed for the sess
 with `fao_settings(silent = TRUE)`.}
 }
 \value{
-Invisibly, a list with the data frames \code{priors} and \code{results}.
+Invisibly, a list with the data frames \code{priors} and \code{results}. The results give the
+status in the two classes of FAO (2026) for catch-only results and in the five classes
+of Palomares et al. (2018).
 }
 \description{
 This function makes the two tables that CMSY++ studies usually give: the priors of each stock
@@ -48,4 +50,14 @@ tables$results
 # Column names in both languages, without saving
 cmsy_tables(result, lang = "both", table = FALSE)$results
 }
+}
+\references{
+FAO (2026). The State of World Fisheries and Aquaculture 2026. Rome, FAO. Section "The status
+of fishery resources", Box 1.3 (assessment tiers and status classes).
+\url{https://openknowledge.fao.org/server/api/core/bitstreams/09d03e2f-7097-4d59-bf94-db65e95f44fd/content/sofia-2026/the-status-fishery-resources.html}
+
+Palomares, M.L.D., Froese, R., Derrick, B., Noel, S.-L., Tsui, G., Woroniak, J. and Pauly, D.
+(2018). A preliminary global assessment of the status of exploited marine fish and
+invertebrate populations. A report prepared by the Sea Around Us for OCEANA. University of
+British Columbia and GEOMAR. \url{https://www.fishbase.de/rfroese/OceanaFinalReport_V7a.pdf}
 }

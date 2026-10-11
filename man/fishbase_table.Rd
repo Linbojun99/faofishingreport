@@ -43,3 +43,14 @@ estimate <- fishbase_table("estimate")
 attr(estimate, "fishbase_version")
 }
 }
+\references{
+Froese, R. and Pauly, D. (Eds.) FishBase. World Wide Web electronic publication.
+\url{https://www.fishbase.se}
+
+Palomares, M.L.D. and Pauly, D. (Eds.) SeaLifeBase. World Wide Web electronic publication.
+\url{https://www.sealifebase.se}
+
+Boettiger, C., Lang, D.T. and Wainwright, P.C. (2012). rfishbase: exploring, manipulating and
+visualizing FishBase data from R. Journal of Fish Biology 81: 2030-2039.
+\doi{10.1111/j.1095-8649.2012.03464.x}
+}

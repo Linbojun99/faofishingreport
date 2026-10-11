@@ -33,6 +33,12 @@
 #' Froese, R., Winker, H., Coro, G., Demirel, N., Tsikliras, A.C., Dimarchopoulou, D., Scarcella,
 #' G., Quaas, M. and Matz-Lueck, N. (2018). Status and rebuilding of European fisheries. Marine
 #' Policy 93: 159-170. \doi{10.1016/j.marpol.2018.04.018}
+#'
+#' Froese, R., Winker, H., Coro, G., Palomares, M.L.D., Tsikliras, A.C., Dimarchopoulou, D.,
+#' Touloumis, K., Demirel, N., Vianna, G.M.S., Scarcella, G., Schijns, R., Liang, C. and Pauly,
+#' D. (2023). New developments in the analysis of catch time series as the basis for fish stock
+#' assessments: the CMSY++ method. Acta Ichthyologica et Piscatoria 53: 173-189.
+#' \doi{10.3897/aiep.53.105910}
 #' @export
 #' @examples
 #' \dontrun{
@@ -221,7 +227,8 @@ cmsy_chart_forecast <- function(projection, series, lang, ann) {
 #' @inheritParams cmsy_plot
 #' @param ... Results of [cmsy_run()], named or not (e.g. `default = run1, start_1980 = run2`).
 #' @param external Optional data frame of other estimates, with columns `Stock`, `Year`, `B_Bmsy`
-#'        (and optionally `F_Fmsy`) and `source` (e.g. "ICES 2024" or "JABBA").
+#'        (and optionally `F_Fmsy`) and `source` (the name shown in the legend, e.g. the agency or
+#'        model of the other assessment).
 #' @return Invisibly, a list with `last_year` (one row per stock and run) and `plots`.
 #' @export
 #' @examples
@@ -301,7 +308,18 @@ cmsy_compare <- function(..., stocks = NULL, external = NULL, lang = NULL,
 #'
 #' @inheritParams cmsy_plot
 #' @param table A logical value. If TRUE (default), the tables are saved in `tables/cmsy/`.
-#' @return Invisibly, a list with the data frames `priors` and `results`.
+#' @return Invisibly, a list with the data frames `priors` and `results`. The results give the
+#'         status in the two classes of FAO (2026) for catch-only results and in the five classes
+#'         of Palomares et al. (2018).
+#' @references
+#' FAO (2026). The State of World Fisheries and Aquaculture 2026. Rome, FAO. Section "The status
+#' of fishery resources", Box 1.3 (assessment tiers and status classes).
+#' \url{https://openknowledge.fao.org/server/api/core/bitstreams/09d03e2f-7097-4d59-bf94-db65e95f44fd/content/sofia-2026/the-status-fishery-resources.html}
+#'
+#' Palomares, M.L.D., Froese, R., Derrick, B., Noel, S.-L., Tsui, G., Woroniak, J. and Pauly, D.
+#' (2018). A preliminary global assessment of the status of exploited marine fish and
+#' invertebrate populations. A report prepared by the Sea Around Us for OCEANA. University of
+#' British Columbia and GEOMAR. \url{https://www.fishbase.de/rfroese/OceanaFinalReport_V7a.pdf}
 #' @export
 #' @examples
 #' \dontrun{

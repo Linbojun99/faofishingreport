@@ -55,8 +55,11 @@ its fisheries. It also lists, for each distant-water area, the first and last ye
 the peak and the recent catch.
 }
 \details{
-An area is adjacent to a country as in \code{coastal_distant()}: the country's land, including
-overseas territories, lies within 20 km of the FAO area boundary. FAO records catch by the flag
+Distant-water catch is defined as by FAO: the catch of a country in the FAO major fishing areas
+it does not border; fishing outside its own waters but in an area it borders does not count
+(Grainger and Garcia 1996, section 2.6; Garibaldi and Limongelli 2003, section 2.1). An area is
+adjacent to a country as in \code{coastal_distant()}: the country's land, including overseas
+territories, lies within 20 km of the FAO area boundary (a rule of this package). FAO records catch by the flag
 of the vessel and by FAO major area, not by exclusive economic zone (EEZ), so the split shows in
 which FAO areas a country's fleet fished, not whether the catch came from its own waters, the
 waters of other countries or the high seas. Swartz et al. (2010) mapped the spatial expansion
@@ -78,6 +81,14 @@ distant_water_profile("Korea, Republic of", min_catch = 100)
 \references{
 FAO (2024). The State of World Fisheries and Aquaculture 2024. Blue Transformation in action.
 Rome, FAO. \doi{10.4060/cd0683en}
+
+Garibaldi, L. and Limongelli, L. (2003). Trends in oceanic captures and clustering of large
+marine ecosystems: two studies based on the FAO capture database. FAO Fisheries Technical Paper
+435. Rome, FAO. \url{https://www.fao.org/4/y4449e/y4449e00.htm}
+
+Grainger, R.J.R. and Garcia, S.M. (1996). Chronicles of marine fishery landings (1950-1994):
+trend analysis and fisheries potential. FAO Fisheries Technical Paper 359. Rome, FAO.
+\url{https://www.fao.org/4/w3244e/w3244e00.htm}
 
 Swartz, W., Sala, E., Tracey, S., Watson, R. and Pauly, D. (2010). The spatial expansion and
 ecological footprint of fisheries (1950 to present). PLoS ONE 5: e15143.

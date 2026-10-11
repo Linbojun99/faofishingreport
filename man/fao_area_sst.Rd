@@ -114,4 +114,13 @@ Rayner, N.A., Parker, D.E., Horton, E.B., Folland, C.K., Alexander, L.V., Rowell
 E.C. and Kaplan, A. (2003). Global analyses of sea surface temperature, sea ice, and night
 marine air temperature since the late nineteenth century. Journal of Geophysical Research 108
 (D14): 4407. \doi{10.1029/2002JD002670}
+
+HadISST1 dataset description, with the warning of 10 March 2016 and a link to the analysis by
+D. Chelton and C. Risien (\url{https://ir.library.oregonstate.edu/xmlui/handle/1957/58385}):
+\url{https://coastwatch.pfeg.noaa.gov/erddap/info/erdHadISST/index.html}
+
+Web pages of the products: ERSST v5 \url{https://www.ncei.noaa.gov/products/extended-reconstructed-sst};
+HadISST1 \url{https://www.metoffice.gov.uk/hadobs/hadisst/}; COBE-SST2
+\url{https://psl.noaa.gov/data/gridded/data.cobe2.html}; OISST v2.1
+\url{https://www.ncei.noaa.gov/products/optimum-interpolation-sst}
 }

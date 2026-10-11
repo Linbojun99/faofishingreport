@@ -139,6 +139,10 @@ Palomares, M.L.D., Froese, R., Derrick, B., Noel, S.-L., Tsui, G., Woroniak, J. 
 invertebrate populations. A report prepared by the Sea Around Us for OCEANA. University of
 British Columbia and GEOMAR. \url{https://www.fishbase.de/rfroese/OceanaFinalReport_V7a.pdf}
 
+FAO (2026). The State of World Fisheries and Aquaculture 2026. Rome, FAO. Section "The status
+of fishery resources", Box 1.3 (assessment tiers and status classes).
+\url{https://openknowledge.fao.org/server/api/core/bitstreams/09d03e2f-7097-4d59-bf94-db65e95f44fd/content/sofia-2026/the-status-fishery-resources.html}
+
 Mohn, R. (1999). The retrospective problem in sequential population analysis: an
 investigation using cod fishery and simulated data. ICES Journal of Marine Science 56:
 473-488. \doi{10.1006/jmsc.1999.0481}
