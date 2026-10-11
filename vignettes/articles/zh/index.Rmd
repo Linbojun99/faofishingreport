@@ -186,8 +186,13 @@ report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE, format = c("do
 
 ## 📖 文档
 
+**🧭 入门**
+
 - [🚀 快速入门](get-started.html)
 - [🎓 教程：东北太平洋（FAO 67区）从零到报告](tutorial-67.html)
+
+**📊 数据与分析**
+
 - [💾 FAO 数据：下载与自定义](data.html)
 - [🌊 渔区分析](fishing-areas.html)
 - [🐟 物种与国家分析](species-countries.html)
@@ -196,10 +201,16 @@ report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE, format = c("do
 - [🔬 渔获骤变、渔业崩溃、同步性与远洋捕捞](literature-analyses.html)
 - [🌡️ 海表温度与渔获平均温度](sst-mtc.html)
 - [🐠 FishBase 与 SeaLifeBase 物种特征](fishbase.html)
+
+**📝 评估与报告**
+
 - [📉 CMSY++ 资源评估](cmsy.html)
 - [📝 一键生成评估报告（Word、LaTeX、PDF）](report.html)
-- 🧩 扩展（不纳入Word报告）：[🚢 贸易与就业](trade-employment.html)
+
+**🧰 其他**
+
 - [🎨 自定义图表与地图](customise.html)
+- 🧩 扩展（不纳入Word报告）：[🚢 贸易与就业](trade-employment.html)
 
 每篇文档最后都列出了所用方法和数据的参考文献及其 DOI 或网址。每个函数的参数说明见[函数参考](../../reference/index.html)（英文）。
 

@@ -38,6 +38,12 @@ These changes concern how the package runs CMSY++. The model of `CMSY++16.R` is 
 * Report text: the abstract no longer opens with a general sentence on the area or ends with a recommendation; the sentence on under-reporting cites Garibaldi (2012); the conclusion on diversity gives the HHI, and equal concentration by species and by country is said once; the P/D paragraph and conclusion do not name the most recent period twice; counts of CMSY++ stocks agree with their verbs and say "no stock" ("没有种群") instead of 0; English sentences no longer start with a number; lists whose items contain commas are separated by semicolons; Chinese notes no longer open with "需要指出的是".
 * `cmsy_input()` and `cmsy_area()` messages say "1 stock" instead of "1 stocks".
 
+## Website
+
+* Pages are less crowded: wider line spacing (above all in Chinese), main sections separated by a thin line, subsections marked with a bar, and more space between paragraphs, list items, code, tables and figures.
+* In the tutorial, the explanation under each chart ("How to read it" and the result for area 67) is in its own box, with a dashed line before the result, so that each chart and its text stand apart from the next chart.
+* The documentation links on the home pages are grouped (start here, data and analyses, assessment and report, more) instead of one run of links.
+
 # faofishingreport 0.6.0
 
 ## Documentation

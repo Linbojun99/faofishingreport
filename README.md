@@ -208,20 +208,33 @@ tables in `tables/`.
 
 ## 📖 Documentation
 
-The [website](https://linbojun99.github.io/faofishingreport/) has a guide for every part of the package:
-[🚀 Get started](https://linbojun99.github.io/faofishingreport/articles/get-started.html) ·
-[🎓 Tutorial: FAO area 67 from zero to a report](https://linbojun99.github.io/faofishingreport/articles/tutorial-67.html) ·
-[💾 FAO data](https://linbojun99.github.io/faofishingreport/articles/data.html) ·
-[🌊 Fishing areas](https://linbojun99.github.io/faofishingreport/articles/fishing-areas.html) ·
-[🐟 Species and countries](https://linbojun99.github.io/faofishingreport/articles/species-countries.html) ·
-[📈 Status and trends](https://linbojun99.github.io/faofishingreport/articles/status-trends.html) ·
-[🔍 Quality, diversity and fleets](https://linbojun99.github.io/faofishingreport/articles/quality-diversity-fleets.html) ·
-[🔬 Shocks, collapses, synchrony and fleets](https://linbojun99.github.io/faofishingreport/articles/literature-analyses.html) ·
-[🌡️ Sea temperature and catch temperature](https://linbojun99.github.io/faofishingreport/articles/sst-mtc.html) ·
-[🐠 FishBase traits](https://linbojun99.github.io/faofishingreport/articles/fishbase.html) ·
-[📉 CMSY++](https://linbojun99.github.io/faofishingreport/articles/cmsy.html) ·
-[📝 Word report](https://linbojun99.github.io/faofishingreport/articles/report.html) ·
-[🎨 Customise](https://linbojun99.github.io/faofishingreport/articles/customise.html)
+The [website](https://linbojun99.github.io/faofishingreport/) has a guide for every part of the package.
+
+**🧭 Start here**
+
+- [🚀 Get started](https://linbojun99.github.io/faofishingreport/articles/get-started.html)
+- [🎓 Tutorial: FAO area 67 from zero to a report](https://linbojun99.github.io/faofishingreport/articles/tutorial-67.html)
+
+**📊 Data and analyses**
+
+- [💾 FAO data](https://linbojun99.github.io/faofishingreport/articles/data.html)
+- [🌊 Fishing areas](https://linbojun99.github.io/faofishingreport/articles/fishing-areas.html)
+- [🐟 Species and countries](https://linbojun99.github.io/faofishingreport/articles/species-countries.html)
+- [📈 Status and trends](https://linbojun99.github.io/faofishingreport/articles/status-trends.html)
+- [🔍 Quality, diversity and fleets](https://linbojun99.github.io/faofishingreport/articles/quality-diversity-fleets.html)
+- [🔬 Shocks, collapses, synchrony and fleets](https://linbojun99.github.io/faofishingreport/articles/literature-analyses.html)
+- [🌡️ Sea temperature and catch temperature](https://linbojun99.github.io/faofishingreport/articles/sst-mtc.html)
+- [🐠 FishBase traits](https://linbojun99.github.io/faofishingreport/articles/fishbase.html)
+
+**📝 Assessment and report**
+
+- [📉 CMSY++](https://linbojun99.github.io/faofishingreport/articles/cmsy.html)
+- [📝 Word report](https://linbojun99.github.io/faofishingreport/articles/report.html)
+
+**🧰 More**
+
+- [🎨 Customise](https://linbojun99.github.io/faofishingreport/articles/customise.html)
+- 🧩 Extension (not in the Word report): [🚢 Trade and employment](https://linbojun99.github.io/faofishingreport/articles/trade-employment.html)
 
 Every guide ends with the references of the methods and data it uses, with their DOI or link.
 
