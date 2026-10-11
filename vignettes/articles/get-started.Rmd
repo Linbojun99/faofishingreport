@@ -79,7 +79,7 @@ Each analysis saves its charts and tables in the **current working folder**:
 | Folder | Content |
 |---|---|
 | `figures/png/` | Charts as PNG (always) |
-| `figures/pptx/` | Charts as editable PowerPoint files (with `pptx = TRUE`) |
+| `figures/pptx/` | Charts as editable PowerPoint files (with `pptx = TRUE`; needs the eoffice package) |
 | `tables/` | Tables as CSV, readable by Excel including Chinese names |
 
 So start by choosing a folder for the report:

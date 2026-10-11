@@ -11,3 +11,4 @@
 ^vignettes/articles$
 ^codecov\.yml$
 ^research_notes$
+^reports$

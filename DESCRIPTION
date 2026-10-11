@@ -27,6 +27,7 @@ Imports:
     tools,
     utils
 Suggests:
+    eoffice,
     testthat (>= 3.0.0),
     withr,
     knitr,
@@ -37,7 +38,6 @@ Depends:
     dplyr,
     ggplot2,
     magrittr,
-    eoffice,
     metR,
     ggsci,
     RColorBrewer,
