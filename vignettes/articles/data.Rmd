@@ -212,6 +212,21 @@ For GFCM, CECAF and the Southeast Atlantic, the catch summed over the divisions 
 the FAO area for nearly all records. Some codes are not places: "37.0.0 Tunas" holds tunas
 reported for the whole area and "37.9.0 Not known" catch whose division is not known.
 
+## 🚢 Trade and employment data
+
+FAO also publishes the trade of aquatic products and the employment in fisheries and aquaculture.
+`load_fao_trade()` (exports, imports and re-exports by country, commodity and year from 1976, about
+16 MB) and `load_fao_employment()` (people by country, work area, working time and sex from 1995, under
+1 MB) download them the first time and keep them in the data folder, like `load_fao_divisions()`.
+Trade quantities are product weight, not live weight, and employment counts people, not full-time
+equivalents. See [🚢 Trade and employment](trade-employment.html) for the analyses that join them to the
+catch: `catch_trade()`, `employment_summary()` and `catch_per_fisher()`.
+
+```{r, eval = FALSE}
+trade <- load_fao_trade()
+employment <- load_fao_employment()
+```
+
 ## ⚠️ Notes on the data
 
 - **Recent years are often estimated.** When a country has not yet reported, FAO estimates its

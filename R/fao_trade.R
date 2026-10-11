@@ -147,12 +147,14 @@ fao_convert_trade <- function(zip_file, lookup = fao_lookup_tables()) {
   )
 }
 
-# Status of trade values: as the production types, but values flagged X are taken from the
-# reports of trade partners (mirror data, FAO metadata of FI_Trade)
-fao_trade_status <- function(status) {
+# Status of trade and employment values: as the production types, with series breaks and missing
+# values named; trade values flagged X are taken from the reports of trade partners (mirror data,
+# FAO metadata of FI_Trade), employment values flagged X come from an international organization
+fao_trade_status <- function(status, trade = TRUE) {
   out <- fao_production_type(status)
-  out[status %in% "X"] <- "partner data"
-  out[status %in% "B"] <- "actual"
+  if (trade) out[status %in% "X"] <- "partner data"
+  out[status %in% "B"] <- "series break"
+  out[status %in% c("L", "M", "O")] <- "missing"
   out
 }
 

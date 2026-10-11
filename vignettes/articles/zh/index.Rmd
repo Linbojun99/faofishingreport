@@ -127,6 +127,7 @@ coastal_distant(FAO34$area_data)
 - [📈 类群结构、资源状态与趋势](status-trends.html)
 - [🔍 数据质量、多样性与船队](quality-diversity-fleets.html)
 - [🌡️ 海表温度与渔获平均温度](sst-mtc.html)
+- [🚢 贸易与就业](trade-employment.html)
 - [🎨 自定义图表与地图](customise.html)
 
 每个函数的参数说明见[函数参考](../../reference/index.html)（英文）。

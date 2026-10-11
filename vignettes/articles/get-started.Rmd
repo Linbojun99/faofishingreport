@@ -155,4 +155,6 @@ status <- stock_status(FAO34$area_data)
   [🔍 Data quality, diversity and fleets](quality-diversity-fleets.html): the nine summary analyses
 - [🌡️ Sea temperature and catch temperature](sst-mtc.html): SST of the fishing areas (built in or
   from your own NetCDF files) and the mean temperature of the catch
+- [🚢 Trade and employment](trade-employment.html): exports and imports compared with the catch, people
+  in fisheries and aquaculture, and catch per fisher
 - [🎨 Customise charts and maps](customise.html): themes, palettes, map projections, fonts and output

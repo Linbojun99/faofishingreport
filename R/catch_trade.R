@@ -56,8 +56,8 @@
 #'     within a group, and processing of imported raw material.
 #'   \item Unit values (`export_unit_value`, USD per kg product weight) are in current US dollars,
 #'     not adjusted for inflation, and change with the mix of products.
-#'   \item `estimated_export_value_pct` is the share of the export value estimated by FAO or taken
-#'     from the reports of trade partners.
+#'   \item `estimated_export_value_pct` is the share of the export value estimated (by FAO or the
+#'     country) or taken from the reports of trade partners.
 #' }
 #'
 #' @inheritParams summary_params

@@ -197,6 +197,20 @@ mean_temperature_catch(med, by = "division")    # 每个分区的渔获平均温
 
 对 GFCM、CECAF 和东南大西洋，各分区渔获之和与 FAO 渔区的渔获几乎完全一致。有些代码不是具体海域："37.0.0 Tunas" 是按整个渔区报告的金枪鱼，"37.9.0 Not known" 是分区不明的渔获。
 
+## 🚢 贸易与就业数据
+
+FAO 还发布水产品贸易和渔业与养殖就业数据：
+
+- `load_fao_trade()`：各国按商品和年份的出口、进口、转口，从 1976 年起，约 16 MB；
+- `load_fao_employment()`：各国按工作领域、工作时间、性别的从业人数，从 1995 年起，不到 1 MB。
+
+两个函数和 `load_fao_divisions()` 一样，第一次运行时下载数据并保存在数据文件夹。贸易数量是产品重量，不是活重；就业是人数，不是全时当量。把它们和渔获数据对接的分析（`catch_trade()`、`employment_summary()`、`catch_per_fisher()`）见[🚢 贸易与就业](trade-employment.html)。
+
+```{r, eval = FALSE}
+trade <- load_fao_trade()
+employment <- load_fao_employment()
+```
+
 ## ⚠️ 数据注意事项
 
 - **近几年的数据常为估算值。** 某个国家尚未上报时，FAO 会估算其产量。在 34 渔区，2024 年约三分之一的产量

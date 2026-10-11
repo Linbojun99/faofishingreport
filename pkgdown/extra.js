@@ -19,6 +19,7 @@
     "📈 Composition, stock status and trends": "📈 类群结构、资源状态与趋势",
     "🔍 Data quality, diversity and fleets": "🔍 数据质量、多样性与船队",
     "🌡️ Sea temperature and catch temperature": "🌡️ 海表温度与渔获平均温度",
+    "🚢 Trade and employment": "🚢 贸易与就业",
     "🎨 Customise charts and maps": "🎨 自定义图表与地图",
     "On this page": "本页目录",
     "Developed by": "开发者",
