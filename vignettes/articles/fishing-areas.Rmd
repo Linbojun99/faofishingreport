@@ -1,0 +1,150 @@
+---
+title: "🌊 Fishing area analysis"
+description: >
+  fishing_area_data(), fishing_area_species() and fishing_area_country(): total catch,
+  main species and main countries of an FAO fishing area, with all options.
+---
+
+```{r setup, include = FALSE}
+source("_setup.R")
+```
+
+The three fishing area functions describe one FAO major fishing area. The examples use the
+**Eastern Central Atlantic (area 34)**; the last section shows the same analysis for the
+**Northwest Pacific (area 61)**.
+
+## 🗺️ The FAO major fishing areas
+
+```{r}
+data <- load_fao_data()
+areas <- aggregate(Production ~ FAO.major.fishing.area..Name., data = subset(data, Year == max(Year)), FUN = sum)
+names(areas) <- c("Fishing area", "Catch in the last year (t)")
+show_table(areas[order(-areas[[2]]), ], n = 30, digits = 0)
+```
+
+Use these names (e.g. `"Pacific, Northwest"`) in `fishing_area_data()`.
+
+## 1️⃣ `fishing_area_data()`: catch of the area
+
+```{r, figures = TRUE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+```
+
+It saves three charts:
+
+| File | Chart |
+|---|---|
+| `fishing_trend.png` | Total catch of the area. With `timeseries_analysis = TRUE`, the grey bars are the mean catch of each period between **breakpoints** (dashed lines), found with `strucchange::breakpoints()` |
+| `fishing_percentage.png` | The area's share of the world catch each year, and its average (red line) |
+| `area_country_map.png` | Total catch of each country in the area over all years, on a world map |
+
+and returns a list:
+
+| Element | Content |
+|---|---|
+| `area_data` | Catch records of the area: the input of the other functions |
+| `coefs_data` | Start, end and mean catch of each period between breakpoints |
+| `act_world_map` | The map data (an sf object) |
+
+```{r}
+FAO34$coefs_data
+```
+
+### Options
+
+```{r, figures = TRUE}
+fishing_area_data(
+  "Atlantic, Eastern Central",
+  timeseries_analysis = FALSE,          # no breakpoints
+  area_color1 = "#9ecae1",              # fill of the catch area
+  area_color2 = "#08519c",              # its outline
+  hline_color = "#e6550d",              # average line of the share chart
+  fill_scale = "blue",                  # palette of the map
+  lang = "zh"                           # Chinese chart text
+)
+```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `area_name` | FAO major fishing area | |
+| `plot` | Save charts | `TRUE` |
+| `timeseries_analysis` | Add breakpoints to the catch chart | `TRUE` |
+| `area_color1`, `area_color2`, `area_alpha` | Fill, outline and transparency of the catch area | `"grey80"`, `"black"`, `0.7` |
+| `line_color`, `line_alpha`, `line_linewidth`, `point_size` | Line and points of the share chart | `"black"`, `0.8`, `1.5`, `2` |
+| `hline_color`, `hline_alpha`, `hline_linewidth` | Average line of the share chart | `"red"`, `0.7`, `1.5` |
+| `axis_text_size`, `axis_title_size`, `axis_text_face`, `axis_title_face` | Axis text | `10`, `12`, `"plain"`, `"bold"` |
+| `polygon_color`, `fill_scale` | Country borders and palette of the map | `"grey90"`, map palette of `fao_settings()` |
+| `axis_title_size_map`, `axis_text_size_map`, `legend_text_size_map` | Text sizes of the map | `14`, `12`, `12` |
+| `lang` | `"en"`, `"zh"` or `"both"` | language of `fao_settings()` |
+| `data_version` | FAO release: `"latest"`, `"bundled"` or e.g. `"2023.1.1"` | `"latest"` |
+| `pptx` | Also save editable PowerPoint | `FALSE` |
+
+## 2️⃣ `fishing_area_species()`: main species
+
+```{r, figures = TRUE}
+species <- fishing_area_species(FAO34$area_data, rank_range = c(1, 10))
+```
+
+| File | Chart |
+|---|---|
+| `area/area_species.png` | Catch of the ten main species over time |
+| `area/area_species_wrap.png` | One panel per species with its share of the area's catch, a linear trend (dashed) and the breakpoints of its mean catch |
+
+The function returns the catch by species and year, the ranking, and the breakpoints:
+
+```{r}
+show_table(species$area_species_ranked_total)
+```
+
+It also saves two tables in `tables/`: `species_ranked_table.csv` (average catch per decade, catch
+in the last five years, share in the last year) and `species_coefs_data.csv` (breakpoints).
+
+```{r}
+show_table(read.csv("tables/species_ranked_table.csv", fileEncoding = "UTF-8-BOM", check.names = FALSE), n = 5, digits = 0)
+```
+
+### Options
+
+- **`rank_range`** chooses the ranks: `c(11, 20)` shows the next ten species.
+- **`timeseries_analysis = FALSE`** replaces the breakpoints by a smooth curve
+  (`smooth_method`, default `"loess"`).
+- **`h_value`** is the minimum length of a period between breakpoints: a fraction of the series
+  (default `0.15`) or a number of years (e.g. `5`). Larger values give fewer breakpoints;
+  species with too short a series are skipped with a message.
+
+```{r, figures = TRUE}
+fishing_area_species(FAO34$area_data, rank_range = c(11, 20), h_value = 5, lang = "both")
+```
+
+Style arguments: `line_width`, `point_size`, `point_alpha`, `point_shape`, `line_alpha`,
+`axis_text_size`, `axis_title_size`, `strip_text_size`, `axis_text_face`, `axis_title_face`,
+`strip_text_face`, `smooth_method`, `smooth_linetype`, `line_linewidth`, `text_hjust`,
+`text_vjust`, `text_size`, `text_color` and `facet_ncol`.
+
+## 3️⃣ `fishing_area_country()`: main countries
+
+```{r, figures = TRUE}
+countries <- fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
+```
+
+It has the same arguments and outputs as `fishing_area_species()`, by country
+(`area/area_country.png`, `area/area_country_wrap.png`, `tables/country_ranked_table.csv`,
+`tables/country_coefs_data.csv`).
+
+```{r}
+show_table(countries$area_country_ranked_total)
+```
+
+## 🌏 Another area: the Northwest Pacific
+
+Any FAO area works the same way. The Northwest Pacific (area 61) is the largest fishing area:
+
+```{r, figures = TRUE}
+FAO61 <- fishing_area_data("Pacific, Northwest")
+fishing_area_country(FAO61$area_data, rank_range = c(1, 8))
+```
+
+::: callout-tip
+Charts of different areas are saved under the same file names (e.g. `fishing_trend.png`), so
+use one working folder per area, e.g. `setwd("reports/FAO61")`.
+:::

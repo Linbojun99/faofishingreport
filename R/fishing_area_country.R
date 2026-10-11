@@ -29,6 +29,13 @@
 #' @param h_value The minimum segment size, which must be greater than the
 #'        number of regressors. For the model `ts_data ~ 1`, this means `h_value`
 #'        should be greater than 1. The default value is 0.15.
+#' @param ZH A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the same as `lang = "zh"`.
+#' @param lang The language of the chart text and names: "en" (English), "zh" (Chinese) or "both"
+#'        (Chinese and English). Default is NULL, which uses "zh" if `ZH = TRUE`, and otherwise the language
+#'        set with `fao_settings()` ("en" unless changed).
+#' @param pptx A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are
+#'        also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
+#'        changed for all functions with `fao_settings(pptx = TRUE)`.
 #' @return NULL. The function saves the generated plots to the specified directory if plot = TRUE.
 #' @export
 #'
@@ -55,8 +62,15 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
                                  text_size = 4.5,
                                  text_color = "black",
                                  facet_ncol = 2,
-                                 h_value=0.15) {
+                                 h_value=0.15,
+                                 ZH = FALSE, lang = NULL,
+                                 pptx = getOption("faofishingreport.pptx", FALSE)) {
 
+
+  lang <- fao_lang(lang, ZH)
+  area_data$Country..Name. <- fao_translate(area_data$Country..Name., "country", lang)
+  last_year <- max(area_data$Year, na.rm = TRUE)
+  year_breaks <- fao_year_breaks(area_data$Year)
 
   #area_country
   area_country <- area_data %>%
@@ -74,38 +88,29 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
   print(paste("The total number of country with non-zero catch over the years is:", unique_country_count))
 
   area_country_table <- area_country %>%
-    dplyr::mutate(Decade = dplyr::case_when(
-      Year >= 1950 & Year < 1960 ~ "1950s",
-      Year >= 1960 & Year < 1970 ~ "1960s",
-      Year >= 1970 & Year < 1980 ~ "1970s",
-      Year >= 1980 & Year < 1990 ~ "1980s",
-      Year >= 1990 & Year < 2000 ~ "1990s",
-      Year >= 2000 & Year < 2010 ~ "2000s",
-      Year >= 2010 & Year < 2020 ~ "2010s",
-      TRUE ~ "2020s"
-    ))
+    dplyr::mutate(Decade = fao_decade(Year))
 
   # 计算每个年代的平均产量
   decade_avg_production_country <- area_country_table %>%
     dplyr::group_by(Decade, Country..Name.) %>%
     dplyr::summarize(avg_production = mean(Tonnes, na.rm = TRUE))
 
-  # 计算2017到2021年的产量
+  # 计算最近5年的产量
   recent_production_country <- area_country_table %>%
-    dplyr::filter(Year >= 2017 & Year <= 2021) %>%
+    dplyr::filter(Year > last_year - 5) %>%
     dplyr::group_by(Year, Country..Name.) %>%
     dplyr::summarize(yearly_production = sum(Tonnes, na.rm = TRUE))
 
-  # 计算2021年每个品种的产量
+  # 计算最后一年每个品种的产量
   total_production_2021_country <- area_country_table %>%
-    dplyr::filter(Year == 2021) %>%
+    dplyr::filter(Year == last_year) %>%
     dplyr::group_by(Country..Name.) %>%
     dplyr::summarize(total_2021_production = sum(Tonnes, na.rm = TRUE))
 
-  # 计算2021年的总产量
+  # 计算最后一年的总产量
   total_production_2021 <- sum(total_production_2021_country$total_2021_production, na.rm = TRUE)
 
-  # 计算每个品种在2021年的产量占总产量的百分比
+  # 计算每个品种在最后一年的产量占总产量的百分比
   percentage_of_total_country <- total_production_2021_country %>%
     dplyr::mutate(percentage_of_total = (total_2021_production / total_production_2021) * 100)
 
@@ -180,7 +185,8 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
 
   # 重命名 percentage_of_total_country_ranked 中的列以避免连接时的名称冲突
   percentage_of_total_country_ranked <- percentage_of_total_country_ranked %>%
-    dplyr::rename(percentage_of_total_2021 = percentage_of_total)
+    dplyr::rename(!!paste0("total_", last_year, "_production") := total_2021_production,
+                  !!paste0("percentage_of_total_", last_year) := percentage_of_total)
 
   # 将所有数据框连接到一起
   final_data <- decade_avg_wide %>%
@@ -230,7 +236,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
   # 假设 unique_country 是一个包含国家名称的向量
   unique_country <- unique(plot_data$Country..Name.)
 
-  results <- lapply(unique_country, get_bp_coefs, data = plot_data,h_value)
+  results <- fao_breakpoints_by(unique_country, get_bp_coefs, data = plot_data, h_value)
 
 
   # 提取和合并有效结果为一个数据框
@@ -244,31 +250,25 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
     # 输出结果
   print(final_data)
   if (table) {
-    write.csv(final_data, file = "tables/country_ranked_table.csv", row.names = FALSE)
-    write.csv(coefs_data, file = "tables/country_coefs_data.csv", row.names = FALSE)
+    fao_write_csv(final_data, "tables/country_ranked_table.csv")
+    fao_write_csv(coefs_data, "tables/country_coefs_data.csv")
 
   }
   if (plot) {
 
 
-    if (!dir.exists("figures/png/area")) {
-      dir.create("figures/png/area")
-    }
-
-    if (!dir.exists("figures/pptx/area")) {
-      dir.create("figures/pptx/area")
-    }
 
     # Replace plot_data_Top10 with plot_data in your plotting code
     p1 <- ggplot2::ggplot(plot_data, ggplot2::aes(x = Year, y = Tonnes/1e6, color = Country..Name., group = Country..Name.)) +
       ggplot2::geom_point(alpha=point_alpha, shape=point_shape, size=point_size) +
       ggplot2::geom_line(linewidth=line_width, alpha=line_alpha) +
-      ggplot2::theme_bw() +
-      ggsci::scale_color_npg()+
-      ggplot2::labs( x = "Year", y = "Million Tonnes") +
-      ggplot2::scale_x_continuous(breaks = seq(1950,2021,5),expand = c(0,0))+
+      fao_base_theme() +
+      fao_scale_discrete("colour")+
+      ggplot2::labs( x = fao_label("year", lang), y = fao_label("million_tonnes", lang), color = fao_label("country", lang)) +
+      ggplot2::scale_x_continuous(breaks = year_breaks,expand = c(0,0))+
       ggplot2::scale_y_continuous(expand = c(0,0))+
       ggplot2::theme(
+        text = ggplot2::element_text(family = fao_font()),
         panel.grid.minor.x = ggplot2::element_blank(),
         strip.background = ggplot2::element_rect(fill = "white", colour = "black"),
         axis.title.x = ggplot2::element_text(size=axis_title_size, face = axis_title_face),
@@ -281,8 +281,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
       ggplot2::guides(color = ggplot2::guide_legend(nrow = 2))
 
 
-    ggplot2::ggsave(filename = "figures/png/area/area_country.png", plot = p1, dpi = 600, width = 12, height = 6)
-    eoffice::topptx(figure=p1,filename = "figures/pptx/area/area_country.pptx", width = 12, height = 6)
+    fao_save_plot(p1, "area/area_country", width = 12, height = 6, pptx = pptx)
 
     if(timeseries_analysis){
       p2 <- ggplot2::ggplot() +
@@ -298,13 +297,14 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
                               ggplot2::aes(x = start_year, xend = end_year, y = intercept/1e6, yend = intercept/1e6),
                               color = "black",linetype="solid",size=1.5,alpha=0.5) +
         ggplot2::geom_vline(data = coefs_data, ggplot2::aes(xintercept = start_year, group = Country..Name.), linetype = "dashed", color = "black",linewidth=1) +
-        ggplot2::theme_bw() +
-        ggsci::scale_color_npg()+
+        fao_base_theme() +
+        fao_scale_discrete("colour")+
         ggplot2::facet_wrap(~Country..Name.,ncol=2,scales = "free_y")+
-        ggplot2::labs(x = "Year", y = "Million Tonnes") +
-        ggplot2::scale_x_continuous(breaks = seq(1950,2021,5),expand = c(0,0))+
+        ggplot2::labs(x = fao_label("year", lang), y = fao_label("million_tonnes", lang), color = fao_label("country", lang)) +
+        ggplot2::scale_x_continuous(breaks = year_breaks,expand = c(0,0))+
         ggplot2::scale_y_continuous()+
         ggplot2::theme(
+          text = ggplot2::element_text(family = fao_font()),
           #panel.grid.major.x = element_blank()
           panel.grid.minor.x = ggplot2::element_blank(),
           strip.background = ggplot2::element_rect(fill = "white", colour = "black"),
@@ -315,8 +315,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
           legend.box = "horizontal",
           axis.text.x = ggplot2::element_text(angle = 60, hjust = 1))+
         guides(color = ggplot2::guide_legend(nrow = 2))
-      ggplot2::ggsave(filename = "figures/png/area/area_country_wrap.png", plot = p2, dpi = 600, width = 12, height = 8)
-      eoffice::topptx(figure=p2,filename = "figures/pptx/area/area_country_wrap.pptx", width = 12, height = 8)
+      fao_save_plot(p2, "area/area_country_wrap", width = 12, height = 8, pptx = pptx)
     }
     else{
       p3 <- ggplot2::ggplot() +
@@ -329,13 +328,14 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
                              dplyr::mutate(Country..Name. = factor(Country..Name., levels = unique(Country..Name.[order(-Total_Tonnes)]))),
                            ggplot2::aes(x = 1957, y = 0, label = paste0(round(Percentage, 2), "%")),
                            hjust = text_hjust, vjust = text_vjust, size = text_size, color = text_color) +
-        ggplot2::theme_bw() +
-        ggsci::scale_color_npg()+
+        fao_base_theme() +
+        fao_scale_discrete("colour")+
         ggplot2::facet_wrap(~Country..Name., ncol=facet_ncol, scales = "free_y") +
-        ggplot2::labs(x = "Year", y = "Million Tonnes") +
-        ggplot2::scale_x_continuous(breaks = seq(1950,2021,5),expand = c(0,0))+
+        ggplot2::labs(x = fao_label("year", lang), y = fao_label("million_tonnes", lang), color = fao_label("country", lang)) +
+        ggplot2::scale_x_continuous(breaks = year_breaks,expand = c(0,0))+
         ggplot2::scale_y_continuous()+
         ggplot2::theme(
+          text = ggplot2::element_text(family = fao_font()),
           panel.grid.minor.x = ggplot2::element_blank(),
           strip.background = ggplot2::element_rect(fill = "white", colour = "black"),
           strip.text = ggplot2::element_text(face = strip_text_face,size=strip_text_size),
@@ -348,8 +348,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), plot = TRUE, 
           axis.text.x = ggplot2::element_text(size=12,angle = 60, hjust = 1))+
         ggplot2::guides(color = ggplot2::guide_legend(nrow = 2))
 
-      ggplot2::ggsave(filename = "figures/png/area/area_country_wrap.png", plot = p3, dpi = 600, width = 12, height = 8)
-      eoffice::topptx(figure=p3,filename = "figures/pptx/area/area_country_wrap.pptx", width = 12, height = 8)
+      fao_save_plot(p3, "area/area_country_wrap", width = 12, height = 8, pptx = pptx)
 
     }
   }

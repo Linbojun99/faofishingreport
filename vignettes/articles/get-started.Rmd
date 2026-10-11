@@ -1,0 +1,156 @@
+---
+title: "🚀 Get started"
+description: >
+  Install faofishingreport, update the FAO data and produce the first charts for the
+  Eastern Central Atlantic (FAO area 34).
+---
+
+```{r setup, include = FALSE}
+source("_setup.R")
+```
+
+**faofishingreport** turns the FAO Global Capture Production statistics into charts, maps
+and tables for reports. This page walks through a complete first analysis of the
+**Eastern Central Atlantic (FAO major fishing area 34)**; every chart below was produced by
+the code shown above it.
+
+A typical workflow:
+
+| Step | What you do | Functions |
+|---|---|---|
+| 1. Data | Check for and download the latest FAO release | `check_fao_update()`, `download_fao_data()` |
+| 2. Fishing area | Total catch, main species and main countries of an area | `fishing_area_data()`, `fishing_area_species()`, `fishing_area_country()` |
+| 3. Species and countries | Who catches a species, what a country catches | `species_country()`, `country_species()`, `country_analysis()` |
+| 4. Summaries | Composition, stock status, trends, data quality, fleets | `stock_status()`, `peak_trend()`, `coastal_distant()`, ... |
+| 5. Style | Language, theme, colours, map projection | `fao_settings()` |
+
+## 📦 Installation
+
+faofishingreport needs **R 4.2 or later**. Install it from GitHub:
+
+```{r, eval = FALSE}
+install.packages("remotes")
+remotes::install_github("Linbojun99/faofishingreport")
+```
+
+All required packages (dplyr, ggplot2, sf, rnaturalearth, ...) are installed automatically.
+
+::: callout-note
+**Windows and macOS** use binary packages, so no compiler (Rtools) is needed.
+**Linux** needs the system libraries of the sf package and, for Chinese charts, a Chinese font:
+
+```bash
+sudo apt-get install libgdal-dev libgeos-dev libproj-dev libudunits2-dev fonts-noto-cjk
+```
+:::
+
+Load the package. The start-up message shows the operating system and the font chosen for
+charts (SimSun on Windows, Songti SC on macOS, Noto Serif CJK SC on Linux):
+
+```{r, eval = FALSE}
+library(faofishingreport)
+#> faofishingreport: Windows, chart font "SimSun" (change it with fao_font())
+```
+
+## 💾 Get the latest FAO data
+
+The package comes with FAO release `r readLines(system.file("extdata", "bundled_release.txt", package = "faofishingreport"))`.
+FAO publishes a new release about once a year. Check whether a newer one exists and download
+it (about 5 MB, a few seconds):
+
+```{r, eval = FALSE}
+check_fao_update()
+#> FAO Global Capture Production
+#>   Latest online release: 2026.1.0 (published 2026-03-30)
+#>   Bundled with package:  2026.1.0
+#>   Downloaded locally:    none
+#>   Your data is up to date.
+
+download_fao_data()   # only needed when a newer release is available
+```
+
+All functions automatically use the newest data available. See
+[💾 FAO data](data.html) for choosing releases, the data format and working with your own subsets.
+
+## 📁 Where the results go
+
+Each analysis saves its charts and tables in the **current working folder**:
+
+| Folder | Content |
+|---|---|
+| `figures/png/` | Charts as PNG (always) |
+| `figures/pptx/` | Charts as editable PowerPoint files (with `pptx = TRUE`) |
+| `tables/` | Tables as CSV, readable by Excel including Chinese names |
+
+So start by choosing a folder for the report:
+
+```{r, eval = FALSE}
+setwd("D:/reports/FAO34")   # any folder
+```
+
+## 🌊 First analysis: FAO area 34
+
+`fishing_area_data()` extracts the catch of one FAO major fishing area and draws its total catch
+with the breakpoints of the mean catch, its share of the world catch, and a world map of the
+countries fishing there.
+
+```{r, figures = TRUE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+```
+
+The result is a list; `FAO34$area_data` holds the catch records of the area and is the input of
+most other functions:
+
+```{r}
+show_table(FAO34$area_data, n = 5)
+```
+
+Any other area works the same way. The names of the FAO major fishing areas are:
+
+```{r}
+data <- load_fao_data()
+sort(unique(data$FAO.major.fishing.area..Name.))
+```
+
+## 🐟 Main species and countries
+
+The ten species with the largest catch in area 34, their catch over time and the breakpoints of
+their mean catch:
+
+```{r, figures = TRUE}
+species <- fishing_area_species(FAO34$area_data, rank_range = c(1, 10))
+```
+
+The same for the countries:
+
+```{r, figures = TRUE}
+countries <- fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
+```
+
+## 🌐 Chinese and bilingual charts
+
+Every analysis has a `lang` argument: `"en"` (English), `"zh"` (Chinese) or `"both"`.
+Country, species and area names use the official FAO Chinese names.
+
+```{r, figures = "country_ranked_wrap"}
+species_country(FAO34$area_data, species_name = "European pilchard(=Sardine)", lang = "both")
+```
+
+To use Chinese everywhere, set it once with `fao_settings(lang = "zh")`.
+
+## 📊 A first summary: stock status
+
+`stock_status()` classifies each species by its catch relative to its peak catch:
+
+```{r, figures = TRUE}
+status <- stock_status(FAO34$area_data)
+```
+
+## 🧭 Next steps
+
+- [💾 FAO data: download and customise](data.html): releases, data format, subsets, Chinese names
+- [🌊 Fishing area analysis](fishing-areas.html): all options of the fishing area functions
+- [🐟 Species and countries](species-countries.html): `species_country()`, `country_species()`, `country_analysis()`
+- [📈 Composition, stock status and trends](status-trends.html) and
+  [🔍 Data quality, diversity and fleets](quality-diversity-fleets.html): the nine summary analyses
+- [🎨 Customise charts and maps](customise.html): themes, palettes, map projections, fonts and output

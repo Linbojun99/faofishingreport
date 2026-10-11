@@ -23,19 +23,26 @@
 #' @param axis_title_size The size of the axis title text. Default is 12.
 #' @param strip_text_size The size of the strip text. Default is 12.
 #' @param polygon_color The color of the borders of the polygons in the map plot. Default is "grey90".
-#' @param fill_scale The color scale for filling polygons in the map plot. Default is "deep-orange".
+#' @param fill_scale The colour palette of the map. Default is NULL, which uses `map_palette` of
+#'        `fao_settings()` ("deep-orange" unless changed); see `?fao_settings` for the choices.
 #' @param axis_title_size_map The size of the axis title text in the map plot. Default is 14.
 #' @param axis_text_size_map The size of the axis text in the map plot. Default is 12.
 #' @param legend_text_size_map The size of the legend text in the map plot. Default is 12.
-#' @param min_segment_size The minimum segment size, which must be greater than the
-#'        number of regressors. For the model `ts_data ~ 1`, this means `min_segment_size`
-#'        should be greater than 1. The default value is 5.
-#' @param ZH A logical value to Chinese. Default is "FALSE"
+#' @param ZH A logical value to Chinese. Default is "FALSE". `ZH = TRUE` is the same as `lang = "zh"`.
+#' @param lang The language of the chart text: "en" (English), "zh" (Chinese) or "both"
+#'        (Chinese and English). Default is NULL, which uses "zh" if `ZH = TRUE`, and otherwise the language
+#'        set with `fao_settings()` ("en" unless changed).
+#' @param pptx A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are
+#'        also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
+#'        changed for all functions with `fao_settings(pptx = TRUE)`.
+#' @param data_version The FAO data release to use: "latest" (default) uses the newest of the
+#'        releases downloaded with `download_fao_data()` and the data bundled with the package;
+#'        "bundled" uses the data bundled with the package; or a release such as "2026.1.0".
 #' @return A data frame containing data for the specified fishing area.
 #' @export
 #' @examples
 #' \dontrun{
-#' Firstly, data preparing and loading.
+#' # Firstly, data preparing and loading.
 #' FAO34 <- fishing_area_data(area_name="Atlantic, Eastern Central", plot = TRUE, timeseries_analysis=TRUE)
 #' }
 fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
@@ -52,14 +59,14 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
                               axis_text_size = 10, axis_title_size = 12,
                               strip_text_size = 12,
                               polygon_color = "grey90",
-                              fill_scale = "deep-orange",
+                              fill_scale = NULL,
                               axis_title_size_map = 14,
                               axis_text_size_map = 12,
                               legend_text_size_map = 12,
-                              ZH=FALSE) {
-  data_path <- system.file("extdata", "Global_Production_long.rda", package="faofishingreport")
-  load(data_path, envir = .GlobalEnv)
-  data <- Global_Production_long
+                              ZH=FALSE, lang = NULL, data_version = "latest",
+                              pptx = getOption("faofishingreport.pptx", FALSE)) {
+  lang <- fao_lang(lang, ZH)
+  data <- load_fao_data(data_version)
   area_data <- subset(data, data$FAO.major.fishing.area..Name. == area_name)
   area_data <- na.omit(area_data)
 
@@ -104,29 +111,13 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
 
 
   #draw set
-  ylab="Million Tonnes"
-  xlab2="Percentage of Total Production"
-  xlab="Year"
-  legendtext="Country..Name."
-  Other="Other"
-  if(ZH){
-    ylab="百万吨"
-    xlab="年"
-    xlab2="捕捞产量占比"
-    legendtext="国家"
-    Other=""}
+  ylab <- fao_label("million_tonnes", lang)
+  xlab2 <- fao_label("share", lang)
+  xlab <- fao_label("year", lang)
+  year_breaks <- fao_year_breaks(area_data$Year)
 
+  act_world_map <- NULL
   if (plot) {
-    # Create figures directory if it doesn't exist
-    if (!dir.exists("figures")) {
-      dir.create("figures")
-    }
-    if (!dir.exists("figures/pptx")) {
-      dir.create("figures/pptx")
-    }
-    if (!dir.exists("figures/png")) {
-      dir.create("figures/png")
-    }
 
 
     if(timeseries_analysis){
@@ -140,18 +131,18 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
                               ggplot2::aes(x = start_year, xend = end_year, y = intercept/1e6, yend = intercept/1e6),
                      color = "black",linetype="solid",size=1.5,alpha=0.5) +
         ggplot2::geom_vline(data = coefs_data, ggplot2::aes(xintercept = start_year), linetype = "dashed", color = "black",linewidth=1) +
-        ggplot2::theme_bw() +
-        ggplot2::scale_x_continuous(breaks = seq(1950,2021,5),expand = c(0,0)) +
+        fao_base_theme() +
+        ggplot2::scale_x_continuous(breaks = year_breaks,expand = c(0,0)) +
         ggplot2::scale_y_continuous(expand = c(0,0)) +
         ggplot2::theme(
+          text = ggplot2::element_text(family = fao_font()),
           panel.grid.minor.x = ggplot2::element_blank(),
 
           axis.title.x = ggplot2::element_text(size=axis_text_size,face = axis_text_face),
           axis.title.y = ggplot2::element_text(size=axis_text_size,face = axis_text_face),
           legend.position = "bottom") +
-        ggplot2::labs(y=ylab)
-      ggplot2::ggsave(filename = "figures/png/fishing_trend.png", plot = p1, dpi=600,width = 12, height = 6)
-      eoffice::topptx(figure=p1,filename = "figures/pptx/fishing_trend.pptx",devsize = TRUE)
+        ggplot2::labs(x=xlab, y=ylab)
+      fao_save_plot(p1, "fishing_trend", width = 12, height = 6, pptx = pptx)
             coefs_data<-tibble::as_tibble(coefs_data)
             print(paste("Mutation point detection:",coefs_data))
   }
@@ -162,22 +153,22 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
                          fill=area_color1,
                          alpha=area_alpha,
                          color=area_color2) +
-      ggplot2::theme_bw() +
-      ggplot2::scale_x_continuous(breaks = seq(1950,2021,5),expand = c(0,0)) +
+      fao_base_theme() +
+      ggplot2::scale_x_continuous(breaks = year_breaks,expand = c(0,0)) +
       ggplot2::scale_y_continuous(expand = c(0,0)) +
       ggplot2::theme(
+        text = ggplot2::element_text(family = fao_font()),
         panel.grid.minor.x = ggplot2::element_blank(),
 
         axis.title.x = ggplot2::element_text(size=axis_text_size,face = axis_text_face),
         axis.title.y = ggplot2::element_text(size=axis_text_size,face = axis_text_face),
         legend.position = "bottom") +
-      ggplot2::labs(y=ylab)
+      ggplot2::labs(x=xlab, y=ylab)
 
-    ggplot2::ggsave(filename = "figures/png/fishing_trend.png", plot = p1, dpi=600,width = 12, height = 6)
-    eoffice::topptx(figure=p1,filename = "figures/pptx/fishing_trend.pptx",devsize = TRUE)
+    fao_save_plot(p1, "fishing_trend", width = 12, height = 6, pptx = pptx)
 }
     # Percentage calculations
-    Global_production_total <- dplyr::group_by(Global_Production_long, Year) %>%
+    Global_production_total <- dplyr::group_by(data, Year) %>%
       dplyr::summarise(Global_Tonnes = sum(Production, na.rm = TRUE))
 
     merged_data <- dplyr::left_join(area_production, Global_production_total, by = "Year")
@@ -201,13 +192,13 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
                          linewidth=line_linewidth, alpha=line_alpha, color=line_color) +
       ggplot2::geom_point(data=merged_data, mapping=ggplot2::aes(x = Year, y = Percentage_area),
                           size=point_size) +
-      ggplot2::theme_bw() +
+      fao_base_theme() +
       ggplot2::labs(y = xlab2, x = xlab) +
-      ggplot2::theme(axis.text.x = ggplot2::element_text(size=axis_text_size),
+      ggplot2::theme(text = ggplot2::element_text(family = fao_font()), axis.text.x = ggplot2::element_text(size=axis_text_size),
                      legend.position = "none") +
-      ggplot2::scale_x_continuous(breaks = seq(1950,2021,5), expand = c(0,0)) +
+      ggplot2::scale_x_continuous(breaks = year_breaks, expand = c(0,0)) +
       ggplot2::scale_y_continuous() +
-      ggplot2::theme(panel.grid.minor.x = ggplot2::element_blank(),
+      ggplot2::theme(text = ggplot2::element_text(family = fao_font()), panel.grid.minor.x = ggplot2::element_blank(),
                      strip.background = ggplot2::element_rect(fill = "white", colour = "black"),
                      strip.text = ggplot2::element_text(face = strip_text_face, size=strip_text_size),
                      axis.text.x =  ggplot2::element_text(size=axis_text_size),
@@ -216,81 +207,20 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
                      axis.title.y = ggplot2::element_text(size=axis_title_size, face = axis_title_face),
                      legend.box = "horizontal")
 
-    ggplot2::ggsave(filename = "figures/png/fishing_percentage.png", plot = percentage_plot, dpi=600, width = 12, height = 6)
+    fao_save_plot(percentage_plot, "fishing_percentage", width = 12, height = 6, pptx = pptx)
 
-    eoffice::topptx(figure=percentage_plot,filename = "figures/pptx/fishing_percentage.pptx", devsize = TRUE)
-
-    # 地图绘制代码
-    # 创建一个命名的替换规则向量
-    replace_rules <- c(
-      "Cape Verde" = "Cabo Verde",
-      "Curacao" = "Cura?ao",
-      "Netherlands" = "Netherlands (Kingdom of the)",
-      "Democratic Republic of the Congo" = "Congo, Dem. Rep. of the",
-      "Republic of Congo" = "Congo",
-      "North Korea" = "Korea, Dem. People's Rep",
-      "South Korea" = "Korea, Republic of",
-      "Russia" = "Russian Federation",
-      "Vietnam" = "Viet Nam",
-      "Laos" = "Lao People's Democratic Republic",
-      "Moldova" = "Republic of Moldova",
-      "Czech Republic" = "Czechia",
-      "Ivory Coast" = "C?te d'Ivoire",
-      "UK" = "United Kingdom",
-      "Syria" = "Syrian Arab Republic",
-      "Guam" = "Guam (USA)",
-      "New Caledonia" = "New Caledonia (France)",
-      "Martinique" = "Martinique (France)",
-      "Mayotte" = "Mayotte (France)",
-      "Saint Pierre and Miquelon" = "Saint Pierre & Miquelon (France)",
-      "Bermuda" = "Bermuda (UK)",
-      "Saint Helena" = "Saint Helena (UK)",
-      "Turks and Caicos Islands" = "Turks & Caicos Isl. (UK)",
-      "Virgin Islands" = "British Virgin Isl. (UK)",
-      "Northern Mariana Islands" = "North Marianas (USA)",
-      "Niue" = "Niue (New Zealand)",
-      "Taiwan" = "Taiwan Province of China",
-      "USA" = "United States of America",
-      "Saint Vincent" = "Saint Vincent/Grenadines",
-      "Saint Kitts" = "Saint Kitts and Nevis"
-    )
-
-    # 应用替换规则
-
-    worldMap <- ggplot2::map_data("world") %>%
-      dplyr::filter(region != "Antarctica") %>%
-      dplyr::rename(country = region) %>%
-      dplyr::mutate(country = dplyr::recode(country, !!!replace_rules))
-
+    # 地图：各国在该渔区的总产量，国家按 ISO3 代码匹配
     area_country_Total <- area_data %>%
-      dplyr::group_by(Year, Country..Name.) %>%
-      dplyr::summarise(Tonnes = sum(Production, na.rm = TRUE), .groups = "drop") %>%
       dplyr::group_by(Country..Name.) %>%
-      dplyr::summarise(Total_Tonnes = sum(Tonnes, na.rm = TRUE), .groups = "drop")
+      dplyr::summarise(Total_Tonnes = sum(Production, na.rm = TRUE), .groups = "drop")
+    area_country_Total$Percentage <- 100 * area_country_Total$Total_Tonnes / sum(area_country_Total$Total_Tonnes)
 
-    total_tonnes_country <- sum(area_country_Total$Total_Tonnes)
-
-    area_country_Total <- area_country_Total %>%
-      dplyr::mutate(Percentage = (Total_Tonnes / total_tonnes_country) * 100)
-
-    worldMap %>%
-      dplyr::left_join(area_country_Total, by = c("country" = "Country..Name.")) -> act_world_map
-
-    map_plot <- ggplot2::ggplot() +
-      ggplot2::geom_polygon(act_world_map,
-                            mapping=ggplot2::aes(x = long, y = lat, group = group,
-                                                 fill= Total_Tonnes/1e6),
-                            colour = polygon_color) +
-      ggplot2::coord_sf() +
-      ggsci::scale_fill_material(fill_scale, na.value = "grey90") +
-      ggplot2::labs(fill=ylab) +
-      metR::scale_x_longitude() +
-      metR::scale_y_latitude() +
-      ggplot2::theme_minimal() +
+    country_map <- fao_country_value_map(area_country_Total$Country..Name., area_country_Total$Total_Tonnes / 1e6,
+                                         ylab, polygon_color, fill_scale)
+    act_world_map <- country_map$data
+    map_plot <- country_map$plot +
       ggplot2::theme(
-        panel.grid.minor.x = ggplot2::element_blank(),
-        strip.background = ggplot2::element_rect(fill = "white", colour = "black"),
-        strip.text = ggplot2::element_text(face = strip_text_face, size=strip_text_size),
+        text = ggplot2::element_text(family = fao_font()),
         axis.title.x = ggplot2::element_text(size=axis_title_size_map, face = axis_title_face),
         axis.title.y = ggplot2::element_text(size=axis_title_size_map, face = axis_title_face),
         axis.text.y = ggplot2::element_text(size=axis_text_size_map),
@@ -299,8 +229,7 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
         legend.position = "bottom",
         legend.box = "horizontal")
 
-    ggplot2::ggsave(filename = "figures/png/area_country_map.png", plot = map_plot, dpi=600, width = 12, height = 6)
-    eoffice::topptx(figure = map_plot,filename = "figures/pptx/area_country_map.pptx", width=12, height=6)
+    fao_save_plot(map_plot, "area_country_map", width = 12, height = 6, pptx = pptx)
 
      }
 

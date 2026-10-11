@@ -1,3 +1,8 @@
+# 旧方法（保留作记录）：从 FAO 网站抓取国家中英文名称，生成 inst/extdata/countries_name_data.rda。
+# 现在包用 countries_name_data.rda 把 FAO 国家代码对应到原有的英文国名；
+# 中文名优先使用 FAO 数据包自带的官方代码表，见 data-raw/update_bundled_data.R。
+# 一般不需要再运行本脚本。
+
 library(RSelenium)
 library(wdman)
 library(rvest)

@@ -1,0 +1,213 @@
+---
+title: "💾 FAO data: download and customise"
+description: >
+  Where the data come from, how to check for and download FAO releases, the data format,
+  and how to analyse your own subsets.
+---
+
+```{r setup, include = FALSE}
+source("_setup.R")
+```
+
+## 📚 The data
+
+faofishingreport uses the **FAO Global Capture Production** statistics: the yearly catch of
+every country, by species item and FAO major fishing area, since 1950. Only capture
+fisheries are included (no aquaculture), in tonnes live weight.
+
+```{r}
+data <- load_fao_data()
+c(rows = nrow(data), first_year = min(data$Year), last_year = max(data$Year),
+  countries = length(unique(data$Country..Name.)),
+  species = length(unique(data$ASFIS.species..Name.)),
+  areas = length(unique(data$FAO.major.fishing.area..Name.)))
+```
+
+FAO publishes a new release about once a year (usually in March), adding one more year and
+revising earlier years. The package comes with a recent release, and can download newer ones
+directly from the [FAO statistics server](https://www.fao.org/fishery/static/Data/).
+
+## 🔎 Check for a new release
+
+`check_fao_update()` lists the releases on the FAO server and compares the newest with the
+data bundled with the package and the data you have downloaded:
+
+```{r, eval = FALSE}
+check_fao_update()
+#> FAO Global Capture Production
+#>   Latest online release: 2026.1.0 (published 2026-03-30)
+#>   Bundled with package:  2026.1.0
+#>   Downloaded locally:    none
+#>   Your data is up to date.
+```
+
+It also returns, invisibly, a list with the versions and a table of all releases:
+
+```{r, eval = FALSE}
+releases <- check_fao_update(quiet = TRUE)
+releases$update_available
+#> [1] FALSE
+tail(releases$releases, 3)
+#>    version       date size                                                          url
+#> 9 2024.1.0 2024-04-04 4.5M https://www.fao.org/fishery/static/Data/Capture_2024.1.0.zip
+#> 10 2025.1.0 2025-09-04 5.0M https://www.fao.org/fishery/static/Data/Capture_2025.1.0.zip
+#> 11 2026.1.0 2026-03-30 5.5M https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip
+```
+
+## ⬇️ Download a release
+
+`download_fao_data()` downloads a release (about 5 MB), converts it to the package format and
+saves it on your computer. Downloading again is not needed: later calls read the saved file.
+
+```{r, eval = FALSE}
+download_fao_data()                       # the latest release
+download_fao_data(version = "2023.1.1")   # an older release, e.g. to reproduce a report
+download_fao_data(overwrite = TRUE)       # download again
+```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `version` | Release to download, e.g. `"2026.1.0"`, or `"latest"` | `"latest"` |
+| `data_dir` | Folder where the release is saved | `fao_data_dir()` |
+| `overwrite` | Download again even if the release was already saved | `FALSE` |
+| `quiet` | Hide progress messages | `FALSE` |
+
+Each release is saved as three files:
+
+| File | Content |
+|---|---|
+| `Global_Production_long_<version>.rds` | The catch data |
+| `fao_names_<version>.rds` | Official Chinese names of countries, species and areas |
+| `fao_groups_<version>.rds` | Species groups (ISSCAAP, taxonomic level), country groups and area groups |
+
+### 📂 Choose the data folder
+
+By default the files go to the user data folder of R:
+
+```{r, eval = FALSE}
+fao_data_dir()
+#> [1] "C:/Users/<you>/AppData/Local/R/data/R/faofishingreport"            # Windows
+#> [1] "~/Library/Application Support/org.R-project.R/R/faofishingreport"  # macOS
+```
+
+To keep the data elsewhere, for example in a folder shared by your team, set `data_dir` once.
+Downloads then go there, and every function reads from there:
+
+```{r, eval = FALSE}
+fao_settings(data_dir = "D:/shared/fao_data")
+download_fao_data()
+```
+
+## 🧭 Which release is used
+
+All functions use the **newest** data available: the newest downloaded release, or the bundled
+data if it is newer. `fishing_area_data()` and `country_analysis()` can be told which release to
+use with `data_version`:
+
+```{r, eval = FALSE}
+FAO34 <- fishing_area_data("Atlantic, Eastern Central")                            # newest
+FAO34 <- fishing_area_data("Atlantic, Eastern Central", data_version = "bundled")  # bundled
+FAO34 <- fishing_area_data("Atlantic, Eastern Central", data_version = "2023.1.1") # a download
+```
+
+`load_fao_data()` returns the whole data set, with the same `version` choices:
+
+```{r, eval = FALSE}
+data <- load_fao_data()                  # newest
+data <- load_fao_data("2023.1.1")        # a downloaded release
+```
+
+## 📋 Data format
+
+Every release is converted to the same eight columns, so all analyses work with any release:
+
+```{r}
+show_table(data, n = 6)
+```
+
+| Column | Content |
+|---|---|
+| `Country..Name.` | Country (FAO short name, e.g. "Korea, Republic of") |
+| `ASFIS.species..Name.` | Species item (ASFIS English name; items not identified to species end in "nei") |
+| `FAO.major.fishing.area..Name.` | FAO major fishing area |
+| `Unit..Name.`, `Unit` | Always tonnes live weight |
+| `Year` | Year |
+| `Production` | Catch in tonnes |
+| `Production.Type` | `actual` (official), `estimate` (estimated by the country or FAO), `neligible` (below 0.5 t), ... |
+
+## ✂️ Analyse your own subsets
+
+The analysis functions take a data frame with these columns, so any subset can be analysed.
+`fishing_area_data()` is the easiest way to get one fishing area, but you can also build subsets
+yourself:
+
+```{r}
+# The catch of several fishing areas together, e.g. the whole Atlantic
+atlantic <- subset(data, grepl("^Atlantic", FAO.major.fishing.area..Name.))
+unique(atlantic$FAO.major.fishing.area..Name.)
+```
+
+```{r, figures = TRUE}
+# The species groups of the whole Atlantic since 2000
+species_group_composition(subset(atlantic, Year >= 2000), label = "Atlantic since 2000")
+```
+
+The `label` argument names the output files; by default the name of the fishing area is used.
+More examples:
+
+```{r, eval = FALSE}
+# One country in all areas
+china <- subset(data, Country..Name. == "China")
+peak_trend(china, by = "area", label = "China")
+
+# One species in all areas
+skipjack <- subset(data, ASFIS.species..Name. == "Skipjack tuna")
+peak_trend(skipjack, by = "area", label = "Skipjack tuna")
+
+# Only the last 30 years of area 34
+FAO34_recent <- subset(FAO34$area_data, Year >= 1995)
+fishing_area_species(FAO34_recent)
+```
+
+To find the exact names of countries, species and areas:
+
+```{r}
+head(sort(unique(data$Country..Name.)), 10)
+grep("tuna", unique(data$ASFIS.species..Name.), value = TRUE)
+```
+
+## 🌐 Chinese names
+
+Chinese names come from the FAO code lists published with each release and from the FAO ASFIS
+species list; names without an official Chinese name are filled from the package's own tables,
+and otherwise stay in English. `fao_translate()` shows them:
+
+```{r}
+fao_translate(c("Morocco", "Spain", "Korea, Republic of"), "country", "zh")
+fao_translate(c("European pilchard(=Sardine)", "Skipjack tuna"), "species", "both")
+fao_translate("Atlantic, Eastern Central", "area", "zh")
+```
+
+FAO gives no Chinese names for ISSCAAP species groups, major groups and income groups; the
+package's translations are in `inst/extdata/group_names_zh.csv`, and all chart labels in
+`inst/extdata/chart_labels.csv`. Edit these files in the package source and reinstall to change
+the wording.
+
+## ⚠️ Notes on the data
+
+- **Recent years are often estimated.** When a country has not yet reported, FAO estimates its
+  catch. In area 34, about a third of the 2024 catch is estimated; these values are usually
+  revised in the next release. `data_quality()` shows this for any area.
+- **"nei" items** ("not elsewhere included") are catches not identified to species, e.g.
+  "Marine fishes nei". They are a large share of the catch in some areas.
+- **Former countries** such as the USSR (until 1991) appear as separate countries.
+- **Releases differ**: FAO revises past years, so results from different releases can differ
+  slightly. Note the release used in reports (`attr(data, "fao_version")` for downloaded data).
+
+## 🔄 For maintainers: update the bundled data
+
+The bundled data, Chinese names and groups are rebuilt from the latest FAO release with:
+
+```bash
+Rscript data-raw/update_bundled_data.R
+```

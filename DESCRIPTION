@@ -1,27 +1,39 @@
 Package: faofishingreport
 Type: Package
-Title: FAO Fishing Report
-Version: 0.1.0
-Author: Lin
-Maintainer: The package maintainer <linbojun99@gmail.com>
-Description: FAO Fishing Report.
+Title: Analyse and Report FAO Global Capture Production Statistics
+Version: 0.2.0
+Authors@R: person("Hongyu", "Lin", email = "linbojun99@gmail.com", role = c("aut", "cre"))
+Description: Analyses FAO Global Capture Production statistics by fishing area,
+    country and species, and exports charts (PNG and editable PowerPoint) and
+    tables for reports. Includes breakpoint analysis of catch time series,
+    checks for and downloads the latest FAO data release, and draws charts in
+    English, Chinese or both, using official FAO Chinese names and a Chinese
+    font chosen for the operating system.
 License: GPL-3
+URL: https://linbojun99.github.io/faofishingreport/, https://github.com/Linbojun99/faofishingreport
+BugReports: https://github.com/Linbojun99/faofishingreport/issues
 Encoding: UTF-8
-LazyData: true
-RoxygenNote: 7.2.3
-Imports: 
-    dplyr,
-    ggplot2,
-    magrittr,
-    eoffice,
-    metR,
-    ggsci,
-    RColorBrewer,
-    forcats,
-    tidyverse,
-    strucchange,
-    ggrepel
+Imports:
+    sf,
+    rnaturalearth,
+    rnaturalearthdata,
+    ragg,
+    systemfonts,
+    readr,
+    tidyr,
+    tibble,
+    rlang,
+    stats,
+    tools,
+    utils
+Suggests:
+    testthat (>= 3.0.0),
+    withr,
+    knitr,
+    rmarkdown
+Config/testthat/edition: 3
 Depends:
+    R (>= 4.2.0),
     dplyr,
     ggplot2,
     magrittr,
@@ -33,3 +45,4 @@ Depends:
     tidyverse,
     strucchange,
     ggrepel
+Config/roxygen2/version: 8.1.1
