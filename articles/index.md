@@ -6,7 +6,7 @@
   started](https://linbojun99.github.io/faofishingreport/articles/get-started.md):
 
   Install faofishingreport, update the FAO data, produce the first
-  charts for the Eastern Central Atlantic (FAO area 34) and write a Word
+  charts for the Northeast Atlantic (FAO area 27) and write a Word
   report in one call.
 
 - [🎓 Tutorial: the Northeast Pacific (FAO area 67) from zero to a
@@ -27,7 +27,8 @@
 - [🌊 Fishing area
   analysis](https://linbojun99.github.io/faofishingreport/articles/fishing-areas.md):
 
-  fishing_area_data(), fishing_area_species() and
+  fao_areas() and fishing_area_map(): the FAO major fishing areas and
+  their subareas; fishing_area_data(), fishing_area_species() and
   fishing_area_country(): total catch, main species and main countries
   of an FAO fishing area, with all options.
 
@@ -114,8 +115,8 @@
 - [🚀
   快速入门](https://linbojun99.github.io/faofishingreport/articles/zh/get-started.md):
 
-  安装faofishingreport，更新FAO数据，为中东大西洋（FAO
-  34渔区）绘制第一批图表，并一键生成Word报告。
+  安装faofishingreport，更新FAO数据，为东北大西洋（FAO
+  27渔区）绘制第一批图表，并一键生成Word报告。
 
 - [🎓 教程：东北太平洋（FAO
   67区）从零到报告](https://linbojun99.github.io/faofishingreport/articles/zh/tutorial-67.md):
@@ -132,7 +133,7 @@
 - [🌊
   渔区分析](https://linbojun99.github.io/faofishingreport/articles/zh/fishing-areas.md):
 
-  fishing_area_data()、fishing_area_species()和fishing_area_country()：某个FAO渔区的总产量、主要物种和主要捕捞国家，以及全部选项。
+  fao_areas()和fishing_area_map()：FAO主要渔区及其分区；fishing_area_data()、fishing_area_species()和fishing_area_country()：某个FAO渔区的总产量、主要物种和主要捕捞国家，以及全部选项。
 
 - [🐟
   物种与国家分析](https://linbojun99.github.io/faofishingreport/articles/zh/species-countries.md):

@@ -16,9 +16,9 @@ BY
 
 ``` r
 
-fao_report(34)                                                  # 语言取自fao_settings()
-fao_report("Atlantic, Eastern Central", lang = "zh", author = "Hongyu Lin")
-fao_report(34, lang = "en", font = "Times New Roman", citation = "fao")
+fao_report(27)                                                  # 语言取自fao_settings()
+fao_report("Atlantic, Northeast", lang = "zh", author = "Hongyu Lin")
+fao_report(27, lang = "en", font = "Times New Roman", citation = "fao")
 ```
 
 生成的报告是初稿。只有作者才能写的部分，如其他数据来源、结论的讨论和其他参考文献，以灰色“【待补充：……】”标出（英文报告中为“To
@@ -28,16 +28,16 @@ be completed”）。使用前请核对自动生成的文字。
 
 ``` r
 
-report <- fao_report(34, file = "FAO34_report_zh.docx", lang = "zh")
+report <- fao_report(27, file = "FAO27_report_zh.docx", lang = "zh")
 report
-#> FAO report: /tmp/Rtmp5Px3TF/faofishingreport_site_1be39fc084b0/FAO34_report_zh.docx
+#> FAO report: /tmp/RtmpTdqgcv/faofishingreport_site_1dd7629f014b9/FAO27_report_zh.docx
 #> Sections: total, species, countries, groups, status, quality, diversity, fleets
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
 #>   $analyses               results of the analyses: total, species, countries, groups, status, quality, diversity, fleets
 ```
 
-渔区可以用代码（`34`）或英文名称（`"Atlantic, Eastern Central"`）指定。运行约需半分钟，期间以消息显示进度（本页未显示）：先是各项分析，然后是写入的文件。不指定`file`时，报告保存为工作目录下的`reports/FAO34_report_zh.docx`；本页的工作目录是一个临时文件夹。
+渔区可以用代码（`27`）或英文名称（`"Atlantic, Northeast"`）指定。运行约需半分钟，期间以消息显示进度（本页未显示）：先是各项分析，然后是写入的文件。不指定`file`时，报告保存为工作目录下的`reports/FAO27_report_zh.docx`；本页的工作目录是一个临时文件夹。
 
 各项分析在另一个临时文件夹中运行，图表分辨率为300
 dpi，不生成PowerPoint文件。图表只插入Word文件，不会在你的文件夹中留下图表文件；如需保留图表，请直接运行相应的分析函数（见[🌊
@@ -52,16 +52,16 @@ show_table(report$main_species, digits = 1)
 
 | species | species_en | scientific_name | mean_catch_t | share_pct | peak_year | pct_of_peak | trend_10_years |
 |:---|:---|:---|---:|---:|:---|---:|:---|
-| 沙丁鱼 | European pilchard(=Sardine) | Sardina pilchardus | 1,041,854.9 | 20.4 | 2018 | 52.6 | none |
-| 科利鲭 | Atlantic chub mackerel | Scomber colias | 414,307.8 | 8.1 | 2019 | 96.6 | none |
-| 筛鲱 | Bonga shad | Ethmalosa fimbriata | 348,662.7 | 6.8 | 2017 | 87.1 | none |
-| 竹筴鱼属物种 | Jack and horse mackerels nei | Trachurus spp. | 263,295.6 | 5.1 | 2010 | 58.7 | none |
-| 未分类的沙丁鱼 | Sardinellas nei | Sardinella spp. | 246,900.5 | 4.8 | 2018 | 32.8 | none |
-| 未分类的海洋鱼类 | Marine fishes nei | Actinopterygii | 243,873.7 | 4.8 | 1995 | 60.5 | none |
-| 短体小沙丁鱼 | Madeiran sardinella | Sardinella maderensis | 243,476.6 | 4.8 | 2021 | 73.4 | none |
-| 鲣 | Skipjack tuna | Katsuwonus pelamis | 195,951.7 | 3.8 | 2018 | 69.2 | none |
-| 金色小沙丁鱼 | Round sardinella | Sardinella aurita | 127,328.2 | 2.5 | 1991 | 34.9 | none |
-| 欧洲鳀 | European anchovy | Engraulis encrasicolus | 124,334.4 | 2.4 | 1990 | 48.9 | up |
+| 大西洋鲱 | Atlantic herring | Clupea harengus | 1,464,717.6 | 17.3 | 1965 | 33.5 | none |
+| 小鳍鳕 | Blue whiting(=Poutassou) | Micromesistius poutassou | 1,445,802.2 | 17.1 | 2004 | 75.8 | none |
+| 大西洋鲭 | Atlantic mackerel | Scomber scombrus | 1,022,621.6 | 12.1 | 2014 | 65.4 | none |
+| 大西洋鳕 | Atlantic cod | Gadus morhua | 975,521.5 | 11.5 | 1969 | 35.5 | none |
+| 黍鲱 | European sprat | Sprattus sprattus | 384,876.0 | 4.5 | 1975 | 34.9 | down |
+| 青鳕 | Saithe(=Pollock) | Pollachius virens | 321,305.7 | 3.8 | 1974 | 41.4 | none |
+| 毛鳞鱼 | Capelin | Mallotus villosus | 311,462.1 | 3.7 | 1977 | 4.5 | none |
+| 黑线鳕 | Haddock | Melanogrammus aeglefinus | 300,767.9 | 3.6 | 1969 | 33.0 | none |
+| Sandeels(=Sandlances) nei | Sandeels(=Sandlances) nei | Ammodytes spp. | 221,906.9 | 2.6 | 1997 | 7.8 | none |
+| 极北海带 | North European kelp | Laminaria hyperborea | 169,330.1 | 2.0 | 2023 | 92.4 | none |
 
 ## 📑 报告包含哪些内容
 
@@ -147,7 +147,7 @@ show_table(data.frame(abstract))
 
 | abstract |
 |:---|
-| 本报告根据联合国粮食及农业组织（FAO）全球捕捞产量统计1950–2024年数据（2026.1.0版），采用突变点检测、Mann-Kendall趋势检验、资源开发状态图和多样性与集中度指数，分析了FAO 34渔区（中东大西洋）的渔获量变化、主要渔获种类、主要捕捞国家（地区）、渔获类群组成、资源开发状态、数据质量、渔获多样性和沿岸国与远洋捕捞。结果表明，2024年该海域渔获量为509.9万t，占全球海洋捕捞产量的6.3%；历史最高渔获量出现在2018年（552.0万t），2024年渔获量为峰值的92.4%。渔获量变化可划分为4个阶段（1950–1968年、1969–1987年、1988–2009年和2010–2024年）。近5年沙丁鱼是最主要的渔获种类，占总渔获量的20.4%。摩洛哥是最主要的捕捞国家（地区），占近5年渔获量的27.7%。2024年处于过度开发或崩溃状态的资源占39.7%。 |
+| 本报告根据联合国粮食及农业组织（FAO）全球捕捞产量统计1950–2024年数据（2026.1.0版），采用突变点检测、Mann-Kendall趋势检验、资源开发状态图和多样性与集中度指数，分析了FAO 27渔区（东北大西洋）的渔获量变化、主要渔获种类、主要捕捞国家（地区）、渔获类群组成、资源开发状态、数据质量、渔获多样性和沿岸国与远洋捕捞。结果表明，2024年该海域渔获量为784.2万t，占全球海洋捕捞产量的9.7%；历史最高渔获量出现在1976年（1317.3万t），2024年渔获量为峰值的59.5%。渔获量变化可划分为3个阶段（1950–1964年、1965–2005年和2006–2024年）。近5年大西洋鲱是最主要的渔获种类，占总渔获量的17.3%。挪威是最主要的捕捞国家（地区），占近5年渔获量的26.8%。2024年处于过度开发或崩溃状态的资源占61.6%。 |
 
 图表题注，按报告编号：
 
@@ -159,24 +159,24 @@ show_table(data.frame(style = captions$style_name, caption = captions$text), n =
 
 | style | caption |
 |:---|:---|
-| FAO Caption | 图1-1 1950–2024年FAO 34渔区（中东大西洋）渔获量变化及突变点 |
-| FAO Caption | 图1-2 FAO 34渔区（中东大西洋）渔获量占全球海洋捕捞产量的比例 |
-| FAO Table Caption | 表1-1 近5年（2020–2024年）FAO 34渔区（中东大西洋）主要渔获种类 |
-| FAO Caption | 图1-3 FAO 34渔区（中东大西洋）近5年主要渔获种类的历年渔获量 |
-| FAO Caption | 图1-4 FAO 34渔区（中东大西洋）近5年主要渔获种类的历年渔获量及突变点 |
-| FAO Table Caption | 表1-2 近5年（2020–2024年）FAO 34渔区（中东大西洋）主要捕捞国家（地区） |
-| FAO Caption | 图1-5 FAO 34渔区（中东大西洋）近5年主要捕捞国家（地区）的历年渔获量 |
-| FAO Caption | 图1-6 各国家和地区在FAO 34渔区（中东大西洋）的累计渔获量 |
-| FAO Caption | 图1-7 FAO 34渔区（中东大西洋）近5年主要捕捞国家（地区）的历年渔获量及突变点 |
-| FAO Caption | 图1-8 FAO 34渔区（中东大西洋）各ISSCAAP类群的渔获量占比 |
-| FAO Caption | 图1-9 FAO 34渔区（中东大西洋）资源开发状态（按资源数量） |
-| FAO Caption | 图1-10 FAO 34渔区（中东大西洋）资源开发状态（按渔获量） |
-| FAO Caption | 图1-11 FAO 34渔区（中东大西洋）渔获量的数据来源构成 |
-| FAO Caption | 图1-12 FAO 34渔区（中东大西洋）渔获量的分类阶元构成 |
-| FAO Caption | 图1-13 FAO 34渔区（中东大西洋）渔获的多样性与集中度指数 |
-| FAO Caption | 图1-14 FAO 34渔区（中东大西洋）沿岸国与远洋捕捞国家和地区的渔获量 |
-| FAO Table Caption | 附表1 FAO 34渔区（中东大西洋）主要渔获种类各年代的年均渔获量（万t） |
-| FAO Table Caption | 附表2 FAO 34渔区（中东大西洋）主要捕捞国家（地区）各年代的年均渔获量（万t） |
+| FAO Caption | 图1-1 1950–2024年FAO 27渔区（东北大西洋）渔获量变化及突变点 |
+| FAO Caption | 图1-2 FAO 27渔区（东北大西洋）渔获量占全球海洋捕捞产量的比例 |
+| FAO Table Caption | 表1-1 近5年（2020–2024年）FAO 27渔区（东北大西洋）主要渔获种类 |
+| FAO Caption | 图1-3 FAO 27渔区（东北大西洋）近5年主要渔获种类的历年渔获量 |
+| FAO Caption | 图1-4 FAO 27渔区（东北大西洋）近5年主要渔获种类的历年渔获量及突变点 |
+| FAO Table Caption | 表1-2 近5年（2020–2024年）FAO 27渔区（东北大西洋）主要捕捞国家（地区） |
+| FAO Caption | 图1-5 FAO 27渔区（东北大西洋）近5年主要捕捞国家（地区）的历年渔获量 |
+| FAO Caption | 图1-6 各国家和地区在FAO 27渔区（东北大西洋）的累计渔获量 |
+| FAO Caption | 图1-7 FAO 27渔区（东北大西洋）近5年主要捕捞国家（地区）的历年渔获量及突变点 |
+| FAO Caption | 图1-8 FAO 27渔区（东北大西洋）各ISSCAAP类群的渔获量占比 |
+| FAO Caption | 图1-9 FAO 27渔区（东北大西洋）资源开发状态（按资源数量） |
+| FAO Caption | 图1-10 FAO 27渔区（东北大西洋）资源开发状态（按渔获量） |
+| FAO Caption | 图1-11 FAO 27渔区（东北大西洋）渔获量的数据来源构成 |
+| FAO Caption | 图1-12 FAO 27渔区（东北大西洋）渔获量的分类阶元构成 |
+| FAO Caption | 图1-13 FAO 27渔区（东北大西洋）渔获的多样性与集中度指数 |
+| FAO Caption | 图1-14 FAO 27渔区（东北大西洋）沿岸国与远洋捕捞国家和地区的渔获量 |
+| FAO Table Caption | 附表1 FAO 27渔区（东北大西洋）主要渔获种类各年代的年均渔获量（万t） |
+| FAO Table Caption | 附表2 FAO 27渔区（东北大西洋）主要捕捞国家（地区）各年代的年均渔获量（万t） |
 
 灰色备注：
 
@@ -212,19 +212,19 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 | \[10\] Shannon C E. A mathematical theory of communication\[J\]. Bell System Technical Journal, 1948, 27(3): 379-423. DOI: 10.1002/j.1538-7305.1948.tb01338.x. |
 | \[11\] Rhoades S A. The Herfindahl-Hirschman index\[J\]. Federal Reserve Bulletin, 1993, 79(3): 188-189. |
 | \[12\] R Core Team. R: A language and environment for statistical computing\[CP/OL\]. Vienna: R Foundation for Statistical Computing, 2026\[2026-10-12\]. <https://www.R-project.org/>. |
-| \[13\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.7.0\[CP/OL\]. 2026\[2026-10-12\]. <https://linbojun99.github.io/faofishingreport/>. |
+| \[13\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.8.0\[CP/OL\]. 2026\[2026-10-12\]. <https://linbojun99.github.io/faofishingreport/>. |
 | \[14\] Garibaldi L. The FAO global capture production database: a six-decade effort to catch the trend\[J\]. Marine Policy, 2012, 36(3): 760-768. DOI: 10.1016/j.marpol.2011.10.024. |
 
 ## 🧾 参数
 
 | 参数 | 默认值 | 含义 |
 |----|----|----|
-| `area` | （必填） | FAO主要渔区：代码（如`34`）或英文名称（如`"Atlantic, Eastern Central"`）。渔区不存在时报错，并列出所有海洋渔区。 |
+| `area` | （必填） | FAO主要渔区：代码（如`27`）或英文名称（如`"Atlantic, Northeast"`）。渔区不存在时报错，并列出所有海洋渔区。 |
 | `...` |  | 各项分析的设置，以章节名为前缀命名，如`species_h_value = 0.2`（见[⚙️ 分析的设置](#settings)） |
 | `file` | `reports/FAO<code>_report_<lang>.docx` | 要写入的文件，所在文件夹不存在时会自动创建；其他格式使用相同的文件名，扩展名为`.tex`和`.pdf` |
 | `format` | `"docx"` | `"docx"`、`"latex"`和`"pdf"`中的一个或多个（见[🖨️ Word、LaTeX和PDF](#formats)） |
 | `lang` | `NULL`：采用[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)中的语言 | `"zh"`（中文）或`"en"`（英文）；`"both"`生成中文报告 |
-| `title` | 根据渔区生成 | 如“FAO 34渔区（中东大西洋）海洋捕捞产量评估” |
+| `title` | 根据渔区生成 | 如“FAO 27渔区（东北大西洋）海洋捕捞产量评估” |
 | `report_no` | `1` | 报告编号：“报告一”（中文数字，最大到99；英文报告为“Report 1”），同时是图表编号的第一个数字（图1-1、表1-1） |
 | `author` | `NULL`：“作者” | 封面、标题下方和文件属性中的作者 |
 | `affiliation` | `NULL`：不显示 | 封面上的单位 |
@@ -286,10 +286,10 @@ CMSY++资源评估](https://linbojun99.github.io/faofishingreport/articles/zh/cm
 
 ``` r
 
-short <- fao_report(34, file = "FAO34_short.docx", lang = "zh", quality = FALSE, diversity = FALSE,
+short <- fao_report(27, file = "FAO27_short.docx", lang = "zh", quality = FALSE, diversity = FALSE,
                     fleets = FALSE, pelagic = TRUE, status_smooth = TRUE)
 short
-#> FAO report: /tmp/Rtmp5Px3TF/faofishingreport_site_1be39fc084b0/FAO34_short.docx
+#> FAO report: /tmp/RtmpTdqgcv/faofishingreport_site_1dd7629f014b9/FAO27_short.docx
 #> Sections: total, species, countries, groups, status, pelagic
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -334,7 +334,7 @@ show_table(data.frame(reference = short_word$text[short_word$style_name == "FAO 
 | \[10\] Caddy J F. Toward a comparative evaluation of human impacts on fishery ecosystems of enclosed and semi‐enclosed seas\[J\]. Reviews in Fisheries Science, 1993, 1(1): 57-95. DOI: 10.1080/10641269309388535. |
 | \[11\] de Leiva Moreno J I, Agostini V N, Caddy J F, et al. Is the pelagic-demersal ratio from fishery landings a useful proxy for nutrient availability? A preliminary data exploration for the semi-enclosed seas around Europe\[J\]. ICES Journal of Marine Science, 2000, 57(4): 1091-1102. DOI: 10.1006/jmsc.2000.0705. |
 | \[12\] R Core Team. R: A language and environment for statistical computing\[CP/OL\]. Vienna: R Foundation for Statistical Computing, 2026\[2026-10-12\]. <https://www.R-project.org/>. |
-| \[13\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.7.0\[CP/OL\]. 2026\[2026-10-12\]. <https://linbojun99.github.io/faofishingreport/>. |
+| \[13\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.8.0\[CP/OL\]. 2026\[2026-10-12\]. <https://linbojun99.github.io/faofishingreport/>. |
 | \[14\] Hondorp D W, Breitburg D L, Davias L A. Eutrophication and Fisheries: Separating the Effects of Nitrogen Loads and Hypoxia on the Pelagic-to-Demersal Ratio and other Measures of Landings Composition\[J\]. Marine and Coastal Fisheries, 2010, 2(1): 339-361. DOI: 10.1577/C09-020.1. |
 
 分析方法段落描述的是各项分析的默认设置，例如资源开发状态图的纳入标准和突变点检测中15%的最小分段长度。修改这类设置（`status_smooth = TRUE`、`status_min_catch = 10000`、`species_h_value = 0.2`等）后，结果会随之改变，但需要自己在1.2
@@ -367,10 +367,10 @@ show_table(data.frame(reference = short_word$text[short_word$style_name == "FAO 
 
 ``` r
 
-fao_report(34, species_h = 0.2)
+fao_report(27, species_h = 0.2)
 #> Error:
 #> ! fao_report(): species_h would set h, which is not an argument of fishing_area_species(). Its arguments: rank_range, plot, timeseries_analysis, line_width, point_size, point_alpha, point_shape, line_alpha, axis_text_size, axis_title_size, strip_text_size, axis_text_face, axis_title_face, strip_text_face, smooth_method, smooth_linetype, line_linewidth, text_hjust, text_vjust, text_size, text_color, facet_ncol, h_value, ZH
-fao_report(34, speceis_h_value = 0.2)
+fao_report(27, speceis_h_value = 0.2)
 #> Error:
 #> ! Unknown argument of fao_report(): speceis_h_value. Settings of an analysis start with its section: total_, species_, countries_, groups_, status_, quality_, diversity_, fleets_, shocks_, collapse_, synchrony_, pelagic_, mtc_, distant_, cmsy_
 ```
@@ -411,17 +411,17 @@ spp.（“spp.”为正体）；科及更高分类阶元的名称用正体，如
 
 ``` r
 
-fao_report(34, lang = "zh", format = c("docx", "pdf"))      # Word和PDF
-fao_report(34, lang = "en", format = "latex")                # 只输出LaTeX源文件
-report <- fao_report(34, format = c("docx", "latex", "pdf"))
+fao_report(27, lang = "zh", format = c("docx", "pdf"))      # Word和PDF
+fao_report(27, lang = "en", format = "latex")                # 只输出LaTeX源文件
+report <- fao_report(27, format = c("docx", "latex", "pdf"))
 report$file                                                  # 按docx、latex、pdf命名的文件路径
 ```
 
-| `format` | 输出的文件（以`fao_report(34, lang = "zh")`为例） | 说明 |
+| `format` | 输出的文件（以`fao_report(27, lang = "zh")`为例） | 说明 |
 |----|----|----|
-| `"docx"` | `reports/FAO34_report_zh.docx` | 本文介绍的Word文件 |
-| `"latex"` | `reports/FAO34_report_zh.tex`和文件夹`reports/FAO34_report_zh_figures/` | 同一份报告的XeLaTeX源文件，图片为PNG文件。中文报告使用`ctexart`文档类，英文报告使用`article`文档类。 |
-| `"pdf"` | `reports/FAO34_report_zh.pdf`（以及`.tex`） | 用XeLaTeX编译的PDF，带有各级标题的书签 |
+| `"docx"` | `reports/FAO27_report_zh.docx` | 本文介绍的Word文件 |
+| `"latex"` | `reports/FAO27_report_zh.tex`和文件夹`reports/FAO27_report_zh_figures/` | 同一份报告的XeLaTeX源文件，图片为PNG文件。中文报告使用`ctexart`文档类，英文报告使用`article`文档类。 |
+| `"pdf"` | `reports/FAO27_report_zh.pdf`（以及`.tex`） | 用XeLaTeX编译的PDF，带有各级标题的书签 |
 
 LaTeX版本沿用Word文件的格式（见[📐
 格式](#format)）：A4纸张和相同的页边距，相同的字体和字号，1.5倍行距，三线表（booktabs，单倍行距，列宽按内容确定，可以跨页），带编号的图表标题，封面不编页码，标题页从第1页开始。字体取自本机已安装的字体：
@@ -452,7 +452,7 @@ TinyTeX在macOS上安装到`~/Library/TinyTeX`，在Windows上安装到`%APPDATA
 
 ``` r
 
-fao_report(34, lang = "zh", format = "pdf")   # 第一次运行时还会安装LaTeX宏包
+fao_report(27, lang = "zh", format = "pdf")   # 第一次运行时还会安装LaTeX宏包
 ```
 
 | 情况 | 怎么做 |
@@ -460,7 +460,7 @@ fao_report(34, lang = "zh", format = "pdf")   # 第一次运行时还会安装La
 | 电脑上没有LaTeX | `install.packages("tinytex")`，然后[`tinytex::install_tinytex()`](https://rdrr.io/pkg/tinytex/man/install_tinytex.html) |
 | TinyTeX安装时间较早，宏包装不上，或提示”Local TeX Live (2024) is older than remote repository” | [`tinytex::reinstall_tinytex()`](https://rdrr.io/pkg/tinytex/man/install_tinytex.html)：重新安装最新版TinyTeX，并装回原有的宏包 |
 | 使用其他TeX发行版（MacTeX、TeX Live、MiKTeX） | 只要`xelatex`在系统路径中即可使用；缺少的宏包用其自带的管理工具安装（如`tlmgr install ctex`） |
-| 修改了`.tex`文件 | 重新编译：`tinytex::xelatex("reports/FAO34_report_zh.tex")` |
+| 修改了`.tex`文件 | 重新编译：`tinytex::xelatex("reports/FAO27_report_zh.tex")` |
 | 只需要LaTeX源文件 | `format = "latex"`不需要安装LaTeX |
 
 没有安装tinytex包时，本包调用系统路径中的`xelatex`（为生成书签编译两次）。
@@ -495,22 +495,22 @@ al.”。FAO格式参照FAO出版物（如FAO
 ``` r
 
 cmsy_setup()                          # 只需运行一次：安装JAGS和CMSY++所需的R包
-report <- fao_report(34, lang = "zh", cmsy = TRUE)
+report <- fao_report(27, lang = "zh", cmsy = TRUE)
 report
-#> FAO report: .../reports/FAO34_report_zh.docx
+#> FAO report: .../reports/FAO27_report_zh.docx
 #> Sections: total, species, countries, groups, status, quality, diversity, fleets, cmsy
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
 #>   $cmsy_reference_points  CMSY++ biological reference points with 95% confidence limits (10 rows)
 #>   $cmsy_priors            CMSY++ priors, their sources and links (10 rows)
-#>   $cmsy                   CMSY++ result (folder .../reports/cmsy/Atlantic__Eastern_Central)
+#>   $cmsy                   CMSY++ result (folder .../reports/cmsy/Atlantic__Northeast)
 #>   $analyses               results of the analyses: total, species, ..., fleets, cmsy
 
 View(report$cmsy_reference_points)    # r、k、MSY、Fmsy、Bmsy、B/Bmsy和F/Fmsy及其95%置信区间
 View(report$cmsy_priors)              # 先验参数、来源和链接
 
 # 表格中列出15个主要种类和国家，评估其中5个物种，MCMC链更长
-fao_report(34, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5,
+fao_report(27, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5,
            cmsy_settings = list(n.iter = 100000))
 ```
 
@@ -518,8 +518,8 @@ fao_report(34, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5,
 
     3 主要渔获种类资源评估（CMSY++）
         3.1 评估概况
-        3.2 沙丁鱼（Sardina pilchardus）
-        3.3 金色小沙丁鱼（Sardinella aurita）
+        3.2 大西洋鲱（Clupea harengus）
+        3.3 小鳍鳕（Micromesistius poutassou）
         ...
         3.12 小结
 
@@ -527,15 +527,15 @@ fao_report(34, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5,
 - **每个物种一个小节**：r、k和MSY及其95%置信区间，最后一年的B/Bmsy和F/Fmsy，渔获量占MSY的百分比，资源状态，位于Kobe图四个区的概率，该物种的CMSY++结果图，以及一条灰色备注，提示与其他评估结果比较并讨论先验设置。
 - **小结**；附件中还有**附表3**生物学参考点（r、k、MSY、Fmsy、Bmsy、B/Bmsy、F/Fmsy）及其95%置信区间，**附表4**先验参数（恢复力、r和k的范围、首年、中间年份和末年的B/k先验），**附表5**先验参数的来源（r先验来源、B/k先验来源、物种在FishBase或SeaLifeBase中的页面），其后列出FishBase数据、CMSY++代码与用户指南以及FAO数据的链接。
 
-CMSY++的全部结果（输入文件、运行结果、图和表）保存在报告旁边的`cmsy/`文件夹中，如`reports/cmsy/Atlantic__Eastern_Central/`，其中有`cmsy_result.rds`。如需重新生成报告（例如改变章节或修改模板之后），把这个结果传给`cmsy`即可，不必再运行CMSY++，此时`cmsy_`设置不再起作用。[`cmsy_area()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_area.md)的结果也可以同样传入：
+CMSY++的全部结果（输入文件、运行结果、图和表）保存在报告旁边的`cmsy/`文件夹中，如`reports/cmsy/Atlantic__Northeast/`，其中有`cmsy_result.rds`。如需重新生成报告（例如改变章节或修改模板之后），把这个结果传给`cmsy`即可，不必再运行CMSY++，此时`cmsy_`设置不再起作用。[`cmsy_area()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_area.md)的结果也可以同样传入：
 
 ``` r
 
-cmsy34 <- readRDS(file.path("reports", "cmsy", "Atlantic__Eastern_Central", "cmsy_result.rds"))
-fao_report(34, lang = "zh", cmsy = cmsy34, pelagic = TRUE)
+cmsy27 <- readRDS(file.path("reports", "cmsy", "Atlantic__Northeast", "cmsy_result.rds"))
+fao_report(27, lang = "zh", cmsy = cmsy27, pelagic = TRUE)
 
-area34 <- cmsy_area("Atlantic, Eastern Central", top = 10)
-fao_report(34, lang = "zh", cmsy = area34)
+area27 <- cmsy_area("Atlantic, Northeast", top = 10)
+fao_report(27, lang = "zh", cmsy = area27)
 ```
 
 CMSY++部分的图来自那次运行，语言与运行时相同。方法、设置和局限性见[📉
@@ -567,16 +567,16 @@ show_table(report$main_countries, digits = 1)
 
 | country | country_en | mean_catch_t | share_pct | peak_year | pct_of_peak | trend_10_years |
 |:---|:---|---:|---:|:---|---:|:---|
-| 摩洛哥 | Morocco | 1,418,927.3 | 27.7 | 2022 | 91.0 | none |
-| 毛里塔尼亚 | Mauritania | 674,299.1 | 13.2 | 2018 | 65.4 | none |
-| 塞内加尔 | Senegal | 464,480.7 | 9.1 | 2017 | 93.6 | none |
-| 尼日利亚 | Nigeria | 441,470.9 | 8.6 | 2017 | 94.4 | none |
-| 几内亚 | Guinea | 343,164.0 | 6.7 | 2021 | 81.0 | none |
-| 加纳 | Ghana | 333,652.8 | 6.5 | 1999 | 98.1 | none |
-| 塞拉利昂 | Sierra Leone | 205,312.0 | 4.0 | 2022 | 97.1 | none |
-| 喀麦隆 | Cameroon | 198,094.6 | 3.9 | 2019 | 78.8 | none |
-| 伯利兹 | Belize | 190,814.7 | 3.7 | 2010 | 51.1 | none |
-| 格鲁吉亚 | Georgia | 127,022.0 | 2.5 | 2019 | 79.9 | none |
+| 挪威 | Norway | 2,265,474.9 | 26.8 | 1977 | 58.1 | none |
+| 冰岛 | Iceland | 1,265,855.5 | 15.0 | 1997 | 45.5 | none |
+| 俄罗斯联邦 | Russian Federation | 962,240.0 | 11.4 | 2002 | 75.1 | none |
+| 大不列颠及北爱尔兰联合王国 | United Kingdom | 668,016.8 | 7.9 | 1973 | 62.5 | none |
+| 法罗群岛 | Faroe Islands | 650,579.3 | 7.7 | 2023 | 85.4 | none |
+| 丹麦 | Denmark | 521,267.6 | 6.2 | 1980 | 23.1 | none |
+| 法国 | France | 364,925.9 | 4.3 | 1973 | 53.0 | none |
+| 荷兰王国 | Netherlands (Kingdom of the) | 265,473.4 | 3.1 | 1993 | 59.7 | none |
+| 西班牙 | Spain | 254,364.9 | 3.0 | 1969 | 36.0 | down |
+| 爱尔兰 | Ireland | 228,514.0 | 2.7 | 1995 | 58.5 | none |
 
 ``` r
 
@@ -588,13 +588,13 @@ show_table(stocks[, c("species_name", "peak_year", "peak_tonnes", "pct_of_peak",
            n = 5, digits = 0)
 ```
 
-| species_name   | peak_year | peak_tonnes | pct_of_peak | status_last_year |
-|:---------------|:----------|------------:|------------:|:-----------------|
-| 沙丁鱼         | 2018      |   1,354,617 |          53 | 充分开发         |
-| 竹筴鱼属物种   | 2010      |     574,747 |          59 | 充分开发         |
-| 未分类的沙丁鱼 | 2018      |     542,915 |          33 | 过度开发         |
-| 科利鲭         | 2019      |     485,443 |          97 | 充分开发         |
-| 金色小沙丁鱼   | 1991      |     453,410 |          35 | 过度开发         |
+| species_name | peak_year | peak_tonnes | pct_of_peak | status_last_year |
+|:-------------|:----------|------------:|------------:|:-----------------|
+| 毛鳞鱼       | 1977      |   3,773,808 |           4 | 崩溃             |
+| 大西洋鲱     | 1965      |   3,736,100 |          33 | 过度开发         |
+| 小鳍鳕       | 2004      |   2,419,291 |          76 | 充分开发         |
+| 大西洋鳕     | 1969      |   2,147,600 |          36 | 过度开发         |
+| 大西洋鲭     | 2014      |   1,382,490 |          65 | 充分开发         |
 
 ## ✏️ 修改报告措辞
 
@@ -605,7 +605,7 @@ show_table(stocks[, c("species_name", "peak_year", "peak_tonnes", "pct_of_peak",
 texts <- read.csv(system.file("extdata", "report_text.csv", package = "faofishingreport"),
                   fileEncoding = "UTF-8", colClasses = "character")
 nrow(texts)
-#> [1] 298
+#> [1] 301
 show_table(data.frame(texts[texts$key %in% c("h_status", "status_p2", "concl_status"), ], row.names = NULL))
 ```
 
@@ -714,7 +714,7 @@ Fisheries* 14(3): 293–311.
 [doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
 
 Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture
-Production statistics. R package version 0.7.0.
+Production statistics. R package version 0.8.0.
 <https://linbojun99.github.io/faofishingreport/>
 
 Mann, H.B. (1945). Nonparametric tests against trend. *Econometrica*

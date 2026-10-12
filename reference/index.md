@@ -17,8 +17,13 @@ Check for, download and load FAO Global Capture Production releases.
 
 ## 🌊 Fishing areas
 
-Total catch, main species and main countries of an FAO fishing area.
+The FAO major fishing areas and their subareas; total catch, main
+species and main countries of an area.
 
+- [`fao_areas()`](https://linbojun99.github.io/faofishingreport/reference/fao_areas.md)
+  : FAO Major Fishing Areas
+- [`fishing_area_map()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_map.md)
+  : Map of an FAO Major Fishing Area and Its Subareas
 - [`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md)
   : Extract Data for a Specified Fishing Area and Optionally Generate
   Plots
@@ -135,6 +140,8 @@ priors and JAGS set up for the operating system.
   : Run CMSY++ on FAO Catch Data
 - [`cmsy_plot()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_plot.md)
   : Charts of CMSY++ Results
+- [`cmsy_mcmc()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_mcmc.md)
+  : MCMC Settings and Convergence of CMSY++ Runs
 - [`cmsy_forecast()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_forecast.md)
   : Project CMSY++ Results under Fishing Scenarios
 - [`cmsy_compare()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_compare.md)

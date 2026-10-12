@@ -1,0 +1,140 @@
+# fao_areas(): FAO主要渔区
+
+英文原页：[`fao_areas()`](https://linbojun99.github.io/faofishingreport/reference/fao_areas.md)
+
+## 说明
+
+该函数列出由渔业统计协调工作组（CWP）划定、用于统计的FAO主要渔区：19个海洋渔区和各大洲的内陆水域。每个渔区给出代码、名称、所属大洋、数据最后一年的渔获量，以及FAO官方地图的链接。`plot = TRUE`时，把标有渔区代码的海洋渔区世界地图保存为figures/png/area/fao_major_areas.png。
+
+English
+
+This function lists the FAO major fishing areas for statistical
+purposes, defined by the Coordinating Working Party on Fishery
+Statistics (CWP): the 19 marine areas and the inland waters of each
+continent. For each area it gives its code, name, ocean, catch in the
+last year of the data and the link to its official FAO map. With
+`plot = TRUE`, a world map of the marine areas labelled with their codes
+is saved as `figures/png/area/fao_major_areas.png`.
+
+## 用法
+
+``` r
+
+fao_areas(
+  data = NULL,
+  plot = TRUE,
+  table = TRUE,
+  lang = NULL,
+  pptx = fao_setting("pptx")
+)
+```
+
+## 参数
+
+- `data`:
+
+  [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)返回的FAO渔获数据，用于计算最后一年的渔获量。默认为NULL，即最新版本（[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)）。
+
+  English
+
+  FAO catch data as returned by
+  [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md),
+  used for the catch of the last year. Default is NULL, the latest
+  release
+  ([`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)).
+
+- `plot`:
+
+  逻辑值。为TRUE（默认）时，世界地图保存在figures/png/area/。
+
+  English
+
+  A logical value. If TRUE (default), the world map is saved in
+  `figures/png/area/`.
+
+- `table`:
+
+  逻辑值。为TRUE（默认）时，表格保存在tables/。
+
+  English
+
+  A logical value. If TRUE (default), the table is saved in `tables/`.
+
+- `lang`:
+
+  图表文字和名称的语言：“en”（英文）、“zh”（中文）或”both”（中英双语）。默认为NULL，即使用[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)设置的语言（未更改时为”en”）。
+
+  English
+
+  The language of the map text and names: “en” (English), “zh” (Chinese)
+  or “both” (Chinese and English). Default is NULL, which uses the
+  language set with
+  [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+  (“en” unless changed).
+
+- `pptx`:
+
+  逻辑值。为TRUE时，地图还另存为可编辑的PowerPoint文件，保存在figures/pptx/area/。默认为[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)中的设置（未更改时为FALSE）。
+
+  English
+
+  A logical value. If TRUE, the map is also saved as an editable
+  PowerPoint file in `figures/pptx/area/`. Default is the value set with
+  [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
+  (FALSE unless changed).
+
+## 返回值
+
+以不可见方式返回一个数据框，每个渔区一行：`area_code`、`name_en`、`name`（所选语言的名称）、`type`（“marine”海洋或”inland”内陆）、`ocean`（所属大洋）、`catch_last_year`（最后一年渔获量，吨）、`share_pct`（占当年全球渔获量的百分比，包括海洋和内陆）和`fao_map`（FAO官方地图的链接）。地图保存在属性”plot”中。
+
+English
+
+Invisibly, a data frame with one row per area: `area_code`, `name_en`,
+`name` (in the chosen language), `type` (“marine” or “inland”), `ocean`,
+`catch_last_year` (tonnes), `share_pct` (percentage of the world catch
+of the year, marine and inland) and `fao_map` (link to the official FAO
+map). The map is in the attribute “plot”.
+
+## 详细说明
+
+官方地图是FAO渔区地图页面（<https://www.fao.org/fishery/docs/maps/Default.htm>）上的GIF图片；本包只提供链接，不复制这些图片。世界地图根据本包自带的渔区边界（inst/extdata/FAO_AREAS_CWP.shp，FAO，CC
+BY
+4.0）绘制，投影和中心经度按[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)的设置。单个渔区及其分区的地图见[`fishing_area_map()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_map.md)。
+
+English
+
+The official maps are the GIF images of the FAO fishing area maps page
+(<https://www.fao.org/fishery/docs/maps/Default.htm>); the package links
+to them and does not copy them. The world map is drawn from the area
+boundaries bundled with the package (`inst/extdata/FAO_AREAS_CWP.shp`,
+FAO, CC BY 4.0), in the projection and central longitude set with
+[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md).
+[`fishing_area_map()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_map.md)
+maps one area with its subareas.
+
+## 参考文献
+
+CWP (Coordinating Working Party on Fishery Statistics). *CWP Handbook of
+Fishery Statistics*: Main water areas (FAO major fishing areas). Rome:
+FAO.
+<https://www.fao.org/cwp-on-fishery-statistics/handbook/general-concepts/main-water-areas/en/>
+
+FAO. Fishing area maps. In: FAO Fisheries and Aquaculture Division
+\[online\]. Rome. <https://www.fao.org/fishery/docs/maps/Default.htm>
+
+FAO (2024). FAO Major Fishing Areas for Statistical Purposes. In: FAO
+Fisheries and Aquaculture Division \[online\]. Licence: CC-BY 4.0.
+<https://www.fao.org/fishery/geonetwork?uuid=ac02a460-da52-11dc-9d70-0017f293bd28>
+
+## 另请参阅
+
+[`fishing_area_map()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_map.md)
+for the map of one area and its subareas.
+
+## 示例
+
+``` r
+
+areas <- fao_areas(lang = "zh")
+areas[areas$type == "marine", c("area_code", "name", "catch_last_year")]
+```

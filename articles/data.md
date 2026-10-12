@@ -169,9 +169,9 @@ can be told which release to use with `data_version`:
 
 ``` r
 
-FAO34 <- fishing_area_data("Atlantic, Eastern Central")                            # newest
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", data_version = "bundled")  # bundled
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", data_version = "2023.1.1") # a download
+FAO27 <- fishing_area_data("Atlantic, Northeast")                            # newest
+FAO27 <- fishing_area_data("Atlantic, Northeast", data_version = "bundled")  # bundled
+FAO27 <- fishing_area_data("Atlantic, Northeast", data_version = "2023.1.1") # a download
 ```
 
 [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)
@@ -319,9 +319,9 @@ peak_trend(china, by = "area", label = "China")
 skipjack <- subset(data, ASFIS.species..Name. == "Skipjack tuna")
 peak_trend(skipjack, by = "area", label = "Skipjack tuna")
 
-# Only the last 30 years of area 34
-FAO34_recent <- subset(FAO34$area_data, Year >= 1995)
-fishing_area_species(FAO34_recent)
+# Only the last 30 years of area 27
+FAO27_recent <- subset(FAO27$area_data, Year >= 1995)
+fishing_area_species(FAO27_recent)
 ```
 
 To find the exact names of countries, species and areas:
@@ -354,12 +354,12 @@ shows them:
 
 ``` r
 
-fao_translate(c("Morocco", "Spain", "Korea, Republic of"), "country", "zh")
-#> [1] "摩洛哥"   "西班牙"   "大韩民国"
-fao_translate(c("European pilchard(=Sardine)", "Skipjack tuna"), "species", "both")
-#> [1] "沙丁鱼 European pilchard(=Sardine)" "鲣 Skipjack tuna"
-fao_translate("Atlantic, Eastern Central", "area", "zh")
-#> [1] "中东大西洋"
+fao_translate(c("Norway", "Spain", "Korea, Republic of"), "country", "zh")
+#> [1] "挪威"     "西班牙"   "大韩民国"
+fao_translate(c("Atlantic cod", "Skipjack tuna"), "species", "both")
+#> [1] "大西洋鳕 Atlantic cod" "鲣 Skipjack tuna"
+fao_translate("Atlantic, Northeast", "area", "zh")
+#> [1] "东北大西洋"
 ```
 
 | Argument | Meaning | Default |
@@ -456,8 +456,9 @@ employment <- load_fao_employment()
 ## ⚠️ Notes on the data
 
 - **Recent years are often estimated.** When a country has not yet
-  reported, FAO estimates its catch. In area 34, about a third of the
-  2024 catch is estimated; these values are usually revised in the next
+  reported, FAO estimates its catch. In area 34 (Eastern Central
+  Atlantic), about a third of the 2024 catch is estimated, against less
+  than 1% in area 27; these values are usually revised in the next
   release.
   [`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md)
   shows this for any area.

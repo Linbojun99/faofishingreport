@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -392,9 +392,9 @@ newest downloaded release, or the bundled data if it is newer.
 <code><a href="../reference/fao_report.html">fao_report()</a></code> can be told which release to use with
 <code>data_version</code>:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">FAO34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span><span class="op">)</span>                            <span class="co"># newest</span></span>
-<span><span class="va">FAO34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, data_version <span class="op">=</span> <span class="st">"bundled"</span><span class="op">)</span>  <span class="co"># bundled</span></span>
-<span><span class="va">FAO34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, data_version <span class="op">=</span> <span class="st">"2023.1.1"</span><span class="op">)</span> <span class="co"># a download</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">FAO27</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span><span class="op">)</span>                            <span class="co"># newest</span></span>
+<span><span class="va">FAO27</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, data_version <span class="op">=</span> <span class="st">"bundled"</span><span class="op">)</span>  <span class="co"># bundled</span></span>
+<span><span class="va">FAO27</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, data_version <span class="op">=</span> <span class="st">"2023.1.1"</span><span class="op">)</span> <span class="co"># a download</span></span></code></pre></div>
 <p><code><a href="../reference/load_fao_data.html">load_fao_data()</a></code> returns the whole data set, with the
 same choices:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -735,9 +735,9 @@ subset of <code><a href="../reference/load_fao_data.html">load_fao_data()</a></c
 <span><span class="va">skipjack</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">ASFIS.species..Name.</span> <span class="op">==</span> <span class="st">"Skipjack tuna"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/peak_trend.html">peak_trend</a></span><span class="op">(</span><span class="va">skipjack</span>, by <span class="op">=</span> <span class="st">"area"</span>, label <span class="op">=</span> <span class="st">"Skipjack tuna"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Only the last 30 years of area 34</span></span>
-<span><span class="va">FAO34_recent</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, <span class="va">Year</span> <span class="op">&gt;=</span> <span class="fl">1995</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/fishing_area_species.html">fishing_area_species</a></span><span class="op">(</span><span class="va">FAO34_recent</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Only the last 30 years of area 27</span></span>
+<span><span class="va">FAO27_recent</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, <span class="va">Year</span> <span class="op">&gt;=</span> <span class="fl">1995</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/fishing_area_species.html">fishing_area_species</a></span><span class="op">(</span><span class="va">FAO27_recent</span><span class="op">)</span></span></code></pre></div>
 <p>To find the exact names of countries, species and areas:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">Country..Name.</span><span class="op">)</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span></span>
@@ -762,12 +762,12 @@ release and from the FAO ASFIS species list; names without an official
 Chinese name are filled from the package’s own tables, and otherwise
 stay in English. <code><a href="../reference/fao_translate.html">fao_translate()</a></code> shows them:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_translate.html">fao_translate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Morocco"</span>, <span class="st">"Spain"</span>, <span class="st">"Korea, Republic of"</span><span class="op">)</span>, <span class="st">"country"</span>, <span class="st">"zh"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "摩洛哥"   "西班牙"   "大韩民国"</span></span>
-<span><span class="fu"><a href="../reference/fao_translate.html">fao_translate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"European pilchard(=Sardine)"</span>, <span class="st">"Skipjack tuna"</span><span class="op">)</span>, <span class="st">"species"</span>, <span class="st">"both"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "沙丁鱼 European pilchard(=Sardine)" "鲣 Skipjack tuna"</span></span>
-<span><span class="fu"><a href="../reference/fao_translate.html">fao_translate</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, <span class="st">"area"</span>, <span class="st">"zh"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "中东大西洋"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_translate.html">fao_translate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Norway"</span>, <span class="st">"Spain"</span>, <span class="st">"Korea, Republic of"</span><span class="op">)</span>, <span class="st">"country"</span>, <span class="st">"zh"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "挪威"     "西班牙"   "大韩民国"</span></span>
+<span><span class="fu"><a href="../reference/fao_translate.html">fao_translate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Atlantic cod"</span>, <span class="st">"Skipjack tuna"</span><span class="op">)</span>, <span class="st">"species"</span>, <span class="st">"both"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "大西洋鳕 Atlantic cod" "鲣 Skipjack tuna"</span></span>
+<span><span class="fu"><a href="../reference/fao_translate.html">fao_translate</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, <span class="st">"area"</span>, <span class="st">"zh"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "东北大西洋"</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="33%">
@@ -877,9 +877,10 @@ employment</a> for the analyses that join them to the catch:
 <ul>
 <li>
 <strong>Recent years are often estimated.</strong> When a country
-has not yet reported, FAO estimates its catch. In area 34, about a third
-of the 2024 catch is estimated; these values are usually revised in the
-next release. <code><a href="../reference/data_quality.html">data_quality()</a></code> shows this for any area.</li>
+has not yet reported, FAO estimates its catch. In area 34 (Eastern
+Central Atlantic), about a third of the 2024 catch is estimated, against
+less than 1% in area 27; these values are usually revised in the next
+release. <code><a href="../reference/data_quality.html">data_quality()</a></code> shows this for any area.</li>
 <li>
 <strong>“nei” items</strong> (“not elsewhere included”) are catches
 not identified to species, e.g. “Marine fishes nei”. They are a large

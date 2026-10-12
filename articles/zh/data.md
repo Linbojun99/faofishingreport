@@ -142,9 +142,9 @@ download_fao_data()
 
 ``` r
 
-FAO34 <- fishing_area_data("Atlantic, Eastern Central")                            # 最新数据
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", data_version = "bundled")  # 包自带数据
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", data_version = "2023.1.1") # 已下载的某个版本
+FAO27 <- fishing_area_data("Atlantic, Northeast")                            # 最新数据
+FAO27 <- fishing_area_data("Atlantic, Northeast", data_version = "bundled")  # 包自带数据
+FAO27 <- fishing_area_data("Atlantic, Northeast", data_version = "2023.1.1") # 已下载的某个版本
 ```
 
 [`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)返回完整的数据集，取值方式相同：
@@ -274,9 +274,9 @@ peak_trend(china, by = "area", label = "China")
 skipjack <- subset(data, ASFIS.species..Name. == "Skipjack tuna")
 peak_trend(skipjack, by = "area", label = "Skipjack tuna")
 
-# 只取34渔区最近30年的数据
-FAO34_recent <- subset(FAO34$area_data, Year >= 1995)
-fishing_area_species(FAO34_recent)
+# 只取27渔区最近30年的数据
+FAO27_recent <- subset(FAO27$area_data, Year >= 1995)
+fishing_area_species(FAO27_recent)
 ```
 
 查找国家、物种和渔区的准确名称：
@@ -305,12 +305,12 @@ ASFIS物种名录；没有官方中文名的条目由本包自带的对照表补
 
 ``` r
 
-fao_translate(c("Morocco", "Spain", "Korea, Republic of"), "country", "zh")
-#> [1] "摩洛哥"   "西班牙"   "大韩民国"
-fao_translate(c("European pilchard(=Sardine)", "Skipjack tuna"), "species", "both")
-#> [1] "沙丁鱼 European pilchard(=Sardine)" "鲣 Skipjack tuna"
-fao_translate("Atlantic, Eastern Central", "area", "zh")
-#> [1] "中东大西洋"
+fao_translate(c("Norway", "Spain", "Korea, Republic of"), "country", "zh")
+#> [1] "挪威"     "西班牙"   "大韩民国"
+fao_translate(c("Atlantic cod", "Skipjack tuna"), "species", "both")
+#> [1] "大西洋鳕 Atlantic cod" "鲣 Skipjack tuna"
+fao_translate("Atlantic, Northeast", "area", "zh")
+#> [1] "东北大西洋"
 ```
 
 | 参数   | 含义                                                 | 默认值      |
@@ -370,7 +370,7 @@ employment <- load_fao_employment()
 
 ## ⚠️ 数据注意事项
 
-- **近几年的数据常为估算值。**某个国家尚未上报时，FAO会估算其产量。在34渔区，2024年约三分之一的产量是估算值；这些数值通常会在下一个版本中修订。[`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md)可以显示任一渔区的这一情况。
+- **近几年的数据常为估算值。**某个国家尚未上报时，FAO会估算其产量。在34渔区（中东大西洋），2024年约三分之一的产量是估算值，而27渔区不到1%；这些数值通常会在下一个版本中修订。[`data_quality()`](https://linbojun99.github.io/faofishingreport/reference/data_quality.md)可以显示任一渔区的这一情况。
 - **未分类（nei）类别**（“not elsewhere
   included”，即”未另列明”）是未鉴定到种的产量，例如”Marine fishes
   nei”。在某些渔区，这部分产量占比很大。

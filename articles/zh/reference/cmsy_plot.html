@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -125,7 +125,9 @@ Bmsy（FAO的过度捕捞界限）和0.5 Bmsy处画线（图2右上）；</li>
 <strong>prior_posterior</strong>：r、k、MSY以及第一年、中间年份和最后一年B/k的先验和后验密度，并给出后验与先验方差比（PPVR）（图4）；</li>
 <li>
 <strong>retrospective</strong>：回顾性分析，即去掉最后一年、两年或三年数据时的B/Bmsy和F/Fmsy，并给出Mohn’s
-rho（图5；需要<code>cmsy_run(plots = "retrospective")</code>）。</li>
+rho（图5；需要<code>cmsy_run(plots = "retrospective")</code>）；</li>
+<li>
+<strong>mcmc</strong>：r、k、MSY和最后一年B/k每条MCMC链的抽样（轨迹）及其密度，并给出Rhat和有效样本量（见<code><a href="../../../reference/cmsy_mcmc.html">cmsy_mcmc()</a></code>；本包早期版本的运行结果没有这张图）。</li>
 </ul>
 <p>多个种群合在一起的图表：</p>
 <ul>
@@ -203,7 +205,12 @@ prior-posterior variance ratio PPVR (Figure 4);</li>
 <li>
 <strong>retrospective</strong>: B/Bmsy and F/Fmsy when the last one,
 two or three years are left out, with Mohn’s rho (Figure 5; needs
-<code>cmsy_run(plots = "retrospective")</code>).</li>
+<code>cmsy_run(plots = "retrospective")</code>);</li>
+<li>
+<strong>mcmc</strong>: the draws of each MCMC chain (trace) and
+their densities for r, k, MSY and the last-year B/k, with Rhat and the
+effective sample size (see <code><a href="../../../reference/cmsy_mcmc.html">cmsy_mcmc()</a></code>; not for runs of
+earlier versions of the package).</li>
 </ul>
 <p>For several stocks together:</p>
 <ul>
@@ -256,7 +263,8 @@ studies: healthy (at least 1), slightly overfished (0.8-1), overfished
 <span>  annotations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"faofishingreport.cmsy_annotations"</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span>
 <span>  lang <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pptx <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"faofishingreport.pptx"</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span>
-<span>  silent <span class="op">=</span> <span class="fu">fao_setting</span><span class="op">(</span><span class="st">"silent"</span><span class="op">)</span></span>
+<span>  silent <span class="op">=</span> <span class="fu">fao_setting</span><span class="op">(</span><span class="st">"silent"</span><span class="op">)</span>,</span>
+<span>  mcmc_colors <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -347,6 +355,17 @@ English
 A logical value. If FALSE (default), a progress bar shows how many
 stocks have been drawn. If TRUE, nothing is printed. The default can be
 changed for the session with <code>fao_settings(silent = TRUE)</code>.
+</details>
+</dd>
+<dt><code>mcmc_colors</code></dt>
+<dd>
+“mcmc”图中各条链的颜色：NULL（默认）为Okabe-Ito配色，也可以是调色板名称或颜色向量（见<code><a href="../../../reference/cmsy_mcmc.html">cmsy_mcmc()</a></code>）。
+<details class="fao-en"><summary>
+English
+</summary>
+Colours of the chains in the “mcmc” chart: NULL (default) for the
+Okabe-Ito colours, a palette name or a vector of colours (see
+<code><a href="../../../reference/cmsy_mcmc.html">cmsy_mcmc()</a></code>).
 </details>
 </dd>
 </dl>

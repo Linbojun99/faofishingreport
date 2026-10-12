@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -101,9 +101,9 @@ BY 4.0</a>。用<code><a href="../../reference/fao_data_info.html">fao_data_info
 </div>
 <p><code><a href="../../reference/fao_report.html">fao_report()</a></code>一次调用即可为一个FAO主要渔区生成中文或英文的Word评估报告。它对该渔区运行本包的各项分析，把结果填入文字模板，插入带编号题注的图表，并列出正文引用的参考文献。</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span><span class="op">)</span>                                                  <span class="co"># 语言取自fao_settings()</span></span>
-<span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, author <span class="op">=</span> <span class="st">"Hongyu Lin"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"en"</span>, font <span class="op">=</span> <span class="st">"Times New Roman"</span>, citation <span class="op">=</span> <span class="st">"fao"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span><span class="op">)</span>                                                  <span class="co"># 语言取自fao_settings()</span></span>
+<span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, author <span class="op">=</span> <span class="st">"Hongyu Lin"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"en"</span>, font <span class="op">=</span> <span class="st">"Times New Roman"</span>, citation <span class="op">=</span> <span class="st">"fao"</span><span class="op">)</span></span></code></pre></div>
 <div class="callout-note">
 <p>生成的报告是初稿。只有作者才能写的部分，如其他数据来源、结论的讨论和其他参考文献，以灰色“【待补充：……】”标出（英文报告中为“To
 be completed”）。使用前请核对自动生成的文字。</p>
@@ -112,14 +112,14 @@ be completed”）。使用前请核对自动生成的文字。</p>
 <h2 id="第一份报告">🚀 第一份报告<a class="anchor" aria-label="anchor" href="#%E7%AC%AC%E4%B8%80%E4%BB%BD%E6%8A%A5%E5%91%8A"></a>
 </h2>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_report_zh.docx"</span>, lang <span class="op">=</span> <span class="st">"zh"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, file <span class="op">=</span> <span class="st">"FAO27_report_zh.docx"</span>, lang <span class="op">=</span> <span class="st">"zh"</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/Rtmp5Px3TF/faofishingreport_site_1be39fc084b0/FAO34_report_zh.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmpTdqgcv/faofishingreport_site_1dd7629f014b9/FAO27_report_zh.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, quality, diversity, fleets</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $analyses               results of the analyses: total, species, countries, groups, status, quality, diversity, fleets</span></span></code></pre></div>
-<p>渔区可以用代码（<code>34</code>）或英文名称（<code>"Atlantic, Eastern Central"</code>）指定。运行约需半分钟，期间以消息显示进度（本页未显示）：先是各项分析，然后是写入的文件。不指定<code>file</code>时，报告保存为工作目录下的<code>reports/FAO34_report_zh.docx</code>；本页的工作目录是一个临时文件夹。</p>
+<p>渔区可以用代码（<code>27</code>）或英文名称（<code>"Atlantic, Northeast"</code>）指定。运行约需半分钟，期间以消息显示进度（本页未显示）：先是各项分析，然后是写入的文件。不指定<code>file</code>时，报告保存为工作目录下的<code>reports/FAO27_report_zh.docx</code>；本页的工作目录是一个临时文件夹。</p>
 <p>各项分析在另一个临时文件夹中运行，图表分辨率为300
 dpi，不生成PowerPoint文件。图表只插入Word文件，不会在你的文件夹中留下图表文件；如需保留图表，请直接运行相应的分析函数（见<a href="fishing-areas.html">🌊 渔区分析</a>）。</p>
 <p><code><a href="../../reference/fao_report.html">fao_report()</a></code>以不可见的方式返回报告中的表格，因此请把结果赋给一个变量。近5年的主要渔获种类：</p>
@@ -127,14 +127,14 @@ dpi，不生成PowerPoint文件。图表只插入Word文件，不会在你的文
 <code class="sourceCode R"><span><span class="fu">show_table</span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">main_species</span>, digits <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="13%">
-<col width="22%">
-<col width="17%">
-<col width="10%">
-<col width="7%">
-<col width="7%">
+<col width="18%">
+<col width="18%">
+<col width="18%">
 <col width="9%">
-<col width="11%">
+<col width="7%">
+<col width="7%">
+<col width="8%">
+<col width="10%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">species</th>
@@ -148,104 +148,104 @@ dpi，不生成PowerPoint文件。图表只插入Word文件，不会在你的文
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">沙丁鱼</td>
-<td align="left">European pilchard(=Sardine)</td>
-<td align="left">Sardina pilchardus</td>
-<td align="right">1,041,854.9</td>
-<td align="right">20.4</td>
-<td align="left">2018</td>
-<td align="right">52.6</td>
+<td align="left">大西洋鲱</td>
+<td align="left">Atlantic herring</td>
+<td align="left">Clupea harengus</td>
+<td align="right">1,464,717.6</td>
+<td align="right">17.3</td>
+<td align="left">1965</td>
+<td align="right">33.5</td>
 <td align="left">none</td>
 </tr>
 <tr class="even">
-<td align="left">科利鲭</td>
-<td align="left">Atlantic chub mackerel</td>
-<td align="left">Scomber colias</td>
-<td align="right">414,307.8</td>
-<td align="right">8.1</td>
-<td align="left">2019</td>
-<td align="right">96.6</td>
+<td align="left">小鳍鳕</td>
+<td align="left">Blue whiting(=Poutassou)</td>
+<td align="left">Micromesistius poutassou</td>
+<td align="right">1,445,802.2</td>
+<td align="right">17.1</td>
+<td align="left">2004</td>
+<td align="right">75.8</td>
 <td align="left">none</td>
 </tr>
 <tr class="odd">
-<td align="left">筛鲱</td>
-<td align="left">Bonga shad</td>
-<td align="left">Ethmalosa fimbriata</td>
-<td align="right">348,662.7</td>
-<td align="right">6.8</td>
-<td align="left">2017</td>
-<td align="right">87.1</td>
+<td align="left">大西洋鲭</td>
+<td align="left">Atlantic mackerel</td>
+<td align="left">Scomber scombrus</td>
+<td align="right">1,022,621.6</td>
+<td align="right">12.1</td>
+<td align="left">2014</td>
+<td align="right">65.4</td>
 <td align="left">none</td>
 </tr>
 <tr class="even">
-<td align="left">竹筴鱼属物种</td>
-<td align="left">Jack and horse mackerels nei</td>
-<td align="left">Trachurus spp.</td>
-<td align="right">263,295.6</td>
-<td align="right">5.1</td>
-<td align="left">2010</td>
-<td align="right">58.7</td>
+<td align="left">大西洋鳕</td>
+<td align="left">Atlantic cod</td>
+<td align="left">Gadus morhua</td>
+<td align="right">975,521.5</td>
+<td align="right">11.5</td>
+<td align="left">1969</td>
+<td align="right">35.5</td>
 <td align="left">none</td>
 </tr>
 <tr class="odd">
-<td align="left">未分类的沙丁鱼</td>
-<td align="left">Sardinellas nei</td>
-<td align="left">Sardinella spp.</td>
-<td align="right">246,900.5</td>
-<td align="right">4.8</td>
-<td align="left">2018</td>
-<td align="right">32.8</td>
-<td align="left">none</td>
-</tr>
-<tr class="even">
-<td align="left">未分类的海洋鱼类</td>
-<td align="left">Marine fishes nei</td>
-<td align="left">Actinopterygii</td>
-<td align="right">243,873.7</td>
-<td align="right">4.8</td>
-<td align="left">1995</td>
-<td align="right">60.5</td>
-<td align="left">none</td>
-</tr>
-<tr class="odd">
-<td align="left">短体小沙丁鱼</td>
-<td align="left">Madeiran sardinella</td>
-<td align="left">Sardinella maderensis</td>
-<td align="right">243,476.6</td>
-<td align="right">4.8</td>
-<td align="left">2021</td>
-<td align="right">73.4</td>
-<td align="left">none</td>
-</tr>
-<tr class="even">
-<td align="left">鲣</td>
-<td align="left">Skipjack tuna</td>
-<td align="left">Katsuwonus pelamis</td>
-<td align="right">195,951.7</td>
-<td align="right">3.8</td>
-<td align="left">2018</td>
-<td align="right">69.2</td>
-<td align="left">none</td>
-</tr>
-<tr class="odd">
-<td align="left">金色小沙丁鱼</td>
-<td align="left">Round sardinella</td>
-<td align="left">Sardinella aurita</td>
-<td align="right">127,328.2</td>
-<td align="right">2.5</td>
-<td align="left">1991</td>
+<td align="left">黍鲱</td>
+<td align="left">European sprat</td>
+<td align="left">Sprattus sprattus</td>
+<td align="right">384,876.0</td>
+<td align="right">4.5</td>
+<td align="left">1975</td>
 <td align="right">34.9</td>
+<td align="left">down</td>
+</tr>
+<tr class="even">
+<td align="left">青鳕</td>
+<td align="left">Saithe(=Pollock)</td>
+<td align="left">Pollachius virens</td>
+<td align="right">321,305.7</td>
+<td align="right">3.8</td>
+<td align="left">1974</td>
+<td align="right">41.4</td>
+<td align="left">none</td>
+</tr>
+<tr class="odd">
+<td align="left">毛鳞鱼</td>
+<td align="left">Capelin</td>
+<td align="left">Mallotus villosus</td>
+<td align="right">311,462.1</td>
+<td align="right">3.7</td>
+<td align="left">1977</td>
+<td align="right">4.5</td>
 <td align="left">none</td>
 </tr>
 <tr class="even">
-<td align="left">欧洲鳀</td>
-<td align="left">European anchovy</td>
-<td align="left">Engraulis encrasicolus</td>
-<td align="right">124,334.4</td>
-<td align="right">2.4</td>
-<td align="left">1990</td>
-<td align="right">48.9</td>
-<td align="left">up</td>
+<td align="left">黑线鳕</td>
+<td align="left">Haddock</td>
+<td align="left">Melanogrammus aeglefinus</td>
+<td align="right">300,767.9</td>
+<td align="right">3.6</td>
+<td align="left">1969</td>
+<td align="right">33.0</td>
+<td align="left">none</td>
+</tr>
+<tr class="odd">
+<td align="left">Sandeels(=Sandlances) nei</td>
+<td align="left">Sandeels(=Sandlances) nei</td>
+<td align="left">Ammodytes spp.</td>
+<td align="right">221,906.9</td>
+<td align="right">2.6</td>
+<td align="left">1997</td>
+<td align="right">7.8</td>
+<td align="left">none</td>
+</tr>
+<tr class="even">
+<td align="left">极北海带</td>
+<td align="left">North European kelp</td>
+<td align="left">Laminaria hyperborea</td>
+<td align="right">169,330.1</td>
+<td align="right">2.0</td>
+<td align="left">2023</td>
+<td align="right">92.4</td>
+<td align="left">none</td>
 </tr>
 </tbody>
 </table>
@@ -341,7 +341,7 @@ Around Us等）。</li>
 </tr></thead>
 <tbody><tr class="odd">
 <td align="left">本报告根据联合国粮食及农业组织（FAO）全球捕捞产量统计1950–2024年数据（2026.1.0版），采用突变点检测、Mann-Kendall趋势检验、资源开发状态图和多样性与集中度指数，分析了FAO
-34渔区（中东大西洋）的渔获量变化、主要渔获种类、主要捕捞国家（地区）、渔获类群组成、资源开发状态、数据质量、渔获多样性和沿岸国与远洋捕捞。结果表明，2024年该海域渔获量为509.9万t，占全球海洋捕捞产量的6.3%；历史最高渔获量出现在2018年（552.0万t），2024年渔获量为峰值的92.4%。渔获量变化可划分为4个阶段（1950–1968年、1969–1987年、1988–2009年和2010–2024年）。近5年沙丁鱼是最主要的渔获种类，占总渔获量的20.4%。摩洛哥是最主要的捕捞国家（地区），占近5年渔获量的27.7%。2024年处于过度开发或崩溃状态的资源占39.7%。</td>
+27渔区（东北大西洋）的渔获量变化、主要渔获种类、主要捕捞国家（地区）、渔获类群组成、资源开发状态、数据质量、渔获多样性和沿岸国与远洋捕捞。结果表明，2024年该海域渔获量为784.2万t，占全球海洋捕捞产量的9.7%；历史最高渔获量出现在1976年（1317.3万t），2024年渔获量为峰值的59.5%。渔获量变化可划分为3个阶段（1950–1964年、1965–2005年和2006–2024年）。近5年大西洋鲱是最主要的渔获种类，占总渔获量的17.3%。挪威是最主要的捕捞国家（地区），占近5年渔获量的26.8%。2024年处于过度开发或崩溃状态的资源占61.6%。</td>
 </tr></tbody>
 </table>
 <p>图表题注，按报告编号：</p>
@@ -361,92 +361,92 @@ Around Us等）。</li>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">图1-1 1950–2024年FAO
-34渔区（中东大西洋）渔获量变化及突变点</td>
+27渔区（东北大西洋）渔获量变化及突变点</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
 <td align="left">图1-2 FAO
-34渔区（中东大西洋）渔获量占全球海洋捕捞产量的比例</td>
+27渔区（东北大西洋）渔获量占全球海洋捕捞产量的比例</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Table Caption</td>
 <td align="left">表1-1 近5年（2020–2024年）FAO
-34渔区（中东大西洋）主要渔获种类</td>
+27渔区（东北大西洋）主要渔获种类</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
 <td align="left">图1-3 FAO
-34渔区（中东大西洋）近5年主要渔获种类的历年渔获量</td>
+27渔区（东北大西洋）近5年主要渔获种类的历年渔获量</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">图1-4 FAO
-34渔区（中东大西洋）近5年主要渔获种类的历年渔获量及突变点</td>
+27渔区（东北大西洋）近5年主要渔获种类的历年渔获量及突变点</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Table Caption</td>
 <td align="left">表1-2 近5年（2020–2024年）FAO
-34渔区（中东大西洋）主要捕捞国家（地区）</td>
+27渔区（东北大西洋）主要捕捞国家（地区）</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">图1-5 FAO
-34渔区（中东大西洋）近5年主要捕捞国家（地区）的历年渔获量</td>
+27渔区（东北大西洋）近5年主要捕捞国家（地区）的历年渔获量</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
 <td align="left">图1-6 各国家和地区在FAO
-34渔区（中东大西洋）的累计渔获量</td>
+27渔区（东北大西洋）的累计渔获量</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">图1-7 FAO
-34渔区（中东大西洋）近5年主要捕捞国家（地区）的历年渔获量及突变点</td>
+27渔区（东北大西洋）近5年主要捕捞国家（地区）的历年渔获量及突变点</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
 <td align="left">图1-8 FAO
-34渔区（中东大西洋）各ISSCAAP类群的渔获量占比</td>
+27渔区（东北大西洋）各ISSCAAP类群的渔获量占比</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">图1-9 FAO
-34渔区（中东大西洋）资源开发状态（按资源数量）</td>
+27渔区（东北大西洋）资源开发状态（按资源数量）</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
 <td align="left">图1-10 FAO
-34渔区（中东大西洋）资源开发状态（按渔获量）</td>
+27渔区（东北大西洋）资源开发状态（按渔获量）</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">图1-11 FAO
-34渔区（中东大西洋）渔获量的数据来源构成</td>
+27渔区（东北大西洋）渔获量的数据来源构成</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
 <td align="left">图1-12 FAO
-34渔区（中东大西洋）渔获量的分类阶元构成</td>
+27渔区（东北大西洋）渔获量的分类阶元构成</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">图1-13 FAO
-34渔区（中东大西洋）渔获的多样性与集中度指数</td>
+27渔区（东北大西洋）渔获的多样性与集中度指数</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
 <td align="left">图1-14 FAO
-34渔区（中东大西洋）沿岸国与远洋捕捞国家和地区的渔获量</td>
+27渔区（东北大西洋）沿岸国与远洋捕捞国家和地区的渔获量</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Table Caption</td>
 <td align="left">附表1 FAO
-34渔区（中东大西洋）主要渔获种类各年代的年均渔获量（万t）</td>
+27渔区（东北大西洋）主要渔获种类各年代的年均渔获量（万t）</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Table Caption</td>
 <td align="left">附表2 FAO
-34渔区（中东大西洋）主要捕捞国家（地区）各年代的年均渔获量（万t）</td>
+27渔区（东北大西洋）主要捕捞国家（地区）各年代的年均渔获量（万t）</td>
 </tr>
 </tbody>
 </table>
@@ -550,7 +550,7 @@ Computing, 2026[2026-10-12]. <a href="https://www.R-project.org/" class="externa
 </tr>
 <tr class="odd">
 <td align="left">[13] Lin H. faofishingreport: Analyse and report FAO
-Global Capture Production statistics. R package version 0.7.0[CP/OL].
+Global Capture Production statistics. R package version 0.8.0[CP/OL].
 2026[2026-10-12]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>.</td>
 </tr>
 <tr class="even">
@@ -579,7 +579,7 @@ database: a six-decade effort to catch the trend[J]. Marine Policy,
 <tr class="odd">
 <td><code>area</code></td>
 <td>（必填）</td>
-<td>FAO主要渔区：代码（如<code>34</code>）或英文名称（如<code>"Atlantic, Eastern Central"</code>）。渔区不存在时报错，并列出所有海洋渔区。</td>
+<td>FAO主要渔区：代码（如<code>27</code>）或英文名称（如<code>"Atlantic, Northeast"</code>）。渔区不存在时报错，并列出所有海洋渔区。</td>
 </tr>
 <tr class="even">
 <td><code>...</code></td>
@@ -608,7 +608,7 @@ database: a six-decade effort to catch the trend[J]. Marine Policy,
 <tr class="even">
 <td><code>title</code></td>
 <td>根据渔区生成</td>
-<td>如“FAO 34渔区（中东大西洋）海洋捕捞产量评估”</td>
+<td>如“FAO 27渔区（东北大西洋）海洋捕捞产量评估”</td>
 </tr>
 <tr class="odd">
 <td><code>report_no</code></td>
@@ -869,10 +869,10 @@ v5数据时的Huang等（2017）、Pyper和Peterman（1998）、Alajmi等（2024
 </h2>
 <p>关闭三个章节，开启中上层鱼类与底层鱼类渔获比，并在资源开发状态图中使用平滑后的渔获量：</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">short</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_short.docx"</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, quality <span class="op">=</span> <span class="cn">FALSE</span>, diversity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<code class="sourceCode R"><span><span class="va">short</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, file <span class="op">=</span> <span class="st">"FAO27_short.docx"</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, quality <span class="op">=</span> <span class="cn">FALSE</span>, diversity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                    fleets <span class="op">=</span> <span class="cn">FALSE</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span>, status_smooth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">short</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/Rtmp5Px3TF/faofishingreport_site_1be39fc084b0/FAO34_short.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmpTdqgcv/faofishingreport_site_1dd7629f014b9/FAO27_short.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, pelagic</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -969,7 +969,7 @@ Computing, 2026[2026-10-12]. <a href="https://www.R-project.org/" class="externa
 </tr>
 <tr class="odd">
 <td align="left">[13] Lin H. faofishingreport: Analyse and report FAO
-Global Capture Production statistics. R package version 0.7.0[CP/OL].
+Global Capture Production statistics. R package version 0.8.0[CP/OL].
 2026[2026-10-12]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>.</td>
 </tr>
 <tr class="even">
@@ -1080,10 +1080,10 @@ Landings Composition[J]. Marine and Coastal Fisheries, 2010, 2(1):
 <p><code>collapse_seed</code>和<code>distant_countries</code>是报告本身的设置。<code>cmsy_</code>前缀也可以用于<code><a href="../../reference/cmsy_input.html">cmsy_input()</a></code>的参数，如<code>cmsy_min_years</code>。报告自己设定的参数（<code>area</code>、<code>area_data</code>、<code>area_name</code>、<code>lang</code>、<code>pptx</code>和<code>table</code>）不能指定。已关闭章节的设置不起作用。</p>
 <p>设置必须有名称，以章节名开头，并且是该章节函数的参数，否则<code><a href="../../reference/fao_report.html">fao_report()</a></code>会在运行任何分析之前停止，报错信息列出可以使用的名称：</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, species_h <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, species_h <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> fao_report(): species_h would set h, which is not an argument of fishing_area_species(). Its arguments: rank_range, plot, timeseries_analysis, line_width, point_size, point_alpha, point_shape, line_alpha, axis_text_size, axis_title_size, strip_text_size, axis_text_face, axis_title_face, strip_text_face, smooth_method, smooth_linetype, line_linewidth, text_hjust, text_vjust, text_size, text_color, facet_ncol, h_value, ZH</span></span>
-<span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, speceis_h_value <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, speceis_h_value <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Unknown argument of fao_report(): speceis_h_value. Settings of an analysis start with its section: total_, species_, countries_, groups_, status_, quality_, diversity_, fleets_, shocks_, collapse_, synchrony_, pelagic_, mtc_, distant_, cmsy_</span></span></code></pre></div>
 </div>
@@ -1172,9 +1172,9 @@ spp.（“spp.”为正体）；科及更高分类阶元的名称用正体，如
 </h2>
 <p><code>format</code>决定输出哪些文件：<code>"docx"</code>（默认）、<code>"latex"</code>和<code>"pdf"</code>，可以选一个或多个。各项分析只运行一次，各种格式的文字、图表、表格、图表标题和参考文献完全相同。</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docx"</span>, <span class="st">"pdf"</span><span class="op">)</span><span class="op">)</span>      <span class="co"># Word和PDF</span></span>
-<span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"en"</span>, format <span class="op">=</span> <span class="st">"latex"</span><span class="op">)</span>                <span class="co"># 只输出LaTeX源文件</span></span>
-<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docx"</span>, <span class="st">"latex"</span>, <span class="st">"pdf"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docx"</span>, <span class="st">"pdf"</span><span class="op">)</span><span class="op">)</span>      <span class="co"># Word和PDF</span></span>
+<span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"en"</span>, format <span class="op">=</span> <span class="st">"latex"</span><span class="op">)</span>                <span class="co"># 只输出LaTeX源文件</span></span>
+<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docx"</span>, <span class="st">"latex"</span>, <span class="st">"pdf"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">report</span><span class="op">$</span><span class="va">file</span>                                                  <span class="co"># 按docx、latex、pdf命名的文件路径</span></span></code></pre></div>
 <table class="table">
 <colgroup>
@@ -1184,26 +1184,26 @@ spp.（“spp.”为正体）；科及更高分类阶元的名称用正体，如
 </colgroup>
 <thead><tr class="header">
 <th><code>format</code></th>
-<th>输出的文件（以<code>fao_report(34, lang = "zh")</code>为例）</th>
+<th>输出的文件（以<code>fao_report(27, lang = "zh")</code>为例）</th>
 <th>说明</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td><code>"docx"</code></td>
-<td><code>reports/FAO34_report_zh.docx</code></td>
+<td><code>reports/FAO27_report_zh.docx</code></td>
 <td>本文介绍的Word文件</td>
 </tr>
 <tr class="even">
 <td><code>"latex"</code></td>
 <td>
-<code>reports/FAO34_report_zh.tex</code>和文件夹<code>reports/FAO34_report_zh_figures/</code>
+<code>reports/FAO27_report_zh.tex</code>和文件夹<code>reports/FAO27_report_zh_figures/</code>
 </td>
 <td>同一份报告的XeLaTeX源文件，图片为PNG文件。中文报告使用<code>ctexart</code>文档类，英文报告使用<code>article</code>文档类。</td>
 </tr>
 <tr class="odd">
 <td><code>"pdf"</code></td>
 <td>
-<code>reports/FAO34_report_zh.pdf</code>（以及<code>.tex</code>）</td>
+<code>reports/FAO27_report_zh.pdf</code>（以及<code>.tex</code>）</td>
 <td>用XeLaTeX编译的PDF，带有各级标题的书签</td>
 </tr>
 </tbody>
@@ -1266,7 +1266,7 @@ Live（Xie 2019）。只需运行一次：</p>
 <span><span class="fu">tinytex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">tinytex_root</a></span><span class="op">(</span><span class="op">)</span>        <span class="co"># 安装位置</span></span></code></pre></div>
 <p>TinyTeX在macOS上安装到<code>~/Library/TinyTeX</code>，在Windows上安装到<code>%APPDATA%/TinyTeX</code>，在Linux上安装到<code>~/.TinyTeX</code>，不需要管理员权限。安装后请重启R。不需要手动安装任何LaTeX宏包：第一次生成PDF报告时会自动安装所需的宏包（中文用的ctex和xeCJK，以及booktabs、longtable、needspace、xurl等），只在第一次需要几分钟。</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, format <span class="op">=</span> <span class="st">"pdf"</span><span class="op">)</span>   <span class="co"># 第一次运行时还会安装LaTeX宏包</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, format <span class="op">=</span> <span class="st">"pdf"</span><span class="op">)</span>   <span class="co"># 第一次运行时还会安装LaTeX宏包</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="50%">
@@ -1295,7 +1295,7 @@ older than remote repository”</td>
 </tr>
 <tr class="even">
 <td>修改了<code>.tex</code>文件</td>
-<td>重新编译：<code>tinytex::xelatex("reports/FAO34_report_zh.tex")</code>
+<td>重新编译：<code>tinytex::xelatex("reports/FAO27_report_zh.tex")</code>
 </td>
 </tr>
 <tr class="odd">
@@ -1399,28 +1399,28 @@ al.”。FAO格式参照FAO出版物（如FAO
 <p><code>cmsy = TRUE</code>时，主要种类还会用CMSY++（<code><a href="../../reference/cmsy_area.html">cmsy_area()</a></code>）进行资源评估：评估对象为近10年渔获量最高的<code>top_n</code>个鉴定到种的物种条目，或指定的<code>cmsy_top</code>个。CMSY++需要JAGS，用<code><a href="../../reference/cmsy_setup.html">cmsy_setup()</a></code>安装一次即可；未安装时<code><a href="../../reference/fao_report.html">fao_report()</a></code>会报错并给出提示。评估需要几分钟。</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/cmsy_setup.html">cmsy_setup</a></span><span class="op">(</span><span class="op">)</span>                          <span class="co"># 只需运行一次：安装JAGS和CMSY++所需的R包</span></span>
-<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
-<span><span class="co">#&gt; FAO report: .../reports/FAO34_report_zh.docx</span></span>
+<span><span class="co">#&gt; FAO report: .../reports/FAO27_report_zh.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, quality, diversity, fleets, cmsy</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $cmsy_reference_points  CMSY++ biological reference points with 95% confidence limits (10 rows)</span></span>
 <span><span class="co">#&gt;   $cmsy_priors            CMSY++ priors, their sources and links (10 rows)</span></span>
-<span><span class="co">#&gt;   $cmsy                   CMSY++ result (folder .../reports/cmsy/Atlantic__Eastern_Central)</span></span>
+<span><span class="co">#&gt;   $cmsy                   CMSY++ result (folder .../reports/cmsy/Atlantic__Northeast)</span></span>
 <span><span class="co">#&gt;   $analyses               results of the analyses: total, species, ..., fleets, cmsy</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">cmsy_reference_points</span><span class="op">)</span>    <span class="co"># r、k、MSY、Fmsy、Bmsy、B/Bmsy和F/Fmsy及其95%置信区间</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">cmsy_priors</span><span class="op">)</span>              <span class="co"># 先验参数、来源和链接</span></span>
 <span></span>
 <span><span class="co"># 表格中列出15个主要种类和国家，评估其中5个物种，MCMC链更长</span></span>
-<span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, top_n <span class="op">=</span> <span class="fl">15</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span>, cmsy_top <span class="op">=</span> <span class="fl">5</span>,</span>
+<span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, top_n <span class="op">=</span> <span class="fl">15</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span>, cmsy_top <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>           cmsy_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n.iter <span class="op">=</span> <span class="fl">100000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>此时，摘要中会增加一句种群状况，分析方法中增加一段CMSY++方法，结果之后还有单独的一部分：</p>
 <pre><code>3 主要渔获种类资源评估（CMSY++）
     3.1 评估概况
-    3.2 沙丁鱼（Sardina pilchardus）
-    3.3 金色小沙丁鱼（Sardinella aurita）
+    3.2 大西洋鲱（Clupea harengus）
+    3.3 小鳍鳕（Micromesistius poutassou）
     ...
     3.12 小结</code></pre>
 <ul>
@@ -1431,13 +1431,13 @@ al.”。FAO格式参照FAO出版物（如FAO
 <li>
 <strong>小结</strong>；附件中还有<strong>附表3</strong>生物学参考点（r、k、MSY、Fmsy、Bmsy、B/Bmsy、F/Fmsy）及其95%置信区间，<strong>附表4</strong>先验参数（恢复力、r和k的范围、首年、中间年份和末年的B/k先验），<strong>附表5</strong>先验参数的来源（r先验来源、B/k先验来源、物种在FishBase或SeaLifeBase中的页面），其后列出FishBase数据、CMSY++代码与用户指南以及FAO数据的链接。</li>
 </ul>
-<p>CMSY++的全部结果（输入文件、运行结果、图和表）保存在报告旁边的<code>cmsy/</code>文件夹中，如<code>reports/cmsy/Atlantic__Eastern_Central/</code>，其中有<code>cmsy_result.rds</code>。如需重新生成报告（例如改变章节或修改模板之后），把这个结果传给<code>cmsy</code>即可，不必再运行CMSY++，此时<code>cmsy_</code>设置不再起作用。<code><a href="../../reference/cmsy_area.html">cmsy_area()</a></code>的结果也可以同样传入：</p>
+<p>CMSY++的全部结果（输入文件、运行结果、图和表）保存在报告旁边的<code>cmsy/</code>文件夹中，如<code>reports/cmsy/Atlantic__Northeast/</code>，其中有<code>cmsy_result.rds</code>。如需重新生成报告（例如改变章节或修改模板之后），把这个结果传给<code>cmsy</code>即可，不必再运行CMSY++，此时<code>cmsy_</code>设置不再起作用。<code><a href="../../reference/cmsy_area.html">cmsy_area()</a></code>的结果也可以同样传入：</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cmsy34</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"reports"</span>, <span class="st">"cmsy"</span>, <span class="st">"Atlantic__Eastern_Central"</span>, <span class="st">"cmsy_result.rds"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="va">cmsy34</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">cmsy27</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"reports"</span>, <span class="st">"cmsy"</span>, <span class="st">"Atlantic__Northeast"</span>, <span class="st">"cmsy_result.rds"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="va">cmsy27</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">area34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/cmsy_area.html">cmsy_area</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, top <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="va">area34</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">area27</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/cmsy_area.html">cmsy_area</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, top <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="va">area27</span><span class="op">)</span></span></code></pre></div>
 <p>CMSY++部分的图来自那次运行，语言与运行时相同。方法、设置和局限性见<a href="cmsy.html">📉
 CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。</p>
 </div>
@@ -1499,15 +1499,15 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 <span><span class="co">#&gt; [1] "file"           "sections"       "main_species"   "main_countries"</span></span>
 <span><span class="co">#&gt; [5] "analyses"</span></span>
 <span><span class="fu">show_table</span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">main_countries</span>, digits <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
-<table class="table">
+<table style="width:100%;" class="table">
 <colgroup>
-<col width="13%">
-<col width="15%">
-<col width="15%">
+<col width="23%">
+<col width="24%">
 <col width="11%">
-<col width="11%">
-<col width="14%">
-<col width="17%">
+<col width="8%">
+<col width="8%">
+<col width="10%">
+<col width="12%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">country</th>
@@ -1520,93 +1520,93 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">摩洛哥</td>
-<td align="left">Morocco</td>
-<td align="right">1,418,927.3</td>
-<td align="right">27.7</td>
-<td align="left">2022</td>
-<td align="right">91.0</td>
+<td align="left">挪威</td>
+<td align="left">Norway</td>
+<td align="right">2,265,474.9</td>
+<td align="right">26.8</td>
+<td align="left">1977</td>
+<td align="right">58.1</td>
 <td align="left">none</td>
 </tr>
 <tr class="even">
-<td align="left">毛里塔尼亚</td>
-<td align="left">Mauritania</td>
-<td align="right">674,299.1</td>
-<td align="right">13.2</td>
-<td align="left">2018</td>
-<td align="right">65.4</td>
+<td align="left">冰岛</td>
+<td align="left">Iceland</td>
+<td align="right">1,265,855.5</td>
+<td align="right">15.0</td>
+<td align="left">1997</td>
+<td align="right">45.5</td>
 <td align="left">none</td>
 </tr>
 <tr class="odd">
-<td align="left">塞内加尔</td>
-<td align="left">Senegal</td>
-<td align="right">464,480.7</td>
-<td align="right">9.1</td>
-<td align="left">2017</td>
-<td align="right">93.6</td>
+<td align="left">俄罗斯联邦</td>
+<td align="left">Russian Federation</td>
+<td align="right">962,240.0</td>
+<td align="right">11.4</td>
+<td align="left">2002</td>
+<td align="right">75.1</td>
 <td align="left">none</td>
 </tr>
 <tr class="even">
-<td align="left">尼日利亚</td>
-<td align="left">Nigeria</td>
-<td align="right">441,470.9</td>
-<td align="right">8.6</td>
-<td align="left">2017</td>
-<td align="right">94.4</td>
+<td align="left">大不列颠及北爱尔兰联合王国</td>
+<td align="left">United Kingdom</td>
+<td align="right">668,016.8</td>
+<td align="right">7.9</td>
+<td align="left">1973</td>
+<td align="right">62.5</td>
 <td align="left">none</td>
 </tr>
 <tr class="odd">
-<td align="left">几内亚</td>
-<td align="left">Guinea</td>
-<td align="right">343,164.0</td>
-<td align="right">6.7</td>
-<td align="left">2021</td>
-<td align="right">81.0</td>
+<td align="left">法罗群岛</td>
+<td align="left">Faroe Islands</td>
+<td align="right">650,579.3</td>
+<td align="right">7.7</td>
+<td align="left">2023</td>
+<td align="right">85.4</td>
 <td align="left">none</td>
 </tr>
 <tr class="even">
-<td align="left">加纳</td>
-<td align="left">Ghana</td>
-<td align="right">333,652.8</td>
-<td align="right">6.5</td>
-<td align="left">1999</td>
-<td align="right">98.1</td>
+<td align="left">丹麦</td>
+<td align="left">Denmark</td>
+<td align="right">521,267.6</td>
+<td align="right">6.2</td>
+<td align="left">1980</td>
+<td align="right">23.1</td>
 <td align="left">none</td>
 </tr>
 <tr class="odd">
-<td align="left">塞拉利昂</td>
-<td align="left">Sierra Leone</td>
-<td align="right">205,312.0</td>
-<td align="right">4.0</td>
-<td align="left">2022</td>
-<td align="right">97.1</td>
+<td align="left">法国</td>
+<td align="left">France</td>
+<td align="right">364,925.9</td>
+<td align="right">4.3</td>
+<td align="left">1973</td>
+<td align="right">53.0</td>
 <td align="left">none</td>
 </tr>
 <tr class="even">
-<td align="left">喀麦隆</td>
-<td align="left">Cameroon</td>
-<td align="right">198,094.6</td>
-<td align="right">3.9</td>
-<td align="left">2019</td>
-<td align="right">78.8</td>
+<td align="left">荷兰王国</td>
+<td align="left">Netherlands (Kingdom of the)</td>
+<td align="right">265,473.4</td>
+<td align="right">3.1</td>
+<td align="left">1993</td>
+<td align="right">59.7</td>
 <td align="left">none</td>
 </tr>
 <tr class="odd">
-<td align="left">伯利兹</td>
-<td align="left">Belize</td>
-<td align="right">190,814.7</td>
-<td align="right">3.7</td>
-<td align="left">2010</td>
-<td align="right">51.1</td>
-<td align="left">none</td>
+<td align="left">西班牙</td>
+<td align="left">Spain</td>
+<td align="right">254,364.9</td>
+<td align="right">3.0</td>
+<td align="left">1969</td>
+<td align="right">36.0</td>
+<td align="left">down</td>
 </tr>
 <tr class="even">
-<td align="left">格鲁吉亚</td>
-<td align="left">Georgia</td>
-<td align="right">127,022.0</td>
-<td align="right">2.5</td>
-<td align="left">2019</td>
-<td align="right">79.9</td>
+<td align="left">爱尔兰</td>
+<td align="left">Ireland</td>
+<td align="right">228,514.0</td>
+<td align="right">2.7</td>
+<td align="left">1995</td>
+<td align="right">58.5</td>
 <td align="left">none</td>
 </tr>
 </tbody>
@@ -1628,39 +1628,39 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">沙丁鱼</td>
-<td align="left">2018</td>
-<td align="right">1,354,617</td>
-<td align="right">53</td>
-<td align="left">充分开发</td>
+<td align="left">毛鳞鱼</td>
+<td align="left">1977</td>
+<td align="right">3,773,808</td>
+<td align="right">4</td>
+<td align="left">崩溃</td>
 </tr>
 <tr class="even">
-<td align="left">竹筴鱼属物种</td>
-<td align="left">2010</td>
-<td align="right">574,747</td>
-<td align="right">59</td>
-<td align="left">充分开发</td>
-</tr>
-<tr class="odd">
-<td align="left">未分类的沙丁鱼</td>
-<td align="left">2018</td>
-<td align="right">542,915</td>
+<td align="left">大西洋鲱</td>
+<td align="left">1965</td>
+<td align="right">3,736,100</td>
 <td align="right">33</td>
 <td align="left">过度开发</td>
 </tr>
-<tr class="even">
-<td align="left">科利鲭</td>
-<td align="left">2019</td>
-<td align="right">485,443</td>
-<td align="right">97</td>
+<tr class="odd">
+<td align="left">小鳍鳕</td>
+<td align="left">2004</td>
+<td align="right">2,419,291</td>
+<td align="right">76</td>
 <td align="left">充分开发</td>
 </tr>
-<tr class="odd">
-<td align="left">金色小沙丁鱼</td>
-<td align="left">1991</td>
-<td align="right">453,410</td>
-<td align="right">35</td>
+<tr class="even">
+<td align="left">大西洋鳕</td>
+<td align="left">1969</td>
+<td align="right">2,147,600</td>
+<td align="right">36</td>
 <td align="left">过度开发</td>
+</tr>
+<tr class="odd">
+<td align="left">大西洋鲭</td>
+<td align="left">2014</td>
+<td align="right">1,382,490</td>
+<td align="right">65</td>
+<td align="left">充分开发</td>
 </tr>
 </tbody>
 </table>
@@ -1673,7 +1673,7 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 <code class="sourceCode R"><span><span class="va">texts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"report_text.csv"</span>, package <span class="op">=</span> <span class="st">"faofishingreport"</span><span class="op">)</span>,</span>
 <span>                  fileEncoding <span class="op">=</span> <span class="st">"UTF-8"</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">texts</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 298</span></span>
+<span><span class="co">#&gt; [1] 301</span></span>
 <span><span class="fu">show_table</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">texts</span><span class="op">[</span><span class="va">texts</span><span class="op">$</span><span class="va">key</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h_status"</span>, <span class="st">"status_p2"</span>, <span class="st">"concl_status"</span><span class="op">)</span>, <span class="op">]</span>, row.names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
@@ -1889,7 +1889,7 @@ London: Charles Griffin.</p>
 global catch data for inferences on the world’s marine fisheries.
 <em>Fish and Fisheries</em> 14(3): 293–311. <a href="https://doi.org/10.1111/j.1467-2979.2012.00469.x" class="external-link">doi:10.1111/j.1467-2979.2012.00469.x</a></p>
 <p>Lin, H. (2026). faofishingreport: Analyse and report FAO Global
-Capture Production statistics. R package version 0.7.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
+Capture Production statistics. R package version 0.8.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
 <p>Mann, H.B. (1945). Nonparametric tests against trend.
 <em>Econometrica</em> 13(3): 245–259. <a href="https://doi.org/10.2307/1907187" class="external-link">doi:10.2307/1907187</a></p>
 <p>R Core Team (2026). R: A language and environment for statistical

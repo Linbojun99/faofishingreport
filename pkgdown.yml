@@ -17,6 +17,7 @@ articles:
   articles/zh/reference/cmsy_input: zh/reference/cmsy_input.html
   articles/zh/reference/cmsy_install_jags: zh/reference/cmsy_install_jags.html
   articles/zh/reference/cmsy_jags_versions: zh/reference/cmsy_jags_versions.html
+  articles/zh/reference/cmsy_mcmc: zh/reference/cmsy_mcmc.html
   articles/zh/reference/cmsy_plot: zh/reference/cmsy_plot.html
   articles/zh/reference/cmsy_priors: zh/reference/cmsy_priors.html
   articles/zh/reference/cmsy_run: zh/reference/cmsy_run.html
@@ -44,6 +45,7 @@ articles:
   articles/zh/reference/download_sst_data: zh/reference/download_sst_data.html
   articles/zh/reference/employment_summary: zh/reference/employment_summary.html
   articles/zh/reference/fao_area_sst: zh/reference/fao_area_sst.html
+  articles/zh/reference/fao_areas: zh/reference/fao_areas.html
   articles/zh/reference/fao_capture_groups: zh/reference/fao_capture_groups.html
   articles/zh/reference/fao_data_dir: zh/reference/fao_data_dir.html
   articles/zh/reference/fao_data_info: zh/reference/fao_data_info.html
@@ -60,6 +62,7 @@ articles:
   articles/zh/fishbase: zh/fishbase.html
   articles/zh/reference/fishing_area_country: zh/reference/fishing_area_country.html
   articles/zh/reference/fishing_area_data: zh/reference/fishing_area_data.html
+  articles/zh/reference/fishing_area_map: zh/reference/fishing_area_map.html
   articles/zh/reference/fishing_area_species: zh/reference/fishing_area_species.html
   articles/fishing-areas: fishing-areas.html
   articles/zh/fishing-areas: zh/fishing-areas.html
@@ -94,7 +97,7 @@ articles:
   articles/zh/trade-employment: zh/trade-employment.html
   articles/tutorial-67: tutorial-67.html
   articles/zh/tutorial-67: zh/tutorial-67.html
-last_built: 2026-10-11T23:40Z
+last_built: 2026-10-12T03:29Z
 urls:
   reference: https://linbojun99.github.io/faofishingreport/reference
   article: https://linbojun99.github.io/faofishingreport/articles

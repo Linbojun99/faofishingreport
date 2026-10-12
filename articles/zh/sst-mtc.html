@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,23 +98,16 @@
 </h2>
 <p><code><a href="../../reference/fao_area_sst.html">fao_area_sst()</a></code>返回19个FAO主要海洋渔区的逐年SST。每次调用都会说明用的是哪一套SST数据：</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sst34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="st">"34"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">sst27</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="st">"27"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; SST: NOAA ERSST v5, built into the package (FAO major areas; 2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sst34</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"area_en"</span>, <span class="st">"year"</span>, <span class="st">"sst_mean"</span>, <span class="st">"sst_p10"</span>, <span class="st">"sst_p90"</span>, <span class="st">"sst_min_month"</span>, <span class="st">"sst_max_month"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                     area_en year sst_mean sst_p10 sst_p90 sst_min_month</span></span>
-<span><span class="co">#&gt; 1 Atlantic, Eastern Central 1950   24.510  20.834  27.147        23.620</span></span>
-<span><span class="co">#&gt; 2 Atlantic, Eastern Central 1951   24.644  20.983  27.301        23.546</span></span>
-<span><span class="co">#&gt; 3 Atlantic, Eastern Central 1952   24.581  20.892  27.285        23.614</span></span>
-<span><span class="co">#&gt; 4 Atlantic, Eastern Central 1953   24.642  20.997  27.377        23.726</span></span>
-<span><span class="co">#&gt; 5 Atlantic, Eastern Central 1954   24.237  20.406  27.085        23.392</span></span>
-<span><span class="co">#&gt; 6 Atlantic, Eastern Central 1955   24.724  21.230  27.405        23.716</span></span>
-<span><span class="co">#&gt;   sst_max_month</span></span>
-<span><span class="co">#&gt; 1        25.232</span></span>
-<span><span class="co">#&gt; 2        25.626</span></span>
-<span><span class="co">#&gt; 3        25.563</span></span>
-<span><span class="co">#&gt; 4        25.618</span></span>
-<span><span class="co">#&gt; 5        25.529</span></span>
-<span><span class="co">#&gt; 6        25.735</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sst27</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"area_en"</span>, <span class="st">"year"</span>, <span class="st">"sst_mean"</span>, <span class="st">"sst_p10"</span>, <span class="st">"sst_p90"</span>, <span class="st">"sst_min_month"</span>, <span class="st">"sst_max_month"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;               area_en year sst_mean sst_p10 sst_p90 sst_min_month sst_max_month</span></span>
+<span><span class="co">#&gt; 1 Atlantic, Northeast 1950    9.247  -0.789  18.017         6.883        12.478</span></span>
+<span><span class="co">#&gt; 2 Atlantic, Northeast 1951    9.236  -1.078  18.021         6.932        12.572</span></span>
+<span><span class="co">#&gt; 3 Atlantic, Northeast 1952    9.329  -0.964  18.152         7.045        12.778</span></span>
+<span><span class="co">#&gt; 4 Atlantic, Northeast 1953    9.487  -0.836  18.371         7.171        12.913</span></span>
+<span><span class="co">#&gt; 5 Atlantic, Northeast 1954    9.333  -0.751  17.905         7.095        12.481</span></span>
+<span><span class="co">#&gt; 6 Atlantic, Northeast 1955    9.358  -1.046  18.493         6.954        12.753</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="33%">
@@ -129,7 +122,7 @@
 <tbody>
 <tr class="odd">
 <td><code>area</code></td>
-<td>FAO渔区代码（如<code>"34"</code>）或FAO数据中的渔区名称（如<code>"Atlantic, Eastern Central"</code>）</td>
+<td>FAO渔区代码（如<code>"27"</code>）或FAO数据中的渔区名称（如<code>"Atlantic, Northeast"</code>）</td>
 <td>
 <code>NULL</code>：全部19个渔区</td>
 </tr>
@@ -249,9 +242,9 @@ v5是常用SST产品中最小的。它不用卫星资料，整个时段前后一
 </h3>
 <p>其他网格化的SST数据，只要给出<strong>NetCDF文件的路径，或者存放NetCDF文件的文件夹路径</strong>，就可以使用。可以只用于一次调用，也可以对整个会话生效：</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="st">"34"</span>, sst <span class="op">=</span> <span class="st">"D:/data/HadISST_sst.nc"</span><span class="op">)</span>       <span class="co"># 只用于这一次调用</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="st">"27"</span>, sst <span class="op">=</span> <span class="st">"D:/data/HadISST_sst.nc"</span><span class="op">)</span>       <span class="co"># 只用于这一次调用</span></span>
 <span><span class="fu"><a href="../../reference/fao_settings.html">fao_settings</a></span><span class="op">(</span>sst <span class="op">=</span> <span class="st">"D:/data/HadISST_sst.nc"</span><span class="op">)</span>             <span class="co"># 本次会话的所有函数都用这个文件</span></span>
-<span><span class="fu"><a href="../../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span>                  <span class="co"># 现在使用这个文件</span></span>
+<span><span class="fu"><a href="../../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span>                  <span class="co"># 现在使用这个文件</span></span>
 <span><span class="fu"><a href="../../reference/fao_settings.html">fao_settings</a></span><span class="op">(</span>sst <span class="op">=</span> <span class="st">"ersst5"</span><span class="op">)</span>                             <span class="co"># 换回内置的SST</span></span></code></pre></div>
 <p>文件的读取规则如下：</p>
 <ul>
@@ -332,7 +325,7 @@ few</td>
 <p><code><a href="../../reference/download_sst_data.html">download_sst_data()</a></code>逐年下载其中一种产品并算好渔区表，之后按名字使用，例如<code>sst = "hadisst1"</code>：</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../reference/download_sst_data.html">download_sst_data</a></span><span class="op">(</span><span class="st">"hadisst1"</span><span class="op">)</span>                 <span class="co"># 约240 MB；中断后重新运行会接着下载</span></span>
-<span><span class="fu"><a href="../../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="st">"34"</span>, sst <span class="op">=</span> <span class="st">"hadisst1"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="st">"27"</span>, sst <span class="op">=</span> <span class="st">"hadisst1"</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="33%">
@@ -500,8 +493,8 @@ al. 2013）是渔获物种偏好温度的平均值，按渔获量加权：</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mi>T</mi><msub><mi>C</mi><mi>t</mi></msub><mo>=</mo><mfrac><mrow><munder><mo>∑</mo><mi>i</mi></munder><msub><mi>T</mi><mi>i</mi></msub><msub><mi>C</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub></mrow><mrow><munder><mo>∑</mo><mi>i</mi></munder><msub><mi>C</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub></mrow></mfrac></mrow><annotation encoding="application/x-tex">MTC_t = \frac{\sum_i T_i C_{i,t}}{\sum_i C_{i,t}}</annotation></semantics></math></p>
 <p>其中<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>i</mi></msub><annotation encoding="application/x-tex">T_i</annotation></semantics></math>是物种<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>i</mi><annotation encoding="application/x-tex">i</annotation></semantics></math>的偏好温度，<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>C</mi><mrow><mi>i</mi><mo>,</mo><mi>t</mi></mrow></msub><annotation encoding="application/x-tex">C_{i,t}</annotation></semantics></math>是它在第<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>年的渔获量；两个求和都只包括有偏好温度的条目。MTC上升，说明喜暖物种在渔获中所占的比例变大。</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">FAO34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">mtc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">FAO27</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">mtc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span></span>
 <span><span class="va">mtc</span><span class="op">$</span><span class="va">trend</span>      <span class="co"># 斜率（°C/十年）、Mann-Kendall检验、与SST的相关</span></span></code></pre></div>
 <p>偏好温度来自FishBase和SeaLifeBase（<code>TempPrefMean</code>），由<code><a href="../../reference/fishbase_match.html">fishbase_match()</a></code>与FAO物种条目对应；数据怎样获取、怎样匹配，见<a href="fishbase.html">🐠
 FishBase与SeaLifeBase物种特征</a>。默认<code>version = "latest"</code>时，联网的情况下第一次运行会下载所需的FishBase和SeaLifeBase表格（约23
@@ -617,7 +610,7 @@ al. 2023），所以每个匹配和偏好温度是否正确，需要你查阅�
 3.在<code>checked</code>列写上核对人或日期。值不对就改<code>temp_pref_mean</code>，并在<code>note</code>写明出处（如果要给原本不参与计算的条目，如属一级的条目，赋一个值，还要把它的<code>match_type</code>改为<code>"manual"</code>）；也可以把更正写进<code><a href="../../reference/fishbase_match.html">fishbase_match()</a></code>的更正文件，之后每次运行都会自动采用。
 4.用核对后的表重新运行：</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mtc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, match <span class="op">=</span> <span class="st">"tables/Atlantic__Eastern_Central_mtc_species.csv"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">mtc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, match <span class="op">=</span> <span class="st">"tables/Atlantic__Northeast_mtc_species.csv"</span><span class="op">)</span></span></code></pre></div>
 <p>在所有参与计算的条目都核对完之前，函数会提示已核对的渔获占比，图注也会写明“偏好温度为自动初配结果，尚未全部经用户核对”。</p>
 </div>
 <div class="section level3">
@@ -695,7 +688,7 @@ et al. 2025）。</li>
 <p><code><a href="../../reference/fao_report.html">fao_report()</a></code>用<code>mtc = TRUE</code>加入渔获平均温度一节（见<a href="report.html">📝
 一键生成评估报告（Word、LaTeX、PDF）</a>）。报告使用包内置的FishBase数据（<code>mtc_version = "builtin"</code>），不需要下载，在任何电脑上得到的数值都相同；<code>mtc_version = "latest"</code>则改用最新的FishBase版本。<code><a href="../../reference/mean_temperature_catch.html">mean_temperature_catch()</a></code>的其他设置以<code>mtc_</code>为前缀传入，例如<code>mtc_sst = "hadisst1"</code>或<code>mtc_match = "&lt;核对过的物种表&gt;"</code>。报告用到的物种及其匹配和链接以<code>report$mtc_species</code>返回，方便核对：</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, mtc <span class="op">=</span> <span class="cn">TRUE</span>, mtc_min_coverage <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, mtc <span class="op">=</span> <span class="cn">TRUE</span>, mtc_min_coverage <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></span>
 <span><span class="va">report</span><span class="op">$</span><span class="va">mtc_species</span></span></code></pre></div>
 </div>
 <div class="section level2">

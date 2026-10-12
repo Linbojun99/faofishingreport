@@ -46,7 +46,12 @@ prior and posterior densities of r, k, MSY and B/k in the first,
 
   retrospective
 B/Bmsy and F/Fmsy when the last one, two or three years are left out,
-    with Mohn's rho (Figure 5; needs cmsy_run(plots = &quot;retrospective&quot;)).
+    with Mohn's rho (Figure 5; needs cmsy_run(plots = &quot;retrospective&quot;));
+
+  mcmc
+the draws of each MCMC chain (trace) and their densities for r, k, MSY and the
+    last-year B/k, with Rhat and the effective sample size (see cmsy_mcmc(); not
+    for runs of earlier versions of the package).
 
 
 For several stocks together:
@@ -131,7 +136,12 @@ prior and posterior densities of r, k, MSY and B/k in the first,
 
   retrospective
 B/Bmsy and F/Fmsy when the last one, two or three years are left out,
-    with Mohn's rho (Figure 5; needs cmsy_run(plots = &quot;retrospective&quot;)).
+    with Mohn's rho (Figure 5; needs cmsy_run(plots = &quot;retrospective&quot;));
+
+  mcmc
+the draws of each MCMC chain (trace) and their densities for r, k, MSY and the
+    last-year B/k, with Rhat and the effective sample size (see cmsy_mcmc(); not
+    for runs of earlier versions of the package).
 
 
 For several stocks together:
@@ -177,7 +187,7 @@ slightly overfished (0.8-1), overfished (0.5-0.8), grossly overfished (0.2-0.5) 
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -270,7 +280,12 @@ CMSY++ user guide (Froese et al. 2021), from the results saved by the run:</p><d
 
   <dt>retrospective</dt>
 <dd><p>B/Bmsy and F/Fmsy when the last one, two or three years are left out,
-    with Mohn's rho (Figure 5; needs <code>cmsy_run(plots = "retrospective")</code>).</p></dd>
+    with Mohn's rho (Figure 5; needs <code>cmsy_run(plots = "retrospective")</code>);</p></dd>
+
+  <dt>mcmc</dt>
+<dd><p>the draws of each MCMC chain (trace) and their densities for r, k, MSY and the
+    last-year B/k, with Rhat and the effective sample size (see <code><a href="cmsy_mcmc.html">cmsy_mcmc()</a></code>; not
+    for runs of earlier versions of the package).</p></dd>
 
 
 </dl><p>For several stocks together:</p><dl><dt>overview</dt>
@@ -320,7 +335,8 @@ slightly overfished (0.8-1), overfished (0.5-0.8), grossly overfished (0.2-0.5) 
 <span>  annotations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"faofishingreport.cmsy_annotations"</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span>
 <span>  lang <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pptx <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"faofishingreport.pptx"</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span>
-<span>  silent <span class="op">=</span> <span class="fu">fao_setting</span><span class="op">(</span><span class="st">"silent"</span><span class="op">)</span></span>
+<span>  silent <span class="op">=</span> <span class="fu">fao_setting</span><span class="op">(</span><span class="st">"silent"</span><span class="op">)</span>,</span>
+<span>  mcmc_colors <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -368,6 +384,11 @@ changed for all functions with <code>fao_settings(pptx = TRUE)</code>.</p></dd>
 <dd><p>A logical value. If FALSE (default), a progress bar shows how many stocks have
 been drawn. If TRUE, nothing is printed. The default can be changed for the session
 with <code>fao_settings(silent = TRUE)</code>.</p></dd>
+
+
+<dt id="arg-mcmc-colors">mcmc_colors<a class="anchor" aria-label="anchor" href="#arg-mcmc-colors"></a></dt>
+<dd><p>Colours of the chains in the "mcmc" chart: NULL (default) for the Okabe-Ito
+colours, a palette name or a vector of colours (see <code><a href="cmsy_mcmc.html">cmsy_mcmc()</a></code>).</p></dd>
 
 </dl></div>
     <div class="section level2">

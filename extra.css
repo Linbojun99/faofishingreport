@@ -196,6 +196,22 @@ details.fao-en[open] {
 details.fao-en[open] > summary { margin-bottom: 0.4rem; }
 main dl dd details.fao-en { margin-top: 0.1rem; }
 
+/* ---- Headings in the deep blue of the logo, body text near-black ---------------------------- */
+main {
+  color: #1f2328;
+}
+main h1, main h2, main h3, main h4, main h5, main h6,
+.page-header h1, .template-reference-index h2 {
+  color: #0B2E5B;
+  font-weight: 600;
+}
+main h1 a, main h2 a, main h3 a, main h4 a {
+  color: inherit;
+}
+main a.anchor {
+  color: #16A6B6;
+}
+
 /* ---- Reading layout: room between the parts of every page ----------------------------------- */
 /* Wider lines, paragraphs and list items apart, each main section below a thin divider, the
    subsections marked with a bar, and space around code, tables and figures */

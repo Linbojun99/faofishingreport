@@ -39,6 +39,7 @@
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/cmsy_input.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/cmsy_install_jags.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/cmsy_jags_versions.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/cmsy_mcmc.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/cmsy_plot.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/cmsy_priors.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/cmsy_run.html</loc></url>
@@ -60,6 +61,7 @@
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/download_sst_data.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/employment_summary.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fao_area_sst.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fao_areas.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fao_capture_groups.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fao_data_dir.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fao_data_info.html</loc></url>
@@ -74,6 +76,7 @@
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fishbase_table.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fishing_area_country.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fishing_area_data.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fishing_area_map.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/fishing_area_species.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/index.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/articles/zh/reference/load_fao_data.html</loc></url>
@@ -111,6 +114,7 @@
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/cmsy_input.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/cmsy_install_jags.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/cmsy_jags_versions.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/reference/cmsy_mcmc.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/cmsy_plot.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/cmsy_priors.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/cmsy_run.html</loc></url>
@@ -132,6 +136,7 @@
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/download_sst_data.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/employment_summary.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/fao_area_sst.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/reference/fao_areas.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/fao_capture_groups.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/fao_data_info.html</loc></url>
@@ -147,6 +152,7 @@
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/fishbase_table.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/fishing_area_country.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.html</loc></url>
+<url><loc>https://linbojun99.github.io/faofishingreport/reference/fishing_area_map.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/fishing_area_species.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/index.html</loc></url>
 <url><loc>https://linbojun99.github.io/faofishingreport/reference/load_fao_data.html</loc></url>

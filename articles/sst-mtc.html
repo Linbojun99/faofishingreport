@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -102,23 +102,16 @@ catch</strong> (MTC).</p>
 <p><code><a href="../reference/fao_area_sst.html">fao_area_sst()</a></code> returns the yearly SST of the 19 FAO
 major marine fishing areas. Every call says which SST data it uses:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">sst34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="st">"34"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">sst27</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="st">"27"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; SST: NOAA ERSST v5, built into the package (FAO major areas; 2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sst34</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"area_en"</span>, <span class="st">"year"</span>, <span class="st">"sst_mean"</span>, <span class="st">"sst_p10"</span>, <span class="st">"sst_p90"</span>, <span class="st">"sst_min_month"</span>, <span class="st">"sst_max_month"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                     area_en year sst_mean sst_p10 sst_p90 sst_min_month</span></span>
-<span><span class="co">#&gt; 1 Atlantic, Eastern Central 1950   24.510  20.834  27.147        23.620</span></span>
-<span><span class="co">#&gt; 2 Atlantic, Eastern Central 1951   24.644  20.983  27.301        23.546</span></span>
-<span><span class="co">#&gt; 3 Atlantic, Eastern Central 1952   24.581  20.892  27.285        23.614</span></span>
-<span><span class="co">#&gt; 4 Atlantic, Eastern Central 1953   24.642  20.997  27.377        23.726</span></span>
-<span><span class="co">#&gt; 5 Atlantic, Eastern Central 1954   24.237  20.406  27.085        23.392</span></span>
-<span><span class="co">#&gt; 6 Atlantic, Eastern Central 1955   24.724  21.230  27.405        23.716</span></span>
-<span><span class="co">#&gt;   sst_max_month</span></span>
-<span><span class="co">#&gt; 1        25.232</span></span>
-<span><span class="co">#&gt; 2        25.626</span></span>
-<span><span class="co">#&gt; 3        25.563</span></span>
-<span><span class="co">#&gt; 4        25.618</span></span>
-<span><span class="co">#&gt; 5        25.529</span></span>
-<span><span class="co">#&gt; 6        25.735</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">sst27</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"area_en"</span>, <span class="st">"year"</span>, <span class="st">"sst_mean"</span>, <span class="st">"sst_p10"</span>, <span class="st">"sst_p90"</span>, <span class="st">"sst_min_month"</span>, <span class="st">"sst_max_month"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt;               area_en year sst_mean sst_p10 sst_p90 sst_min_month sst_max_month</span></span>
+<span><span class="co">#&gt; 1 Atlantic, Northeast 1950    9.247  -0.789  18.017         6.883        12.478</span></span>
+<span><span class="co">#&gt; 2 Atlantic, Northeast 1951    9.236  -1.078  18.021         6.932        12.572</span></span>
+<span><span class="co">#&gt; 3 Atlantic, Northeast 1952    9.329  -0.964  18.152         7.045        12.778</span></span>
+<span><span class="co">#&gt; 4 Atlantic, Northeast 1953    9.487  -0.836  18.371         7.171        12.913</span></span>
+<span><span class="co">#&gt; 5 Atlantic, Northeast 1954    9.333  -0.751  17.905         7.095        12.481</span></span>
+<span><span class="co">#&gt; 6 Atlantic, Northeast 1955    9.358  -1.046  18.493         6.954        12.753</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="33%">
@@ -133,8 +126,8 @@ major marine fishing areas. Every call says which SST data it uses:</p>
 <tbody>
 <tr class="odd">
 <td><code>area</code></td>
-<td>FAO area codes (e.g. <code>"34"</code>) or names as in the FAO data
-(e.g. <code>"Atlantic, Eastern Central"</code>)</td>
+<td>FAO area codes (e.g. <code>"27"</code>) or names as in the FAO data
+(e.g. <code>"Atlantic, Northeast"</code>)</td>
 <td>
 <code>NULL</code>: all 19 areas</td>
 </tr>
@@ -267,9 +260,9 @@ only 96 cells.</p>
 NetCDF file, or of a folder of NetCDF files</strong>, either for one
 call or once for the session:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="st">"34"</span>, sst <span class="op">=</span> <span class="st">"D:/data/HadISST_sst.nc"</span><span class="op">)</span>       <span class="co"># one call</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="st">"27"</span>, sst <span class="op">=</span> <span class="st">"D:/data/HadISST_sst.nc"</span><span class="op">)</span>       <span class="co"># one call</span></span>
 <span><span class="fu"><a href="../reference/fao_settings.html">fao_settings</a></span><span class="op">(</span>sst <span class="op">=</span> <span class="st">"D:/data/HadISST_sst.nc"</span><span class="op">)</span>             <span class="co"># all functions, for the session</span></span>
-<span><span class="fu"><a href="../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span>                  <span class="co"># now uses this file</span></span>
+<span><span class="fu"><a href="../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span>                  <span class="co"># now uses this file</span></span>
 <span><span class="fu"><a href="../reference/fao_settings.html">fao_settings</a></span><span class="op">(</span>sst <span class="op">=</span> <span class="st">"ersst5"</span><span class="op">)</span>                             <span class="co"># back to the built-in SST</span></span></code></pre></div>
 <p>The files are read as follows:</p>
 <ul>
@@ -366,7 +359,7 @@ year at a time, and computes its table. It is then used by its name,
 e.g. <code>sst = "hadisst1"</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/download_sst_data.html">download_sst_data</a></span><span class="op">(</span><span class="st">"hadisst1"</span><span class="op">)</span>                 <span class="co"># about 240 MB; run again to resume</span></span>
-<span><span class="fu"><a href="../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="st">"34"</span>, sst <span class="op">=</span> <span class="st">"hadisst1"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="../reference/fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="st">"27"</span>, sst <span class="op">=</span> <span class="st">"hadisst1"</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="33%">
@@ -563,8 +556,8 @@ both sums are over the items that have a preferred temperature. A rising
 MTC means that species of warmer waters make up a larger part of the
 catch.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">FAO34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">mtc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">FAO27</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">mtc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span></span>
 <span><span class="va">mtc</span><span class="op">$</span><span class="va">trend</span>      <span class="co"># slopes (°C per decade), Mann-Kendall test, correlation with SST</span></span></code></pre></div>
 <p>The preferred temperatures come from FishBase and SeaLifeBase
 (<code>TempPrefMean</code>), matched to the FAO species items by
@@ -737,7 +730,7 @@ which every later run applies.</li>
 <li>Run the function again with the checked table:</li>
 </ol>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">mtc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, match <span class="op">=</span> <span class="st">"tables/Atlantic__Eastern_Central_mtc_species.csv"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">mtc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mean_temperature_catch.html">mean_temperature_catch</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, match <span class="op">=</span> <span class="st">"tables/Atlantic__Northeast_mtc_species.csv"</span><span class="op">)</span></span></code></pre></div>
 <p>Until every item used has been checked, the function says how much of
 the catch has been checked, and the chart caption says that the
 preferred temperatures have not all been checked.</p>
@@ -846,7 +839,7 @@ e.g. <code>mtc_sst = "hadisst1"</code> or
 used, with their matches and links, are returned as
 <code>report$mtc_species</code> for checking:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, mtc <span class="op">=</span> <span class="cn">TRUE</span>, mtc_min_coverage <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, mtc <span class="op">=</span> <span class="cn">TRUE</span>, mtc_min_coverage <span class="op">=</span> <span class="fl">60</span><span class="op">)</span></span>
 <span><span class="va">report</span><span class="op">$</span><span class="va">mtc_species</span></span></code></pre></div>
 </div>
 <div class="section level2">

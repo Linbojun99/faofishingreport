@@ -13,28 +13,21 @@ FAO捕捞统计每个渔区每年只有一个数，没有渔区内部的空间�
 
 ``` r
 
-sst34 <- fao_area_sst("34")
+sst27 <- fao_area_sst("27")
 #> SST: NOAA ERSST v5, built into the package (FAO major areas; 2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.
-head(sst34[, c("area_en", "year", "sst_mean", "sst_p10", "sst_p90", "sst_min_month", "sst_max_month")])
-#>                     area_en year sst_mean sst_p10 sst_p90 sst_min_month
-#> 1 Atlantic, Eastern Central 1950   24.510  20.834  27.147        23.620
-#> 2 Atlantic, Eastern Central 1951   24.644  20.983  27.301        23.546
-#> 3 Atlantic, Eastern Central 1952   24.581  20.892  27.285        23.614
-#> 4 Atlantic, Eastern Central 1953   24.642  20.997  27.377        23.726
-#> 5 Atlantic, Eastern Central 1954   24.237  20.406  27.085        23.392
-#> 6 Atlantic, Eastern Central 1955   24.724  21.230  27.405        23.716
-#>   sst_max_month
-#> 1        25.232
-#> 2        25.626
-#> 3        25.563
-#> 4        25.618
-#> 5        25.529
-#> 6        25.735
+head(sst27[, c("area_en", "year", "sst_mean", "sst_p10", "sst_p90", "sst_min_month", "sst_max_month")])
+#>               area_en year sst_mean sst_p10 sst_p90 sst_min_month sst_max_month
+#> 1 Atlantic, Northeast 1950    9.247  -0.789  18.017         6.883        12.478
+#> 2 Atlantic, Northeast 1951    9.236  -1.078  18.021         6.932        12.572
+#> 3 Atlantic, Northeast 1952    9.329  -0.964  18.152         7.045        12.778
+#> 4 Atlantic, Northeast 1953    9.487  -0.836  18.371         7.171        12.913
+#> 5 Atlantic, Northeast 1954    9.333  -0.751  17.905         7.095        12.481
+#> 6 Atlantic, Northeast 1955    9.358  -1.046  18.493         6.954        12.753
 ```
 
 | 参数 | 含义 | 默认值 |
 |----|----|----|
-| `area` | FAO渔区代码（如`"34"`）或FAO数据中的渔区名称（如`"Atlantic, Eastern Central"`） | `NULL`：全部19个渔区 |
+| `area` | FAO渔区代码（如`"27"`）或FAO数据中的渔区名称（如`"Atlantic, Northeast"`） | `NULL`：全部19个渔区 |
 | `sst` | SST数据：`"ersst5"`（内置）、用[`download_sst_data()`](https://linbojun99.github.io/faofishingreport/reference/download_sst_data.md)下载的产品名，或NetCDF文件（或存放NetCDF文件的文件夹）的路径 | [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)中的`sst`设置，未修改时为`"ersst5"` |
 | `variable` | 自己的NetCDF文件中SST变量的名称 | `NULL`：按变量名自动识别 |
 | `data_dir` | 存放下载数据和计算结果的文件夹 | [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) |
@@ -72,9 +65,9 @@ v5是常用SST产品中最小的。它不用卫星资料，整个时段前后一
 
 ``` r
 
-fao_area_sst("34", sst = "D:/data/HadISST_sst.nc")       # 只用于这一次调用
+fao_area_sst("27", sst = "D:/data/HadISST_sst.nc")       # 只用于这一次调用
 fao_settings(sst = "D:/data/HadISST_sst.nc")             # 本次会话的所有函数都用这个文件
-mean_temperature_catch(FAO34$area_data)                  # 现在使用这个文件
+mean_temperature_catch(FAO27$area_data)                  # 现在使用这个文件
 fao_settings(sst = "ersst5")                             # 换回内置的SST
 ```
 
@@ -110,7 +103,7 @@ knitr::kable(fao_sst_products()[, c("product", "name", "grid", "first_year", "da
 ``` r
 
 download_sst_data("hadisst1")                 # 约240 MB；中断后重新运行会接着下载
-fao_area_sst("34", sst = "hadisst1")
+fao_area_sst("27", sst = "hadisst1")
 ```
 
 | 参数 | 含义 | 默认值 |
@@ -172,8 +165,8 @@ MTC_t = \frac{\sum_i T_i C_{i,t}}{\sum_i C_{i,t}}
 
 ``` r
 
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-mtc <- mean_temperature_catch(FAO34$area_data)
+FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+mtc <- mean_temperature_catch(FAO27$area_data)
 mtc$trend      # 斜率（°C/十年）、Mann-Kendall检验、与SST的相关
 ```
 
@@ -228,7 +221,7 @@ al. 2023），所以每个匹配和偏好温度是否正确，需要你查阅�
 
 ``` r
 
-mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern_Central_mtc_species.csv")
+mtc <- mean_temperature_catch(FAO27$area_data, match = "tables/Atlantic__Northeast_mtc_species.csv")
 ```
 
 在所有参与计算的条目都核对完之前，函数会提示已核对的渔获占比，图注也会写明“偏好温度为自动初配结果，尚未全部经用户核对”。
@@ -274,7 +267,7 @@ mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern
 
 ``` r
 
-report <- fao_report(34, mtc = TRUE, mtc_min_coverage = 60)
+report <- fao_report(27, mtc = TRUE, mtc_min_coverage = 60)
 report$mtc_species
 ```
 

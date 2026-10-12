@@ -16,6 +16,8 @@
 
 | 函数 | 说明 |
 |----|----|
+| [`fao_areas()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/fao_areas.md) | FAO主要渔区 |
+| [`fishing_area_map()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/fishing_area_map.md) | FAO主要渔区及其分区地图 |
 | [`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/fishing_area_data.md) | 提取指定渔区的数据并绘图（可选） |
 | [`fishing_area_species()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/fishing_area_species.md) | 渔区主要物种分析 |
 | [`fishing_area_country()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/fishing_area_country.md) | 渔区主要国家分析 |
@@ -84,6 +86,7 @@
 | [`cmsy_defaults()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/cmsy_defaults.md) | CMSY++设置及其默认值 |
 | [`cmsy_run()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/cmsy_run.md) | 用FAO渔获数据运行CMSY++ |
 | [`cmsy_plot()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/cmsy_plot.md) | CMSY++结果图表 |
+| [`cmsy_mcmc()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/cmsy_mcmc.md) | CMSY++运行的MCMC设置与收敛诊断 |
 | [`cmsy_forecast()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/cmsy_forecast.md) | 不同捕捞情景下的CMSY++预测 |
 | [`cmsy_compare()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/cmsy_compare.md) | 比较多次CMSY++运行结果，或与其他评估比较 |
 | [`cmsy_tables()`](https://linbojun99.github.io/faofishingreport/articles/zh/reference/cmsy_tables.md) | 报告用的CMSY++先验参数表和结果表 |

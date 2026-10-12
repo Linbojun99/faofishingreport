@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -107,9 +107,9 @@ the area, writes their results into text made from templates, adds the
 charts and tables with numbered captions, and lists the references it
 cites.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span><span class="op">)</span>                                                  <span class="co"># language of fao_settings()</span></span>
-<span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, author <span class="op">=</span> <span class="st">"Hongyu Lin"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"en"</span>, font <span class="op">=</span> <span class="st">"Times New Roman"</span>, citation <span class="op">=</span> <span class="st">"fao"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span><span class="op">)</span>                                                  <span class="co"># language of fao_settings()</span></span>
+<span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, author <span class="op">=</span> <span class="st">"Hongyu Lin"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"en"</span>, font <span class="op">=</span> <span class="st">"Times New Roman"</span>, citation <span class="op">=</span> <span class="st">"fao"</span><span class="op">)</span></span></code></pre></div>
 <div class="callout-note">
 <p>The report is a first draft. The parts only the author can write,
 such as other data sources, the discussion of the conclusions and other
@@ -120,18 +120,18 @@ Chinese reports). Check the generated text before you use it.</p>
 <h2 id="a-first-report">🚀 A first report<a class="anchor" aria-label="anchor" href="#a-first-report"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_report_en.docx"</span>, lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, file <span class="op">=</span> <span class="st">"FAO27_report_en.docx"</span>, lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmpWjKkxU/faofishingreport_site_1bbd662010bd2/FAO34_report_en.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmpR3SySh/faofishingreport_site_1dafc3c03f703/FAO27_report_en.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, quality, diversity, fleets</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $analyses               results of the analyses: total, species, countries, groups, status, quality, diversity, fleets</span></span></code></pre></div>
-<p>The area is given by its code (<code>34</code>) or its English name
-(<code>"Atlantic, Eastern Central"</code>). The call takes about half a
-minute and reports its progress in messages (hidden on this page): each
+<p>The area is given by its code (<code>27</code>) or its English name
+(<code>"Atlantic, Northeast"</code>). The call takes about half a minute
+and reports its progress in messages (hidden on this page): each
 analysis, then the file written. Without <code>file</code>, the report
-is saved as <code>reports/FAO34_report_en.docx</code> in the working
+is saved as <code>reports/FAO27_report_en.docx</code> in the working
 directory; on this page the working directory is a temporary folder.</p>
 <p>The analyses run in a temporary folder of their own, with charts at
 300 dpi and no PowerPoint files. The charts end up in the Word file
@@ -143,9 +143,9 @@ so assign the result. The main species of the last five years:</p>
 <code class="sourceCode R"><span><span class="fu">show_table</span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">main_species</span>, digits <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="20%">
-<col width="20%">
-<col width="16%">
+<col width="18%">
+<col width="18%">
+<col width="18%">
 <col width="9%">
 <col width="7%">
 <col width="7%">
@@ -164,104 +164,104 @@ so assign the result. The main species of the last five years:</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">European pilchard(=Sardine)</td>
-<td align="left">European pilchard(=Sardine)</td>
-<td align="left">Sardina pilchardus</td>
-<td align="right">1,041,854.9</td>
-<td align="right">20.4</td>
-<td align="left">2018</td>
-<td align="right">52.6</td>
+<td align="left">Atlantic herring</td>
+<td align="left">Atlantic herring</td>
+<td align="left">Clupea harengus</td>
+<td align="right">1,464,717.6</td>
+<td align="right">17.3</td>
+<td align="left">1965</td>
+<td align="right">33.5</td>
 <td align="left">none</td>
 </tr>
 <tr class="even">
-<td align="left">Atlantic chub mackerel</td>
-<td align="left">Atlantic chub mackerel</td>
-<td align="left">Scomber colias</td>
-<td align="right">414,307.8</td>
-<td align="right">8.1</td>
-<td align="left">2019</td>
-<td align="right">96.6</td>
+<td align="left">Blue whiting(=Poutassou)</td>
+<td align="left">Blue whiting(=Poutassou)</td>
+<td align="left">Micromesistius poutassou</td>
+<td align="right">1,445,802.2</td>
+<td align="right">17.1</td>
+<td align="left">2004</td>
+<td align="right">75.8</td>
 <td align="left">none</td>
 </tr>
 <tr class="odd">
-<td align="left">Bonga shad</td>
-<td align="left">Bonga shad</td>
-<td align="left">Ethmalosa fimbriata</td>
-<td align="right">348,662.7</td>
-<td align="right">6.8</td>
-<td align="left">2017</td>
-<td align="right">87.1</td>
+<td align="left">Atlantic mackerel</td>
+<td align="left">Atlantic mackerel</td>
+<td align="left">Scomber scombrus</td>
+<td align="right">1,022,621.6</td>
+<td align="right">12.1</td>
+<td align="left">2014</td>
+<td align="right">65.4</td>
 <td align="left">none</td>
 </tr>
 <tr class="even">
-<td align="left">Jack and horse mackerels nei</td>
-<td align="left">Jack and horse mackerels nei</td>
-<td align="left">Trachurus spp.</td>
-<td align="right">263,295.6</td>
-<td align="right">5.1</td>
-<td align="left">2010</td>
-<td align="right">58.7</td>
+<td align="left">Atlantic cod</td>
+<td align="left">Atlantic cod</td>
+<td align="left">Gadus morhua</td>
+<td align="right">975,521.5</td>
+<td align="right">11.5</td>
+<td align="left">1969</td>
+<td align="right">35.5</td>
 <td align="left">none</td>
 </tr>
 <tr class="odd">
-<td align="left">Sardinellas nei</td>
-<td align="left">Sardinellas nei</td>
-<td align="left">Sardinella spp.</td>
-<td align="right">246,900.5</td>
-<td align="right">4.8</td>
-<td align="left">2018</td>
-<td align="right">32.8</td>
-<td align="left">none</td>
-</tr>
-<tr class="even">
-<td align="left">Marine fishes nei</td>
-<td align="left">Marine fishes nei</td>
-<td align="left">Actinopterygii</td>
-<td align="right">243,873.7</td>
-<td align="right">4.8</td>
-<td align="left">1995</td>
-<td align="right">60.5</td>
-<td align="left">none</td>
-</tr>
-<tr class="odd">
-<td align="left">Madeiran sardinella</td>
-<td align="left">Madeiran sardinella</td>
-<td align="left">Sardinella maderensis</td>
-<td align="right">243,476.6</td>
-<td align="right">4.8</td>
-<td align="left">2021</td>
-<td align="right">73.4</td>
-<td align="left">none</td>
-</tr>
-<tr class="even">
-<td align="left">Skipjack tuna</td>
-<td align="left">Skipjack tuna</td>
-<td align="left">Katsuwonus pelamis</td>
-<td align="right">195,951.7</td>
-<td align="right">3.8</td>
-<td align="left">2018</td>
-<td align="right">69.2</td>
-<td align="left">none</td>
-</tr>
-<tr class="odd">
-<td align="left">Round sardinella</td>
-<td align="left">Round sardinella</td>
-<td align="left">Sardinella aurita</td>
-<td align="right">127,328.2</td>
-<td align="right">2.5</td>
-<td align="left">1991</td>
+<td align="left">European sprat</td>
+<td align="left">European sprat</td>
+<td align="left">Sprattus sprattus</td>
+<td align="right">384,876.0</td>
+<td align="right">4.5</td>
+<td align="left">1975</td>
 <td align="right">34.9</td>
+<td align="left">down</td>
+</tr>
+<tr class="even">
+<td align="left">Saithe(=Pollock)</td>
+<td align="left">Saithe(=Pollock)</td>
+<td align="left">Pollachius virens</td>
+<td align="right">321,305.7</td>
+<td align="right">3.8</td>
+<td align="left">1974</td>
+<td align="right">41.4</td>
+<td align="left">none</td>
+</tr>
+<tr class="odd">
+<td align="left">Capelin</td>
+<td align="left">Capelin</td>
+<td align="left">Mallotus villosus</td>
+<td align="right">311,462.1</td>
+<td align="right">3.7</td>
+<td align="left">1977</td>
+<td align="right">4.5</td>
 <td align="left">none</td>
 </tr>
 <tr class="even">
-<td align="left">European anchovy</td>
-<td align="left">European anchovy</td>
-<td align="left">Engraulis encrasicolus</td>
-<td align="right">124,334.4</td>
-<td align="right">2.4</td>
-<td align="left">1990</td>
-<td align="right">48.9</td>
-<td align="left">up</td>
+<td align="left">Haddock</td>
+<td align="left">Haddock</td>
+<td align="left">Melanogrammus aeglefinus</td>
+<td align="right">300,767.9</td>
+<td align="right">3.6</td>
+<td align="left">1969</td>
+<td align="right">33.0</td>
+<td align="left">none</td>
+</tr>
+<tr class="odd">
+<td align="left">Sandeels(=Sandlances) nei</td>
+<td align="left">Sandeels(=Sandlances) nei</td>
+<td align="left">Ammodytes spp.</td>
+<td align="right">221,906.9</td>
+<td align="right">2.6</td>
+<td align="left">1997</td>
+<td align="right">7.8</td>
+<td align="left">none</td>
+</tr>
+<tr class="even">
+<td align="left">North European kelp</td>
+<td align="left">North European kelp</td>
+<td align="left">Laminaria hyperborea</td>
+<td align="right">169,330.1</td>
+<td align="right">2.0</td>
+<td align="left">2023</td>
+<td align="right">92.4</td>
+<td align="left">none</td>
 </tr>
 </tbody>
 </table>
@@ -389,20 +389,19 @@ officer package:</p>
 <tbody><tr class="odd">
 <td align="left">Using the FAO Global Capture Production statistics for
 1950–2024 (release 2026.1.0), this report analyses, for FAO Major
-Fishing Area 34 (Atlantic, Eastern Central), the catch trends, the main
+Fishing Area 27 (Atlantic, Northeast), the catch trends, the main
 species, the main fishing countries, the composition of the catch, the
 status of the stocks, the quality of the data, the diversity of the
 catch and the catch of coastal and distant-water fleets, with breakpoint
 analysis, Mann-Kendall trend tests, stock status plots and diversity and
-concentration indices. In 2024, the catch in the area was 5.10 million
-t, 6.3% of the world’s marine capture production. The catch peaked in
-2018 at 5.52 million t, and the catch of 2024 was 92.4% of the peak.
-Breakpoints divide the catch series into 4 stages (1950–1968, 1969–1987,
-1988–2009 and 2010–2024). In the last five years, European
-pilchard(=Sardine) was the main species item, with 20.4% of the catch.
-Morocco was the main fishing country, with 27.7% of the catch of the
-last five years. In 2024, 39.7% of the stocks were over-exploited or
-collapsed.</td>
+concentration indices. In 2024, the catch in the area was 7.84 million
+t, 9.7% of the world’s marine capture production. The catch peaked in
+1976 at 13.17 million t, and the catch of 2024 was 59.5% of the peak.
+Breakpoints divide the catch series into 3 stages (1950–1964, 1965–2005
+and 2006–2024). In the last five years, Atlantic herring was the main
+species item, with 17.3% of the catch. Norway was the main fishing
+country, with 26.8% of the catch of the last five years. In 2024, 61.6%
+of the stocks were over-exploited or collapsed.</td>
 </tr></tbody>
 </table>
 <p>The captions of the figures and tables, numbered by report:</p>
@@ -411,8 +410,8 @@ collapsed.</td>
 <span><span class="fu">show_table</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>style <span class="op">=</span> <span class="va">captions</span><span class="op">$</span><span class="va">style_name</span>, caption <span class="op">=</span> <span class="va">captions</span><span class="op">$</span><span class="va">text</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="10%">
-<col width="89%">
+<col width="11%">
+<col width="88%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">style</th>
@@ -421,100 +420,98 @@ collapsed.</td>
 <tbody>
 <tr class="odd">
 <td align="left">FAO Caption</td>
-<td align="left">Figure 1-1. Catch in FAO Major Fishing Area 34
-(Atlantic, Eastern Central) and its breakpoints, 1950–2024</td>
+<td align="left">Figure 1-1. Catch in FAO Major Fishing Area 27
+(Atlantic, Northeast) and its breakpoints, 1950–2024</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
-<td align="left">Figure 1-2. Share of FAO Major Fishing Area 34
-(Atlantic, Eastern Central) in the world’s marine capture
-production</td>
+<td align="left">Figure 1-2. Share of FAO Major Fishing Area 27
+(Atlantic, Northeast) in the world’s marine capture production</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Table Caption</td>
 <td align="left">Table 1-1. Main species items in FAO Major Fishing Area
-34 (Atlantic, Eastern Central), 2020–2024</td>
+27 (Atlantic, Northeast), 2020–2024</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
 <td align="left">Figure 1-3. Catch of the main species items of the last
-five years in FAO Major Fishing Area 34 (Atlantic, Eastern Central)</td>
+five years in FAO Major Fishing Area 27 (Atlantic, Northeast)</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">Figure 1-4. Catch of the main species items of the last
-five years in FAO Major Fishing Area 34 (Atlantic, Eastern Central) and
-their breakpoints</td>
+five years in FAO Major Fishing Area 27 (Atlantic, Northeast) and their
+breakpoints</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Table Caption</td>
 <td align="left">Table 1-2. Main fishing countries in FAO Major Fishing
-Area 34 (Atlantic, Eastern Central), 2020–2024</td>
+Area 27 (Atlantic, Northeast), 2020–2024</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">Figure 1-5. Catch of the main fishing countries of the
-last five years in FAO Major Fishing Area 34 (Atlantic, Eastern
-Central)</td>
+last five years in FAO Major Fishing Area 27 (Atlantic, Northeast)</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
 <td align="left">Figure 1-6. Total catch of each country in FAO Major
-Fishing Area 34 (Atlantic, Eastern Central)</td>
+Fishing Area 27 (Atlantic, Northeast)</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">Figure 1-7. Catch of the main fishing countries of the
-last five years in FAO Major Fishing Area 34 (Atlantic, Eastern Central)
-and their breakpoints</td>
+last five years in FAO Major Fishing Area 27 (Atlantic, Northeast) and
+their breakpoints</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
-<td align="left">Figure 1-8. Catch in FAO Major Fishing Area 34
-(Atlantic, Eastern Central) by ISSCAAP species group</td>
+<td align="left">Figure 1-8. Catch in FAO Major Fishing Area 27
+(Atlantic, Northeast) by ISSCAAP species group</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">Figure 1-9. Stock status plot of FAO Major Fishing Area
-34 (Atlantic, Eastern Central) (share of stocks)</td>
+27 (Atlantic, Northeast) (share of stocks)</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
 <td align="left">Figure 1-10. Stock status plot of FAO Major Fishing
-Area 34 (Atlantic, Eastern Central) (share of catch)</td>
+Area 27 (Atlantic, Northeast) (share of catch)</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">Figure 1-11. Officially reported and estimated catch in
-FAO Major Fishing Area 34 (Atlantic, Eastern Central)</td>
+FAO Major Fishing Area 27 (Atlantic, Northeast)</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
-<td align="left">Figure 1-12. Catch in FAO Major Fishing Area 34
-(Atlantic, Eastern Central) by taxonomic level of identification</td>
+<td align="left">Figure 1-12. Catch in FAO Major Fishing Area 27
+(Atlantic, Northeast) by taxonomic level of identification</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">Figure 1-13. Diversity and concentration of the catch
-in FAO Major Fishing Area 34 (Atlantic, Eastern Central)</td>
+in FAO Major Fishing Area 27 (Atlantic, Northeast)</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
 <td align="left">Figure 1-14. Catch of coastal countries and
-distant-water fleets in FAO Major Fishing Area 34 (Atlantic, Eastern
-Central)</td>
+distant-water fleets in FAO Major Fishing Area 27 (Atlantic,
+Northeast)</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Table Caption</td>
 <td align="left">Table A1. Mean yearly catch (thousand t) of the main
-species items in FAO Major Fishing Area 34 (Atlantic, Eastern Central),
-by decade</td>
+species items in FAO Major Fishing Area 27 (Atlantic, Northeast), by
+decade</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Table Caption</td>
 <td align="left">Table A2. Mean yearly catch (thousand t) of the main
-fishing countries in FAO Major Fishing Area 34 (Atlantic, Eastern
-Central), by decade</td>
+fishing countries in FAO Major Fishing Area 27 (Atlantic, Northeast), by
+decade</td>
 </tr>
 </tbody>
 </table>
@@ -598,7 +595,7 @@ fisheries. Fish and Fisheries, 14(3), 293–311. <a href="https://doi.org/10.111
 </tr>
 <tr class="even">
 <td align="left">Lin, H. (2026). faofishingreport: Analyse and report
-FAO Global Capture Production statistics. R package version 0.7.0
+FAO Global Capture Production statistics. R package version 0.8.0
 [Computer software]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>
 </td>
 </tr>
@@ -656,9 +653,9 @@ Computational Statistics &amp; Data Analysis, 44(1-2), 109–123. <a href="https
 <tr class="odd">
 <td><code>area</code></td>
 <td>(required)</td>
-<td>The FAO major fishing area: its code, e.g. <code>34</code>, or its
-English name, e.g. <code>"Atlantic, Eastern Central"</code>. An unknown
-area gives an error that lists the marine areas.</td>
+<td>The FAO major fishing area: its code, e.g. <code>27</code>, or its
+English name, e.g. <code>"Atlantic, Northeast"</code>. An unknown area
+gives an error that lists the marine areas.</td>
 </tr>
 <tr class="even">
 <td><code>...</code></td>
@@ -694,7 +691,7 @@ PDF</a>)</td>
 <td><code>title</code></td>
 <td>made from the area</td>
 <td>e.g. “Assessment of Marine Capture Production in FAO Major Fishing
-Area 34 (Atlantic, Eastern Central)”</td>
+Area 27 (Atlantic, Northeast)”</td>
 </tr>
 <tr class="odd">
 <td><code>report_no</code></td>
@@ -995,10 +992,10 @@ but its section is written only with <code>total = TRUE</code>.</p>
 <p>Three sections switched off, the pelagic to demersal ratio switched
 on, and stock status plots with smoothed catches:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">short</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_short.docx"</span>, lang <span class="op">=</span> <span class="st">"en"</span>, quality <span class="op">=</span> <span class="cn">FALSE</span>, diversity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<code class="sourceCode R"><span><span class="va">short</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, file <span class="op">=</span> <span class="st">"FAO27_short.docx"</span>, lang <span class="op">=</span> <span class="st">"en"</span>, quality <span class="op">=</span> <span class="cn">FALSE</span>, diversity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                    fleets <span class="op">=</span> <span class="cn">FALSE</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span>, status_smooth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">short</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmpWjKkxU/faofishingreport_site_1bbd662010bd2/FAO34_short.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmpR3SySh/faofishingreport_site_1dafc3c03f703/FAO27_short.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, pelagic</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -1086,7 +1083,7 @@ fisheries. Fish and Fisheries, 14(3), 293–311. <a href="https://doi.org/10.111
 </tr>
 <tr class="even">
 <td align="left">Lin, H. (2026). faofishingreport: Analyse and report
-FAO Global Capture Production statistics. R package version 0.7.0
+FAO Global Capture Production statistics. R package version 0.8.0
 [Computer software]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>
 </td>
 </tr>
@@ -1246,10 +1243,10 @@ argument of the section’s function. Otherwise <code><a href="../reference/fao_
 stops before any analysis is run, and the error lists what is
 allowed:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, species_h <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, species_h <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> fao_report(): species_h would set h, which is not an argument of fishing_area_species(). Its arguments: rank_range, plot, timeseries_analysis, line_width, point_size, point_alpha, point_shape, line_alpha, axis_text_size, axis_title_size, strip_text_size, axis_text_face, axis_title_face, strip_text_face, smooth_method, smooth_linetype, line_linewidth, text_hjust, text_vjust, text_size, text_color, facet_ncol, h_value, ZH</span></span>
-<span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, speceis_h_value <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, speceis_h_value <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00; font-weight: bold;">Error</span><span style="font-weight: bold;">:</span></span></span>
 <span><span class="co">#&gt; <span style="color: #BBBB00;">!</span> Unknown argument of fao_report(): speceis_h_value. Settings of an analysis start with its section: total_, species_, countries_, groups_, status_, quality_, diversity_, fleets_, shocks_, collapse_, synchrony_, pelagic_, mtc_, distant_, cmsy_</span></span></code></pre></div>
 </div>
@@ -1361,9 +1358,9 @@ title and author are also stored in the properties of the file.</p>
 analyses run once, and all formats have the same text, figures, tables,
 captions and references.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docx"</span>, <span class="st">"pdf"</span><span class="op">)</span><span class="op">)</span>      <span class="co"># Word and PDF</span></span>
-<span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"en"</span>, format <span class="op">=</span> <span class="st">"latex"</span><span class="op">)</span>                <span class="co"># the LaTeX source only</span></span>
-<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docx"</span>, <span class="st">"latex"</span>, <span class="st">"pdf"</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docx"</span>, <span class="st">"pdf"</span><span class="op">)</span><span class="op">)</span>      <span class="co"># Word and PDF</span></span>
+<span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"en"</span>, format <span class="op">=</span> <span class="st">"latex"</span><span class="op">)</span>                <span class="co"># the LaTeX source only</span></span>
+<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"docx"</span>, <span class="st">"latex"</span>, <span class="st">"pdf"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">report</span><span class="op">$</span><span class="va">file</span>                                                  <span class="co"># named docx, latex and pdf</span></span></code></pre></div>
 <table class="table">
 <colgroup>
@@ -1373,20 +1370,20 @@ captions and references.</p>
 </colgroup>
 <thead><tr class="header">
 <th><code>format</code></th>
-<th>Files written (for <code>fao_report(34, lang = "zh")</code>)</th>
+<th>Files written (for <code>fao_report(27, lang = "zh")</code>)</th>
 <th>What it is</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td><code>"docx"</code></td>
-<td><code>reports/FAO34_report_zh.docx</code></td>
+<td><code>reports/FAO27_report_zh.docx</code></td>
 <td>The Word file described in this article</td>
 </tr>
 <tr class="even">
 <td><code>"latex"</code></td>
 <td>
-<code>reports/FAO34_report_zh.tex</code> and the folder
-<code>reports/FAO34_report_zh_figures/</code>
+<code>reports/FAO27_report_zh.tex</code> and the folder
+<code>reports/FAO27_report_zh_figures/</code>
 </td>
 <td>The XeLaTeX source of the same report, with its figures as PNG
 files. Chinese reports use the <code>ctexart</code> class, English
@@ -1395,7 +1392,7 @@ reports the <code>article</code> class.</td>
 <tr class="odd">
 <td><code>"pdf"</code></td>
 <td>
-<code>reports/FAO34_report_zh.pdf</code> (and the
+<code>reports/FAO27_report_zh.pdf</code> (and the
 <code>.tex</code>)</td>
 <td>The LaTeX source compiled with XeLaTeX, with bookmarks for the
 headings</td>
@@ -1469,7 +1466,7 @@ You do not need to install any LaTeX package by hand: the first PDF
 report installs the ones it uses (ctex and xeCJK for Chinese, booktabs,
 longtable, needspace, xurl, …), which takes a few minutes once.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, format <span class="op">=</span> <span class="st">"pdf"</span><span class="op">)</span>   <span class="co"># the first run also installs the LaTeX packages</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, format <span class="op">=</span> <span class="st">"pdf"</span><span class="op">)</span>   <span class="co"># the first run also installs the LaTeX packages</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="50%">
@@ -1503,7 +1500,7 @@ missing packages with its own manager
 <tr class="even">
 <td>You changed the <code>.tex</code> file</td>
 <td>Compile it again:
-<code>tinytex::xelatex("reports/FAO34_report_zh.tex")</code>
+<code>tinytex::xelatex("reports/FAO27_report_zh.tex")</code>
 </td>
 </tr>
 <tr class="odd">
@@ -1623,29 +1620,29 @@ once with <code><a href="../reference/cmsy_setup.html">cmsy_setup()</a></code>; 
 few minutes.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/cmsy_setup.html">cmsy_setup</a></span><span class="op">(</span><span class="op">)</span>                          <span class="co"># once: JAGS and the R packages of CMSY++</span></span>
-<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"en"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"en"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
-<span><span class="co">#&gt; FAO report: .../reports/FAO34_report_en.docx</span></span>
+<span><span class="co">#&gt; FAO report: .../reports/FAO27_report_en.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, quality, diversity, fleets, cmsy</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $cmsy_reference_points  CMSY++ biological reference points with 95% confidence limits (10 rows)</span></span>
 <span><span class="co">#&gt;   $cmsy_priors            CMSY++ priors, their sources and links (10 rows)</span></span>
-<span><span class="co">#&gt;   $cmsy                   CMSY++ result (folder .../reports/cmsy/Atlantic__Eastern_Central)</span></span>
+<span><span class="co">#&gt;   $cmsy                   CMSY++ result (folder .../reports/cmsy/Atlantic__Northeast)</span></span>
 <span><span class="co">#&gt;   $analyses               results of the analyses: total, species, ..., fleets, cmsy</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">cmsy_reference_points</span><span class="op">)</span>    <span class="co"># r, k, MSY, Fmsy, Bmsy, B/Bmsy and F/Fmsy with 95% limits</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">cmsy_priors</span><span class="op">)</span>              <span class="co"># priors, their sources and links</span></span>
 <span></span>
 <span><span class="co"># 15 main species and countries in the tables, 5 species assessed, longer MCMC chains</span></span>
-<span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"en"</span>, top_n <span class="op">=</span> <span class="fl">15</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span>, cmsy_top <span class="op">=</span> <span class="fl">5</span>,</span>
+<span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"en"</span>, top_n <span class="op">=</span> <span class="fl">15</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span>, cmsy_top <span class="op">=</span> <span class="fl">5</span>,</span>
 <span>           cmsy_settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n.iter <span class="op">=</span> <span class="fl">100000</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>The report then has an abstract sentence on the stocks, a methods
 paragraph on CMSY++, and a part of its own after the results:</p>
 <pre><code>3 Stock assessment of the main species (CMSY++)
     3.1 Overview
-    3.2 European pilchard(=Sardine) (Sardina pilchardus)
-    3.3 Round sardinella (Sardinella aurita)
+    3.2 Atlantic herring (Clupea harengus)
+    3.3 Blue whiting(=Poutassou) (Micromesistius poutassou)
     ...
     3.12 Summary</code></pre>
 <ul>
@@ -1675,18 +1672,18 @@ code and user guide, and the FAO data.</li>
 </ul>
 <p>All CMSY++ results (input files, runs, charts and tables) are kept in
 the folder <code>cmsy/</code> next to the report,
-e.g. <code>reports/cmsy/Atlantic__Eastern_Central/</code>, with
+e.g. <code>reports/cmsy/Atlantic__Northeast/</code>, with
 <code>cmsy_result.rds</code>. To write the report again, e.g. with other
 sections or after editing the templates, give that result to
 <code>cmsy</code> instead of <code>TRUE</code>; CMSY++ does not run
 again and the <code>cmsy_</code> settings are not used. The result of
 <code><a href="../reference/cmsy_area.html">cmsy_area()</a></code> can be given in the same way:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cmsy34</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"reports"</span>, <span class="st">"cmsy"</span>, <span class="st">"Atlantic__Eastern_Central"</span>, <span class="st">"cmsy_result.rds"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"en"</span>, cmsy <span class="op">=</span> <span class="va">cmsy34</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">cmsy27</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"reports"</span>, <span class="st">"cmsy"</span>, <span class="st">"Atlantic__Northeast"</span>, <span class="st">"cmsy_result.rds"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"en"</span>, cmsy <span class="op">=</span> <span class="va">cmsy27</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">area34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cmsy_area.html">cmsy_area</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, top <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"en"</span>, cmsy <span class="op">=</span> <span class="va">area34</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">area27</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cmsy_area.html">cmsy_area</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, top <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"en"</span>, cmsy <span class="op">=</span> <span class="va">area27</span><span class="op">)</span></span></code></pre></div>
 <p>The charts of the CMSY++ part come from the run, in the language it
 was run in. See <a href="cmsy.html">📉 CMSY++ stock assessment</a> for
 the method, its settings and its limits: FAO data have catches only, so
@@ -1767,13 +1764,13 @@ guide and the FAO data</td>
 <span><span class="fu">show_table</span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">main_countries</span>, digits <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="15%">
-<col width="15%">
-<col width="15%">
+<col width="24%">
+<col width="24%">
 <col width="11%">
-<col width="11%">
-<col width="13%">
-<col width="17%">
+<col width="8%">
+<col width="8%">
+<col width="10%">
+<col width="12%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">country</th>
@@ -1786,93 +1783,93 @@ guide and the FAO data</td>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">Morocco</td>
-<td align="left">Morocco</td>
-<td align="right">1,418,927.3</td>
-<td align="right">27.7</td>
-<td align="left">2022</td>
-<td align="right">91.0</td>
+<td align="left">Norway</td>
+<td align="left">Norway</td>
+<td align="right">2,265,474.9</td>
+<td align="right">26.8</td>
+<td align="left">1977</td>
+<td align="right">58.1</td>
 <td align="left">none</td>
 </tr>
 <tr class="even">
-<td align="left">Mauritania</td>
-<td align="left">Mauritania</td>
-<td align="right">674,299.1</td>
-<td align="right">13.2</td>
-<td align="left">2018</td>
-<td align="right">65.4</td>
+<td align="left">Iceland</td>
+<td align="left">Iceland</td>
+<td align="right">1,265,855.5</td>
+<td align="right">15.0</td>
+<td align="left">1997</td>
+<td align="right">45.5</td>
 <td align="left">none</td>
 </tr>
 <tr class="odd">
-<td align="left">Senegal</td>
-<td align="left">Senegal</td>
-<td align="right">464,480.7</td>
-<td align="right">9.1</td>
-<td align="left">2017</td>
-<td align="right">93.6</td>
+<td align="left">Russian Federation</td>
+<td align="left">Russian Federation</td>
+<td align="right">962,240.0</td>
+<td align="right">11.4</td>
+<td align="left">2002</td>
+<td align="right">75.1</td>
 <td align="left">none</td>
 </tr>
 <tr class="even">
-<td align="left">Nigeria</td>
-<td align="left">Nigeria</td>
-<td align="right">441,470.9</td>
-<td align="right">8.6</td>
-<td align="left">2017</td>
-<td align="right">94.4</td>
+<td align="left">United Kingdom</td>
+<td align="left">United Kingdom</td>
+<td align="right">668,016.8</td>
+<td align="right">7.9</td>
+<td align="left">1973</td>
+<td align="right">62.5</td>
 <td align="left">none</td>
 </tr>
 <tr class="odd">
-<td align="left">Guinea</td>
-<td align="left">Guinea</td>
-<td align="right">343,164.0</td>
-<td align="right">6.7</td>
-<td align="left">2021</td>
-<td align="right">81.0</td>
+<td align="left">Faroe Islands</td>
+<td align="left">Faroe Islands</td>
+<td align="right">650,579.3</td>
+<td align="right">7.7</td>
+<td align="left">2023</td>
+<td align="right">85.4</td>
 <td align="left">none</td>
 </tr>
 <tr class="even">
-<td align="left">Ghana</td>
-<td align="left">Ghana</td>
-<td align="right">333,652.8</td>
-<td align="right">6.5</td>
-<td align="left">1999</td>
-<td align="right">98.1</td>
+<td align="left">Denmark</td>
+<td align="left">Denmark</td>
+<td align="right">521,267.6</td>
+<td align="right">6.2</td>
+<td align="left">1980</td>
+<td align="right">23.1</td>
 <td align="left">none</td>
 </tr>
 <tr class="odd">
-<td align="left">Sierra Leone</td>
-<td align="left">Sierra Leone</td>
-<td align="right">205,312.0</td>
-<td align="right">4.0</td>
-<td align="left">2022</td>
-<td align="right">97.1</td>
+<td align="left">France</td>
+<td align="left">France</td>
+<td align="right">364,925.9</td>
+<td align="right">4.3</td>
+<td align="left">1973</td>
+<td align="right">53.0</td>
 <td align="left">none</td>
 </tr>
 <tr class="even">
-<td align="left">Cameroon</td>
-<td align="left">Cameroon</td>
-<td align="right">198,094.6</td>
-<td align="right">3.9</td>
-<td align="left">2019</td>
-<td align="right">78.8</td>
+<td align="left">Netherlands (Kingdom of the)</td>
+<td align="left">Netherlands (Kingdom of the)</td>
+<td align="right">265,473.4</td>
+<td align="right">3.1</td>
+<td align="left">1993</td>
+<td align="right">59.7</td>
 <td align="left">none</td>
 </tr>
 <tr class="odd">
-<td align="left">Belize</td>
-<td align="left">Belize</td>
-<td align="right">190,814.7</td>
-<td align="right">3.7</td>
-<td align="left">2010</td>
-<td align="right">51.1</td>
-<td align="left">none</td>
+<td align="left">Spain</td>
+<td align="left">Spain</td>
+<td align="right">254,364.9</td>
+<td align="right">3.0</td>
+<td align="left">1969</td>
+<td align="right">36.0</td>
+<td align="left">down</td>
 </tr>
 <tr class="even">
-<td align="left">Georgia</td>
-<td align="left">Georgia</td>
-<td align="right">127,022.0</td>
-<td align="right">2.5</td>
-<td align="left">2019</td>
-<td align="right">79.9</td>
+<td align="left">Ireland</td>
+<td align="left">Ireland</td>
+<td align="right">228,514.0</td>
+<td align="right">2.7</td>
+<td align="left">1995</td>
+<td align="right">58.5</td>
 <td align="left">none</td>
 </tr>
 </tbody>
@@ -1886,11 +1883,11 @@ guide and the FAO data</td>
 <span>           n <span class="op">=</span> <span class="fl">5</span>, digits <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="36%">
-<col width="12%">
+<col width="32%">
+<col width="13%">
 <col width="15%">
 <col width="15%">
-<col width="21%">
+<col width="22%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">species_name</th>
@@ -1901,39 +1898,39 @@ guide and the FAO data</td>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">European pilchard(=Sardine)</td>
-<td align="left">2018</td>
-<td align="right">1,354,617</td>
-<td align="right">53</td>
-<td align="left">Exploited</td>
+<td align="left">Capelin</td>
+<td align="left">1977</td>
+<td align="right">3,773,808</td>
+<td align="right">4</td>
+<td align="left">Collapsed</td>
 </tr>
 <tr class="even">
-<td align="left">Jack and horse mackerels nei</td>
-<td align="left">2010</td>
-<td align="right">574,747</td>
-<td align="right">59</td>
-<td align="left">Exploited</td>
-</tr>
-<tr class="odd">
-<td align="left">Sardinellas nei</td>
-<td align="left">2018</td>
-<td align="right">542,915</td>
+<td align="left">Atlantic herring</td>
+<td align="left">1965</td>
+<td align="right">3,736,100</td>
 <td align="right">33</td>
 <td align="left">Over-exploited</td>
 </tr>
-<tr class="even">
-<td align="left">Atlantic chub mackerel</td>
-<td align="left">2019</td>
-<td align="right">485,443</td>
-<td align="right">97</td>
+<tr class="odd">
+<td align="left">Blue whiting(=Poutassou)</td>
+<td align="left">2004</td>
+<td align="right">2,419,291</td>
+<td align="right">76</td>
 <td align="left">Exploited</td>
 </tr>
-<tr class="odd">
-<td align="left">Round sardinella</td>
-<td align="left">1991</td>
-<td align="right">453,410</td>
-<td align="right">35</td>
+<tr class="even">
+<td align="left">Atlantic cod</td>
+<td align="left">1969</td>
+<td align="right">2,147,600</td>
+<td align="right">36</td>
 <td align="left">Over-exploited</td>
+</tr>
+<tr class="odd">
+<td align="left">Atlantic mackerel</td>
+<td align="left">2014</td>
+<td align="right">1,382,490</td>
+<td align="right">65</td>
+<td align="left">Exploited</td>
 </tr>
 </tbody>
 </table>
@@ -1949,7 +1946,7 @@ with the columns <code>key</code>, <code>en</code> and
 <code class="sourceCode R"><span><span class="va">texts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"report_text.csv"</span>, package <span class="op">=</span> <span class="st">"faofishingreport"</span><span class="op">)</span>,</span>
 <span>                  fileEncoding <span class="op">=</span> <span class="st">"UTF-8"</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">texts</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 298</span></span>
+<span><span class="co">#&gt; [1] 301</span></span>
 <span><span class="fu">show_table</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">texts</span><span class="op">[</span><span class="va">texts</span><span class="op">$</span><span class="va">key</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h_status"</span>, <span class="st">"status_p2"</span>, <span class="st">"concl_status"</span><span class="op">)</span>, <span class="op">]</span>, row.names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
@@ -2185,7 +2182,7 @@ London: Charles Griffin.</p>
 global catch data for inferences on the world’s marine fisheries.
 <em>Fish and Fisheries</em> 14(3): 293–311. <a href="https://doi.org/10.1111/j.1467-2979.2012.00469.x" class="external-link">doi:10.1111/j.1467-2979.2012.00469.x</a></p>
 <p>Lin, H. (2026). faofishingreport: Analyse and report FAO Global
-Capture Production statistics. R package version 0.7.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
+Capture Production statistics. R package version 0.8.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
 <p>Mann, H.B. (1945). Nonparametric tests against trend.
 <em>Econometrica</em> 13(3): 245–259. <a href="https://doi.org/10.2307/1907187" class="external-link">doi:10.2307/1907187</a></p>
 <p>R Core Team (2026). R: A language and environment for statistical

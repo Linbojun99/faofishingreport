@@ -15,28 +15,21 @@ call says which SST data it uses:
 
 ``` r
 
-sst34 <- fao_area_sst("34")
+sst27 <- fao_area_sst("27")
 #> SST: NOAA ERSST v5, built into the package (FAO major areas; 2 x 2 degrees, monthly; In situ only: ships and buoys (ICOADS), Argo floats from 1999; 1950-2025; Huang et al. (2017) Journal of Climate 30: 8179-8205). See ?fao_area_sst to use other SST data.
-head(sst34[, c("area_en", "year", "sst_mean", "sst_p10", "sst_p90", "sst_min_month", "sst_max_month")])
-#>                     area_en year sst_mean sst_p10 sst_p90 sst_min_month
-#> 1 Atlantic, Eastern Central 1950   24.510  20.834  27.147        23.620
-#> 2 Atlantic, Eastern Central 1951   24.644  20.983  27.301        23.546
-#> 3 Atlantic, Eastern Central 1952   24.581  20.892  27.285        23.614
-#> 4 Atlantic, Eastern Central 1953   24.642  20.997  27.377        23.726
-#> 5 Atlantic, Eastern Central 1954   24.237  20.406  27.085        23.392
-#> 6 Atlantic, Eastern Central 1955   24.724  21.230  27.405        23.716
-#>   sst_max_month
-#> 1        25.232
-#> 2        25.626
-#> 3        25.563
-#> 4        25.618
-#> 5        25.529
-#> 6        25.735
+head(sst27[, c("area_en", "year", "sst_mean", "sst_p10", "sst_p90", "sst_min_month", "sst_max_month")])
+#>               area_en year sst_mean sst_p10 sst_p90 sst_min_month sst_max_month
+#> 1 Atlantic, Northeast 1950    9.247  -0.789  18.017         6.883        12.478
+#> 2 Atlantic, Northeast 1951    9.236  -1.078  18.021         6.932        12.572
+#> 3 Atlantic, Northeast 1952    9.329  -0.964  18.152         7.045        12.778
+#> 4 Atlantic, Northeast 1953    9.487  -0.836  18.371         7.171        12.913
+#> 5 Atlantic, Northeast 1954    9.333  -0.751  17.905         7.095        12.481
+#> 6 Atlantic, Northeast 1955    9.358  -1.046  18.493         6.954        12.753
 ```
 
 | Argument | Meaning | Default |
 |----|----|----|
-| `area` | FAO area codes (e.g. `"34"`) or names as in the FAO data (e.g. `"Atlantic, Eastern Central"`) | `NULL`: all 19 areas |
+| `area` | FAO area codes (e.g. `"27"`) or names as in the FAO data (e.g. `"Atlantic, Northeast"`) | `NULL`: all 19 areas |
 | `sst` | The SST data: `"ersst5"` (built in), the name of a product downloaded with [`download_sst_data()`](https://linbojun99.github.io/faofishingreport/reference/download_sst_data.md), or the path of a NetCDF file or of a folder of NetCDF files | the `sst` setting of [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md), `"ersst5"` unless changed |
 | `variable` | Name of the SST variable in your NetCDF files | `NULL`: found from its name |
 | `data_dir` | Folder where downloaded data and computed tables are kept | [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) |
@@ -78,9 +71,9 @@ the session:
 
 ``` r
 
-fao_area_sst("34", sst = "D:/data/HadISST_sst.nc")       # one call
+fao_area_sst("27", sst = "D:/data/HadISST_sst.nc")       # one call
 fao_settings(sst = "D:/data/HadISST_sst.nc")             # all functions, for the session
-mean_temperature_catch(FAO34$area_data)                  # now uses this file
+mean_temperature_catch(FAO27$area_data)                  # now uses this file
 fao_settings(sst = "ersst5")                             # back to the built-in SST
 ```
 
@@ -131,7 +124,7 @@ table. It is then used by its name, e.g. `sst = "hadisst1"`:
 ``` r
 
 download_sst_data("hadisst1")                 # about 240 MB; run again to resume
-fao_area_sst("34", sst = "hadisst1")
+fao_area_sst("27", sst = "hadisst1")
 ```
 
 | Argument | Meaning | Default |
@@ -214,8 +207,8 @@ waters make up a larger part of the catch.
 
 ``` r
 
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-mtc <- mean_temperature_catch(FAO34$area_data)
+FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+mtc <- mean_temperature_catch(FAO27$area_data)
 mtc$trend      # slopes (°C per decade), Mann-Kendall test, correlation with SST
 ```
 
@@ -307,7 +300,7 @@ are used:
 
 ``` r
 
-mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern_Central_mtc_species.csv")
+mtc <- mean_temperature_catch(FAO27$area_data, match = "tables/Atlantic__Northeast_mtc_species.csv")
 ```
 
 Until every item used has been checked, the function says how much of
@@ -378,7 +371,7 @@ matches and links, are returned as `report$mtc_species` for checking:
 
 ``` r
 
-report <- fao_report(34, mtc = TRUE, mtc_min_coverage = 60)
+report <- fao_report(27, mtc = TRUE, mtc_min_coverage = 60)
 report$mtc_species
 ```
 

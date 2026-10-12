@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -350,9 +350,9 @@ MB），转换成本包的数据格式并保存到你的电脑上。之后无需
 </h2>
 <p>所有函数都使用可用的<strong>最新</strong>数据：即已下载的最新版本；如果包自带数据更新，则使用包自带数据。<code><a href="../../reference/fishing_area_data.html">fishing_area_data()</a></code>、<code><a href="../../reference/country_analysis.html">country_analysis()</a></code>和<code><a href="../../reference/fao_report.html">fao_report()</a></code>可以用<code>data_version</code>指定使用哪个版本：</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">FAO34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span><span class="op">)</span>                            <span class="co"># 最新数据</span></span>
-<span><span class="va">FAO34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, data_version <span class="op">=</span> <span class="st">"bundled"</span><span class="op">)</span>  <span class="co"># 包自带数据</span></span>
-<span><span class="va">FAO34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, data_version <span class="op">=</span> <span class="st">"2023.1.1"</span><span class="op">)</span> <span class="co"># 已下载的某个版本</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">FAO27</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span><span class="op">)</span>                            <span class="co"># 最新数据</span></span>
+<span><span class="va">FAO27</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, data_version <span class="op">=</span> <span class="st">"bundled"</span><span class="op">)</span>  <span class="co"># 包自带数据</span></span>
+<span><span class="va">FAO27</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, data_version <span class="op">=</span> <span class="st">"2023.1.1"</span><span class="op">)</span> <span class="co"># 已下载的某个版本</span></span></code></pre></div>
 <p><code><a href="../../reference/load_fao_data.html">load_fao_data()</a></code>返回完整的数据集，取值方式相同：</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/load_fao_data.html">load_fao_data</a></span><span class="op">(</span><span class="op">)</span>                  <span class="co"># 最新数据</span></span>
@@ -657,9 +657,9 @@ MB），转换成本包的数据格式并保存到你的电脑上。之后无需
 <span><span class="va">skipjack</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">ASFIS.species..Name.</span> <span class="op">==</span> <span class="st">"Skipjack tuna"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../../reference/peak_trend.html">peak_trend</a></span><span class="op">(</span><span class="va">skipjack</span>, by <span class="op">=</span> <span class="st">"area"</span>, label <span class="op">=</span> <span class="st">"Skipjack tuna"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 只取34渔区最近30年的数据</span></span>
-<span><span class="va">FAO34_recent</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, <span class="va">Year</span> <span class="op">&gt;=</span> <span class="fl">1995</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../../reference/fishing_area_species.html">fishing_area_species</a></span><span class="op">(</span><span class="va">FAO34_recent</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># 只取27渔区最近30年的数据</span></span>
+<span><span class="va">FAO27_recent</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, <span class="va">Year</span> <span class="op">&gt;=</span> <span class="fl">1995</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../../reference/fishing_area_species.html">fishing_area_species</a></span><span class="op">(</span><span class="va">FAO27_recent</span><span class="op">)</span></span></code></pre></div>
 <p>查找国家、物种和渔区的准确名称：</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">data</span><span class="op">$</span><span class="va">Country..Name.</span><span class="op">)</span><span class="op">)</span>, <span class="fl">10</span><span class="op">)</span></span>
@@ -682,12 +682,12 @@ MB），转换成本包的数据格式并保存到你的电脑上。之后无需
 <p>中文名称来自FAO随每个版本发布的代码表和FAO
 ASFIS物种名录；没有官方中文名的条目由本包自带的对照表补充，仍然没有的则保留英文。用<code><a href="../../reference/fao_translate.html">fao_translate()</a></code>可以查看这些名称：</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_translate.html">fao_translate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Morocco"</span>, <span class="st">"Spain"</span>, <span class="st">"Korea, Republic of"</span><span class="op">)</span>, <span class="st">"country"</span>, <span class="st">"zh"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "摩洛哥"   "西班牙"   "大韩民国"</span></span>
-<span><span class="fu"><a href="../../reference/fao_translate.html">fao_translate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"European pilchard(=Sardine)"</span>, <span class="st">"Skipjack tuna"</span><span class="op">)</span>, <span class="st">"species"</span>, <span class="st">"both"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "沙丁鱼 European pilchard(=Sardine)" "鲣 Skipjack tuna"</span></span>
-<span><span class="fu"><a href="../../reference/fao_translate.html">fao_translate</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, <span class="st">"area"</span>, <span class="st">"zh"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "中东大西洋"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../../reference/fao_translate.html">fao_translate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Norway"</span>, <span class="st">"Spain"</span>, <span class="st">"Korea, Republic of"</span><span class="op">)</span>, <span class="st">"country"</span>, <span class="st">"zh"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "挪威"     "西班牙"   "大韩民国"</span></span>
+<span><span class="fu"><a href="../../reference/fao_translate.html">fao_translate</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Atlantic cod"</span>, <span class="st">"Skipjack tuna"</span><span class="op">)</span>, <span class="st">"species"</span>, <span class="st">"both"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "大西洋鳕 Atlantic cod" "鲣 Skipjack tuna"</span></span>
+<span><span class="fu"><a href="../../reference/fao_translate.html">fao_translate</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, <span class="st">"area"</span>, <span class="st">"zh"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "东北大西洋"</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="33%">
@@ -763,7 +763,7 @@ MB。</li>
 </h2>
 <ul>
 <li>
-<strong>近几年的数据常为估算值。</strong>某个国家尚未上报时，FAO会估算其产量。在34渔区，2024年约三分之一的产量是估算值；这些数值通常会在下一个版本中修订。<code><a href="../../reference/data_quality.html">data_quality()</a></code>可以显示任一渔区的这一情况。</li>
+<strong>近几年的数据常为估算值。</strong>某个国家尚未上报时，FAO会估算其产量。在34渔区（中东大西洋），2024年约三分之一的产量是估算值，而27渔区不到1%；这些数值通常会在下一个版本中修订。<code><a href="../../reference/data_quality.html">data_quality()</a></code>可以显示任一渔区的这一情况。</li>
 <li>
 <strong>未分类（nei）类别</strong>（“not elsewhere
 included”，即”未另列明”）是未鉴定到种的产量，例如”Marine fishes

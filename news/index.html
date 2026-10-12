@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,6 +52,30 @@
       <small>Source: <a href="https://github.com/Linbojun99/faofishingreport/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.8.0" id="faofishingreport-080">faofishingreport 0.8.0<a class="anchor" aria-label="anchor" href="#faofishingreport-080"></a></h2>
+<div class="section level3">
+<h3 id="new-functions-0-8-0">New functions<a class="anchor" aria-label="anchor" href="#new-functions-0-8-0"></a></h3>
+<ul><li><p><code><a href="../reference/fao_areas.html">fao_areas()</a></code> lists the FAO major fishing areas (the 19 marine areas and the inland waters of each continent) with their code, name, ocean, catch in the last year of the data and the link to the official FAO map of each area (<a href="https://www.fao.org/fishery/docs/maps/Default.htm" class="external-link uri">https://www.fao.org/fishery/docs/maps/Default.htm</a>), and saves a world map of the marine areas labelled with their codes.</p></li>
+<li><p><code><a href="../reference/fishing_area_map.html">fishing_area_map()</a></code> maps one marine area with its subareas, divisions or subdivisions, labelled with their codes, from the boundaries bundled with the package. When the ggOceanMaps package (Vihtakari 2026, <a href="https://github.com/MikkoVihtakari/ggOceanMaps" class="external-link uri">https://github.com/MikkoVihtakari/ggOceanMaps</a>, now in Suggests) is installed, the map is drawn on its bathymetric base map, with the depth of the ETOPO 2022 relief model bundled with ggOceanMaps (polar stereographic for areas reaching beyond 60° of latitude); without it, the land of Natural Earth is drawn in a Lambert azimuthal equal-area projection centred on the area. The result lists the boundaries, base map and depth data used, to cite with the map.</p></li>
+<li><p><code><a href="../reference/cmsy_mcmc.html">cmsy_mcmc()</a></code> shows the MCMC settings of each CMSY++ run (chains, iterations, burn-in, thinning) and whether it converged: for r, k, MSY, B/k, B/Bmsy and F/Fmsy, the posterior summary, Rhat (Gelman and Rubin 1992) and the effective sample size (coda), with the stocks that did not converge (Rhat above 1.1) or have too few effective draws (below 400) reported apart, and a chart of the trace and density of each chain (also the new “mcmc” chart of <code><a href="../reference/cmsy_plot.html">cmsy_plot()</a></code>). The colours of the chains can be chosen (<code>colors</code>, <code>mcmc_colors</code>). <code><a href="../reference/cmsy_run.html">cmsy_run()</a></code> keeps the draws of each chain for it; the CMSY++ model is not changed. With the settings of CMSY++16.R (2 chains of 60,000 iterations, thinned by 10), the effective sample size of r and k is often only a few hundred; longer and more chains raise it.</p></li>
+<li><p>The Word report gives the MCMC settings, the largest Rhat and the smallest effective sample size of the CMSY++ runs, and names the stocks that did not converge or have too few effective draws.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-8-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-8-0"></a></h3>
+<ul><li>The tables bundled with the package (chart labels, Chinese names, ISSCAAP groups, SST) and the CSV files written by the package are read as UTF-8 in any locale. In a locale that is not UTF-8 (e.g. “C” on some Linux servers) the Chinese text could not be read, so every chart stopped with “Unknown chart label”.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-8-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-8-0"></a></h3>
+<ul><li>The home pages start with an introduction to the FAO major fishing areas: the 19 marine areas with their code, name, extent and official FAO map, and the inland areas.</li>
+<li>The examples of the home pages and of all articles use the Northeast Atlantic (FAO area 27) instead of the Eastern Central Atlantic (area 34): Atlantic cod and Norway are the example species and country, and the CMSY++ article shows the 30 main stocks of area 27 with a healthy and an overfished stock in detail. Facts about area 34 used to explain a rule (the coastal countries through overseas territories, the share of estimated catch) are kept and say so.</li>
+<li>The fishing area article describes <code><a href="../reference/fao_areas.html">fao_areas()</a></code> and <code><a href="../reference/fishing_area_map.html">fishing_area_map()</a></code>, with the references of ggOceanMaps, ETOPO 2022 and the FAO fishing area maps.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="website-0-8-0">Website<a class="anchor" aria-label="anchor" href="#website-0-8-0"></a></h3>
+<ul><li>Headings are in the deep blue of the logo and the body text near-black, so that headings stand apart from the content.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.7.0" id="faofishingreport-070">faofishingreport 0.7.0<a class="anchor" aria-label="anchor" href="#faofishingreport-070"></a></h2>
 <p>This version corrects errors found in a review of the code and of the statistics. Some results change: see “Changed results”.</p>

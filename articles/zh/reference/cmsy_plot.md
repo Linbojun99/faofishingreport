@@ -20,7 +20,8 @@
 - **kobe**：Kobe图：B/Bmsy和F/Fmsy从第一年（方形）经中间年份（圆形）到最后一年（三角形）的轨迹，最后一年的后验抽样点及其50%、80%和95%概率区域，以及各象限的概率（图3）；
 - **prior_posterior**：r、k、MSY以及第一年、中间年份和最后一年B/k的先验和后验密度，并给出后验与先验方差比（PPVR）（图4）；
 - **retrospective**：回顾性分析，即去掉最后一年、两年或三年数据时的B/Bmsy和F/Fmsy，并给出Mohn’s
-  rho（图5；需要`cmsy_run(plots = "retrospective")`）。
+  rho（图5；需要`cmsy_run(plots = "retrospective")`）；
+- **mcmc**：r、k、MSY和最后一年B/k每条MCMC链的抽样（轨迹）及其密度，并给出Rhat和有效样本量（见[`cmsy_mcmc()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_mcmc.md)；本包早期版本的运行结果没有这张图）。
 
 多个种群合在一起的图表：
 
@@ -77,7 +78,12 @@ al. 2021), from the results saved by the run:
   prior-posterior variance ratio PPVR (Figure 4);
 - **retrospective**: B/Bmsy and F/Fmsy when the last one, two or three
   years are left out, with Mohn’s rho (Figure 5; needs
-  `cmsy_run(plots = "retrospective")`).
+  `cmsy_run(plots = "retrospective")`);
+- **mcmc**: the draws of each MCMC chain (trace) and their densities for
+  r, k, MSY and the last-year B/k, with Rhat and the effective sample
+  size (see
+  [`cmsy_mcmc()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_mcmc.md);
+  not for runs of earlier versions of the package).
 
 For several stocks together:
 
@@ -118,7 +124,8 @@ cmsy_plot(
   annotations = getOption("faofishingreport.cmsy_annotations", FALSE),
   lang = NULL,
   pptx = getOption("faofishingreport.pptx", FALSE),
-  silent = fao_setting("silent")
+  silent = fao_setting("silent"),
+  mcmc_colors = NULL
 )
 ```
 
@@ -204,6 +211,16 @@ cmsy_plot(
   A logical value. If FALSE (default), a progress bar shows how many
   stocks have been drawn. If TRUE, nothing is printed. The default can
   be changed for the session with `fao_settings(silent = TRUE)`.
+
+- `mcmc_colors`:
+
+  “mcmc”图中各条链的颜色：NULL（默认）为Okabe-Ito配色，也可以是调色板名称或颜色向量（见[`cmsy_mcmc()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_mcmc.md)）。
+
+  English
+
+  Colours of the chains in the “mcmc” chart: NULL (default) for the
+  Okabe-Ito colours, a palette name or a vector of colours (see
+  [`cmsy_mcmc()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_mcmc.md)).
 
 ## 返回值
 

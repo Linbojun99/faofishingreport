@@ -66,7 +66,14 @@ al. 2021), from the results saved by the run:
 - retrospective:
 
   B/Bmsy and F/Fmsy when the last one, two or three years are left out,
-  with Mohn's rho (Figure 5; needs `cmsy_run(plots = "retrospective")`).
+  with Mohn's rho (Figure 5; needs `cmsy_run(plots = "retrospective")`);
+
+- mcmc:
+
+  the draws of each MCMC chain (trace) and their densities for r, k, MSY
+  and the last-year B/k, with Rhat and the effective sample size (see
+  [`cmsy_mcmc()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_mcmc.md);
+  not for runs of earlier versions of the package).
 
 For several stocks together:
 
@@ -130,7 +137,8 @@ cmsy_plot(
   annotations = getOption("faofishingreport.cmsy_annotations", FALSE),
   lang = NULL,
   pptx = getOption("faofishingreport.pptx", FALSE),
-  silent = fao_setting("silent")
+  silent = fao_setting("silent"),
+  mcmc_colors = NULL
 )
 ```
 
@@ -184,6 +192,12 @@ cmsy_plot(
   A logical value. If FALSE (default), a progress bar shows how many
   stocks have been drawn. If TRUE, nothing is printed. The default can
   be changed for the session with `fao_settings(silent = TRUE)`.
+
+- mcmc_colors:
+
+  Colours of the chains in the "mcmc" chart: NULL (default) for the
+  Okabe-Ito colours, a palette name or a vector of colours (see
+  [`cmsy_mcmc()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_mcmc.md)).
 
 ## Value
 

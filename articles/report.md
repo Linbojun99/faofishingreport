@@ -18,9 +18,9 @@ numbered captions, and lists the references it cites.
 
 ``` r
 
-fao_report(34)                                                  # language of fao_settings()
-fao_report("Atlantic, Eastern Central", lang = "zh", author = "Hongyu Lin")
-fao_report(34, lang = "en", font = "Times New Roman", citation = "fao")
+fao_report(27)                                                  # language of fao_settings()
+fao_report("Atlantic, Northeast", lang = "zh", author = "Hongyu Lin")
+fao_report(27, lang = "en", font = "Times New Roman", citation = "fao")
 ```
 
 The report is a first draft. The parts only the author can write, such
@@ -32,20 +32,20 @@ Chinese reports). Check the generated text before you use it.
 
 ``` r
 
-report <- fao_report(34, file = "FAO34_report_en.docx", lang = "en")
+report <- fao_report(27, file = "FAO27_report_en.docx", lang = "en")
 report
-#> FAO report: /tmp/RtmpWjKkxU/faofishingreport_site_1bbd662010bd2/FAO34_report_en.docx
+#> FAO report: /tmp/RtmpR3SySh/faofishingreport_site_1dafc3c03f703/FAO27_report_en.docx
 #> Sections: total, species, countries, groups, status, quality, diversity, fleets
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
 #>   $analyses               results of the analyses: total, species, countries, groups, status, quality, diversity, fleets
 ```
 
-The area is given by its code (`34`) or its English name
-(`"Atlantic, Eastern Central"`). The call takes about half a minute and
+The area is given by its code (`27`) or its English name
+(`"Atlantic, Northeast"`). The call takes about half a minute and
 reports its progress in messages (hidden on this page): each analysis,
 then the file written. Without `file`, the report is saved as
-`reports/FAO34_report_en.docx` in the working directory; on this page
+`reports/FAO27_report_en.docx` in the working directory; on this page
 the working directory is a temporary folder.
 
 The analyses run in a temporary folder of their own, with charts at 300
@@ -65,16 +65,16 @@ show_table(report$main_species, digits = 1)
 
 | species | species_en | scientific_name | mean_catch_t | share_pct | peak_year | pct_of_peak | trend_10_years |
 |:---|:---|:---|---:|---:|:---|---:|:---|
-| European pilchard(=Sardine) | European pilchard(=Sardine) | Sardina pilchardus | 1,041,854.9 | 20.4 | 2018 | 52.6 | none |
-| Atlantic chub mackerel | Atlantic chub mackerel | Scomber colias | 414,307.8 | 8.1 | 2019 | 96.6 | none |
-| Bonga shad | Bonga shad | Ethmalosa fimbriata | 348,662.7 | 6.8 | 2017 | 87.1 | none |
-| Jack and horse mackerels nei | Jack and horse mackerels nei | Trachurus spp. | 263,295.6 | 5.1 | 2010 | 58.7 | none |
-| Sardinellas nei | Sardinellas nei | Sardinella spp. | 246,900.5 | 4.8 | 2018 | 32.8 | none |
-| Marine fishes nei | Marine fishes nei | Actinopterygii | 243,873.7 | 4.8 | 1995 | 60.5 | none |
-| Madeiran sardinella | Madeiran sardinella | Sardinella maderensis | 243,476.6 | 4.8 | 2021 | 73.4 | none |
-| Skipjack tuna | Skipjack tuna | Katsuwonus pelamis | 195,951.7 | 3.8 | 2018 | 69.2 | none |
-| Round sardinella | Round sardinella | Sardinella aurita | 127,328.2 | 2.5 | 1991 | 34.9 | none |
-| European anchovy | European anchovy | Engraulis encrasicolus | 124,334.4 | 2.4 | 1990 | 48.9 | up |
+| Atlantic herring | Atlantic herring | Clupea harengus | 1,464,717.6 | 17.3 | 1965 | 33.5 | none |
+| Blue whiting(=Poutassou) | Blue whiting(=Poutassou) | Micromesistius poutassou | 1,445,802.2 | 17.1 | 2004 | 75.8 | none |
+| Atlantic mackerel | Atlantic mackerel | Scomber scombrus | 1,022,621.6 | 12.1 | 2014 | 65.4 | none |
+| Atlantic cod | Atlantic cod | Gadus morhua | 975,521.5 | 11.5 | 1969 | 35.5 | none |
+| European sprat | European sprat | Sprattus sprattus | 384,876.0 | 4.5 | 1975 | 34.9 | down |
+| Saithe(=Pollock) | Saithe(=Pollock) | Pollachius virens | 321,305.7 | 3.8 | 1974 | 41.4 | none |
+| Capelin | Capelin | Mallotus villosus | 311,462.1 | 3.7 | 1977 | 4.5 | none |
+| Haddock | Haddock | Melanogrammus aeglefinus | 300,767.9 | 3.6 | 1969 | 33.0 | none |
+| Sandeels(=Sandlances) nei | Sandeels(=Sandlances) nei | Ammodytes spp. | 221,906.9 | 2.6 | 1997 | 7.8 | none |
+| North European kelp | North European kelp | Laminaria hyperborea | 169,330.1 | 2.0 | 2023 | 92.4 | none |
 
 ## 📑 What the report contains
 
@@ -186,7 +186,7 @@ show_table(data.frame(abstract))
 
 | abstract |
 |:---|
-| Using the FAO Global Capture Production statistics for 1950–2024 (release 2026.1.0), this report analyses, for FAO Major Fishing Area 34 (Atlantic, Eastern Central), the catch trends, the main species, the main fishing countries, the composition of the catch, the status of the stocks, the quality of the data, the diversity of the catch and the catch of coastal and distant-water fleets, with breakpoint analysis, Mann-Kendall trend tests, stock status plots and diversity and concentration indices. In 2024, the catch in the area was 5.10 million t, 6.3% of the world’s marine capture production. The catch peaked in 2018 at 5.52 million t, and the catch of 2024 was 92.4% of the peak. Breakpoints divide the catch series into 4 stages (1950–1968, 1969–1987, 1988–2009 and 2010–2024). In the last five years, European pilchard(=Sardine) was the main species item, with 20.4% of the catch. Morocco was the main fishing country, with 27.7% of the catch of the last five years. In 2024, 39.7% of the stocks were over-exploited or collapsed. |
+| Using the FAO Global Capture Production statistics for 1950–2024 (release 2026.1.0), this report analyses, for FAO Major Fishing Area 27 (Atlantic, Northeast), the catch trends, the main species, the main fishing countries, the composition of the catch, the status of the stocks, the quality of the data, the diversity of the catch and the catch of coastal and distant-water fleets, with breakpoint analysis, Mann-Kendall trend tests, stock status plots and diversity and concentration indices. In 2024, the catch in the area was 7.84 million t, 9.7% of the world’s marine capture production. The catch peaked in 1976 at 13.17 million t, and the catch of 2024 was 59.5% of the peak. Breakpoints divide the catch series into 3 stages (1950–1964, 1965–2005 and 2006–2024). In the last five years, Atlantic herring was the main species item, with 17.3% of the catch. Norway was the main fishing country, with 26.8% of the catch of the last five years. In 2024, 61.6% of the stocks were over-exploited or collapsed. |
 
 The captions of the figures and tables, numbered by report:
 
@@ -198,24 +198,24 @@ show_table(data.frame(style = captions$style_name, caption = captions$text), n =
 
 | style | caption |
 |:---|:---|
-| FAO Caption | Figure 1-1. Catch in FAO Major Fishing Area 34 (Atlantic, Eastern Central) and its breakpoints, 1950–2024 |
-| FAO Caption | Figure 1-2. Share of FAO Major Fishing Area 34 (Atlantic, Eastern Central) in the world’s marine capture production |
-| FAO Table Caption | Table 1-1. Main species items in FAO Major Fishing Area 34 (Atlantic, Eastern Central), 2020–2024 |
-| FAO Caption | Figure 1-3. Catch of the main species items of the last five years in FAO Major Fishing Area 34 (Atlantic, Eastern Central) |
-| FAO Caption | Figure 1-4. Catch of the main species items of the last five years in FAO Major Fishing Area 34 (Atlantic, Eastern Central) and their breakpoints |
-| FAO Table Caption | Table 1-2. Main fishing countries in FAO Major Fishing Area 34 (Atlantic, Eastern Central), 2020–2024 |
-| FAO Caption | Figure 1-5. Catch of the main fishing countries of the last five years in FAO Major Fishing Area 34 (Atlantic, Eastern Central) |
-| FAO Caption | Figure 1-6. Total catch of each country in FAO Major Fishing Area 34 (Atlantic, Eastern Central) |
-| FAO Caption | Figure 1-7. Catch of the main fishing countries of the last five years in FAO Major Fishing Area 34 (Atlantic, Eastern Central) and their breakpoints |
-| FAO Caption | Figure 1-8. Catch in FAO Major Fishing Area 34 (Atlantic, Eastern Central) by ISSCAAP species group |
-| FAO Caption | Figure 1-9. Stock status plot of FAO Major Fishing Area 34 (Atlantic, Eastern Central) (share of stocks) |
-| FAO Caption | Figure 1-10. Stock status plot of FAO Major Fishing Area 34 (Atlantic, Eastern Central) (share of catch) |
-| FAO Caption | Figure 1-11. Officially reported and estimated catch in FAO Major Fishing Area 34 (Atlantic, Eastern Central) |
-| FAO Caption | Figure 1-12. Catch in FAO Major Fishing Area 34 (Atlantic, Eastern Central) by taxonomic level of identification |
-| FAO Caption | Figure 1-13. Diversity and concentration of the catch in FAO Major Fishing Area 34 (Atlantic, Eastern Central) |
-| FAO Caption | Figure 1-14. Catch of coastal countries and distant-water fleets in FAO Major Fishing Area 34 (Atlantic, Eastern Central) |
-| FAO Table Caption | Table A1. Mean yearly catch (thousand t) of the main species items in FAO Major Fishing Area 34 (Atlantic, Eastern Central), by decade |
-| FAO Table Caption | Table A2. Mean yearly catch (thousand t) of the main fishing countries in FAO Major Fishing Area 34 (Atlantic, Eastern Central), by decade |
+| FAO Caption | Figure 1-1. Catch in FAO Major Fishing Area 27 (Atlantic, Northeast) and its breakpoints, 1950–2024 |
+| FAO Caption | Figure 1-2. Share of FAO Major Fishing Area 27 (Atlantic, Northeast) in the world’s marine capture production |
+| FAO Table Caption | Table 1-1. Main species items in FAO Major Fishing Area 27 (Atlantic, Northeast), 2020–2024 |
+| FAO Caption | Figure 1-3. Catch of the main species items of the last five years in FAO Major Fishing Area 27 (Atlantic, Northeast) |
+| FAO Caption | Figure 1-4. Catch of the main species items of the last five years in FAO Major Fishing Area 27 (Atlantic, Northeast) and their breakpoints |
+| FAO Table Caption | Table 1-2. Main fishing countries in FAO Major Fishing Area 27 (Atlantic, Northeast), 2020–2024 |
+| FAO Caption | Figure 1-5. Catch of the main fishing countries of the last five years in FAO Major Fishing Area 27 (Atlantic, Northeast) |
+| FAO Caption | Figure 1-6. Total catch of each country in FAO Major Fishing Area 27 (Atlantic, Northeast) |
+| FAO Caption | Figure 1-7. Catch of the main fishing countries of the last five years in FAO Major Fishing Area 27 (Atlantic, Northeast) and their breakpoints |
+| FAO Caption | Figure 1-8. Catch in FAO Major Fishing Area 27 (Atlantic, Northeast) by ISSCAAP species group |
+| FAO Caption | Figure 1-9. Stock status plot of FAO Major Fishing Area 27 (Atlantic, Northeast) (share of stocks) |
+| FAO Caption | Figure 1-10. Stock status plot of FAO Major Fishing Area 27 (Atlantic, Northeast) (share of catch) |
+| FAO Caption | Figure 1-11. Officially reported and estimated catch in FAO Major Fishing Area 27 (Atlantic, Northeast) |
+| FAO Caption | Figure 1-12. Catch in FAO Major Fishing Area 27 (Atlantic, Northeast) by taxonomic level of identification |
+| FAO Caption | Figure 1-13. Diversity and concentration of the catch in FAO Major Fishing Area 27 (Atlantic, Northeast) |
+| FAO Caption | Figure 1-14. Catch of coastal countries and distant-water fleets in FAO Major Fishing Area 27 (Atlantic, Northeast) |
+| FAO Table Caption | Table A1. Mean yearly catch (thousand t) of the main species items in FAO Major Fishing Area 27 (Atlantic, Northeast), by decade |
+| FAO Table Caption | Table A2. Mean yearly catch (thousand t) of the main fishing countries in FAO Major Fishing Area 27 (Atlantic, Northeast), by decade |
 
 The grey notes:
 
@@ -246,7 +246,7 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 | Garibaldi, L. (2012). The FAO global capture production database: a six-decade effort to catch the trend. Marine Policy, 36(3), 760–768. <https://doi.org/10.1016/j.marpol.2011.10.024> |
 | Kendall, M. G. (1975). Rank correlation methods (4th ed.). Charles Griffin. |
 | Kleisner, K., Zeller, D., Froese, R., & Pauly, D. (2013). Using global catch data for inferences on the world’s marine fisheries. Fish and Fisheries, 14(3), 293–311. <https://doi.org/10.1111/j.1467-2979.2012.00469.x> |
-| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.7.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
+| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.8.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
 | Mann, H. B. (1945). Nonparametric tests against trend. Econometrica, 13(3), 245–259. <https://doi.org/10.2307/1907187> |
 | R Core Team. (2026). R: A language and environment for statistical computing \[Computer software\]. R Foundation for Statistical Computing. <https://www.R-project.org/> |
 | Rhoades, S. A. (1993). The Herfindahl-Hirschman index. Federal Reserve Bulletin, 79(3), 188–189. |
@@ -258,12 +258,12 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 
 | Argument | Default | Meaning |
 |----|----|----|
-| `area` | (required) | The FAO major fishing area: its code, e.g. `34`, or its English name, e.g. `"Atlantic, Eastern Central"`. An unknown area gives an error that lists the marine areas. |
+| `area` | (required) | The FAO major fishing area: its code, e.g. `27`, or its English name, e.g. `"Atlantic, Northeast"`. An unknown area gives an error that lists the marine areas. |
 | `...` |  | Settings of the analyses, named with the section as prefix, e.g. `species_h_value = 0.2` (see [⚙️ Settings of the analyses](#settings)) |
 | `file` | `reports/FAO<code>_report_<lang>.docx` | The file to write; its folder is created if needed. The other formats get the same name with `.tex` and `.pdf`. |
 | `format` | `"docx"` | One or more of `"docx"`, `"latex"` and `"pdf"` (see [🖨️ Word, LaTeX and PDF](#formats)) |
 | `lang` | `NULL`: the language of [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md) | `"zh"` (Chinese) or `"en"` (English); `"both"` gives a Chinese report |
-| `title` | made from the area | e.g. “Assessment of Marine Capture Production in FAO Major Fishing Area 34 (Atlantic, Eastern Central)” |
+| `title` | made from the area | e.g. “Assessment of Marine Capture Production in FAO Major Fishing Area 27 (Atlantic, Northeast)” |
 | `report_no` | `1` | Number of the report: “Report 1” (“报告一” in Chinese reports, with Chinese numerals up to 99), and the first number of the figures and tables (Figure 1-1, Table 1-1) |
 | `author` | `NULL`: “Author” | The author on the cover, under the title and in the properties of the file |
 | `affiliation` | `NULL`: no line | The affiliation on the cover |
@@ -340,10 +340,10 @@ and stock status plots with smoothed catches:
 
 ``` r
 
-short <- fao_report(34, file = "FAO34_short.docx", lang = "en", quality = FALSE, diversity = FALSE,
+short <- fao_report(27, file = "FAO27_short.docx", lang = "en", quality = FALSE, diversity = FALSE,
                     fleets = FALSE, pelagic = TRUE, status_smooth = TRUE)
 short
-#> FAO report: /tmp/RtmpWjKkxU/faofishingreport_site_1bbd662010bd2/FAO34_short.docx
+#> FAO report: /tmp/RtmpR3SySh/faofishingreport_site_1dafc3c03f703/FAO27_short.docx
 #> Sections: total, species, countries, groups, status, pelagic
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -386,7 +386,7 @@ show_table(data.frame(reference = short_word$text[short_word$style_name == "FAO 
 | Hondorp, D. W., Breitburg, D. L., & Davias, L. A. (2010). Eutrophication and Fisheries: Separating the Effects of Nitrogen Loads and Hypoxia on the Pelagic-to-Demersal Ratio and other Measures of Landings Composition. Marine and Coastal Fisheries, 2(1), 339–361. <https://doi.org/10.1577/C09-020.1> |
 | Kendall, M. G. (1975). Rank correlation methods (4th ed.). Charles Griffin. |
 | Kleisner, K., Zeller, D., Froese, R., & Pauly, D. (2013). Using global catch data for inferences on the world’s marine fisheries. Fish and Fisheries, 14(3), 293–311. <https://doi.org/10.1111/j.1467-2979.2012.00469.x> |
-| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.7.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
+| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.8.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
 | Mann, H. B. (1945). Nonparametric tests against trend. Econometrica, 13(3), 245–259. <https://doi.org/10.2307/1907187> |
 | R Core Team. (2026). R: A language and environment for statistical computing \[Computer software\]. R Foundation for Statistical Computing. <https://www.R-project.org/> |
 | Yue, S., & Wang, C. Y. (2004). The Mann-Kendall test modified by effective sample size to detect trend in serially correlated hydrological series. Water Resources Management, 18(3), 201–218. <https://doi.org/10.1023/B:WARM.0000043140.61082.60> |
@@ -439,10 +439,10 @@ stops before any analysis is run, and the error lists what is allowed:
 
 ``` r
 
-fao_report(34, species_h = 0.2)
+fao_report(27, species_h = 0.2)
 #> Error:
 #> ! fao_report(): species_h would set h, which is not an argument of fishing_area_species(). Its arguments: rank_range, plot, timeseries_analysis, line_width, point_size, point_alpha, point_shape, line_alpha, axis_text_size, axis_title_size, strip_text_size, axis_text_face, axis_title_face, strip_text_face, smooth_method, smooth_linetype, line_linewidth, text_hjust, text_vjust, text_size, text_color, facet_ncol, h_value, ZH
-fao_report(34, speceis_h_value = 0.2)
+fao_report(27, speceis_h_value = 0.2)
 #> Error:
 #> ! Unknown argument of fao_report(): speceis_h_value. Settings of an analysis start with its section: total_, species_, countries_, groups_, status_, quality_, diversity_, fleets_, shocks_, collapse_, synchrony_, pelagic_, mtc_, distant_, cmsy_
 ```
@@ -494,17 +494,17 @@ same text, figures, tables, captions and references.
 
 ``` r
 
-fao_report(34, lang = "zh", format = c("docx", "pdf"))      # Word and PDF
-fao_report(34, lang = "en", format = "latex")                # the LaTeX source only
-report <- fao_report(34, format = c("docx", "latex", "pdf"))
+fao_report(27, lang = "zh", format = c("docx", "pdf"))      # Word and PDF
+fao_report(27, lang = "en", format = "latex")                # the LaTeX source only
+report <- fao_report(27, format = c("docx", "latex", "pdf"))
 report$file                                                  # named docx, latex and pdf
 ```
 
-| `format` | Files written (for `fao_report(34, lang = "zh")`) | What it is |
+| `format` | Files written (for `fao_report(27, lang = "zh")`) | What it is |
 |----|----|----|
-| `"docx"` | `reports/FAO34_report_zh.docx` | The Word file described in this article |
-| `"latex"` | `reports/FAO34_report_zh.tex` and the folder `reports/FAO34_report_zh_figures/` | The XeLaTeX source of the same report, with its figures as PNG files. Chinese reports use the `ctexart` class, English reports the `article` class. |
-| `"pdf"` | `reports/FAO34_report_zh.pdf` (and the `.tex`) | The LaTeX source compiled with XeLaTeX, with bookmarks for the headings |
+| `"docx"` | `reports/FAO27_report_zh.docx` | The Word file described in this article |
+| `"latex"` | `reports/FAO27_report_zh.tex` and the folder `reports/FAO27_report_zh_figures/` | The XeLaTeX source of the same report, with its figures as PNG files. Chinese reports use the `ctexart` class, English reports the `article` class. |
+| `"pdf"` | `reports/FAO27_report_zh.pdf` (and the `.tex`) | The LaTeX source compiled with XeLaTeX, with bookmarks for the headings |
 
 The LaTeX version follows the format of the Word file (see [📐
 Format](#format)): A4 pages with the same margins, the same fonts and
@@ -546,7 +546,7 @@ takes a few minutes once.
 
 ``` r
 
-fao_report(34, lang = "zh", format = "pdf")   # the first run also installs the LaTeX packages
+fao_report(27, lang = "zh", format = "pdf")   # the first run also installs the LaTeX packages
 ```
 
 | Situation | What to do |
@@ -554,7 +554,7 @@ fao_report(34, lang = "zh", format = "pdf")   # the first run also installs the 
 | No LaTeX on the computer | `install.packages("tinytex")`, then [`tinytex::install_tinytex()`](https://rdrr.io/pkg/tinytex/man/install_tinytex.html) |
 | TinyTeX installed long ago; packages fail to install, or the message “Local TeX Live (2024) is older than remote repository” | [`tinytex::reinstall_tinytex()`](https://rdrr.io/pkg/tinytex/man/install_tinytex.html) reinstalls the newest TinyTeX with the packages you had |
 | Another TeX distribution (MacTeX, TeX Live, MiKTeX) | It is used if `xelatex` is on the system path; install missing packages with its own manager (e.g. `tlmgr install ctex`) |
-| You changed the `.tex` file | Compile it again: `tinytex::xelatex("reports/FAO34_report_zh.tex")` |
+| You changed the `.tex` file | Compile it again: `tinytex::xelatex("reports/FAO27_report_zh.tex")` |
 | Only the LaTeX source is wanted | `format = "latex"` needs no LaTeX installation |
 
 Without tinytex, the package calls `xelatex` from the system path
@@ -607,22 +607,22 @@ stops with a message. The assessment takes a few minutes.
 ``` r
 
 cmsy_setup()                          # once: JAGS and the R packages of CMSY++
-report <- fao_report(34, lang = "en", cmsy = TRUE)
+report <- fao_report(27, lang = "en", cmsy = TRUE)
 report
-#> FAO report: .../reports/FAO34_report_en.docx
+#> FAO report: .../reports/FAO27_report_en.docx
 #> Sections: total, species, countries, groups, status, quality, diversity, fleets, cmsy
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
 #>   $cmsy_reference_points  CMSY++ biological reference points with 95% confidence limits (10 rows)
 #>   $cmsy_priors            CMSY++ priors, their sources and links (10 rows)
-#>   $cmsy                   CMSY++ result (folder .../reports/cmsy/Atlantic__Eastern_Central)
+#>   $cmsy                   CMSY++ result (folder .../reports/cmsy/Atlantic__Northeast)
 #>   $analyses               results of the analyses: total, species, ..., fleets, cmsy
 
 View(report$cmsy_reference_points)    # r, k, MSY, Fmsy, Bmsy, B/Bmsy and F/Fmsy with 95% limits
 View(report$cmsy_priors)              # priors, their sources and links
 
 # 15 main species and countries in the tables, 5 species assessed, longer MCMC chains
-fao_report(34, lang = "en", top_n = 15, cmsy = TRUE, cmsy_top = 5,
+fao_report(27, lang = "en", top_n = 15, cmsy = TRUE, cmsy_top = 5,
            cmsy_settings = list(n.iter = 100000))
 ```
 
@@ -631,8 +631,8 @@ paragraph on CMSY++, and a part of its own after the results:
 
     3 Stock assessment of the main species (CMSY++)
         3.1 Overview
-        3.2 European pilchard(=Sardine) (Sardina pilchardus)
-        3.3 Round sardinella (Sardinella aurita)
+        3.2 Atlantic herring (Clupea harengus)
+        3.3 Blue whiting(=Poutassou) (Micromesistius poutassou)
         ...
         3.12 Summary
 
@@ -658,8 +658,8 @@ paragraph on CMSY++, and a part of its own after the results:
 
 All CMSY++ results (input files, runs, charts and tables) are kept in
 the folder `cmsy/` next to the report,
-e.g. `reports/cmsy/Atlantic__Eastern_Central/`, with `cmsy_result.rds`.
-To write the report again, e.g. with other sections or after editing the
+e.g. `reports/cmsy/Atlantic__Northeast/`, with `cmsy_result.rds`. To
+write the report again, e.g. with other sections or after editing the
 templates, give that result to `cmsy` instead of `TRUE`; CMSY++ does not
 run again and the `cmsy_` settings are not used. The result of
 [`cmsy_area()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_area.md)
@@ -667,11 +667,11 @@ can be given in the same way:
 
 ``` r
 
-cmsy34 <- readRDS(file.path("reports", "cmsy", "Atlantic__Eastern_Central", "cmsy_result.rds"))
-fao_report(34, lang = "en", cmsy = cmsy34, pelagic = TRUE)
+cmsy27 <- readRDS(file.path("reports", "cmsy", "Atlantic__Northeast", "cmsy_result.rds"))
+fao_report(27, lang = "en", cmsy = cmsy27, pelagic = TRUE)
 
-area34 <- cmsy_area("Atlantic, Eastern Central", top = 10)
-fao_report(34, lang = "en", cmsy = area34)
+area27 <- cmsy_area("Atlantic, Northeast", top = 10)
+fao_report(27, lang = "en", cmsy = area27)
 ```
 
 The charts of the CMSY++ part come from the run, in the language it was
@@ -706,16 +706,16 @@ show_table(report$main_countries, digits = 1)
 
 | country | country_en | mean_catch_t | share_pct | peak_year | pct_of_peak | trend_10_years |
 |:---|:---|---:|---:|:---|---:|:---|
-| Morocco | Morocco | 1,418,927.3 | 27.7 | 2022 | 91.0 | none |
-| Mauritania | Mauritania | 674,299.1 | 13.2 | 2018 | 65.4 | none |
-| Senegal | Senegal | 464,480.7 | 9.1 | 2017 | 93.6 | none |
-| Nigeria | Nigeria | 441,470.9 | 8.6 | 2017 | 94.4 | none |
-| Guinea | Guinea | 343,164.0 | 6.7 | 2021 | 81.0 | none |
-| Ghana | Ghana | 333,652.8 | 6.5 | 1999 | 98.1 | none |
-| Sierra Leone | Sierra Leone | 205,312.0 | 4.0 | 2022 | 97.1 | none |
-| Cameroon | Cameroon | 198,094.6 | 3.9 | 2019 | 78.8 | none |
-| Belize | Belize | 190,814.7 | 3.7 | 2010 | 51.1 | none |
-| Georgia | Georgia | 127,022.0 | 2.5 | 2019 | 79.9 | none |
+| Norway | Norway | 2,265,474.9 | 26.8 | 1977 | 58.1 | none |
+| Iceland | Iceland | 1,265,855.5 | 15.0 | 1997 | 45.5 | none |
+| Russian Federation | Russian Federation | 962,240.0 | 11.4 | 2002 | 75.1 | none |
+| United Kingdom | United Kingdom | 668,016.8 | 7.9 | 1973 | 62.5 | none |
+| Faroe Islands | Faroe Islands | 650,579.3 | 7.7 | 2023 | 85.4 | none |
+| Denmark | Denmark | 521,267.6 | 6.2 | 1980 | 23.1 | none |
+| France | France | 364,925.9 | 4.3 | 1973 | 53.0 | none |
+| Netherlands (Kingdom of the) | Netherlands (Kingdom of the) | 265,473.4 | 3.1 | 1993 | 59.7 | none |
+| Spain | Spain | 254,364.9 | 3.0 | 1969 | 36.0 | down |
+| Ireland | Ireland | 228,514.0 | 2.7 | 1995 | 58.5 | none |
 
 ``` r
 
@@ -727,13 +727,13 @@ show_table(stocks[, c("species_name", "peak_year", "peak_tonnes", "pct_of_peak",
            n = 5, digits = 0)
 ```
 
-| species_name | peak_year | peak_tonnes | pct_of_peak | status_last_year |
-|:---|:---|---:|---:|:---|
-| European pilchard(=Sardine) | 2018 | 1,354,617 | 53 | Exploited |
-| Jack and horse mackerels nei | 2010 | 574,747 | 59 | Exploited |
-| Sardinellas nei | 2018 | 542,915 | 33 | Over-exploited |
-| Atlantic chub mackerel | 2019 | 485,443 | 97 | Exploited |
-| Round sardinella | 1991 | 453,410 | 35 | Over-exploited |
+| species_name             | peak_year | peak_tonnes | pct_of_peak | status_last_year |
+|:-------------------------|:----------|------------:|------------:|:-----------------|
+| Capelin                  | 1977      |   3,773,808 |           4 | Collapsed        |
+| Atlantic herring         | 1965      |   3,736,100 |          33 | Over-exploited   |
+| Blue whiting(=Poutassou) | 2004      |   2,419,291 |          76 | Exploited        |
+| Atlantic cod             | 1969      |   2,147,600 |          36 | Over-exploited   |
+| Atlantic mackerel        | 2014      |   1,382,490 |          65 | Exploited        |
 
 ## ✏️ Change the wording
 
@@ -745,7 +745,7 @@ one row per piece of text with the columns `key`, `en` and `zh`:
 texts <- read.csv(system.file("extdata", "report_text.csv", package = "faofishingreport"),
                   fileEncoding = "UTF-8", colClasses = "character")
 nrow(texts)
-#> [1] 298
+#> [1] 301
 show_table(data.frame(texts[texts$key %in% c("h_status", "status_p2", "concl_status"), ], row.names = NULL))
 ```
 
@@ -861,7 +861,7 @@ Fisheries* 14(3): 293–311.
 [doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
 
 Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture
-Production statistics. R package version 0.7.0.
+Production statistics. R package version 0.8.0.
 <https://linbojun99.github.io/faofishingreport/>
 
 Mann, H.B. (1945). Nonparametric tests against trend. *Econometrica*
