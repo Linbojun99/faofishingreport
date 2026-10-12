@@ -92,7 +92,7 @@ FAO27 <- fishing_area_data("Atlantic, Northeast")
 fishing_area_species(FAO27$area_data, rank_range = c(1, 10))
 fishing_area_country(FAO27$area_data, rank_range = c(1, 10))
 
-# 鳕鱼由哪些国家捕捞；挪威主要捕什么
+# 大西洋鳕由哪些国家捕捞；挪威主要捕什么
 species_country(FAO27$area_data, "Atlantic cod")
 country_species(FAO27$area_data, "Norway")
 

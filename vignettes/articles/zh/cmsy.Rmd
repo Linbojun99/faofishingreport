@@ -324,12 +324,12 @@ over <- ex[ex$example == "overfished", ]
 
 下文详细展示其中两个种群：状态最好的一个和过度捕捞最明显的一个。
 
-- **状态良好：北方长额虾**（*Pandalus borealis*，`PRA_27`，渔获量排第`r green$rank`）：最后一年B/Bmsy为`r sprintf("%.2f", green$B_Bmsy)`（95%置信区间`r sprintf("%.2f", green$B_Bmsy_lcl)`–`r sprintf("%.2f", green$B_Bmsy_ucl)`），F/Fmsy为`r sprintf("%.2f", green$F_Fmsy)`，处在绿区的概率为`r round(100 * green$p_green)`%。
+- **状态良好：Northern prawn**（*Pandalus borealis*，FAO和FishBase都没有中文名，`PRA_27`，渔获量排第`r green$rank`）：最后一年B/Bmsy为`r sprintf("%.2f", green$B_Bmsy)`（95%置信区间`r sprintf("%.2f", green$B_Bmsy_lcl)`–`r sprintf("%.2f", green$B_Bmsy_ucl)`），F/Fmsy为`r sprintf("%.2f", green$F_Fmsy)`，处在绿区的概率为`r round(100 * green$p_green)`%。
 - **过度捕捞：毛鳞鱼**（*Mallotus villosus*，`CAP_27`，渔获量排第`r over$rank`）：最后一年B/Bmsy为`r sprintf("%.2f", over$B_Bmsy)`（95%置信区间`r sprintf("%.2f", over$B_Bmsy_lcl)`–`r sprintf("%.2f", over$B_Bmsy_ucl)`），F/Fmsy为`r sprintf("%.2f", over$F_Fmsy)`，B/Bmsy低于0.8的概率为`r round(100 * over$p_overfished)`%，处在红区的概率为`r round(100 * over$p_red)`%。
 
 毛鳞鱼寿命短，资源量随补充量大起大落，部分年份曾禁止捕捞；仅基于渔获量的模型会把这种渔获量的下降当作生物量的下降。这些结果是使用神经网络B/k先验完成的CMSY++运行，不是经过核实的资源评估，使用前应与ICES的评估结果比较。
 
-两个种群的先验表和结果表由`cmsy_tables()`生成（见第九步），先是北方长额虾：
+两个种群的先验表和结果表由`cmsy_tables()`生成（见第九步），先是Northern prawn：
 
 ```{r}
 show_table(read.csv(file.path(fig_dir, "green_priors_table.csv"), check.names = FALSE))
@@ -373,7 +373,7 @@ cmsy_plot(result)
 
 状态默认按FAO（2026）对第3层（数据有限）评估的规定分为两级：B/Bmsy ≥ 0.8为“最大可持续捕捞”，< 0.8为“过度捕捞”。`classes = "palomares"`改用很多CMSY研究采用的Palomares et al. (2018)五级：健康（≥ 1）、轻度过度捕捞（0.8–1）、过度捕捞（0.5–0.8）、严重过度捕捞（0.2–0.5）、崩溃（< 0.2）。
 
-北方长额虾和毛鳞鱼的CMSY++分析图（默认不加注释）：
+Northern prawn和毛鳞鱼的CMSY++分析图（默认不加注释）：
 
 ```{r, echo = FALSE}
 show_png("green_analysis.png")
@@ -441,7 +441,7 @@ projection <- cmsy_forecast(result, catch = 100000)
 
 函数返回`projection`（各种群、情景和年份的B/Bmsy、F/Fmsy和渔获量中位数及95%区间，以及B ≥ Bmsy的概率）和`share`（各情景逐年达到或高于Bmsy的种群比例及95%区间，以及种群数`n_stocks`；从各种群最晚的最后一年开始）。
 
-固定渔获量取接近各种群MSY的值（北方长额虾`r format(green$forecast_catch_t, big.mark = ",")`吨，毛鳞鱼`r format(over$forecast_catch_t, big.mark = ",")`吨），另加各F情景：
+固定渔获量取接近各种群MSY的值（Northern prawn `r format(green$forecast_catch_t, big.mark = ",")`吨，毛鳞鱼`r format(over$forecast_catch_t, big.mark = ",")`吨），另加各F情景：
 
 ```{r, echo = FALSE}
 show_png("green_forecast.png")
@@ -455,7 +455,7 @@ result_1950 <- cmsy_run(input, stocks = "PRA_27", seed = 1)        # 从1950年�
 cmsy_compare(`1950` = result_1950, `CMSY++` = result, stocks = "PRA_27")
 ```
 
-`cmsy_compare()`把几次运行（例如不同的起始年或先验，即敏感性分析）以及其他评估的结果（`external`，如ICES、JABBA或文献中的B/Bmsy）画在同一张图上，并给出各自最后一年的值。起始年的影响很大：北方长额虾从1950年开始运行时，最后一年B/Bmsy为`r sprintf("%.2f", green$B_Bmsy_1950)`，低于Bmsy；按CMSY++建议从`r green$first_year`年开始时为`r sprintf("%.2f", green$B_Bmsy)`，高于Bmsy。毛鳞鱼无论从哪一年开始都处于过度捕捞状态（从1950年开始为`r sprintf("%.2f", over$B_Bmsy_1950)`，从`r over$first_year`年开始为`r sprintf("%.2f", over$B_Bmsy)`）：
+`cmsy_compare()`把几次运行（例如不同的起始年或先验，即敏感性分析）以及其他评估的结果（`external`，如ICES、JABBA或文献中的B/Bmsy）画在同一张图上，并给出各自最后一年的值。起始年的影响很大：Northern prawn从1950年开始运行时，最后一年B/Bmsy为`r sprintf("%.2f", green$B_Bmsy_1950)`，低于Bmsy；按CMSY++建议从`r green$first_year`年开始时为`r sprintf("%.2f", green$B_Bmsy)`，高于Bmsy。毛鳞鱼无论从哪一年开始都处于过度捕捞状态（从1950年开始为`r sprintf("%.2f", over$B_Bmsy_1950)`，从`r over$first_year`年开始为`r sprintf("%.2f", over$B_Bmsy)`）：
 
 ```{r, echo = FALSE}
 show_png("green_compare.png")

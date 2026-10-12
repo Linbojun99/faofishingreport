@@ -201,7 +201,7 @@ FAO数据中每个物种都有一个ISSCAAP类群，所以函数按类群划分�
 show_table(fao_pd_groups(), n = 15)
 ```
 
-也可以用`pelagic = ...`和`demersal = ...`指定自己的类群。已发表的研究是逐个物种划分的，不是按ISSCAAP类群，所以它们的数值只能粗略对比：de Leiva Moreno et al. (2000)中，贫营养海域低于1，中营养海域约1至3.5，富营养海域约6至20。除了营养盐，捕捞和市场（底层鱼需求更高；Caddy et al. 1998）、缺氧（Hondorp et al. 2010）、小型中上层鱼本身的自然波动以及报告方式都会改变P/D，详见`?pelagic_demersal`。27区的P/D一直低于1（各年代在`r sprintf("%.2f", min(pd$decades$pd_mean))`至`r sprintf("%.2f", max(pd$decades$pd_mean))`之间），尽管中上层鱼是该渔区的主要渔获：小鳍鳕（蓝鳕，一种中上层的鳕类）被归入鳕、无须鳕、黑线鳕类，按这一定义算作底层鱼，而大西洋鲭属于“其他中上层鱼类”，不计入。这说明分组方式对P/D影响很大。
+也可以用`pelagic = ...`和`demersal = ...`指定自己的类群。已发表的研究是逐个物种划分的，不是按ISSCAAP类群，所以它们的数值只能粗略对比：de Leiva Moreno et al. (2000)中，贫营养海域低于1，中营养海域约1至3.5，富营养海域约6至20。除了营养盐，捕捞和市场（底层鱼需求更高；Caddy et al. 1998）、缺氧（Hondorp et al. 2010）、小型中上层鱼本身的自然波动以及报告方式都会改变P/D，详见`?pelagic_demersal`。27区的P/D一直低于1（各年代在`r sprintf("%.2f", min(pd$decades$pd_mean))`至`r sprintf("%.2f", max(pd$decades$pd_mean))`之间），尽管中上层鱼是该渔区的主要渔获：小鳍鳕（Blue whiting，一种中上层的鳕类）被归入鳕、无须鳕、黑线鳕类，按这一定义算作底层鱼，而大西洋鲭属于“其他中上层鱼类”，不计入。这说明分组方式对P/D影响很大。
 
 | 参数 | 含义 | 默认值 |
 |---|---|---|
