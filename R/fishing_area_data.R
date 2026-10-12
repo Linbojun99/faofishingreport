@@ -44,11 +44,12 @@
 #' @return A list with `area_data` (the FAO data of the area), `coefs_data` (start year, end year
 #'         and mean catch of each period between breakpoints) and `act_world_map` (the map data).
 #' @family fishing area analyses
+#' @inheritParams summary_params
 #' @export
 #' @examples
 #' \dontrun{
 #' # Firstly, data preparing and loading.
-#' FAO34 <- fishing_area_data(area_name="Atlantic, Eastern Central", plot = TRUE, timeseries_analysis=TRUE)
+#' FAO27 <- fishing_area_data("Atlantic, Northeast")
 #' }
 fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
                               area_color1 = "grey80", area_alpha = 0.7,
@@ -69,7 +70,9 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
                               axis_text_size_map = 12,
                               legend_text_size_map = 12,
                               ZH=FALSE, lang = NULL, data_version = "latest",
-                              pptx = getOption("faofishingreport.pptx", FALSE)) {
+                              pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show")) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   lang <- fao_lang(lang, ZH)
   data <- load_fao_data(data_version)
   area_data <- subset(data, data$FAO.major.fishing.area..Name. == area_name)
@@ -248,5 +251,13 @@ fishing_area_data <- function(area_name, plot = TRUE,timeseries_analysis=TRUE,
 
      }
 
-  return(list(area_data=area_data,coefs_data=coefs_data,act_world_map=act_world_map))
+  periods <- if (is.null(coefs_data)) NULL else data.frame(from = coefs_data$start_year, to = coefs_data$end_year,
+                                                             mean_catch_t = coefs_data$intercept)
+  last <- which.max(area_production$Year)
+  fao_run_result(list(area_data=area_data,coefs_data=coefs_data,act_world_map=act_world_map), run,
+                 fao_run_title("fishing_area_data", what = area_name), main = periods,
+                 note = paste0(format(nrow(area_data), big.mark = ","), " records, ", min(area_production$Year), "-",
+                               area_production$Year[last], "; catch in ", area_production$Year[last], ": ",
+                               format(round(area_production$Tonnes[last]), big.mark = ","),
+                               " t. Periods of the total catch (breakpoints) and their mean catch:"))
 }

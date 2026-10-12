@@ -36,7 +36,7 @@
 #'        `<out_dir>/<area>/figures_pptx/`. Default is FALSE, which can be changed for all functions
 #'        with `fao_settings(pptx = TRUE)`.
 #' @param area FAO major fishing area name(s), as in [fishing_area_data()] (e.g.
-#'        "Atlantic, Eastern Central"), or FAO catch data such as `fishing_area_data()$area_data`.
+#'        "Atlantic, Northeast"), or FAO catch data such as `fishing_area_data()$area_data`.
 #' @param top Number of species with the largest catch to assess. Default is 10.
 #' @param species Optional species to assess instead of the `top` ones, by English or Chinese
 #'        name, scientific name or FAO 3-alpha code.
@@ -61,33 +61,36 @@
 #' FAO (2026). The State of World Fisheries and Aquaculture 2026. Rome, FAO. Section "The status
 #' of fishery resources", Box 1.3 (assessment tiers and status classes).
 #' \url{https://openknowledge.fao.org/server/api/core/bitstreams/09d03e2f-7097-4d59-bf94-db65e95f44fd/content/sofia-2026/the-status-fishery-resources.html}
+#' @inheritParams summary_params
 #' @export
 #' @examples
 #' \dontrun{
 #' cmsy_setup()                     # once: JAGS and the R packages CMSY++ needs
 #'
-#' # The ten species with the largest catch of the last ten years in FAO area 34, in Chinese
-#' area34 <- cmsy_area("Atlantic, Eastern Central", top = 10, lang = "zh")
-#' area34$summary[, c("Stock", "species_name", "B_Bmsy", "F_Fmsy", "status")]
-#' area34$dir                       # folder with input/, runs/, figures/ and tables/
+#' # The ten species with the largest catch of the last ten years in FAO area 27, in Chinese
+#' area27 <- cmsy_area("Atlantic, Northeast", top = 10, lang = "zh")
+#' area27$summary[, c("Stock", "species_name", "B_Bmsy", "F_Fmsy", "status")]
+#' area27$dir                       # folder with input/, runs/, figures/ and tables/
 #'
 #' # Chosen species (scientific name, FAO code, ...), all annotations, five status classes
-#' cmsy_area("Atlantic, Eastern Central", species = c("Brachydeuterus auritus", "PIL"),
+#' cmsy_area("Atlantic, Northeast", species = c("Mallotus villosus", "PRA"),
 #'           annotations = TRUE, classes = "palomares")
 #'
 #' # Species without a FishBase prior get a resilience (passed on to cmsy_input())
-#' cmsy_area("Atlantic, Eastern Central", top = 20, default_resilience = "Medium")
+#' cmsy_area("Atlantic, Northeast", top = 20, default_resilience = "Medium")
 #'
 #' # Several areas, quietly, with longer MCMC chains (see cmsy_defaults())
-#' cmsy_area(c("Atlantic, Eastern Central", "Pacific, Northwest"), top = 5, silent = TRUE,
+#' cmsy_area(c("Atlantic, Northeast", "Atlantic, Northwest"), top = 5, silent = TRUE,
 #'           settings = list(n.iter = 100000, n.burnin = 50000))
 #' }
 cmsy_area <- function(area, top = 10, species = NULL, recent_years = 10, out_dir = "cmsy_areas",
                       auto_start = TRUE, seed = 1, parallel = NULL, settings = list(),
                       charts = c(cmsy_stock_charts, cmsy_summary_charts), classes = c("fao", "palomares"),
                       forecast = TRUE, annotations = getOption("faofishingreport.cmsy_annotations", FALSE),
-                      lang = NULL, pptx = getOption("faofishingreport.pptx", FALSE),
+                      lang = NULL, pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"),
                       silent = fao_setting("silent"), ...) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   if (is.character(area) && length(area) > 1) {
     out <- lapply(seq_along(area), function(i) {
       if (!silent) message("\n== ", i, "/", length(area), ": ", area[i], " ==")
@@ -216,7 +219,8 @@ cmsy_area <- function(area, top = 10, species = NULL, recent_years = 10, out_dir
     message("Done: ", sum(ok), " of ", nrow(result$summary), " stocks; ",
             sum(result$summary$status[ok] == "overfished", na.rm = TRUE), " overfished (B/Bmsy < 0.8). Results in ", dir)
   }
-  invisible(result)
+  fao_run_result(result, run, fao_run_title("cmsy_area", what = label), main = fao_cols(result$summary, c("Stock", "species_name", "last_year", "B_Bmsy", "F_Fmsy", "status")),
+                 note = paste0("CMSY++ results (from the catch only) for ", nrow(result$summary), " stocks:"), rows = 20, quiet = silent)
 }
 
 # Moves the contents of `from` to `to` (replacing `to`), e.g. figures/png/cmsy to figures

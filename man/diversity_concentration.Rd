@@ -11,6 +11,7 @@ diversity_concentration(
   table = TRUE,
   lang = NULL,
   pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show"),
   label = NULL
 )
 }
@@ -32,6 +33,11 @@ diversity_concentration(
 \verb{figures/pptx/summary/}. Default is FALSE, which can be changed for all functions with
 \code{fao_settings(pptx = TRUE)}.}
 
+\item{plot_show}{A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+which can be changed for all functions with \code{fao_settings(plot_show = TRUE)}. The
+charts are saved as files (\code{plot = TRUE}) either way.}
+
 \item{label}{The name used in the output file names. Default is the fishing area (or the
 country) of the data.}
 }
@@ -52,8 +58,8 @@ squared percentage shares (0 to 10 000; above 2 500 is usually read as highly co
 }
 \examples{
 \dontrun{
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-diversity_concentration(FAO34$area_data, lang = "zh")
+FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+diversity_concentration(FAO27$area_data, lang = "zh")
 }
 }
 \seealso{

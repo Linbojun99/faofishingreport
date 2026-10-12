@@ -15,6 +15,38 @@ fao_summary_name <- function(label, analysis) {
   paste0(fao_file_name(label), "_", analysis)
 }
 
+# The ranks chosen with `rank_range` (fishing_area_species(), species_country(), ...): the ranks
+# listed, e.g. 1:10 for the first ten or c(5, 6) for the fifth and sixth. Until 0.9.0 two numbers
+# were the first and last rank of a range, so a note says once per session what c(1, 10) means now.
+fao_rank_select <- function(rank_range) {
+  if (!is.numeric(rank_range) || length(rank_range) == 0 || !all(is.finite(rank_range)) ||
+      any(rank_range < 1) || any(rank_range != round(rank_range))) {
+    stop("`rank_range` must be the ranks to show, whole numbers of at least 1: e.g. 1:10 for ",
+         "ranks 1 to 10, or c(5, 6) for ranks 5 and 6.", call. = FALSE)
+  }
+  if (length(rank_range) == 2 && abs(diff(rank_range)) > 1 && !isTRUE(.fao_cache$rank_note)) {
+    .fao_cache$rank_note <- TRUE
+    from <- min(rank_range)
+    to <- max(rank_range)
+    message("Since version 1.0.0 `rank_range` lists the ranks to show: c(", rank_range[1], ", ",
+            rank_range[2], ") shows ranks ", rank_range[1], " and ", rank_range[2], ". Use ",
+            from, ":", to, " for ranks ", from, " to ", to, ".")
+  }
+  sort(unique(as.integer(rank_range)))
+}
+
+# Keeps the rows at the chosen ranks of data sorted from the largest catch; stops when there are
+# none (e.g. ranks 20 to 30 of an area with 15 species)
+fao_rank_slice <- function(data, ranks, what = "species") {
+  out <- dplyr::slice(data, ranks)
+  if (nrow(out) == 0) {
+    shown <- if (length(ranks) > 5) paste(min(ranks), "to", max(ranks)) else paste(ranks, collapse = ", ")
+    stop("There is nothing at the ranks in `rank_range` (", shown, "): the data have ",
+         nrow(data), " ", what, ".", call. = FALSE)
+  }
+  out
+}
+
 fao_save_table <- function(x, name) {
   fao_ensure_dirs("tables")
   fao_write_csv(x, file.path("tables", paste0(name, ".csv")))
@@ -124,6 +156,10 @@ fao_category_table <- function(yearly, category_label) {
 #'        `fao_settings(pptx = TRUE)`.
 #' @param label The name used in the output file names. Default is the fishing area (or the
 #'        country) of the data.
+#' @param plot_show A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+#'        the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+#'        which can be changed for all functions with `fao_settings(plot_show = TRUE)`. The
+#'        charts are saved as files (`plot = TRUE`) either way.
 #' @name summary_params
 #' @keywords internal
 NULL

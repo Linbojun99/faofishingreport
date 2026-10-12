@@ -265,14 +265,14 @@ fao_section_total_write <- function(x, ctx) {
 # ---- Main species and countries of the last five years --------------------------------------
 fao_section_species_run <- function(ctx, args) {
   out <- ctx$step("main species", fao_section_call(ctx, "fishing_area_species", args, list(
-    area_data = ctx$area_data, rank_range = c(1, ctx$top_n), rank_years = 5, table = FALSE, lang = ctx$lang)))
+    area_data = ctx$area_data, rank_range = seq_len(ctx$top_n), rank_years = 5, table = FALSE, lang = ctx$lang)))
   out$trend <- suppressMessages(peak_trend(ctx$area_data, by = "species", top_n = Inf, plot = FALSE, table = FALSE, lang = "en"))
   out
 }
 
 fao_section_countries_run <- function(ctx, args) {
   out <- ctx$step("main countries", fao_section_call(ctx, "fishing_area_country", args, list(
-    area_data = ctx$area_data, rank_range = c(1, ctx$top_n), rank_years = 5, table = FALSE, lang = ctx$lang)))
+    area_data = ctx$area_data, rank_range = seq_len(ctx$top_n), rank_years = 5, table = FALSE, lang = ctx$lang)))
   out$trend <- suppressMessages(peak_trend(ctx$area_data, by = "country", top_n = Inf, plot = FALSE, table = FALSE, lang = "en"))
   out
 }

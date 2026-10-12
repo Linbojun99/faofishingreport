@@ -54,7 +54,7 @@ test_that("S3 listings are parsed", {
 })
 
 test_that("the online setting only accepts TRUE or FALSE", {
-  withr::defer(fao_settings(reset = TRUE))
+  defer_reset_settings()
   expect_error(fao_settings(online = "no"), "TRUE or FALSE")
   fao_settings(online = FALSE)
   expect_false(fao_setting("online"))

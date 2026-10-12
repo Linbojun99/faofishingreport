@@ -1,6 +1,6 @@
 {
   "topic": "cmsy_area",
-  "rd_md5": "e408fb6f9b5a10e4689a9e6d2bbc998f",
+  "rd_md5": "f91096ab429016ded284ce98620594b0",
   "stale": false,
   "en": {
     "title": "Run CMSY++ for the Main Species of a Fishing Area",
@@ -8,7 +8,7 @@
     "details": "The results of each area are saved in their own folder, `out_dir/<area>/`:\n\n- **input/**: the CMSY++ catch and ID files, the stocks used, and the main species left out with the reason (e.g. no r prior: see `priors` and `default_resilience` of `cmsy_input()`);\n- **runs/**: the CMSY++ run of each stock (its folder has the original CMSY++ charts, output and log), the changed CMSY++ code and the list of changes;\n- **figures/**: one folder of charts per stock and a `summary/` folder for all stocks (PNG, and PowerPoint in `figures_pptx/` when `pptx` is TRUE);\n- **tables/**: results, yearly series, the priors and results tables for reports, projections, the CMSY++ settings used (`settings_used.csv`) and the sources of everything used (`sources.csv`).\n\nAs in `cmsy_input()`, FAO data have catches only (no abundance index), so all stocks are\nassessed with the catch-only part of CMSY++ and the results are indicative.",
     "value": "Invisibly, the result of `cmsy_run()` with the elements `input`, `forecast`, `tables`\nand `dir` (the folder of the area); a list of these, named by area, for several areas.",
     "arguments": {
-      "area": "FAO major fishing area name(s), as in `fishing_area_data()` (e.g.\n\"Atlantic, Eastern Central\"), or FAO catch data such as `fishing_area_data()$area_data`.",
+      "area": "FAO major fishing area name(s), as in `fishing_area_data()` (e.g.\n\"Atlantic, Northeast\"), or FAO catch data such as `fishing_area_data()$area_data`.",
       "top": "Number of species with the largest catch to assess. Default is 10.",
       "species": "Optional species to assess instead of the `top` ones, by English or Chinese\nname, scientific name or FAO 3-alpha code.",
       "recent_years": "Catch is ranked by its mean over the last `recent_years` years of the\ndata. Default is 10.",
@@ -23,6 +23,7 @@
       "annotations": "The text added to the axis titles and labels: FALSE (default) none, TRUE\nall, or any of \"title\", \"subtitle\", \"caption\", \"legend\" and \"labels\" (text inside the\nchart). The default can be changed for the session with\n`options(faofishingreport.cmsy_annotations = TRUE)`.",
       "lang": "The language of the chart text and names: \"en\" (English), \"zh\" (Chinese) or\n\"both\" (Chinese and English). Default is NULL, which uses the language set with\n`fao_settings()` (\"en\" unless changed).",
       "pptx": "A logical value. If TRUE, the charts are also saved as editable PowerPoint files in\n`<out_dir>/<area>/figures_pptx/`. Default is FALSE, which can be changed for all functions\nwith `fao_settings(pptx = TRUE)`.",
+      "plot_show": "A logical value. If TRUE, each chart is also drawn in the plot window (e.g.\nthe Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,\nwhich can be changed for all functions with `fao_settings(plot_show = TRUE)`. The\ncharts are saved as files (`plot = TRUE`) either way.",
       "silent": "A logical value. If FALSE (default), a progress bar shows how many stocks have\nfinished, with the elapsed and the estimated remaining time, and messages report the\nrun. If TRUE, nothing is printed. The default can be changed for the session with\n`fao_settings(silent = TRUE)`.",
       "...": "Further arguments passed to `cmsy_input()` (e.g. `priors`, `default_resilience`)."
     },
@@ -34,7 +35,7 @@
     "details": "每个渔区的结果保存在各自的文件夹`out_dir/<area>/`中：\n\n- **input/**：CMSY++的渔获量文件和ID文件、所用的种群，以及未纳入评估的主要物种及其原因（例如没有r先验：见`cmsy_input()`的`priors`和`default_resilience`）；\n- **runs/**：每个种群的CMSY++运行结果（其文件夹中有CMSY++的原始图表、输出和日志）、修改后的CMSY++代码和修改清单；\n- **figures/**：每个种群一个图表文件夹，另有一个包含全部种群的`summary/`文件夹（PNG格式；`pptx`为TRUE时，PowerPoint文件保存在`figures_pptx/`中）；\n- **tables/**：结果、逐年序列、报告用的先验参数表和结果表、预测结果、所用的CMSY++设置（`settings_used.csv`）以及所用全部内容的来源（`sources.csv`）。\n\n与`cmsy_input()`中一样，FAO数据只有渔获量（没有资源丰度指数），所以所有种群都只用CMSY++中仅基于渔获量的部分进行评估，结果仅具指示意义。",
     "value": "以不可见方式返回`cmsy_run()`的结果，并附加`input`、`forecast`、`tables`和`dir`（该渔区的文件夹）几个元素；有多个渔区时，返回由这些结果组成、以渔区命名的列表。",
     "arguments": {
-      "area": "FAO主要渔区名称（可以是多个），写法与`fishing_area_data()`中相同（例如\"Atlantic, Eastern Central\"），也可以是FAO渔获量数据，例如`fishing_area_data()$area_data`。",
+      "area": "FAO主要渔区名称（可以是多个），写法与`fishing_area_data()`中相同（例如\"Atlantic, Northeast\"），也可以是FAO渔获量数据，例如`fishing_area_data()$area_data`。",
       "top": "要评估的渔获量最大的物种数。默认为10。",
       "species": "可选，指定要评估的物种，以代替渔获量最大的`top`个物种；可以用英文名或中文名、学名或FAO三字母代码给出。",
       "recent_years": "按数据最后`recent_years`年的平均渔获量对物种排序。默认为10。",
@@ -49,6 +50,7 @@
       "annotations": "在坐标轴标题和坐标轴标签之外添加到图表中的文字：FALSE（默认）不添加，TRUE全部添加，或从\"title\"（标题）、\"subtitle\"（副标题）、\"caption\"（图注）、\"legend\"（图例）和\"labels\"（图表内的文字）中任选。可以用`options(faofishingreport.cmsy_annotations = TRUE)`在本次R会话中更改默认值。",
       "lang": "图表文字和名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL，即使用`fao_settings()`设置的语言（未更改时为\"en\"）。",
       "pptx": "逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件，保存在`<out_dir>/<area>/figures_pptx/`中。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。",
+      "plot_show": "逻辑值。为TRUE时，每张图在保存的同时也画在绘图窗口中（例如RStudio的Plots窗格），便于立即查看。默认为FALSE，可以用`fao_settings(plot_show = TRUE)`为所有函数统一更改。无论是否显示，图表都会保存为文件（`plot = TRUE`）。",
       "silent": "逻辑值。为FALSE（默认）时，用进度条显示已完成的种群数以及已用时间和预计剩余时间，并输出运行信息。为TRUE时不输出任何内容。可以用`fao_settings(silent = TRUE)`在本次R会话中更改默认值。",
       "...": "传递给`cmsy_input()`的其他参数（例如`priors`、`default_resilience`）。"
     },

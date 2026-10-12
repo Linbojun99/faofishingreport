@@ -119,13 +119,33 @@ sort(unique(data$FAO.major.fishing.area..Name.))
 27渔区产量最高的十个物种、它们的产量变化以及平均产量的突变点：
 
 ```{r, figures = TRUE}
-species <- fishing_area_species(FAO27$area_data, rank_range = c(1, 10))
+species <- fishing_area_species(FAO27$area_data, rank_range = 1:10)
 ```
 
 主要捕捞国家的分析方法相同：
 
 ```{r, figures = TRUE}
-countries <- fishing_area_country(FAO27$area_data, rank_range = c(1, 10))
+countries <- fishing_area_country(FAO27$area_data, rank_range = 1:10)
+```
+
+`rank_range`列出要显示的名次：`1:10`为前十名，`11:20`为其后十名，`c(5, 6)`为第五和第六名。
+
+## 🖥️ 控制台中显示的结果
+
+函数运行结束时，会在控制台显示结果摘要：分析的对象、主要结果表的前几行、保存的图表和表格，以及返回结果包含的部分。结果本身以不可见的方式返回，赋值（`species <- ...`）即可保存。下面是第五和第六名物种：
+
+```{r}
+fao_settings(show_data = TRUE)   # 默认设置（本网站的文章关闭了摘要）
+species56 <- fishing_area_species(FAO27$area_data, rank_range = c(5, 6))
+fao_settings(show_data = FALSE)
+```
+
+`plot_show = TRUE`会在保存每张图的同时，把图画在绘图窗口中（RStudio的Plots窗格）；无论是否显示，`plot = TRUE`都会保存图片文件：
+
+```{r, eval = FALSE}
+species <- fishing_area_species(FAO27$area_data, rank_range = 1:10, plot_show = TRUE)
+fao_settings(plot_show = TRUE)    # 本次会话的所有函数都显示图
+fao_settings(show_data = FALSE)   # 不在控制台显示摘要
 ```
 
 ## 🌐 中文与中英双语图表
@@ -166,6 +186,7 @@ fao_report(27, lang = "en")   # 在工作目录中生成reports/FAO27_report_en.
 | `plot` | 是否保存图表 | `TRUE` |
 | `table` | 是否在`tables/`中保存表格（`fishing_area_data()`没有此参数） | `TRUE` |
 | `pptx` | 同时保存可编辑的PowerPoint图表 | `FALSE`，或`fao_settings()`中的`pptx` |
+| `plot_show` | 保存图表的同时把图画在绘图窗口中（例如RStudio的Plots窗格） | `FALSE`，或`fao_settings()`中的`plot_show` |
 | `ZH` | 指定中文的旧方式：`ZH = TRUE`等同于`lang = "zh"`（只有渔区、物种和国家分析函数有此参数） | `FALSE` |
 | `label` | 汇总分析（如`stock_status()`）输出文件名中使用的名称 | `NULL`：数据所属的渔区（或国家） |
 

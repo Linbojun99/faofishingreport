@@ -53,7 +53,8 @@ fishing_area_data(
   ZH = FALSE,
   lang = NULL,
   data_version = "latest",
-  pptx = getOption("faofishingreport.pptx", FALSE)
+  pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show")
 )
 ```
 
@@ -319,6 +320,18 @@ fishing_area_data(
 
     </details>
 
+`plot_show`
+:   逻辑值。为TRUE时，每张图在保存的同时也画在绘图窗口中（例如RStudio的Plots窗格），便于立即查看。默认为FALSE，可以用`fao_settings(plot_show = TRUE)`为所有函数统一更改。无论是否显示，图表都会保存为文件（`plot = TRUE`）。
+
+    <details class="fao-en"><summary>English</summary>
+
+    A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+    the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+    which can be changed for all functions with `fao_settings(plot_show = TRUE)`. The
+    charts are saved as files (`plot = TRUE`) either way.
+
+    </details>
+
 ## 返回值
 
 一个列表，包含`area_data`（该渔区的FAO数据，数据框，可作为其他分析函数的输入）、`coefs_data`（总产量相邻突变点之间的各个时段：起始年`start_year`、结束年`end_year`和该时段的平均产量`intercept`，单位为吨）和`act_world_map`（地图数据，`plot = FALSE`时为NULL）。
@@ -340,7 +353,7 @@ Other fishing area analyses:
 
 ```r
 # Firstly, data preparing and loading.
-FAO34 <- fishing_area_data(area_name="Atlantic, Eastern Central", plot = TRUE, timeseries_analysis=TRUE)
+FAO27 <- fishing_area_data("Atlantic, Northeast")
 ```
 
 

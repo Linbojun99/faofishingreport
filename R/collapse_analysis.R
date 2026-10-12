@@ -68,15 +68,17 @@
 #' @examples
 #' \dontrun{
 #' collapse_analysis(load_fao_data(), lang = "zh")                   # Mullon et al. (2005), world
-#' FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-#' collapse_analysis(FAO34$area_data, method = "worm2006")
+#' FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+#' collapse_analysis(FAO27$area_data, method = "worm2006")
 #' }
 collapse_analysis <- function(area_data, method = c("mullon2005", "worm2006"),
                               exclude_countries = c("Un. Sov. Soc. Rep.", "Yugoslavia SFR", "Czechoslovakia",
                                                     "South Africa", "Namibia", "China"),
                               complete_years = 20, min_mean_catch = 500, min_total_catch = 10000,
                               null_model = TRUE, n_sim = 100, plot = TRUE, table = TRUE, lang = NULL,
-                              pptx = getOption("faofishingreport.pptx", FALSE), label = NULL) {
+                              pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), label = NULL) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   method <- match.arg(method)
   lang <- fao_lang(lang)
   name <- fao_summary_name(fao_summary_label(area_data, label), paste0("collapse_", method))
@@ -269,7 +271,9 @@ collapse_analysis <- function(area_data, method = c("mullon2005", "worm2006"),
     fao_save_table(by_year, paste0(name, "_by_year"))
     fao_save_table(by_group, paste0(name, "_by_group"))
   }
-  invisible(list(series = series, summary = summary, by_year = by_year, by_group = by_group))
+  fao_run_result(list(series = series, summary = summary, by_year = by_year, by_group = by_group), run, fao_run_title("collapse_analysis", area_data, label),
+                 main = fao_cols(summary, c("type", "n", "pct_of_series", "pct_of_collapses", "null_pct_of_series")),
+                 note = paste0("State of ", nrow(series), " catch series:"))
 }
 
 # Collapse of one series by the definition of Mullon et al. (2005); missing years count as zero

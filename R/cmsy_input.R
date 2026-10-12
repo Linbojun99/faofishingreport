@@ -31,7 +31,7 @@
 #' @inheritParams summary_params
 #' @param species Optional species to keep, by English or Chinese FAO name, both together (as
 #'        shown with `lang = "both"`), scientific name or FAO 3-alpha code, e.g.
-#'        `c("European pilchard(=Sardine)", "Sardinella aurita", "BOG")` or Chinese names.
+#'        `c("Atlantic herring", "Mallotus villosus", "PRA")` or Chinese names.
 #'        Default is NULL, all species.
 #' @param by "area" (default): one stock per species item and fishing area, summed over
 #'        countries; or "country": one stock per species item, fishing area and country.
@@ -70,34 +70,36 @@
 #' @export
 #' @examples
 #' \donttest{
-#' FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
+#' FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
 #'
 #' # All species of the area that CMSY++ can assess with catch only
-#' input <- cmsy_input(FAO34$area_data, table = FALSE)
+#' input <- cmsy_input(FAO27$area_data, table = FALSE)
 #' input
 #' head(input$stocks[, c("Stock", "species_en", "first_year", "Resilience", "r.low", "r.hi", "r_source")])
 #' table(input$excluded$reason)                      # why the others are left out
 #'
 #' # Some species only, by English name, scientific name or FAO 3-alpha code
-#' input <- cmsy_input(FAO34$area_data, species = c("European pilchard(=Sardine)", "Sardinella aurita", "GRB"),
+#' input <- cmsy_input(FAO27$area_data, species = c("Atlantic herring", "Mallotus villosus", "PRA"),
 #'                     table = FALSE)
 #'
-#' # Expert B/k priors (user guide Tables 1 and 3): sardine thought to be depleted in the last year
-#' input <- cmsy_input(FAO34$area_data, species = "PIL", table = FALSE,
-#'                     priors = data.frame(species = "Sardina pilchardus", endb.low = 0.2, endb.hi = 0.5))
+#' # Expert B/k priors (user guide Tables 1 and 3): capelin thought to be depleted in the last year
+#' input <- cmsy_input(FAO27$area_data, species = "CAP", table = FALSE,
+#'                     priors = data.frame(species = "Mallotus villosus", endb.low = 0.2, endb.hi = 0.5))
 #' input$id[, c("Stock", "endb.low", "endb.hi")]
 #'
 #' # A start year chosen by the user, and a resilience for species without a FishBase prior
-#' input <- cmsy_input(FAO34$area_data, table = FALSE, default_resilience = "Medium",
-#'                     priors = data.frame(alpha3 = "PIL", StartYear = 1973))
+#' input <- cmsy_input(FAO27$area_data, table = FALSE, default_resilience = "Medium",
+#'                     priors = data.frame(alpha3 = "CAP", StartYear = 1980))
 #'
 #' # One stock per country instead of one per area
-#' by_country <- cmsy_input(FAO34$area_data, species = "PIL", by = "country", table = FALSE)
+#' by_country <- cmsy_input(FAO27$area_data, species = "CAP", by = "country", table = FALSE)
 #' by_country$stocks[, c("Stock", "country", "first_year", "last_year")]
 #' }
 cmsy_input <- function(area_data, species = NULL, by = c("area", "country"), priors = NULL, default_resilience = NULL,
                        min_years = 10, min_catch = 1000, max_filled = 0.2, table = TRUE,
                        lang = NULL, label = NULL, silent = fao_setting("silent")) {
+  run <- fao_run_begin()
+  on.exit(fao_run_end(run), add = TRUE)
   by <- match.arg(by)
   lang <- fao_lang(lang)
   if (!is.null(default_resilience) && !default_resilience %in% cmsy_resilience_r$resilience) {
@@ -245,7 +247,9 @@ cmsy_input <- function(area_data, species = NULL, by = c("area", "country"), pri
     message(nrow(result$stocks), if (nrow(result$stocks) == 1) " stock" else " stocks", " ready for CMSY++ (catch only, no abundance data); ",
             nrow(result$excluded), " left out (see $excluded).")
   }
-  invisible(result)
+  fao_run_result(result, run, fao_run_title("cmsy_input", area_data, label),
+                 main = fao_cols(result$stocks, c("Stock", "species_en", "first_year", "last_year", "Resilience", "r.low", "r.hi")),
+                 note = paste0(nrow(result$stocks), " stocks ready for CMSY++, ", nrow(result$excluded), " left out:"), quiet = silent)
 }
 
 #' @export

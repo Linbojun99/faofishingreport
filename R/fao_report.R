@@ -25,8 +25,8 @@
 #' The text templates are in `inst/extdata/report_text.csv` and the references in
 #' `inst/extdata/report_references.csv` of the package source: edit them to change the wording.
 #'
-#' @param area The FAO major fishing area: its name, e.g. "Atlantic, Eastern Central", or its
-#'        code, e.g. 34.
+#' @param area The FAO major fishing area: its name, e.g. "Atlantic, Northeast", or its
+#'        code, e.g. 27.
 #' @param ... Settings of the analyses, named with the section as prefix: `total_` for
 #'        [fishing_area_data()], `species_` for [fishing_area_species()], `countries_` for
 #'        [fishing_area_country()], `groups_` for [species_group_composition()], `status_` for
@@ -60,7 +60,7 @@
 #' @param lang The language of the report: "zh" (Chinese) or "en" (English). Default is NULL,
 #'        the language set with `fao_settings()` ("both" gives a Chinese report).
 #' @param title The report title. Default is generated from the area, e.g. "Assessment of
-#'        Marine Capture Production in FAO Major Fishing Area 34 (Atlantic, Eastern Central)".
+#'        Marine Capture Production in FAO Major Fishing Area 27 (Atlantic, Northeast)".
 #' @param report_no The number of the report, shown as "Report 1" (in Chinese reports with a
 #'        Chinese numeral) and used in the figure and table numbers (1-1, 1-2, ...). Default is 1.
 #' @param author The author on the cover and below the title. Default is NULL, which writes
@@ -118,27 +118,27 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' fao_report(34)                                  # Chinese or English, from fao_settings()
-#' fao_report("Atlantic, Eastern Central", lang = "zh", author = "Hongyu Lin")
-#' fao_report(34, lang = "en", font = "Times New Roman", citation = "fao")
+#' fao_report(27)                                  # Chinese or English, from fao_settings()
+#' fao_report("Atlantic, Northeast", lang = "zh", author = "Hongyu Lin")
+#' fao_report(27, lang = "en", font = "Times New Roman", citation = "fao")
 #'
 #' # The other analyses of the package, with their settings
-#' fao_report(34, lang = "zh", shocks = TRUE, collapse = TRUE, synchrony = TRUE, pelagic = TRUE,
+#' fao_report(27, lang = "zh", shocks = TRUE, collapse = TRUE, synchrony = TRUE, pelagic = TRUE,
 #'            mtc = TRUE, distant = TRUE, collapse_method = "worm2006", distant_countries = 5)
 #'
 #' # Only some sections, with settings of their functions
-#' fao_report(34, lang = "zh", quality = FALSE, diversity = FALSE,
+#' fao_report(27, lang = "zh", quality = FALSE, diversity = FALSE,
 #'            species_h_value = 0.2, status_smooth = TRUE)
 #'
 #' # With a CMSY++ assessment of the 10 main species (a few minutes)
-#' report <- fao_report(34, lang = "zh", cmsy = TRUE)
+#' report <- fao_report(27, lang = "zh", cmsy = TRUE)
 #' report                                         # the tables it returns
 #' View(report$cmsy_reference_points)             # r, k, MSY, B/Bmsy, ... with 95% limits
 #' View(report$cmsy_priors)                       # priors, sources and links
-#' fao_report(34, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5)
+#' fao_report(27, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5)
 #'
 #' # Reuse CMSY++ results to rewrite the report
-#' fao_report(34, lang = "zh", cmsy = readRDS(file.path("reports", "cmsy", "Atlantic__Eastern_Central",
+#' fao_report(27, lang = "zh", cmsy = readRDS(file.path("reports", "cmsy", "Atlantic__Northeast",
 #'                                                       "cmsy_result.rds")))
 #' }
 fao_report <- function(area, ..., file = NULL, format = "docx", lang = NULL, title = NULL, report_no = 1,
@@ -148,6 +148,9 @@ fao_report <- function(area, ..., file = NULL, format = "docx", lang = NULL, tit
                        total = TRUE, species = TRUE, countries = TRUE, groups = TRUE, status = TRUE,
                        quality = TRUE, diversity = TRUE, fleets = TRUE, shocks = FALSE, collapse = FALSE,
                        synchrony = FALSE, pelagic = FALSE, mtc = FALSE, distant = FALSE, cmsy = FALSE) {
+  # the analyses of the report neither show their summaries nor draw their charts on screen
+  run <- fao_run_begin(plot_show = FALSE)
+  on.exit(fao_run_end(run), add = TRUE)
   format <- match.arg(format, c("docx", "latex", "pdf"), several.ok = TRUE)
   if (!is.numeric(dpi) || length(dpi) != 1 || is.na(dpi) || dpi < 72) {
     stop("`dpi` must be one number of at least 72, e.g. 300 or 600.", call. = FALSE)

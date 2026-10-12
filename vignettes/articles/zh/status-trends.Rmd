@@ -34,6 +34,7 @@ FAO27 <- fishing_area_data("Atlantic, Northeast")
 | `table` | 是否把表格保存到`tables/` | `TRUE` |
 | `lang` | 图中文字和名称的语言：`"en"`、`"zh"`或`"both"` | `NULL`：使用`fao_settings()`设定的语言（未修改时为`"en"`） |
 | `pptx` | 是否同时把图保存为可编辑的PowerPoint文件，存放在`figures/pptx/summary/` | `FALSE`；`fao_settings(pptx = TRUE)`可对所有函数生效 |
+| `plot_show` | 保存图表的同时把图画在绘图窗口中（例如RStudio的Plots窗格） | `FALSE`，或`fao_settings()`中的`plot_show` |
 | `label` | 输出文件名开头的名称 | `NULL`：数据所属的渔区（或国家；含多个渔区和国家时为`"selected_data"`） |
 
 ## 🧺 物种类群结构

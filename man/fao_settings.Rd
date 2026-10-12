@@ -50,6 +50,13 @@ NetCDF file, or of a folder of NetCDF files (see \code{fao_area_sst()}).}
 \item{silent}{Whether the CMSY++ functions (\code{cmsy_run()}, \code{cmsy_plot()}, ...) work
 silently, without progress bars and messages. Default is FALSE. Their \code{silent} argument
 still takes precedence.}
+\item{show_data}{Whether an analysis function shows a short summary of its results in the
+console when it finishes: what was analysed, the first rows of its main table, the charts
+and tables it saved, and the parts of the result it returns. Default is TRUE. The results
+are returned invisibly: assign them to keep them, e.g. \code{x <- stock_status(data)}.}
+\item{plot_show}{Whether charts are also drawn in the plot window (e.g. the Plots pane of
+RStudio) as they are saved. Default is FALSE. The \code{plot_show} argument of a function still
+takes precedence.}
 }}
 
 \item{reset}{A logical value. If TRUE, all settings go back to their defaults first.}

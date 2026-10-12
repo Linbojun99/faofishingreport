@@ -3,7 +3,11 @@
 #' This function analyzes the fishing area data and generates plots for specified country based on their ranking in terms of total tonnes.
 #'
 #' @param area_data A data frame containing the fishing area data.
-#' @param rank_range A numeric vector of length 2 specifying the rank range of country to be analyzed.
+#' @param rank_range The ranks of the countries to show, ranked by their catch (see `rank_years`): the ranks
+#'   listed, e.g. `1:10` (default) for the first ten, `c(5, 6)` for the fifth and sixth, or
+#'   `c(1, 10)` for the first and the tenth. Ranks beyond the number of countries are left out.
+#'   Until version 0.9.0 two numbers gave the first and the last rank (`c(1, 10)` was the
+#'   first ten).
 #' @param rank_years The number of recent years whose catch ranks the countries, e.g. 5 for the
 #'        last five years (as in the tables of [fao_report()]). Default is NULL: the catch of all years.
 #'        The charts show the whole series either way.
@@ -44,13 +48,16 @@
 #'         `coefs_data` (start year, end year and mean catch of each period between breakpoints).
 #'         Charts and tables are saved if `plot` and `table` are TRUE.
 #' @family fishing area analyses
+#' @inheritParams summary_params
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' fishing_area_country(FAO34[["area_data"]], c(1, 10), plot=TRUE,table=TRUE,h_value=0.15) #area_data=Fao34
+#' FAO27 <- fishing_area_data("Atlantic, Northeast")
+#' fishing_area_country(FAO27$area_data, rank_range = 1:10)    # the ten main countries
+#' fishing_area_country(FAO27$area_data, rank_range = c(5, 6)) # the fifth and sixth
 #' }
-fishing_area_country <- function(area_data, rank_range = c(1, 10), rank_years = NULL, plot = TRUE, table=TRUE,timeseries_analysis=TRUE,
+fishing_area_country <- function(area_data, rank_range = 1:10, rank_years = NULL, plot = TRUE, table=TRUE,timeseries_analysis=TRUE,
                                  line_width = 1.5,
                                  point_size = 1.8,
                                  point_alpha = 0.7,
@@ -71,7 +78,10 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), rank_years = 
                                  facet_ncol = 2,
                                  h_value=0.15,
                                  ZH = FALSE, lang = NULL,
-                                 pptx = getOption("faofishingreport.pptx", FALSE)) {
+                                 pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show")) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
+  ranks <- fao_rank_select(rank_range)
 
 
   lang <- fao_lang(lang, ZH)
@@ -159,7 +169,7 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), rank_years = 
     dplyr::arrange(desc(Rank_Tonnes), desc(Total_Tonnes))
 
   selected_country <- ranked_country %>%
-    dplyr::slice(rank_range[1]:rank_range[2])
+    fao_rank_slice(ranks, "countries")
 
   plot_data <- area_data %>%
     dplyr::filter(Country..Name. %in% selected_country$Country..Name.) %>%
@@ -368,5 +378,12 @@ fishing_area_country <- function(area_data, rank_range = c(1, 10), rank_years = 
     }
   }
 
-  return(list(area_country=area_country,area_country_ranked=plot_data,area_country_ranked_total=selected_country,coefs_data=coefs_data))
+  rank_cols <- c(catch_t = "Total_Tonnes", share_pct = "Percentage")
+  if (!is.null(rank_years)) rank_cols[[paste0("catch_last_", rank_years, "_years_t")]] <- "Rank_Tonnes"
+  fao_run_result(list(area_country=area_country,area_country_ranked=plot_data,area_country_ranked_total=selected_country,coefs_data=coefs_data), run,
+                 fao_run_title("fishing_area_country", area_data),
+                 main = fao_rank_table(selected_country, ranks, "country", "Country..Name.", rank_cols),
+                 note = paste0("Ranks ", fao_ranks_text(ranks), " of ", nrow(ranked_country), " countries, by catch ",
+                               if (is.null(rank_years)) "over all years" else paste("in the last", rank_years, "years"),
+                               " (catch_t and share_pct: all years):"))
 }

@@ -107,12 +107,14 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-#' match <- fishbase_match(FAO34$area_data, lang = "zh")
+#' FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+#' match <- fishbase_match(FAO27$area_data, lang = "zh")
 #' head(match[, c("species_name", "status", "match_type", "trophic_level", "url")])
 #' }
 fishbase_match <- function(area_data = NULL, version = "latest", corrections = NULL, table = TRUE,
                            lang = NULL, label = NULL, data_dir = fao_data_dir()) {
+  run <- fao_run_begin()
+  on.exit(fao_run_end(run), add = TRUE)
   lang <- fao_lang(lang)
   if (is.null(area_data)) {
     area_data <- load_fao_data(data_dir = data_dir)
@@ -159,7 +161,9 @@ fishbase_match <- function(area_data = NULL, version = "latest", corrections = N
   counts <- base::table(factor(result$status, levels = c("matched", "failed", "pending online check")))
   message("FAO species items: ", nrow(result), "; ", paste(names(counts), counts, sep = " ", collapse = ", "),
           ". Matched items cover ", round(sum(result$catch_pct[result$status == "matched"]), 1), "% of the catch.")
-  invisible(result)
+  fao_run_result(result, run, fao_run_title("fishbase_match", area_data, label),
+                 main = fao_cols(result, c("species_en", "catch_pct", "status", "match_type", "trophic_level", "temp_pref_mean")),
+                 note = "Species items with the largest catch:")
 }
 
 

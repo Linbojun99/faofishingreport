@@ -62,7 +62,7 @@ show_table(table, n = 10, digits = 0)
 |---|---|---|
 | `area_data` | 渔区产量数据：`fishing_area_data()$area_data`或`load_fao_data()`的任意子集 | |
 | `species_name` | FAO物种名（ASFIS英文名，与数据中一致） | |
-| `rank_range` | 显示的国家排名范围（按该物种历年总产量排序） | `c(1, 10)` |
+| `rank_range` | 显示的国家名次（按该物种历年总产量排序）：`1:10`为前十名，`c(5, 6)`为第五和第六名 | `1:10` |
 | `plot` | 保存图表 | `TRUE` |
 | `table` | 在`tables/`中保存表格 | `TRUE` |
 | `timeseries_analysis` | `TRUE`：分面图显示线性趋势和突变点；`FALSE`：分面图显示平滑（loess）曲线 | `TRUE` |
@@ -78,6 +78,7 @@ show_table(table, n = 10, digits = 0)
 | `ZH` | 指定中文的旧方式：`TRUE`等同于`lang = "zh"` | `FALSE` |
 | `lang` | 图表文字和名称的语言：`"en"`、`"zh"`或`"both"` | `NULL`：`ZH = TRUE`时为`"zh"`，否则使用`fao_settings()`中的语言 |
 | `pptx` | 同时保存可编辑的PowerPoint文件 | `FALSE`，或`fao_settings()`中的`pptx` |
+| `plot_show` | 保存图表的同时把图画在绘图窗口中（例如RStudio的Plots窗格） | `FALSE`，或`fao_settings()`中的`plot_show` |
 
 ::: callout-note
 在当前版本中，`species_country()`的排名图、时间序列图、分面图和饼图使用固定的字号：`axis_text_size`、`axis_title_size`、`strip_text_size`和`strip_text_face`可以传入，但不会改变这些图。地图的参数有效。
@@ -118,7 +119,7 @@ country_species(FAO27$area_data, country_name = "Spain", h_value = 5,
 |---|---|---|
 | `area_data` | 渔区产量数据：`fishing_area_data()$area_data`或`load_fao_data()`的任意子集 | |
 | `country_name` | FAO国家名，与数据中一致 | |
-| `rank_range` | 显示的物种排名范围（按该国历年总产量排序） | `c(1, 10)` |
+| `rank_range` | 显示的物种名次（按该国历年总产量排序）：`1:10`为前十名，`c(5, 6)`为第五和第六名 | `1:10` |
 | `plot` | 保存图表 | `TRUE` |
 | `table` | 在`tables/`中保存表格 | `TRUE` |
 | `timeseries_analysis` | `TRUE`：分面图显示线性趋势和突变点；`FALSE`：分面图显示平滑（loess）曲线 | `TRUE` |
@@ -127,6 +128,7 @@ country_species(FAO27$area_data, country_name = "Spain", h_value = 5,
 | `ZH` | 指定中文的旧方式：`TRUE`等同于`lang = "zh"` | `FALSE` |
 | `lang` | 图表文字和名称的语言：`"en"`、`"zh"`或`"both"` | `NULL`：`ZH = TRUE`时为`"zh"`，否则使用`fao_settings()`中的语言 |
 | `pptx` | 同时保存可编辑的PowerPoint文件 | `FALSE`，或`fao_settings()`中的`pptx` |
+| `plot_show` | 保存图表的同时把图画在绘图窗口中（例如RStudio的Plots窗格） | `FALSE`，或`fao_settings()`中的`plot_show` |
 
 ## 3️⃣ `country_analysis()`：某个国家在全部FAO渔区的捕捞
 
@@ -165,7 +167,7 @@ show_table(norway_global$country_species_area_total, n = 8, digits = 1)
 | 参数 | 含义 | 默认值 |
 |---|---|---|
 | `country_name` | FAO国家名，与数据中一致 | |
-| `rank_range` | 显示的物种排名范围（按该国历年总产量排序） | `c(1, 10)` |
+| `rank_range` | 显示的物种名次（按该国历年总产量排序）：`1:10`为前十名，`c(5, 6)`为第五和第六名 | `1:10` |
 | `plot` | 保存图表 | `TRUE` |
 | `table` | 在`tables/`中保存表格 | `TRUE` |
 | `timeseries_analysis` | `TRUE`：物种分面图显示线性趋势和突变点；`FALSE`：显示平滑曲线 | `TRUE` |
@@ -176,6 +178,7 @@ show_table(norway_global$country_species_area_total, n = 8, digits = 1)
 | `lang` | 图表文字和名称的语言：`"en"`、`"zh"`或`"both"` | `NULL`：`ZH = TRUE`时为`"zh"`，否则使用`fao_settings()`中的语言 |
 | `data_version` | FAO数据版本：`"latest"`、`"bundled"`或具体版本号（如`"2026.1.0"`，见[💾 FAO数据](data.html)） | `"latest"` |
 | `pptx` | 同时保存可编辑的PowerPoint文件 | `FALSE`，或`fao_settings()`中的`pptx` |
+| `plot_show` | 保存图表的同时把图画在绘图窗口中（例如RStudio的Plots窗格） | `FALSE`，或`fao_settings()`中的`plot_show` |
 
 突变点的识别方法见[🌊 渔区分析](fishing-areas.html)（用`strucchange::breakpoints()`拟合各时段均值不变的模型）。
 

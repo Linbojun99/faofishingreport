@@ -6,7 +6,7 @@
 \usage{
 country_analysis(
   country_name,
-  rank_range = c(1, 10),
+  rank_range = 1:10,
   plot = TRUE,
   table = TRUE,
   timeseries_analysis = TRUE,
@@ -16,13 +16,18 @@ country_analysis(
   fill_scale = NULL,
   lang = NULL,
   data_version = "latest",
-  pptx = getOption("faofishingreport.pptx", FALSE)
+  pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show")
 )
 }
 \arguments{
 \item{country_name}{A string specifying the country to be analyzed.}
 
-\item{rank_range}{A numeric vector of length 2 specifying the rank range of species to be analyzed.}
+\item{rank_range}{The ranks of the species to show, ranked by the catch of the country: the ranks
+listed, e.g. \code{1:10} (default) for the first ten, \code{c(5, 6)} for the fifth and sixth, or
+\code{c(1, 10)} for the first and the tenth. Ranks beyond the number of species are left out.
+Until version 0.9.0 two numbers gave the first and the last rank (\code{c(1, 10)} was the
+first ten).}
 
 \item{plot}{A logical value indicating whether to generate and save plots.}
 
@@ -52,6 +57,11 @@ releases downloaded with \code{download_fao_data()} and the data bundled with th
 \item{pptx}{A logical value. Charts are always saved as PNG in \verb{figures/png/}; if TRUE they are
 also saved as editable PowerPoint files in \verb{figures/pptx/}. Default is FALSE, which can be
 changed for all functions with \code{fao_settings(pptx = TRUE)}.}
+
+\item{plot_show}{A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+which can be changed for all functions with \code{fao_settings(plot_show = TRUE)}. The
+charts are saved as files (\code{plot = TRUE}) either way.}
 }
 \value{
 A list with \code{country_species_ranked} (yearly catch of the ranked species),
@@ -63,11 +73,11 @@ area). Charts and tables are saved if \code{plot} and \code{table} are TRUE.
 \description{
 This function takes a country name, analyzes the catch of that country in all
 FAO fishing areas, and identifies the top species and fishing areas
-based on production within the specified rank range.
+by production at the ranks chosen with \code{rank_range}.
 }
 \examples{
 \dontrun{
-country_analysis(country_name = "Morocco",c(1, 10), plot=TRUE,table=TRUE)
+country_analysis("Norway", rank_range = 1:10)   # the ten main species of Norway
 }
 }
 \seealso{

@@ -6,7 +6,8 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>", message = FALSE, warning 
 
 library(faofishingreport)
 fao_settings(reset = TRUE)
-fao_settings(dpi = 100)
+# the articles show results with tables of their own, not with the summaries of the functions
+fao_settings(dpi = 100, show_data = FALSE)
 
 site_output <- tempfile("faofishingreport_site_")
 dir.create(site_output)

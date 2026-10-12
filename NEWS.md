@@ -1,3 +1,40 @@
+# faofishingreport 1.0.0
+
+## Changes that need attention
+
+* `rank_range` of `fishing_area_species()`, `fishing_area_country()`, `species_country()`,
+  `country_species()` and `country_analysis()` lists the ranks to show: `1:10` (the new
+  default) for the first ten, `11:20` for the next ten, `c(5, 6)` for the fifth and the sixth.
+  Until 0.9.0 two numbers were the first and the last rank, so `c(1, 10)` now shows only ranks 1
+  and 10; a note says so once per session. Ranks beyond the data are left out, and an error is
+  given when none is left. The report (`fao_report()`) uses the first `top_n` ranks as before.
+* The analysis functions return their results invisibly, after a summary in the console (below):
+  assign them to keep them, e.g. `species <- fishing_area_species(...)`. The list returned by
+  `species_country()` with `timeseries_analysis = TRUE` has names (`species_country_ranked`,
+  `coefs_data`); `[[1]]` and `[[2]]` still work.
+
+## Results in the console and charts on screen
+
+* When an analysis finishes, it shows a short summary in the console: what was analysed, the
+  first rows of its main table (e.g. the species at the chosen ranks with their catch and
+  share), the charts and tables it saved, and the parts of the result it returns.
+  `fao_settings(show_data = FALSE)` turns the summaries off. The functions run by another one
+  (e.g. by `fao_report()` or `cmsy_area()`) stay quiet, and the CMSY++ functions follow their
+  `silent` argument.
+* New argument `plot_show` of every function that draws charts, and setting
+  `fao_settings(plot_show = TRUE)` for all of them: each chart is also drawn in the plot window
+  (e.g. the Plots pane of RStudio) as it is saved. `plot = TRUE` still saves the chart files, and
+  `plot_show` is FALSE by default.
+
+## Website
+
+* Every article ends with links to the previous and the next article, in the order of the menu,
+  and to the list of all articles.
+* The last section of the fishing area article shows the Northwest Atlantic (area 21), whose
+  Atlantic cod collapsed in the early 1990s (Hutchings and Myers 1994), instead of the Northwest
+  Pacific. The get-started article shows the summary in the console and `plot_show`.
+* The examples of the function reference use area 27 instead of area 34.
+
 # faofishingreport 0.9.0
 
 ## Charts

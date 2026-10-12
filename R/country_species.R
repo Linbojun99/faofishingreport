@@ -2,7 +2,7 @@
 #'
 #' This function takes the fishing area data and a country name,
 #' analyzes the catch of that country, and identifies the top species
-#' based on production within the specified rank range.
+#' by production at the ranks chosen with `rank_range`.
 #'
 #' @param area_data A data frame containing the fishing area data.
 #' @param country_name A string specifying the country to be analyzed.
@@ -11,7 +11,11 @@
 #' @param timeseries_analysis A logical value indicating whether to analysis timeseries.
 #' @param time_analysis_text_displacement The number of years after the first year of data at which
 #'        the percentage labels are placed in the faceted time series plot. Default is 10.
-#' @param rank_range A numeric vector of length 2 specifying the rank range of species to be analyzed.
+#' @param rank_range The ranks of the species to show, ranked by the catch of the country: the ranks
+#'   listed, e.g. `1:10` (default) for the first ten, `c(5, 6)` for the fifth and sixth, or
+#'   `c(1, 10)` for the first and the tenth. Ranks beyond the number of species are left out.
+#'   Until version 0.9.0 two numbers gave the first and the last rank (`c(1, 10)` was the
+#'   first ten).
 #' @param h_value The minimum segment size passed to `strucchange::breakpoints()`: a fraction of
 #'        the series length (default 0.15) or a number of years.
 #' @param ZH A logical value. If TRUE, chart text and names are in Chinese. Default is FALSE. `ZH = TRUE` is the same as `lang = "zh"`.
@@ -22,16 +26,22 @@
 #'        also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
 #'        changed for all functions with `fao_settings(pptx = TRUE)`.
 #' @family species and country analyses
+#' @inheritParams summary_params
 #' @export
 #'
 #' @return A data frame with the yearly catch of the country by the ranked species (the others
 #'         grouped). Charts and tables are saved if `plot` and `table` are TRUE.
 #' @examples
 #' \dontrun{
-#' country_species(FAO34[["area_data"]], country_name = "Morocco",c(1, 10), plot=TRUE,table=TRUE) #area_data=Fao34
+#' FAO27 <- fishing_area_data("Atlantic, Northeast")
+#' country_species(FAO27$area_data, "Norway", rank_range = 1:10)    # the ten main species
+#' country_species(FAO27$area_data, "Norway", rank_range = c(5, 6)) # the fifth and sixth
 #' }
-country_species <- function(area_data, country_name, rank_range = c(1, 10),plot=TRUE,table=TRUE,timeseries_analysis=TRUE,time_analysis_text_displacement=10,h_value=0.15,ZH = FALSE, lang = NULL,
-                            pptx = getOption("faofishingreport.pptx", FALSE)) {
+country_species <- function(area_data, country_name, rank_range = 1:10,plot=TRUE,table=TRUE,timeseries_analysis=TRUE,time_analysis_text_displacement=10,h_value=0.15,ZH = FALSE, lang = NULL,
+                            pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show")) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
+  ranks <- fao_rank_select(rank_range)
 
   old_options <- options(scipen = 999, digits = 2)
   on.exit(options(old_options), add = TRUE)
@@ -70,7 +80,7 @@ country_species <- function(area_data, country_name, rank_range = c(1, 10),plot=
   # Adjusted code for ranked selection based on specified rank range
   country_species_ranked_total <- country_species_total %>%
     dplyr::arrange(desc(species_production)) %>%
-    dplyr::slice(rank_range[1]:rank_range[2]) %>%
+    fao_rank_slice(ranks, "species") %>%
     dplyr::mutate(ASFIS.species..Name. = forcats::fct_reorder(ASFIS.species..Name., -species_production))
 
 
@@ -450,6 +460,10 @@ country_species <- function(area_data, country_name, rank_range = c(1, 10),plot=
 
 
 
-  return(country_species_ranked)
+  fao_run_result(country_species_ranked, run, fao_run_title("country_species", area_data, what = country_name),
+                 main = fao_rank_table(country_species_ranked_total, ranks, "species", "ASFIS.species..Name.",
+                                       c(catch_t = "species_production", share_pct = "percentage_country")),
+                 note = paste0("Ranks ", fao_ranks_text(ranks), " of ", nrow(country_species_total),
+                               " species items, by the catch of the country over all years:"))
 }
 

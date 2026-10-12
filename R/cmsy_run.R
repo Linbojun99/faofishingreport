@@ -24,7 +24,7 @@
 #' @inheritParams cmsy_system
 #' @inheritParams summary_params
 #' @param input The result of [cmsy_input()].
-#' @param stocks Optional stocks to run: `Stock` identifiers (e.g. "PIL_34") or species, by
+#' @param stocks Optional stocks to run: `Stock` identifiers (e.g. "CAP_27") or species, by
 #'        English or Chinese FAO name, scientific name or FAO 3-alpha code (all stocks of the
 #'        species). Default is NULL, all stocks of `input`.
 #' @param out_dir The folder for the CMSY++ output. Default is "cmsy" in the working directory.
@@ -80,20 +80,20 @@
 #' @examples
 #' \dontrun{
 #' cmsy_setup()                                       # once
-#' FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-#' input <- cmsy_input(FAO34$area_data)
+#' FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+#' input <- cmsy_input(FAO27$area_data)
 #'
-#' # Bigeye grunt, with the start year suggested by CMSY++ and a fixed seed
-#' result <- cmsy_run(input, stocks = "Brachydeuterus auritus", auto_start = TRUE, seed = 1)
+#' # Capelin, with the start year suggested by CMSY++ and a fixed seed
+#' result <- cmsy_run(input, stocks = "Mallotus villosus", auto_start = TRUE, seed = 1)
 #' result$summary[, c("Stock", "first_year", "B_Bmsy", "B_Bmsy_lcl", "B_Bmsy_ucl", "F_Fmsy", "status")]
 #' head(result$series)                                # catch, B/k, biomass, B/Bmsy, F/Fmsy by year
 #'
 #' # Every CMSY++ chart of the user guide, including the retrospective analysis
-#' result <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE,
+#' result <- cmsy_run(input, stocks = "CAP_27", seed = 1, auto_start = TRUE,
 #'                    plots = c("analysis", "management", "kobe", "prior_posterior", "retrospective"))
 #'
 #' # Changed CMSY++ settings (see cmsy_defaults()): longer chains and a larger catch error
-#' result <- cmsy_run(input, stocks = "GRB_34", seed = 1,
+#' result <- cmsy_run(input, stocks = "CAP_27", seed = 1,
 #'                    settings = list(n.iter = 100000, n.burnin = 50000, CV.C = 0.2))
 #' result$settings[result$settings$changed, c("setting", "cmsy_default", "used")]
 #'
@@ -101,8 +101,8 @@
 #' result <- cmsy_run(input, stocks = input$stocks$Stock[1:10], parallel = 4, silent = TRUE)
 #'
 #' # Settings that would be used on Windows, and charts in the system's own windows
-#' result <- cmsy_run(input, stocks = "GRB_34", os = "windows")
-#' result <- cmsy_run(input, stocks = "GRB_34", device = "screen")
+#' result <- cmsy_run(input, stocks = "CAP_27", os = "windows")
+#' result <- cmsy_run(input, stocks = "CAP_27", device = "screen")
 #'
 #' # Versions and links of everything used, for the methods section of a report
 #' result$sources
@@ -111,6 +111,8 @@ cmsy_run <- function(input, stocks = NULL, out_dir = "cmsy", parallel = NULL,
                      plots = c("analysis", "management", "kobe"), os = "auto", device = c("file", "screen"),
                      seed = NULL, auto_start = FALSE, settings = list(), table = TRUE, lang = NULL,
                      silent = fao_setting("silent"), timeout = 3600) {
+  run <- fao_run_begin()
+  on.exit(fao_run_end(run), add = TRUE)
   if (!inherits(input, "cmsy_input")) stop("`input` must be the result of cmsy_input().", call. = FALSE)
   used_settings <- cmsy_check_settings(settings)
   device <- match.arg(device)
@@ -201,7 +203,8 @@ cmsy_run <- function(input, stocks = NULL, out_dir = "cmsy", parallel = NULL,
             if (any(!status %in% c("ok", "partial"))) paste0(", ", sum(!status %in% c("ok", "partial")), " failed or timed out"),
             if (any(status != "ok")) " (see $summary$run_status, $summary$exit and the log.txt file of each stock)", ".")
   }
-  invisible(result)
+  fao_run_result(result, run, "cmsy_run()", main = fao_cols(result$summary, c("Stock", "species_name", "last_year", "B_Bmsy", "F_Fmsy", "status")),
+                 note = paste0("CMSY++ results (from the catch only) for ", nrow(result$summary), " stocks:"), rows = 20, quiet = silent)
 }
 
 # Runs the stocks as separate R processes, `parallel` at a time, and follows them with a progress

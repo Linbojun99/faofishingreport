@@ -13,6 +13,7 @@ peak_trend(
   table = TRUE,
   lang = NULL,
   pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show"),
   label = NULL
 )
 }
@@ -38,6 +39,11 @@ Default is 10; use \code{Inf} for all.}
 \item{pptx}{A logical value. If TRUE, charts are also saved as editable PowerPoint files in
 \verb{figures/pptx/summary/}. Default is FALSE, which can be changed for all functions with
 \code{fao_settings(pptx = TRUE)}.}
+
+\item{plot_show}{A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+which can be changed for all functions with \code{fao_settings(plot_show = TRUE)}. The
+charts are saved as files (\code{plot = TRUE}) either way.}
 
 \item{label}{The name used in the output file names. Default is the fishing area (or the
 country) of the data.}
@@ -65,9 +71,9 @@ the trends with \code{q_value} < 0.05, as \code{\link[=fao_report]{fao_report()}
 }
 \examples{
 \dontrun{
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-peak_trend(FAO34$area_data, by = "species", lang = "zh")
-peak_trend(FAO34$area_data, by = "country", lang = "zh")
+FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+peak_trend(FAO27$area_data, by = "species", lang = "zh")
+peak_trend(FAO27$area_data, by = "country", lang = "zh")
 }
 }
 \references{

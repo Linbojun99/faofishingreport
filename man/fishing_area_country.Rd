@@ -6,7 +6,7 @@
 \usage{
 fishing_area_country(
   area_data,
-  rank_range = c(1, 10),
+  rank_range = 1:10,
   rank_years = NULL,
   plot = TRUE,
   table = TRUE,
@@ -33,13 +33,18 @@ fishing_area_country(
   h_value = 0.15,
   ZH = FALSE,
   lang = NULL,
-  pptx = getOption("faofishingreport.pptx", FALSE)
+  pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show")
 )
 }
 \arguments{
 \item{area_data}{A data frame containing the fishing area data.}
 
-\item{rank_range}{A numeric vector of length 2 specifying the rank range of country to be analyzed.}
+\item{rank_range}{The ranks of the countries to show, ranked by their catch (see \code{rank_years}): the ranks
+listed, e.g. \code{1:10} (default) for the first ten, \code{c(5, 6)} for the fifth and sixth, or
+\code{c(1, 10)} for the first and the tenth. Ranks beyond the number of countries are left out.
+Until version 0.9.0 two numbers gave the first and the last rank (\code{c(1, 10)} was the
+first ten).}
 
 \item{rank_years}{The number of recent years whose catch ranks the countries, e.g. 5 for the
 last five years (as in the tables of \code{\link[=fao_report]{fao_report()}}). Default is NULL: the catch of all years.
@@ -101,6 +106,11 @@ set with \code{fao_settings()} ("en" unless changed).}
 \item{pptx}{A logical value. Charts are always saved as PNG in \verb{figures/png/}; if TRUE they are
 also saved as editable PowerPoint files in \verb{figures/pptx/}. Default is FALSE, which can be
 changed for all functions with \code{fao_settings(pptx = TRUE)}.}
+
+\item{plot_show}{A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+which can be changed for all functions with \code{fao_settings(plot_show = TRUE)}. The
+charts are saved as files (\code{plot = TRUE}) either way.}
 }
 \value{
 A list with \code{area_country} (yearly catch of every country in the area),
@@ -114,7 +124,9 @@ This function analyzes the fishing area data and generates plots for specified c
 }
 \examples{
 \dontrun{
-fishing_area_country(FAO34[["area_data"]], c(1, 10), plot=TRUE,table=TRUE,h_value=0.15) #area_data=Fao34
+FAO27 <- fishing_area_data("Atlantic, Northeast")
+fishing_area_country(FAO27$area_data, rank_range = 1:10)    # the ten main countries
+fishing_area_country(FAO27$area_data, rank_range = c(5, 6)) # the fifth and sixth
 }
 }
 \seealso{

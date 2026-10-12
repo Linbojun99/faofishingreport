@@ -44,6 +44,7 @@ The five functions share these arguments:
 | `table` | Save the tables in `tables/` | `TRUE` |
 | `lang` | Language of the charts and names: `"en"`, `"zh"` or `"both"`; `NULL` uses the language set with `fao_settings()` | `NULL` |
 | `pptx` | Also save the charts as editable PowerPoint files in `figures/pptx/summary/` | `FALSE`, or `TRUE` after `fao_settings(pptx = TRUE)` |
+| `plot_show` | Also draw each chart in the plot window (e.g. the Plots pane of RStudio) as it is saved | `FALSE`, or `plot_show` of `fao_settings()` |
 | `label` | Name at the start of the file names | The fishing area (or the country) of the data |
 
 They return their results invisibly: assign them (`x <- catch_shocks(...)`) to use the tables.

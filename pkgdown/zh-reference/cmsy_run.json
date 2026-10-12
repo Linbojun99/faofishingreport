@@ -1,6 +1,6 @@
 {
   "topic": "cmsy_run",
-  "rd_md5": "69c0d3eefb3f3e6b7c1c08d42c1c654a",
+  "rd_md5": "4cca0fc456a16dea65102353ebbb03b9",
   "stale": false,
   "en": {
     "title": "Run CMSY++ on FAO Catch Data",
@@ -9,7 +9,7 @@
     "value": "Invisibly, a list of class `cmsy_result` with `summary` (one row per stock: reference\npoints, last-year status with 95% limits, Kobe probabilities, the priors used and the\nlinks to their sources), `series` (by year: catch, predicted catch, B/k, biomass,\nB/Bmsy, F and F/Fmsy, with 95% limits), `kobe` (the last-year draws), `details`\n(per stock: posterior draws of r, k and B/k, the priors, retrospective runs), `logs`,\n`sources` (the versions of CMSY++, JAGS, R and the data) and `changes` (the changes\nmade to the CMSY++ code). The summary is saved in `tables/cmsy/`. Its `run_status` is\n\"ok\" when the run of the stock finished without error, \"partial\" when the main analysis\nsaved its results but a later step (the retrospective analysis or a chart) failed or ran\nout of time, and \"failed\" or \"timeout\" when there are no results; `exit` says how the\nrun ended. The other functions use the results of \"ok\" and \"partial\" stocks. A\nfinished run is not a validated assessment: the B/k priors suggested by the neural\nnetwork \"may not be appropriate for your stock\" (CMSY++ user guide), so check them\nstock by stock (see `cmsy_input()` for setting your own).",
     "arguments": {
       "input": "The result of `cmsy_input()`.",
-      "stocks": "Optional stocks to run: `Stock` identifiers (e.g. \"PIL_34\") or species, by\nEnglish or Chinese FAO name, scientific name or FAO 3-alpha code (all stocks of the\nspecies). Default is NULL, all stocks of `input`.",
+      "stocks": "Optional stocks to run: `Stock` identifiers (e.g. \"CAP_27\") or species, by\nEnglish or Chinese FAO name, scientific name or FAO 3-alpha code (all stocks of the\nspecies). Default is NULL, all stocks of `input`.",
       "out_dir": "The folder for the CMSY++ output. Default is \"cmsy\" in the working directory.",
       "parallel": "The number of stocks run at the same time. Each uses two more processes for\nits two MCMC chains. Default is half the number of processor cores.",
       "plots": "The CMSY++ charts to save as JPEG files: any of \"analysis\", \"management\", \"kobe\",\n\"prior_posterior\" and \"retrospective\". Default is the first three.",
@@ -32,7 +32,7 @@
     "value": "以不可见方式返回一个`cmsy_result`类的列表，包含`summary`（每个种群一行：生物学参考点、最后一年的状态及其95%置信限、Kobe象限概率、所用的先验及其来源链接）、`series`（逐年：渔获量、预测渔获量、B/k、生物量、B/Bmsy、F和F/Fmsy，以及95%置信限）、`kobe`（最后一年的后验抽样值）、`details`（每个种群：r、k和B/k的后验抽样值、先验、回顾性分析的各次运行）、`logs`、`sources`（CMSY++、JAGS、R和数据的版本）和`changes`（对CMSY++代码所做的修改）。汇总表保存在tables/cmsy/。其中的`run_status`在该种群运行无错误结束时为\"ok\"；主分析已保存结果、但之后的步骤（回顾性分析或某张图）失败或超时时为\"partial\"；没有结果时为\"failed\"或\"timeout\"；`exit`记录运行是怎样结束的。其他函数使用\"ok\"和\"partial\"种群的结果。运行完成并不等于评估经过核实：神经网络给出的B/k先验\"may not be appropriate for your stock\"（可能不适合你的种群，CMSY++用户手册），因此应逐个种群核对（自行设定先验见`cmsy_input()`）。",
     "arguments": {
       "input": "`cmsy_input()`的结果。",
-      "stocks": "要运行的种群（可选）：`Stock`标识（例如\"PIL_34\"），或物种的FAO英文或中文名称、学名或FAO三字母代码（运行该物种的所有种群）。默认为NULL，即`input`中的所有种群。",
+      "stocks": "要运行的种群（可选）：`Stock`标识（例如\"CAP_27\"），或物种的FAO英文或中文名称、学名或FAO三字母代码（运行该物种的所有种群）。默认为NULL，即`input`中的所有种群。",
       "out_dir": "CMSY++输出的文件夹。默认为工作目录下的\"cmsy\"。",
       "parallel": "同时运行的种群数。每个种群还要为其两条MCMC链另外使用两个进程。默认为处理器核心数的一半。",
       "plots": "要保存为JPEG文件的CMSY++图表：\"analysis\"、\"management\"、\"kobe\"、\"prior_posterior\"和\"retrospective\"中的任意几项。默认为前三项。",

@@ -32,7 +32,8 @@ fishing_area_data(
   ZH = FALSE,
   lang = NULL,
   data_version = "latest",
-  pptx = getOption("faofishingreport.pptx", FALSE)
+  pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show")
 )
 }
 \arguments{
@@ -99,6 +100,11 @@ releases downloaded with \code{download_fao_data()} and the data bundled with th
 \item{pptx}{A logical value. Charts are always saved as PNG in \verb{figures/png/}; if TRUE they are
 also saved as editable PowerPoint files in \verb{figures/pptx/}. Default is FALSE, which can be
 changed for all functions with \code{fao_settings(pptx = TRUE)}.}
+
+\item{plot_show}{A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+which can be changed for all functions with \code{fao_settings(plot_show = TRUE)}. The
+charts are saved as files (\code{plot = TRUE}) either way.}
 }
 \value{
 A list with \code{area_data} (the FAO data of the area), \code{coefs_data} (start year, end year
@@ -113,7 +119,7 @@ for an inland area, of all inland waters).
 \examples{
 \dontrun{
 # Firstly, data preparing and loading.
-FAO34 <- fishing_area_data(area_name="Atlantic, Eastern Central", plot = TRUE, timeseries_analysis=TRUE)
+FAO27 <- fishing_area_data("Atlantic, Northeast")
 }
 }
 \seealso{

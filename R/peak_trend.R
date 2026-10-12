@@ -37,13 +37,15 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-#' peak_trend(FAO34$area_data, by = "species", lang = "zh")
-#' peak_trend(FAO34$area_data, by = "country", lang = "zh")
+#' FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+#' peak_trend(FAO27$area_data, by = "species", lang = "zh")
+#' peak_trend(FAO27$area_data, by = "country", lang = "zh")
 #' }
 peak_trend <- function(area_data, by = c("species", "country", "area"), top_n = 10, recent_years = 10,
                        plot = TRUE, table = TRUE, lang = NULL,
-                       pptx = getOption("faofishingreport.pptx", FALSE), label = NULL) {
+                       pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), label = NULL) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   by <- match.arg(by)
   lang <- fao_lang(lang)
   name <- fao_summary_name(fao_summary_label(area_data, label), paste0("peak_trend_", by))
@@ -114,7 +116,10 @@ peak_trend <- function(area_data, by = c("species", "country", "area"), top_n = 
     fao_save_plot(p, file.path("summary", name), width = 12, height = max(4, 0.45 * nrow(result) + 2), pptx = pptx)
   }
   if (table) fao_save_table(result, name)
-  invisible(result)
+  fao_run_result(result, run, fao_run_title("peak_trend", area_data, label),
+                 main = fao_cols(result, c("name", "peak_year", "peak_tonnes", "last_year_tonnes", "pct_of_peak",
+                                           "growth_pct_per_year", "trend")),
+                 note = paste0("Peak catch and trend of the last ", recent_years, " years:"))
 }
 
 
@@ -134,7 +139,9 @@ peak_trend <- function(area_data, by = c("species", "country", "area"), top_n = 
 #' area_overview(lang = "zh")
 #' }
 area_overview <- function(recent_years = 10, plot = TRUE, table = TRUE, lang = NULL,
-                          pptx = getOption("faofishingreport.pptx", FALSE), data_version = "latest") {
+                          pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), data_version = "latest") {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   lang <- fao_lang(lang)
   data <- load_fao_data(data_version)
   groups <- fao_group_table()
@@ -161,5 +168,8 @@ area_overview <- function(recent_years = 10, plot = TRUE, table = TRUE, lang = N
       fao_theme()
     fao_save_plot(p, file.path("summary", "marine_areas_catch"), width = 14, height = 12, pptx = pptx)
   }
-  invisible(result)
+  fao_run_result(result, run, "area_overview(): all marine FAO areas",
+                 main = fao_cols(result, c("name", "peak_year", "peak_tonnes", "last_year_tonnes", "pct_of_peak",
+                                           "growth_pct_per_year", "trend")),
+                 note = paste0("Peak catch and trend of the last ", recent_years, " years:"))
 }

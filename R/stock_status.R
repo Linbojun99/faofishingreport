@@ -40,13 +40,15 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-#' stock_status(FAO34$area_data, lang = "zh")
+#' FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+#' stock_status(FAO27$area_data, lang = "zh")
 #' }
 stock_status <- function(area_data, taxon_levels = c("species", "genus", "family"),
                          min_years = 10, min_consecutive = 5, min_catch = 1000, smooth = FALSE,
                          plot = TRUE, table = TRUE, lang = NULL,
-                         pptx = getOption("faofishingreport.pptx", FALSE), label = NULL) {
+                         pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), label = NULL) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   lang <- fao_lang(lang)
   name <- fao_summary_name(fao_summary_label(area_data, label), "stock_status")
   last_year <- max(area_data$Year, na.rm = TRUE)
@@ -122,7 +124,9 @@ stock_status <- function(area_data, taxon_levels = c("species", "genus", "family
     fao_save_table(yearly, name)
     fao_save_table(stocks, paste0(name, "_stocks"))
   }
-  invisible(list(yearly = yearly, stocks = stocks, status = status))
+  fao_run_result(list(yearly = yearly, stocks = stocks, status = status), run, fao_run_title("stock_status", area_data, label),
+                 main = fao_cols(yearly[yearly$Year == max(yearly$Year), ], c("status_label", "stocks", "stocks_pct", "catch_pct")),
+                 note = paste0("Status of the species items in ", max(yearly$Year), " (from the catch only, for reference):"))
 }
 
 # Status of each year of a catch series relative to its peak (stock status plots)

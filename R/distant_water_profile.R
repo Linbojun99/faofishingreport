@@ -55,8 +55,10 @@
 #' distant_water_profile("Korea, Republic of", min_catch = 100)
 #' }
 distant_water_profile <- function(country_name, top_n = 8, min_catch = 0, plot = TRUE, table = TRUE,
-                                  lang = NULL, pptx = getOption("faofishingreport.pptx", FALSE), label = NULL,
+                                  lang = NULL, pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), label = NULL,
                                   data_version = "latest") {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   lang <- fao_lang(lang)
   name <- fao_summary_name(if (is.null(label)) country_name else label, "distant_water")
 
@@ -161,5 +163,9 @@ distant_water_profile <- function(country_name, top_n = 8, min_catch = 0, plot =
     fao_save_table(yearly, name)
     fao_save_table(areas, paste0(name, "_areas"))
   }
-  invisible(list(yearly = yearly, areas = areas, distant = yearly_distant))
+  fao_run_result(list(yearly = yearly, areas = areas, distant = yearly_distant), run,
+                 fao_run_title("distant_water_profile", what = country_name),
+                 main = fao_cols(areas, c("area", "adjacent", "first_year", "peak_year", "last_5_years_tonnes",
+                                          "share_of_distant_pct")),
+                 note = "Catch by FAO area (adjacent or distant-water):")
 }

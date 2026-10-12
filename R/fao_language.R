@@ -109,6 +109,7 @@ fao_detect_font <- function(os = fao_os(), installed = NULL) {
 # Writes a CSV file as UTF-8 with a byte order mark, so Excel shows Chinese names correctly
 fao_write_csv <- function(x, file) {
   readr::write_excel_csv(x, file)
+  fao_run_saved(file)
 }
 
 # Resolves the output language: the `lang` argument, else ZH = TRUE (the older way of asking
@@ -305,6 +306,9 @@ fao_save_plot <- function(plot, name, width, height, pptx = FALSE) {
     fao_ensure_dirs(dirname(pptx_file))
     eoffice::topptx(figure = plot, filename = pptx_file, width = width, height = height)
   }
+  fao_run_saved(png_file)
+  # plot_show = TRUE: the chart is also drawn in the plot window
+  if (isTRUE(fao_setting("plot_show"))) fao_show_plot(plot)
   invisible(png_file)
 }
 

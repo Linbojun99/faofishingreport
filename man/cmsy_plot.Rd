@@ -12,6 +12,7 @@ cmsy_plot(
   annotations = getOption("faofishingreport.cmsy_annotations", FALSE),
   lang = NULL,
   pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show"),
   silent = fao_setting("silent"),
   mcmc_colors = NULL
 )
@@ -38,6 +39,11 @@ chart). The default can be changed for the session with
 \item{pptx}{A logical value. If TRUE, the charts are also saved as editable PowerPoint files in
 figures/pptx/cmsy/<stock>/ and figures/pptx/cmsy/summary/. Default is FALSE, which can be
 changed for all functions with \code{fao_settings(pptx = TRUE)}.}
+
+\item{plot_show}{A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+which can be changed for all functions with \code{fao_settings(plot_show = TRUE)}. The
+charts are saved as files (\code{plot = TRUE}) either way.}
 
 \item{silent}{A logical value. If FALSE (default), a progress bar shows how many stocks have
 been drawn. If TRUE, nothing is printed. The default can be changed for the session
@@ -120,7 +126,7 @@ PowerPoint when \code{pptx} is TRUE). CMSY++'s own JPEG charts are in the folder
 cmsy_plot(result, lang = "zh")
 
 # Kobe plot and prior-posterior densities of one species, with all annotations
-cmsy_plot(result, stocks = "Brachydeuterus auritus", charts = c("kobe", "prior_posterior"),
+cmsy_plot(result, stocks = "Mallotus villosus", charts = c("kobe", "prior_posterior"),
           annotations = TRUE, lang = "both")
 
 # Only titles and legends

@@ -217,11 +217,11 @@ data). Save it with `saveRDS(NEP, "NEP.rds")` to continue later without recomput
 
 ## 4. 🐟 The main species {#species}
 
-`fishing_area_species()` ranks the species items by their catch (`rank_range = c(1, 10)`: the ten
+`fishing_area_species()` ranks the species items by their catch (`rank_range = 1:10`: the ten
 largest), draws their catch over time and finds the stages of each:
 
 ```{r, figures = "area_species"}
-sp <- fishing_area_species(area67, rank_range = c(1, 10))
+sp <- fishing_area_species(area67, rank_range = 1:10)
 ```
 
 ```{r, include = FALSE}
@@ -269,7 +269,7 @@ Four patterns stand out:
   zigzag in its panel.
 
 ::: callout-note
-Changing `rank_range` changes the species shown, e.g. `rank_range = c(11, 20)` for the next ten.
+Changing `rank_range` changes the species shown, e.g. `rank_range = 11:20` for the next ten.
 The lines in the panels are smoothed only if `timeseries_analysis = FALSE`, which also removes
 the stages.
 :::
@@ -279,7 +279,7 @@ the stages.
 `fishing_area_country()` does the same for the countries, and adds a map of their catch:
 
 ```{r, figures = "area_country"}
-co <- fishing_area_country(area67, rank_range = c(1, 8))
+co <- fishing_area_country(area67, rank_range = 1:8)
 ```
 
 ```{r, include = FALSE}
@@ -326,7 +326,7 @@ Japan, the USSR, Korea and Poland all end in those years.
 ### 6.1 Who catches a species: `species_country()`
 
 ```{r, figures = "Alaska_pollock"}
-pollock <- species_country(area67, "Alaska pollock(=Walleye poll.)", rank_range = c(1, 5))
+pollock <- species_country(area67, "Alaska pollock(=Walleye poll.)", rank_range = 1:5)
 ```
 
 ```{r, include = FALSE}
@@ -355,8 +355,8 @@ with a peak of `r pol_peak("United States of America")`.
 `country_analysis()` looks at the same country in **all** FAO areas, to see where it fishes:
 
 ```{r, figures = "United_States_of_America"}
-usa_67 <- country_species(area67, "United States of America", rank_range = c(1, 10))
-usa_all <- country_analysis("United States of America", rank_range = c(1, 10))
+usa_67 <- country_species(area67, "United States of America", rank_range = 1:10)
+usa_all <- country_analysis("United States of America", rank_range = 1:10)
 ```
 
 ```{r, include = FALSE}

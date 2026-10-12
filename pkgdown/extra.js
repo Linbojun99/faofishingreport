@@ -263,6 +263,49 @@
       .catch(function () { /* reference index not available, e.g. a page opened from disk */ });
   }
 
+  // Articles: the previous and next article at the end of the page, in the order of the navbar
+  // ("Get started", then the Articles menu). In Chinese mode the navbar links already lead to
+  // the Chinese articles and their titles are translated, so the same code serves both languages.
+  var ARTICLE_TEXT = {
+    en: { previous: "Previous article", next: "Next article", all: "All articles", index: "articles/index.html" },
+    zh: { previous: "上一篇", next: "下一篇", all: "全部文章", index: "articles/zh/index.html" }
+  };
+  var ARTICLE_PAGE = /^articles\/(?:zh\/)?([^\/]+)\.html$/;
+
+  function articleNav(root, lang) {
+    var rel = relative(window.location.href, root);
+    var match = rel && rel.match(ARTICLE_PAGE);
+    var main = document.querySelector("main");
+    if (!match || match[1] === "index" || !main) return;
+    var text = ARTICLE_TEXT[lang] || ARTICLE_TEXT.en;
+    var pages = [];
+    document.querySelectorAll(".navbar a.nav-link, .navbar a.dropdown-item").forEach(function (link) {
+      var target = relative(link.href, root);
+      var page = target && target.match(ARTICLE_PAGE);
+      if (!page || page[1] === "index" || pages.some(function (p) { return p.rel === target; })) return;
+      pages.push({ rel: target, title: link.textContent.trim() });
+    });
+    var position = pages.map(function (p) { return p.rel; }).indexOf(rel);
+    if (position < 0) return;
+
+    var pager = element("nav", "fao-pager fao-article-pager");
+    pager.setAttribute("aria-label", text.all);
+    var card = function (page, label, className) {
+      if (!page) return element("span", className + " fao-pager-empty");
+      var link = element("a", className);
+      link.href = root + page.rel;
+      link.appendChild(element("span", "fao-pager-label", label));
+      link.appendChild(element("span", "fao-pager-title", page.title));
+      return link;
+    };
+    pager.appendChild(card(pages[position - 1], "← " + text.previous, "fao-pager-prev"));
+    var all = element("a", "fao-pager-index", "☰ " + text.all);
+    all.href = root + text.index;
+    pager.appendChild(all);
+    pager.appendChild(card(pages[position + 1], text.next + " →", "fao-pager-next"));
+    main.appendChild(pager);
+  }
+
   // The explanation under a chart ("🔎 How to read it", the result for the area that follows it,
   // and the title of the chart before it) is put in a box, so that each chart and its text stand
   // apart from the next chart
@@ -319,6 +362,7 @@
     }
 
     referenceNav(root, lang);
+    articleNav(root, lang);
     var main = document.querySelector("main");
     if (main) explainBoxes(main);
 

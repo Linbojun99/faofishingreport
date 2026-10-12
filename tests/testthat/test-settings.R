@@ -1,5 +1,5 @@
 test_that("settings are set, validated and reset", {
-  withr::defer(fao_settings(reset = TRUE))
+  defer_reset_settings()
   fao_settings(theme = "classic", palette = "lancet", map_center = "0-360")
   expect_equal(fao_setting("theme"), "classic")
   expect_equal(fao_map_center(), 180)

@@ -21,11 +21,13 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-#' data_quality(FAO34$area_data, lang = "zh")
+#' FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+#' data_quality(FAO27$area_data, lang = "zh")
 #' }
 data_quality <- function(area_data, top_n = 10, plot = TRUE, table = TRUE, lang = NULL,
-                         pptx = getOption("faofishingreport.pptx", FALSE), label = NULL) {
+                         pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), label = NULL) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   lang <- fao_lang(lang)
   name <- fao_summary_name(fao_summary_label(area_data, label), "data_quality")
   last_year <- max(area_data$Year, na.rm = TRUE)
@@ -72,5 +74,7 @@ data_quality <- function(area_data, top_n = 10, plot = TRUE, table = TRUE, lang 
     fao_save_table(fao_category_table(yearly_taxon, fao_label("taxon_level", lang)), paste0(name, "_taxon"))
     fao_save_table(countries, paste0(name, "_countries"))
   }
-  invisible(list(data_status = yearly_status, taxon_level = yearly_taxon, countries = countries))
+  fao_run_result(list(data_status = yearly_status, taxon_level = yearly_taxon, countries = countries), run, fao_run_title("data_quality", area_data, label),
+                 main = fao_cols(countries, c("country", "catch_last_5_years", "estimated_pct", "species_level_pct")),
+                 note = "Main countries: share of estimated catch and of catch identified to species (last 5 years):")
 }

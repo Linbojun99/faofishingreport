@@ -75,6 +75,7 @@ cmsy_mcmc_parameters <- c("r", "k", "msy", "bk_first", "bk_last", "b_bmsy_last",
 #' Rank-normalization, folding, and localization: an improved Rhat for assessing convergence of
 #' MCMC. *Bayesian Analysis* 16(2): 667-718. \doi{10.1214/20-BA1221}
 #' @seealso [cmsy_defaults()] for the MCMC settings, [cmsy_run()] to change them.
+#' @inheritParams summary_params
 #' @export
 #' @examples
 #' \dontrun{
@@ -93,7 +94,9 @@ cmsy_mcmc_parameters <- c("r", "k", "msy", "bk_first", "bk_last", "b_bmsy_last",
 #' cmsy_mcmc(result)
 #' }
 cmsy_mcmc <- function(result, stocks = NULL, rhat_max = 1.1, n_eff_min = 400, plot = TRUE, table = TRUE,
-                      colors = NULL, lang = NULL, pptx = fao_setting("pptx"), silent = fao_setting("silent")) {
+                      colors = NULL, lang = NULL, pptx = fao_setting("pptx"), plot_show = fao_setting("plot_show"), silent = fao_setting("silent")) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   if (!inherits(result, "cmsy_result")) stop("`result` must be the result of cmsy_run().", call. = FALSE)
   cmsy_chain_colors(colors, 2)
   lang <- fao_lang(lang)
@@ -168,7 +171,10 @@ cmsy_mcmc <- function(result, stocks = NULL, rhat_max = 1.1, n_eff_min = 400, pl
     fao_write_csv(settings, file.path("tables", "cmsy", "mcmc_settings.csv"))
     fao_write_csv(diagnostics, file.path("tables", "cmsy", "mcmc_diagnostics.csv"))
   }
-  invisible(list(settings = settings, diagnostics = diagnostics, plots = plots))
+  fao_run_result(list(settings = settings, diagnostics = diagnostics, plots = plots), run, "cmsy_mcmc()",
+                 main = fao_cols(diagnostics[diagnostics$parameter != "deviance", ],
+                                 c("Stock", "parameter", "median", "rhat", "n_eff", "converged", "enough_draws")),
+                 note = "Convergence (Rhat) and effective sample size of the MCMC chains:", rows = 20, quiet = silent)
 }
 
 # Posterior summary, Rhat (Gelman and Rubin 1992, coda::gelman.diag) and effective sample size

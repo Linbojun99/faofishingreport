@@ -48,8 +48,10 @@
 #' }
 compare_releases <- function(old = NULL, new = NULL, area_name = NULL, country_name = NULL, tolerance = 0.5,
                              top_n = 10, plot = TRUE, table = TRUE, lang = NULL,
-                             pptx = getOption("faofishingreport.pptx", FALSE), label = NULL,
+                             pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), label = NULL,
                              data_dir = fao_data_dir()) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   lang <- fao_lang(lang)
   available <- unique(c(fao_bundled_release(), fao_local_versions(data_dir)))
   available <- available[order(numeric_version(available))]
@@ -151,8 +153,11 @@ compare_releases <- function(old = NULL, new = NULL, area_name = NULL, country_n
     fao_save_table(by_country, paste0(name, "_countries"))
     fao_save_table(changed, paste0(name, "_records"))
   }
-  invisible(list(by_year = by_year[, setdiff(names(by_year), "direction")], by_country = by_country,
-                 records = changed, releases = c(old = old_label, new = new_label)))
+  fao_run_result(list(by_year = by_year[, setdiff(names(by_year), "direction")], by_country = by_country,
+                      records = changed, releases = c(old = old_label, new = new_label)), run,
+                 fao_run_title("compare_releases", what = c(area_name, country_name)),
+                 main = by_year[, setdiff(names(by_year), "direction")],
+                 note = paste0("Catch in release ", new_label, " against ", old_label, ", last years:"), from = "bottom")
 }
 
 # Record-by-record comparison of two data frames in the package format

@@ -1,6 +1,6 @@
 {
   "topic": "cmsy_mcmc",
-  "rd_md5": "e5825fdd1dd13269536114e4bc2590b4",
+  "rd_md5": "cf4f24aa27c6f1b608a6bc116c9d6e64",
   "stale": false,
   "en": {
     "title": "MCMC Settings and Convergence of CMSY++ Runs",
@@ -17,6 +17,7 @@
       "colors": "Colours of the chains in the chart: NULL (default) for the colour-blind safe\nOkabe-Ito colours (blue, vermilion, green, ...), the name of a palette (any palette of\n`fao_settings(palette = )`, e.g. \"npg\", \"Set1\", \"Tableau 10\" or \"viridis\"), or a vector\nof colours, one per chain (e.g. `c(\"black\", \"#D7191C\")`); with fewer colours than\nchains, colours are interpolated.",
       "lang": "The language of the chart text and parameter names: \"en\" (English), \"zh\"\n(Chinese) or \"both\". Default is NULL, the language set with `fao_settings()`.",
       "pptx": "A logical value. If TRUE, the charts are also saved as editable PowerPoint files.\nDefault is the value set with `fao_settings()` (FALSE unless changed).",
+      "plot_show": "A logical value. If TRUE, each chart is also drawn in the plot window (e.g.\nthe Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,\nwhich can be changed for all functions with `fao_settings(plot_show = TRUE)`. The\ncharts are saved as files (`plot = TRUE`) either way.",
       "silent": "A logical value. If FALSE (default), the stocks and parameters that did not\nconverge or have too few effective draws are reported. Default can be changed with\n`fao_settings(silent = TRUE)`."
     },
     "sections": {}
@@ -36,6 +37,7 @@
       "colors": "图中各条链的颜色：NULL（默认）为色盲友好的Okabe-Ito配色（蓝、朱红、绿……）；也可以是调色板名称（`fao_settings(palette = )`支持的任何调色板，如\"npg\"、\"Set1\"、\"Tableau 10\"或\"viridis\"），或每条链一个颜色的向量（如`c(\"black\", \"#D7191C\")`）；颜色少于链数时按插值补足。",
       "lang": "图表文字和参数名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL，即`fao_settings()`设置的语言。",
       "pptx": "逻辑值。为TRUE时，图表还另存为可编辑的PowerPoint文件。默认为`fao_settings()`中的设置（未更改时为FALSE）。",
+      "plot_show": "逻辑值。为TRUE时，每张图在保存的同时也画在绘图窗口中（例如RStudio的Plots窗格），便于立即查看。默认为FALSE，可以用`fao_settings(plot_show = TRUE)`为所有函数统一更改。无论是否显示，图表都会保存为文件（`plot = TRUE`）。",
       "silent": "逻辑值。为FALSE（默认）时，报告未收敛或有效样本量不足的种群和参数。可以用`fao_settings(silent = TRUE)`更改默认值。"
     },
     "sections": {},

@@ -136,13 +136,38 @@ The ten species with the largest catch in area 27, their catch over time and the
 their mean catch:
 
 ```{r, figures = TRUE}
-species <- fishing_area_species(FAO27$area_data, rank_range = c(1, 10))
+species <- fishing_area_species(FAO27$area_data, rank_range = 1:10)
 ```
 
 The same for the countries:
 
 ```{r, figures = TRUE}
-countries <- fishing_area_country(FAO27$area_data, rank_range = c(1, 10))
+countries <- fishing_area_country(FAO27$area_data, rank_range = 1:10)
+```
+
+`rank_range` lists the ranks shown: `1:10` the first ten, `11:20` the next ten, `c(5, 6)` the
+fifth and the sixth.
+
+## 🖥️ What you see in the console
+
+When a function finishes, it shows a short summary of its results in the console: what was
+analysed, the first rows of its main table, the charts and tables it saved, and the parts of the
+result it returns. The result itself is returned invisibly: assign it (`species <- ...`) to keep
+it. Here the fifth and the sixth species:
+
+```{r}
+fao_settings(show_data = TRUE)   # the default (the articles of this site turn it off)
+species56 <- fishing_area_species(FAO27$area_data, rank_range = c(5, 6))
+fao_settings(show_data = FALSE)
+```
+
+`plot_show = TRUE` also draws each chart in the plot window (the Plots pane of RStudio) as it
+is saved; `plot = TRUE` keeps saving the chart files either way:
+
+```{r, eval = FALSE}
+species <- fishing_area_species(FAO27$area_data, rank_range = 1:10, plot_show = TRUE)
+fao_settings(plot_show = TRUE)    # every function of the session draws its charts
+fao_settings(show_data = FALSE)   # no summaries in the console
 ```
 
 ## 🌐 Chinese and bilingual charts
@@ -191,6 +216,7 @@ The arguments shared by the analyses:
 | `plot` | Save the charts | `TRUE` |
 | `table` | Save the tables in `tables/` (not in `fishing_area_data()`) | `TRUE` |
 | `pptx` | Also save the charts as editable PowerPoint files | `FALSE`, or `pptx` of `fao_settings()` |
+| `plot_show` | Also draw each chart in the plot window (e.g. the Plots pane of RStudio) as it is saved | `FALSE`, or `plot_show` of `fao_settings()` |
 | `ZH` | Older way of asking for Chinese: `ZH = TRUE` is `lang = "zh"` (only in the fishing area, species and country functions) | `FALSE` |
 | `label` | Name used in the output files of the summary analyses, e.g. `stock_status()` | `NULL`: the fishing area (or country) of the data |
 

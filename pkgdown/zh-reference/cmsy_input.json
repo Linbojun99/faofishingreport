@@ -1,6 +1,6 @@
 {
   "topic": "cmsy_input",
-  "rd_md5": "f8ce07454b4e002fcc51ad56162cd54c",
+  "rd_md5": "108cdc14a229653dc1bbc50f3b8e589f",
   "stale": false,
   "en": {
     "title": "Prepare FAO Catch Data for CMSY++",
@@ -9,7 +9,7 @@
     "value": "Invisibly, a list of class `cmsy_input` with `catch` and `id` (the two CMSY++ input\ntables), `stocks` (one row per stock with its species, area, years, filled years, catch\nand the source of its r prior) and `excluded` (stocks left out, with the reason).\nWhen `table` is TRUE the four tables are saved in `tables/cmsy/`.",
     "arguments": {
       "area_data": "FAO catch data: `fishing_area_data()$area_data`, or any subset of\n`load_fao_data()` (e.g. one country, or several fishing areas).",
-      "species": "Optional species to keep, by English or Chinese FAO name, both together (as\nshown with `lang = \"both\"`), scientific name or FAO 3-alpha code, e.g.\n`c(\"European pilchard(=Sardine)\", \"Sardinella aurita\", \"BOG\")` or Chinese names.\nDefault is NULL, all species.",
+      "species": "Optional species to keep, by English or Chinese FAO name, both together (as\nshown with `lang = \"both\"`), scientific name or FAO 3-alpha code, e.g.\n`c(\"Atlantic herring\", \"Mallotus villosus\", \"PRA\")` or Chinese names.\nDefault is NULL, all species.",
       "by": "\"area\" (default): one stock per species item and fishing area, summed over\ncountries; or \"country\": one stock per species item, fishing area and country.",
       "priors": "Optional data frame of priors and settings that replace the defaults, one row\nper stock or species. It identifies the rows by a `Stock`, `alpha3`, `species_en` or\n`species` column (`species`: any name, as in the `species` argument) and can have any of the ID file columns `Resilience`, `r.low`, `r.hi`,\n`stb.low`, `stb.hi`, `int.yr`, `intb.low`, `intb.hi`, `endb.low`, `endb.hi`,\n`StartYear`, `EndYear` and `Comment`. Values given here are recorded as \"user\". A\n`Resilience` given without `r.low` and `r.hi` replaces the r range from FishBase or\nSeaLifeBase with the range of that resilience (CMSY++ uses `r.low` and `r.hi` whenever\nboth are given). A row\napplies to the stocks of its most specific identifier: only its stock when it has a\n`Stock`, even if it also names the species; else all stocks of its species. Rows for a\nspecies are applied before rows for one stock, so the values given for a stock take\nprecedence.",
       "default_resilience": "Resilience (\"High\", \"Medium\", \"Low\" or \"Very low\") for stocks\nwhose species has no resilience or prior r in FishBase or SeaLifeBase. Default is NULL:\nsuch stocks are left out, since the user guide gives no default.",
@@ -30,7 +30,7 @@
     "value": "以不可见方式返回一个`cmsy_input`类的列表，包含`catch`和`id`（CMSY++的两个输入表）、`stocks`（每个种群一行，包括物种、渔区、年份、填补的年份、渔获量及其r先验的来源）和`excluded`（未纳入的种群及原因）。`table`为TRUE时，这四个表格保存在tables/cmsy/。",
     "arguments": {
       "area_data": "FAO渔获数据：`fishing_area_data()$area_data`，或`load_fao_data()`的任意子集（例如一个国家，或几个渔区）。",
-      "species": "要保留的物种（可选），可以用FAO英文或中文名称、中英文名称合写（与`lang = \"both\"`时显示的形式相同）、学名或FAO三字母代码，例如`c(\"European pilchard(=Sardine)\", \"Sardinella aurita\", \"BOG\")`，也可以用中文名称。默认为NULL，即所有物种。",
+      "species": "要保留的物种（可选），可以用FAO英文或中文名称、中英文名称合写（与`lang = \"both\"`时显示的形式相同）、学名或FAO三字母代码，例如`c(\"Atlantic herring\", \"Mallotus villosus\", \"PRA\")`，也可以用中文名称。默认为NULL，即所有物种。",
       "by": "\"area\"（默认）：每个物种条目和渔区为一个种群，按国家合计；\"country\"：每个物种条目、渔区和国家为一个种群。",
       "priors": "可选的数据框，给出用于替代默认值的先验和设置，每个种群或物种一行。用`Stock`、`alpha3`、`species_en`或`species`列识别各行（`species`：任何名称，与`species`参数相同），并可包含ID文件的以下任意列：`Resilience`、`r.low`、`r.hi`、`stb.low`、`stb.hi`、`int.yr`、`intb.low`、`intb.hi`、`endb.low`、`endb.hi`、`StartYear`、`EndYear`和`Comment`。在这里给出的值，其来源记为\"user\"（用户）。只给出`Resilience`而没有给出`r.low`和`r.hi`时，FishBase或SeaLifeBase中的r范围由该恢复力对应的范围替代（只要同时给出`r.low`和`r.hi`，CMSY++就使用这两个值）。每一行适用于其最具体的标识所对应的种群：有`Stock`时只适用于该种群，即使该行也给出了物种；否则适用于该物种的所有种群。物种的行先于单个种群的行应用，因此为某个种群给出的值优先。",
       "default_resilience": "物种在FishBase或SeaLifeBase中没有恢复力或r先验时，其种群所用的恢复力（\"High\"、\"Medium\"、\"Low\"或\"Very low\"）。默认为NULL：由于用户指南没有给出默认值，这类种群不予纳入。",

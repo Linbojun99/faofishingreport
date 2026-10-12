@@ -115,7 +115,7 @@ cmsy_annotation_types <- c("title", "subtitle", "caption", "legend", "labels")
 #' cmsy_plot(result, lang = "zh")
 #'
 #' # Kobe plot and prior-posterior densities of one species, with all annotations
-#' cmsy_plot(result, stocks = "Brachydeuterus auritus", charts = c("kobe", "prior_posterior"),
+#' cmsy_plot(result, stocks = "Mallotus villosus", charts = c("kobe", "prior_posterior"),
 #'           annotations = TRUE, lang = "both")
 #'
 #' # Only titles and legends
@@ -133,7 +133,9 @@ cmsy_annotation_types <- c("title", "subtitle", "caption", "legend", "labels")
 #' }
 cmsy_plot <- function(result, stocks = NULL, charts = c(cmsy_stock_charts, cmsy_summary_charts),
                       classes = c("fao", "palomares"), annotations = getOption("faofishingreport.cmsy_annotations", FALSE), lang = NULL,
-                      pptx = getOption("faofishingreport.pptx", FALSE), silent = fao_setting("silent"), mcmc_colors = NULL) {
+                      pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), silent = fao_setting("silent"), mcmc_colors = NULL) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   if (!inherits(result, "cmsy_result")) stop("`result` must be the result of cmsy_run().", call. = FALSE)
   charts <- match.arg(charts, c(cmsy_stock_charts, cmsy_summary_charts), several.ok = TRUE)
   cmsy_chain_colors(mcmc_colors, 2)
@@ -216,7 +218,7 @@ cmsy_plot <- function(result, stocks = NULL, charts = c(cmsy_stock_charts, cmsy_
     step <- step + 1
     bar$update(step, "summary")
   }
-  invisible(plots)
+  fao_run_result(plots, run, "cmsy_plot()", note = paste0("CMSY++ charts: ", length(plots)), quiet = silent)
 }
 
 # Last-year results of a stock, each language with its own status name

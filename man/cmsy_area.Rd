@@ -20,13 +20,14 @@ cmsy_area(
   annotations = getOption("faofishingreport.cmsy_annotations", FALSE),
   lang = NULL,
   pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show"),
   silent = fao_setting("silent"),
   ...
 )
 }
 \arguments{
 \item{area}{FAO major fishing area name(s), as in \code{\link[=fishing_area_data]{fishing_area_data()}} (e.g.
-"Atlantic, Eastern Central"), or FAO catch data such as \code{fishing_area_data()$area_data}.}
+"Atlantic, Northeast"), or FAO catch data such as \code{fishing_area_data()$area_data}.}
 
 \item{top}{Number of species with the largest catch to assess. Default is 10.}
 
@@ -73,6 +74,11 @@ chart). The default can be changed for the session with
 \verb{<out_dir>/<area>/figures_pptx/}. Default is FALSE, which can be changed for all functions
 with \code{fao_settings(pptx = TRUE)}.}
 
+\item{plot_show}{A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+which can be changed for all functions with \code{fao_settings(plot_show = TRUE)}. The
+charts are saved as files (\code{plot = TRUE}) either way.}
+
 \item{silent}{A logical value. If FALSE (default), a progress bar shows how many stocks have
 finished, with the elapsed and the estimated remaining time, and messages report the
 run. If TRUE, nothing is printed. The default can be changed for the session with
@@ -112,20 +118,20 @@ assessed with the catch-only part of CMSY++ and the results are indicative.
 \dontrun{
 cmsy_setup()                     # once: JAGS and the R packages CMSY++ needs
 
-# The ten species with the largest catch of the last ten years in FAO area 34, in Chinese
-area34 <- cmsy_area("Atlantic, Eastern Central", top = 10, lang = "zh")
-area34$summary[, c("Stock", "species_name", "B_Bmsy", "F_Fmsy", "status")]
-area34$dir                       # folder with input/, runs/, figures/ and tables/
+# The ten species with the largest catch of the last ten years in FAO area 27, in Chinese
+area27 <- cmsy_area("Atlantic, Northeast", top = 10, lang = "zh")
+area27$summary[, c("Stock", "species_name", "B_Bmsy", "F_Fmsy", "status")]
+area27$dir                       # folder with input/, runs/, figures/ and tables/
 
 # Chosen species (scientific name, FAO code, ...), all annotations, five status classes
-cmsy_area("Atlantic, Eastern Central", species = c("Brachydeuterus auritus", "PIL"),
+cmsy_area("Atlantic, Northeast", species = c("Mallotus villosus", "PRA"),
           annotations = TRUE, classes = "palomares")
 
 # Species without a FishBase prior get a resilience (passed on to cmsy_input())
-cmsy_area("Atlantic, Eastern Central", top = 20, default_resilience = "Medium")
+cmsy_area("Atlantic, Northeast", top = 20, default_resilience = "Medium")
 
 # Several areas, quietly, with longer MCMC chains (see cmsy_defaults())
-cmsy_area(c("Atlantic, Eastern Central", "Pacific, Northwest"), top = 5, silent = TRUE,
+cmsy_area(c("Atlantic, Northeast", "Atlantic, Northwest"), top = 5, silent = TRUE,
           settings = list(n.iter = 100000, n.burnin = 50000))
 }
 }

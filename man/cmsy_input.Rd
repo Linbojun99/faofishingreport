@@ -25,7 +25,7 @@ cmsy_input(
 
 \item{species}{Optional species to keep, by English or Chinese FAO name, both together (as
 shown with \code{lang = "both"}), scientific name or FAO 3-alpha code, e.g.
-\code{c("European pilchard(=Sardine)", "Sardinella aurita", "BOG")} or Chinese names.
+\code{c("Atlantic herring", "Mallotus villosus", "PRA")} or Chinese names.
 Default is NULL, all species.}
 
 \item{by}{"area" (default): one stock per species item and fishing area, summed over
@@ -102,29 +102,29 @@ read from), \code{rule_url} (the CMSY++ user guide) and \code{fao_data_url} (the
 }
 \examples{
 \donttest{
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
+FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
 
 # All species of the area that CMSY++ can assess with catch only
-input <- cmsy_input(FAO34$area_data, table = FALSE)
+input <- cmsy_input(FAO27$area_data, table = FALSE)
 input
 head(input$stocks[, c("Stock", "species_en", "first_year", "Resilience", "r.low", "r.hi", "r_source")])
 table(input$excluded$reason)                      # why the others are left out
 
 # Some species only, by English name, scientific name or FAO 3-alpha code
-input <- cmsy_input(FAO34$area_data, species = c("European pilchard(=Sardine)", "Sardinella aurita", "GRB"),
+input <- cmsy_input(FAO27$area_data, species = c("Atlantic herring", "Mallotus villosus", "PRA"),
                     table = FALSE)
 
-# Expert B/k priors (user guide Tables 1 and 3): sardine thought to be depleted in the last year
-input <- cmsy_input(FAO34$area_data, species = "PIL", table = FALSE,
-                    priors = data.frame(species = "Sardina pilchardus", endb.low = 0.2, endb.hi = 0.5))
+# Expert B/k priors (user guide Tables 1 and 3): capelin thought to be depleted in the last year
+input <- cmsy_input(FAO27$area_data, species = "CAP", table = FALSE,
+                    priors = data.frame(species = "Mallotus villosus", endb.low = 0.2, endb.hi = 0.5))
 input$id[, c("Stock", "endb.low", "endb.hi")]
 
 # A start year chosen by the user, and a resilience for species without a FishBase prior
-input <- cmsy_input(FAO34$area_data, table = FALSE, default_resilience = "Medium",
-                    priors = data.frame(alpha3 = "PIL", StartYear = 1973))
+input <- cmsy_input(FAO27$area_data, table = FALSE, default_resilience = "Medium",
+                    priors = data.frame(alpha3 = "CAP", StartYear = 1980))
 
 # One stock per country instead of one per area
-by_country <- cmsy_input(FAO34$area_data, species = "PIL", by = "country", table = FALSE)
+by_country <- cmsy_input(FAO27$area_data, species = "CAP", by = "country", table = FALSE)
 by_country$stocks[, c("Stock", "country", "first_year", "last_year")]
 }
 }

@@ -146,6 +146,7 @@ mtc$trend      # 斜率（°C/十年）、Mann-Kendall检验、与SST的相关
 | `table` | 是否把表格保存到`tables/` | `TRUE` |
 | `lang` | 图中文字和名称的语言：`"en"`、`"zh"`或`"both"` | `NULL`：使用`fao_settings()`设定的语言 |
 | `pptx` | 是否同时把图保存为可编辑的PowerPoint文件，存放在`figures/pptx/summary/` | `FALSE` |
+| `plot_show` | 保存图表的同时把图画在绘图窗口中（例如RStudio的Plots窗格） | `FALSE`，或`fao_settings()`中的`plot_show` |
 | `label` | 输出文件名开头的名称 | 数据所属的渔区（或国家） |
 | `data_dir` | 存放下载数据的文件夹 | `fao_data_dir()` |
 

@@ -65,7 +65,7 @@ first.
 |---|---|---|
 | `area_data` | Catch data of an area: `fishing_area_data()$area_data` or any subset of `load_fao_data()` | |
 | `species_name` | FAO species name (ASFIS English name, as in the data) | |
-| `rank_range` | Ranks of the countries shown, by total catch of the species over all years | `c(1, 10)` |
+| `rank_range` | Ranks of the countries shown, by total catch of the species over all years: `1:10` the ten largest, `c(5, 6)` the fifth and the sixth | `1:10` |
 | `plot` | Save the charts | `TRUE` |
 | `table` | Save the table in `tables/` | `TRUE` |
 | `timeseries_analysis` | `TRUE`: panel chart with linear trend and breakpoints; `FALSE`: panel chart with a smooth (loess) curve | `TRUE` |
@@ -81,6 +81,7 @@ first.
 | `ZH` | Older way of asking for Chinese: `TRUE` is `lang = "zh"` | `FALSE` |
 | `lang` | Language of the chart text and names: `"en"`, `"zh"` or `"both"` | `NULL`: `"zh"` if `ZH = TRUE`, else the language of `fao_settings()` |
 | `pptx` | Also save the charts as editable PowerPoint files | `FALSE`, or `pptx` of `fao_settings()` |
+| `plot_show` | Also draw each chart in the plot window (e.g. the Plots pane of RStudio) as it is saved | `FALSE`, or `plot_show` of `fao_settings()` |
 
 ::: callout-note
 In the current version the ranking, time series, panel and pie charts of `species_country()` use
@@ -124,7 +125,7 @@ country_species(FAO27$area_data, country_name = "Spain", h_value = 5,
 |---|---|---|
 | `area_data` | Catch data of an area: `fishing_area_data()$area_data` or any subset of `load_fao_data()` | |
 | `country_name` | FAO country name, as in the data | |
-| `rank_range` | Ranks of the species shown, by the country's total catch over all years | `c(1, 10)` |
+| `rank_range` | Ranks of the species shown, by the country's total catch over all years: `1:10` the ten largest, `c(5, 6)` the fifth and the sixth | `1:10` |
 | `plot` | Save the charts | `TRUE` |
 | `table` | Save the table in `tables/` | `TRUE` |
 | `timeseries_analysis` | `TRUE`: panel chart with linear trend and breakpoints; `FALSE`: panel chart with a smooth (loess) curve | `TRUE` |
@@ -133,6 +134,7 @@ country_species(FAO27$area_data, country_name = "Spain", h_value = 5,
 | `ZH` | Older way of asking for Chinese: `TRUE` is `lang = "zh"` | `FALSE` |
 | `lang` | Language of the chart text and names: `"en"`, `"zh"` or `"both"` | `NULL`: `"zh"` if `ZH = TRUE`, else the language of `fao_settings()` |
 | `pptx` | Also save the charts as editable PowerPoint files | `FALSE`, or `pptx` of `fao_settings()` |
+| `plot_show` | Also draw each chart in the plot window (e.g. the Plots pane of RStudio) as it is saved | `FALSE`, or `plot_show` of `fao_settings()` |
 
 ## 3️⃣ `country_analysis()`: a country in all FAO areas
 
@@ -173,7 +175,7 @@ show_table(norway_global$country_species_area_total, n = 8, digits = 1)
 | Argument | Meaning | Default |
 |---|---|---|
 | `country_name` | FAO country name, as in the data | |
-| `rank_range` | Ranks of the species shown, by the country's total catch over all years | `c(1, 10)` |
+| `rank_range` | Ranks of the species shown, by the country's total catch over all years: `1:10` the ten largest, `c(5, 6)` the fifth and the sixth | `1:10` |
 | `plot` | Save the charts | `TRUE` |
 | `table` | Save the table in `tables/` | `TRUE` |
 | `timeseries_analysis` | `TRUE`: species panel chart with linear trend and breakpoints; `FALSE`: with a smooth curve | `TRUE` |
@@ -184,6 +186,7 @@ show_table(norway_global$country_species_area_total, n = 8, digits = 1)
 | `lang` | Language of the chart text and names: `"en"`, `"zh"` or `"both"` | `NULL`: `"zh"` if `ZH = TRUE`, else the language of `fao_settings()` |
 | `data_version` | FAO release: `"latest"`, `"bundled"` or a release such as `"2026.1.0"` (see [💾 FAO data](data.html)) | `"latest"` |
 | `pptx` | Also save the charts as editable PowerPoint files | `FALSE`, or `pptx` of `fao_settings()` |
+| `plot_show` | Also draw each chart in the plot window (e.g. the Plots pane of RStudio) as it is saved | `FALSE`, or `plot_show` of `fao_settings()` |
 
 The breakpoints are found as described in [🌊 Fishing area analysis](fishing-areas.html)
 (`strucchange::breakpoints()` with a constant mean in each period).

@@ -63,7 +63,7 @@
 #' @examples
 #' # By scientific name, English name or FAO 3-alpha code (Chinese names work as well)
 #' cmsy_priors("Gadus morhua")
-#' cmsy_priors(c("COD", "European pilchard(=Sardine)"), lang = "both")
+#' cmsy_priors(c("COD", "Atlantic herring"), lang = "both")
 #'
 #' # Part of a name finds every matching species
 #' cmsy_priors("sardin")[, c("alpha3", "species_en", "scientific_name", "resilience", "r_low", "r_high")]

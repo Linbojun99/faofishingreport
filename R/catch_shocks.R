@@ -51,14 +51,16 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-#' catch_shocks(FAO34$area_data, lang = "zh")                      # countries in area 34
-#' catch_shocks(FAO34$area_data, by = "species")                   # species in area 34
+#' FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+#' catch_shocks(FAO27$area_data, lang = "zh")                      # countries in area 27
+#' catch_shocks(FAO27$area_data, by = "species")                   # species in area 27
 #' catch_shocks(load_fao_data(), by = "country", method = "gephart2017")   # national totals
 #' }
 catch_shocks <- function(area_data, by = c("country", "area"), method = c("cottrell2019", "gephart2017"),
                          min_years = 20, top_n = 25, plot = TRUE, table = TRUE, lang = NULL,
-                         pptx = getOption("faofishingreport.pptx", FALSE), label = NULL) {
+                         pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), label = NULL) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   method <- match.arg(method)
   by <- match.arg(by, c("country", "area", "species"), several.ok = TRUE)
   lang <- fao_lang(lang)
@@ -195,7 +197,9 @@ catch_shocks <- function(area_data, by = c("country", "area"), method = c("cottr
     fao_save_table(by_group, paste0(name, "_by_group"))
     fao_save_table(series, paste0(name, "_series"))
   }
-  invisible(list(shocks = shocks, by_year = by_year, by_group = by_group, series = series))
+  fao_run_result(list(shocks = shocks, by_year = by_year, by_group = by_group, series = series), run, fao_run_title("catch_shocks", area_data, label),
+                 main = fao_cols(shocks, c("series_name", "Year", "catch_tonnes", "baseline_tonnes", "loss_pct")),
+                 note = paste0(nrow(shocks), " catch shocks in ", nrow(series), " series:"))
 }
 
 # Parameters of the two published methods

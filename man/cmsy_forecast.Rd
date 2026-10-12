@@ -18,6 +18,7 @@ cmsy_forecast(
   lang = NULL,
   annotations = getOption("faofishingreport.cmsy_annotations", FALSE),
   pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show"),
   silent = fao_setting("silent")
 )
 }
@@ -57,6 +58,11 @@ chart). The default can be changed for the session with
 \item{pptx}{A logical value. If TRUE, the charts are also saved as editable PowerPoint files in
 figures/pptx/cmsy/<stock>/ and figures/pptx/cmsy/summary/. Default is FALSE, which can be
 changed for all functions with \code{fao_settings(pptx = TRUE)}.}
+
+\item{plot_show}{A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+which can be changed for all functions with \code{fao_settings(plot_show = TRUE)}. The
+charts are saved as files (\code{plot = TRUE}) either way.}
 
 \item{silent}{A logical value. If FALSE (default), a progress bar shows how many stocks have
 been projected. If TRUE, nothing is printed. The default can be changed for the session

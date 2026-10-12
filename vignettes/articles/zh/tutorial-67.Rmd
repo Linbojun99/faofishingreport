@@ -172,10 +172,10 @@ share <- 100 * total / world[names(total)]
 
 ## 4. 🐟 主要物种 {#species}
 
-`fishing_area_species()`按渔获量给物种条目排序（`rank_range = c(1, 10)`：最大的十个），绘制它们的渔获量随时间的变化，并找出每个物种的阶段：
+`fishing_area_species()`按渔获量给物种条目排序（`rank_range = 1:10`：最大的十个），绘制它们的渔获量随时间的变化，并找出每个物种的阶段：
 
 ```{r, figures = "area_species"}
-sp <- fishing_area_species(area67, rank_range = c(1, 10))
+sp <- fishing_area_species(area67, rank_range = 1:10)
 ```
 
 ```{r, include = FALSE}
@@ -206,7 +206,7 @@ pink_even <- mean(pink[as.integer(names(pink)) %% 2 == 0])
 - **两年周期。**细鳞大麻哈鱼（pink salmon）的生命周期为两年，因此奇数年和偶数年的洄游群体交替出现：2000年以来，奇数年的渔获量平均为`r mt(pink_odd)`，偶数年为`r mt(pink_even)`，这就是它的分面中锯齿状的折线。
 
 ::: callout-note
-改变`rank_range`就会改变显示的物种，例如`rank_range = c(11, 20)`显示其后的十个。只有在`timeseries_analysis = FALSE`时，分面中的折线才会被平滑，同时也不再显示阶段。
+改变`rank_range`就会改变显示的物种，例如`rank_range = 11:20`显示其后的十个。只有在`timeseries_analysis = FALSE`时，分面中的折线才会被平滑，同时也不再显示阶段。
 :::
 
 ::: callout-note
@@ -218,7 +218,7 @@ FAO物种名录（ASFIS）中没有中文名的物种，本包使用FishBase和S
 `fishing_area_country()`对国家做同样的分析，并加上一张各国渔获量的地图：
 
 ```{r, figures = "area_country"}
-co <- fishing_area_country(area67, rank_range = c(1, 8))
+co <- fishing_area_country(area67, rank_range = 1:8)
 ```
 
 ```{r, include = FALSE}
@@ -250,7 +250,7 @@ canada_50s <- sum(leader[as.character(1950:1959)] == "Canada")
 ### 6.1 谁在捕捞某个物种：`species_country()`
 
 ```{r, figures = "Alaska_pollock"}
-pollock <- species_country(area67, "Alaska pollock(=Walleye poll.)", rank_range = c(1, 5))
+pollock <- species_country(area67, "Alaska pollock(=Walleye poll.)", rank_range = 1:5)
 ```
 
 ```{r, include = FALSE}
@@ -270,8 +270,8 @@ pol_peak <- function(country) {
 `country_species()`把一个国家在该渔区的渔获量按物种分解；`country_analysis()`考察同一个国家在**所有**FAO渔区的渔获量，看它在哪里捕捞：
 
 ```{r, figures = "United_States_of_America"}
-usa_67 <- country_species(area67, "United States of America", rank_range = c(1, 10))
-usa_all <- country_analysis("United States of America", rank_range = c(1, 10))
+usa_67 <- country_species(area67, "United States of America", rank_range = 1:10)
+usa_all <- country_analysis("United States of America", rank_range = 1:10)
 ```
 
 ```{r, include = FALSE}

@@ -1,6 +1,6 @@
 {
   "topic": "fao_areas",
-  "rd_md5": "c349c3cd617adc724266478b8e05f810",
+  "rd_md5": "f0cf22cec9b4cb9bd31b7da653fcddf4",
   "stale": false,
   "en": {
     "title": "FAO Major Fishing Areas",
@@ -12,7 +12,8 @@
       "plot": "A logical value. If TRUE (default), the world map is saved in `figures/png/area/`.",
       "table": "A logical value. If TRUE (default), the table is saved in `tables/`.",
       "lang": "The language of the map text and names: \"en\" (English), \"zh\" (Chinese) or \"both\"\n(Chinese and English). Default is NULL, which uses the language set with\n`fao_settings()` (\"en\" unless changed).",
-      "pptx": "A logical value. If TRUE, the map is also saved as an editable PowerPoint file in\n`figures/pptx/area/`. Default is the value set with `fao_settings()` (FALSE unless changed)."
+      "pptx": "A logical value. If TRUE, the map is also saved as an editable PowerPoint file in\n`figures/pptx/area/`. Default is the value set with `fao_settings()` (FALSE unless changed).",
+      "plot_show": "A logical value. If TRUE, each chart is also drawn in the plot window (e.g.\nthe Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,\nwhich can be changed for all functions with `fao_settings(plot_show = TRUE)`. The\ncharts are saved as files (`plot = TRUE`) either way."
     },
     "sections": {}
   },
@@ -26,7 +27,8 @@
       "plot": "逻辑值。为TRUE（默认）时，世界地图保存在figures/png/area/。",
       "table": "逻辑值。为TRUE（默认）时，表格保存在tables/。",
       "lang": "图表文字和名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL，即使用`fao_settings()`设置的语言（未更改时为\"en\"）。",
-      "pptx": "逻辑值。为TRUE时，地图还另存为可编辑的PowerPoint文件，保存在figures/pptx/area/。默认为`fao_settings()`中的设置（未更改时为FALSE）。"
+      "pptx": "逻辑值。为TRUE时，地图还另存为可编辑的PowerPoint文件，保存在figures/pptx/area/。默认为`fao_settings()`中的设置（未更改时为FALSE）。",
+      "plot_show": "逻辑值。为TRUE时，每张图在保存的同时也画在绘图窗口中（例如RStudio的Plots窗格），便于立即查看。默认为FALSE，可以用`fao_settings(plot_show = TRUE)`为所有函数统一更改。无论是否显示，图表都会保存为文件（`plot = TRUE`）。"
     },
     "sections": {},
     "section_titles": {}

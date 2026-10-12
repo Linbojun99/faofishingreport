@@ -14,6 +14,7 @@ cmsy_mcmc(
   colors = NULL,
   lang = NULL,
   pptx = fao_setting("pptx"),
+  plot_show = fao_setting("plot_show"),
   silent = fao_setting("silent")
 )
 }
@@ -45,6 +46,11 @@ chains, colours are interpolated.}
 
 \item{pptx}{A logical value. If TRUE, the charts are also saved as editable PowerPoint files.
 Default is the value set with \code{fao_settings()} (FALSE unless changed).}
+
+\item{plot_show}{A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+which can be changed for all functions with \code{fao_settings(plot_show = TRUE)}. The
+charts are saved as files (\code{plot = TRUE}) either way.}
 
 \item{silent}{A logical value. If FALSE (default), the stocks and parameters that did not
 converge or have too few effective draws are reported. Default can be changed with

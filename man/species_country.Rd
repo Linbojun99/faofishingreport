@@ -7,7 +7,7 @@
 species_country(
   area_data,
   species_name,
-  rank_range = c(1, 10),
+  rank_range = 1:10,
   plot = TRUE,
   table = TRUE,
   timeseries_analysis = TRUE,
@@ -24,7 +24,8 @@ species_country(
   strip_text_size = 12,
   ZH = FALSE,
   lang = NULL,
-  pptx = getOption("faofishingreport.pptx", FALSE)
+  pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show")
 )
 }
 \arguments{
@@ -32,7 +33,11 @@ species_country(
 
 \item{species_name}{A string specifying the species to be analyzed.}
 
-\item{rank_range}{A numeric vector of length 2 specifying the rank range of countries to be analyzed.}
+\item{rank_range}{The ranks of the countries to show, ranked by their catch of the species: the ranks
+listed, e.g. \code{1:10} (default) for the first ten, \code{c(5, 6)} for the fifth and sixth, or
+\code{c(1, 10)} for the first and the tenth. Ranks beyond the number of countries are left out.
+Until version 0.9.0 two numbers gave the first and the last rank (\code{c(1, 10)} was the
+first ten).}
 
 \item{plot}{A logical value indicating whether to generate and save plots.}
 
@@ -73,21 +78,30 @@ set with \code{fao_settings()} ("en" unless changed).}
 \item{pptx}{A logical value. Charts are always saved as PNG in \verb{figures/png/}; if TRUE they are
 also saved as editable PowerPoint files in \verb{figures/pptx/}. Default is FALSE, which can be
 changed for all functions with \code{fao_settings(pptx = TRUE)}.}
+
+\item{plot_show}{A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+which can be changed for all functions with \code{fao_settings(plot_show = TRUE)}. The
+charts are saved as files (\code{plot = TRUE}) either way.}
 }
 \value{
 A data frame with the yearly catch of the species by the ranked countries (the others
-grouped); with \code{timeseries_analysis = TRUE}, a list of this data frame and the periods
-between breakpoints of each country. Charts and tables are saved if \code{plot} and \code{table}
-are TRUE.
+grouped); with \code{timeseries_analysis = TRUE}, a list of this data frame
+(\code{species_country_ranked}) and the periods between breakpoints of each country
+(\code{coefs_data}). The result is returned invisibly, after a summary in the console (see
+\code{show_data} in \code{\link[=fao_settings]{fao_settings()}}). Charts and tables are saved if \code{plot} and \code{table} are
+TRUE.
 }
 \description{
 This function takes a data frame and a specified species name,
 analyzes the data for the specified species, and identifies the top countries
-based on production within the specified rank range.
+by production at the ranks chosen with \code{rank_range}.
 }
 \examples{
 \dontrun{
-species_country(FAO34[["area_data"]], species_name = "European pilchard(=Sardine)",c(1, 10), plot=TRUE,table=TRUE,h_value = 0.15) #area_data=Fao34
+FAO27 <- fishing_area_data("Atlantic, Northeast")
+species_country(FAO27$area_data, "Atlantic cod", rank_range = 1:10)    # the ten main countries
+species_country(FAO27$area_data, "Atlantic cod", rank_range = c(5, 6)) # the fifth and sixth
 }
 }
 \seealso{

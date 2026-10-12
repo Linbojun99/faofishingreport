@@ -18,11 +18,13 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-#' diversity_concentration(FAO34$area_data, lang = "zh")
+#' FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+#' diversity_concentration(FAO27$area_data, lang = "zh")
 #' }
 diversity_concentration <- function(area_data, top_n = 5, plot = TRUE, table = TRUE, lang = NULL,
-                                    pptx = getOption("faofishingreport.pptx", FALSE), label = NULL) {
+                                    pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), label = NULL) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   lang <- fao_lang(lang)
   name <- fao_summary_name(fao_summary_label(area_data, label), "diversity")
 
@@ -71,5 +73,8 @@ diversity_concentration <- function(area_data, top_n = 5, plot = TRUE, table = T
     fao_save_plot(p, file.path("summary", name), width = 12, height = 12, pptx = pptx)
   }
   if (table) fao_save_table(indicators, name)
-  invisible(indicators)
+  fao_run_result(indicators, run, fao_run_title("diversity_concentration", area_data, label),
+                 main = fao_cols(indicators, c("Year", "n_species", "n_countries", "shannon_species", "hhi_species",
+                                               "top5_species_pct")),
+                 note = "Diversity and concentration of the catch, last years:", from = "bottom")
 }

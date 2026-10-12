@@ -37,6 +37,7 @@ FAO27 <- fishing_area_data("Atlantic, Northeast")
 | `table` | 将表格保存到`tables/` | `TRUE` |
 | `lang` | 图表和名称的语言：`"en"`、`"zh"`或`"both"`；`NULL`表示使用`fao_settings()`设置的语言 | `NULL` |
 | `pptx` | 同时把图表保存为可编辑的PowerPoint文件，存放在`figures/pptx/summary/` | `FALSE`；运行`fao_settings(pptx = TRUE)`后为`TRUE` |
+| `plot_show` | 保存图表的同时把图画在绘图窗口中（例如RStudio的Plots窗格） | `FALSE`，或`fao_settings()`中的`plot_show` |
 | `label` | 输出文件名开头的名称 | 数据所属的渔区（或国家） |
 
 这些函数以不可见的方式返回结果：把结果赋给一个对象（`x <- catch_shocks(...)`），才能使用其中的表格。

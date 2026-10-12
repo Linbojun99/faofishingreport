@@ -39,6 +39,8 @@ fao_settings()
 #>   online          TRUE
 #>   sst             ersst5
 #>   silent          FALSE
+#>   show_data       TRUE
+#>   plot_show       FALSE
 #>   font            SimSun
 ```
 
@@ -70,6 +72,8 @@ The settings:
 | `online` | Whether functions may connect to the internet to look for the newest FishBase release; `FALSE` works offline with the downloaded copy (see [🐠 FishBase](fishbase.html)) | `TRUE` |
 | `sst` | Sea surface temperature data of `fao_area_sst()` and `mean_temperature_catch()`: `"ersst5"` (built in), a product downloaded with `download_sst_data()` (e.g. `"hadisst1"`), or the path of your own NetCDF file or folder (see [🌡️ Sea temperature](sst-mtc.html)) | `"ersst5"` |
 | `silent` | Whether the CMSY++ functions work without progress bars and messages; their `silent` argument takes precedence (see [📉 CMSY++](cmsy.html)) | `FALSE` |
+| `show_data` | Whether a function shows a summary of its results in the console when it finishes (what was analysed, its main table, the files saved, the parts of the result); the result is returned invisibly | `TRUE` |
+| `plot_show` | Whether charts are also drawn in the plot window (the Plots pane of RStudio) as they are saved; the `plot_show` argument of a function takes precedence | `FALSE` |
 
 `fao_settings(reset = TRUE)` restores the defaults. A wrong name or value gives an error at once,
 with the choices available. Each setting is stored as the R option `faofishingreport.<name>`, so
@@ -83,12 +87,12 @@ Every analysis has a `lang` argument; `fao_settings(lang = ...)` changes the def
 
 ```{r, figures = "area_country.png"}
 fao_settings(lang = "zh")
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(lang = "both")
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 ```
 
 ```{r, include = FALSE}
@@ -102,12 +106,12 @@ and means `lang = "zh"`.
 
 ```{r, figures = "area_country.png"}
 fao_settings(theme = "classic")
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(theme = "minimal", base_size = 14)
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 ```
 
 Any ggplot2 theme can be used, e.g. `fao_settings(theme = ggplot2::theme_light(base_size = 13))`.
@@ -118,17 +122,17 @@ Any ggplot2 theme can be used, e.g. `fao_settings(theme = ggplot2::theme_light(b
 
 ```{r, figures = "area_country.png"}
 fao_settings(theme = "bw", base_size = 12, palette = "lancet")
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(palette = "Okabe-Ito")        # suitable for colour-blind readers
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(palette = c("#0B2E5B", "#16A6B6", "#F28E2B", "#E15759", "#59A14F", "#B07AA1"))
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 fao_settings(palette = "npg")
 ```
 
@@ -224,7 +228,7 @@ The `fill_scale` argument of `fishing_area_data()`, `species_country()` and
 
 ```{r, include = FALSE}
 fao_settings(reset = TRUE)
-fao_settings(dpi = 100, lang = page_lang)
+fao_settings(dpi = 100, lang = page_lang, show_data = FALSE)
 ```
 
 ## 🔤 Fonts {#fonts}
@@ -260,7 +264,7 @@ package, which finds any installed font by name; PowerPoint files use the same f
 
 ```{r, figures = "area_country.png"}
 fao_settings(grid = TRUE)
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 fao_settings(grid = FALSE)
 ```
 

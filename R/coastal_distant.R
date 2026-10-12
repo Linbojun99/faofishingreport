@@ -17,11 +17,13 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-#' coastal_distant(FAO34$area_data, lang = "zh")
+#' FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+#' coastal_distant(FAO27$area_data, lang = "zh")
 #' }
 coastal_distant <- function(area_data, top_n = 8, plot = TRUE, table = TRUE, lang = NULL,
-                            pptx = getOption("faofishingreport.pptx", FALSE), label = NULL) {
+                            pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), label = NULL) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   lang <- fao_lang(lang)
   name <- fao_summary_name(fao_summary_label(area_data, label), "coastal_distant")
 
@@ -68,5 +70,6 @@ coastal_distant <- function(area_data, top_n = 8, plot = TRUE, table = TRUE, lan
       fao_save_table(fao_category_table(yearly_distant, fao_label("country", lang)), paste0(name, "_countries"))
     }
   }
-  invisible(list(yearly = yearly, distant = yearly_distant, table = summary_table))
+  fao_run_result(list(yearly = yearly, distant = yearly_distant, table = summary_table), run, fao_run_title("coastal_distant", area_data, label),
+                 main = fao_decade_brief(summary_table), note = "Catch (t) by decade (mean per year) and in the last year:")
 }

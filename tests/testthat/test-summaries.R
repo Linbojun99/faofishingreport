@@ -64,11 +64,11 @@ test_that("the species and country functions print nothing and report gaps as me
   data <- data.frame(Country..Name. = rep(c("Japan", "Canada"), each = 30), ASFIS.species..Name. = "Pacific cod",
                      FAO.major.fishing.area..Name. = "Pacific, Northeast",
                      Year = c(1981:2010, 1981:1995, 1997:2011), Production = c(1:30, 30:1))
-  expect_output(expect_message(result <- species_country(data, "Pacific cod", rank_range = c(1, 2), plot = FALSE,
+  expect_output(expect_message(result <- species_country(data, "Pacific cod", rank_range = 1:2, plot = FALSE,
                                                           table = FALSE),
                                "Canada is not continuous"), NA)
   expect_length(result, 2)
-  expect_output(country_species(data, "Japan", rank_range = c(1, 1), plot = FALSE, table = FALSE), NA)
+  expect_output(country_species(data, "Japan", rank_range = 1, plot = FALSE, table = FALSE), NA)
   expect_length(list.files(), 0)
 })
 
@@ -77,9 +77,9 @@ test_that("the main species and countries can be ranked by recent years, as in t
   withr::local_dir(withr::local_tempdir())
   recent <- area[area$Year > max(area$Year) - 5, ]
   top <- function(column) names(utils::head(sort(tapply(recent$Production, recent[[column]], sum), decreasing = TRUE), 10))
-  sp <- fishing_area_species(area, rank_range = c(1, 10), rank_years = 5, plot = FALSE, table = FALSE, lang = "en")
+  sp <- fishing_area_species(area, rank_range = 1:10, rank_years = 5, plot = FALSE, table = FALSE, lang = "en")
   expect_setequal(as.character(sp$area_species_ranked_total$ASFIS.species..Name.), top("ASFIS.species..Name."))
-  co <- fishing_area_country(area, rank_range = c(1, 10), rank_years = 5, plot = FALSE, table = FALSE, lang = "en")
+  co <- fishing_area_country(area, rank_range = 1:10, rank_years = 5, plot = FALSE, table = FALSE, lang = "en")
   expect_setequal(as.character(co$area_country_ranked_total$Country..Name.), top("Country..Name."))
   expect_error(fao_report(34, species_rank_years = 10), "cannot be set")
 })
@@ -107,7 +107,7 @@ test_that("the table of species_country() keeps the Other nei it ranked", {
   data <- data.frame(Country..Name. = rep(c("Morocco", "Other nei"), each = 30), ASFIS.species..Name. = "European pilchard(=Sardine)",
                      FAO.major.fishing.area..Name. = "Atlantic, Eastern Central", Year = rep(1995:2024, 2),
                      Production = rep(c(100, 1000), each = 30))
-  out <- suppressMessages(species_country(data, "European pilchard(=Sardine)", rank_range = c(1, 2), plot = FALSE,
+  out <- suppressMessages(species_country(data, "European pilchard(=Sardine)", rank_range = 1:2, plot = FALSE,
                                           table = TRUE, timeseries_analysis = FALSE, lang = "en"))
   expect_setequal(as.character(unique(out$Country..Name.)), c("Morocco", "Other nei"))
   csv <- utils::read.csv(file.path("tables", "European_pilchard__Sardine__country_ranked_table.csv"), check.names = FALSE)

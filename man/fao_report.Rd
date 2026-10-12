@@ -40,8 +40,8 @@ fao_report(
 )
 }
 \arguments{
-\item{area}{The FAO major fishing area: its name, e.g. "Atlantic, Eastern Central", or its
-code, e.g. 34.}
+\item{area}{The FAO major fishing area: its name, e.g. "Atlantic, Northeast", or its
+code, e.g. 27.}
 
 \item{...}{Settings of the analyses, named with the section as prefix: \code{total_} for
 \code{\link[=fishing_area_data]{fishing_area_data()}}, \code{species_} for \code{\link[=fishing_area_species]{fishing_area_species()}}, \code{countries_} for
@@ -80,7 +80,7 @@ else the Fandol fonts of TeX Live.}
 the language set with \code{fao_settings()} ("both" gives a Chinese report).}
 
 \item{title}{The report title. Default is generated from the area, e.g. "Assessment of
-Marine Capture Production in FAO Major Fishing Area 34 (Atlantic, Eastern Central)".}
+Marine Capture Production in FAO Major Fishing Area 27 (Atlantic, Northeast)".}
 
 \item{report_no}{The number of the report, shown as "Report 1" (in Chinese reports with a
 Chinese numeral) and used in the figure and table numbers (1-1, 1-2, ...). Default is 1.}
@@ -180,27 +180,27 @@ The text templates are in \code{inst/extdata/report_text.csv} and the references
 }
 \examples{
 \dontrun{
-fao_report(34)                                  # Chinese or English, from fao_settings()
-fao_report("Atlantic, Eastern Central", lang = "zh", author = "Hongyu Lin")
-fao_report(34, lang = "en", font = "Times New Roman", citation = "fao")
+fao_report(27)                                  # Chinese or English, from fao_settings()
+fao_report("Atlantic, Northeast", lang = "zh", author = "Hongyu Lin")
+fao_report(27, lang = "en", font = "Times New Roman", citation = "fao")
 
 # The other analyses of the package, with their settings
-fao_report(34, lang = "zh", shocks = TRUE, collapse = TRUE, synchrony = TRUE, pelagic = TRUE,
+fao_report(27, lang = "zh", shocks = TRUE, collapse = TRUE, synchrony = TRUE, pelagic = TRUE,
            mtc = TRUE, distant = TRUE, collapse_method = "worm2006", distant_countries = 5)
 
 # Only some sections, with settings of their functions
-fao_report(34, lang = "zh", quality = FALSE, diversity = FALSE,
+fao_report(27, lang = "zh", quality = FALSE, diversity = FALSE,
            species_h_value = 0.2, status_smooth = TRUE)
 
 # With a CMSY++ assessment of the 10 main species (a few minutes)
-report <- fao_report(34, lang = "zh", cmsy = TRUE)
+report <- fao_report(27, lang = "zh", cmsy = TRUE)
 report                                         # the tables it returns
 View(report$cmsy_reference_points)             # r, k, MSY, B/Bmsy, ... with 95\% limits
 View(report$cmsy_priors)                       # priors, sources and links
-fao_report(34, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5)
+fao_report(27, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5)
 
 # Reuse CMSY++ results to rewrite the report
-fao_report(34, lang = "zh", cmsy = readRDS(file.path("reports", "cmsy", "Atlantic__Eastern_Central",
+fao_report(27, lang = "zh", cmsy = readRDS(file.path("reports", "cmsy", "Atlantic__Northeast",
                                                       "cmsy_result.rds")))
 }
 }

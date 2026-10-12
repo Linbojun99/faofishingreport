@@ -16,7 +16,7 @@ data_source()
 
 `fao_areas()` and `fishing_area_map()` show the FAO major fishing areas and their subareas; the
 three other fishing area functions describe one area. The examples use the **Northeast Atlantic
-(area 27)**; the last section shows the same analysis for the **Northwest Pacific (area 61)**.
+(area 27)**; the last section shows the same analysis for the **Northwest Atlantic (area 21)**.
 
 ## 🗺️ The FAO major fishing areas
 
@@ -35,7 +35,7 @@ show_table(areas[order(-areas$catch_last_year), c("area_code", "name_en", "type"
            n = 30, digits = 1)
 ```
 
-Use these names (e.g. `"Pacific, Northwest"`) or codes in the other functions. The official FAO
+Use these names (e.g. `"Atlantic, Northwest"`) or codes in the other functions. The official FAO
 maps (column `fao_map`) are the maps of the
 [FAO fishing area maps](https://www.fao.org/fishery/docs/maps/Default.htm) page; the package
 links to them.
@@ -86,6 +86,7 @@ All arguments of `fishing_area_map()`:
 | `table` | Save the table of units in `tables/` | `TRUE` |
 | `lang` | Language of the map text: `"en"`, `"zh"` or `"both"` | `NULL`: the language of `fao_settings()` |
 | `pptx` | Also save the map as an editable PowerPoint file | `FALSE`, or `pptx` of `fao_settings()` |
+| `plot_show` | Also draw each chart in the plot window (e.g. the Plots pane of RStudio) as it is saved | `FALSE`, or `plot_show` of `fao_settings()` |
 
 ## 1️⃣ `fishing_area_data()`: catch of the area
 
@@ -158,11 +159,12 @@ All arguments of `fishing_area_data()`:
 | `lang` | Language of the chart text: `"en"`, `"zh"` or `"both"` | `NULL`: `"zh"` if `ZH = TRUE`, else the language of `fao_settings()` |
 | `data_version` | FAO release: `"latest"` (newest available), `"bundled"` or a release such as `"2026.1.0"` (see [💾 FAO data](data.html)) | `"latest"` |
 | `pptx` | Also save the charts as editable PowerPoint files in `figures/pptx/` | `FALSE`, or `pptx` of `fao_settings()` |
+| `plot_show` | Also draw each chart in the plot window (e.g. the Plots pane of RStudio) as it is saved | `FALSE`, or `plot_show` of `fao_settings()` |
 
 ## 2️⃣ `fishing_area_species()`: main species
 
 ```{r, figures = TRUE}
-species <- fishing_area_species(FAO27$area_data, rank_range = c(1, 10))
+species <- fishing_area_species(FAO27$area_data, rank_range = 1:10)
 ```
 
 | File | Chart |
@@ -193,7 +195,7 @@ show_table(read.csv("tables/species_ranked_table.csv", fileEncoding = "UTF-8-BOM
 
 ### Options
 
-- **`rank_range`** chooses the ranks: `c(11, 20)` shows the next ten species.
+- **`rank_range`** lists the ranks shown: `11:20` shows the next ten species, `c(5, 6)` the fifth and the sixth.
 - **`timeseries_analysis = FALSE`** replaces the breakpoints by a smooth curve
   (`smooth_method`, default `"loess"`).
 - **`h_value`** is the minimum length of a period between breakpoints: a fraction of the series
@@ -201,7 +203,7 @@ show_table(read.csv("tables/species_ranked_table.csv", fileEncoding = "UTF-8-BOM
   species with too short a series are skipped with a message.
 
 ```{r, figures = TRUE}
-fishing_area_species(FAO27$area_data, rank_range = c(11, 20), h_value = 5, lang = "both")
+fishing_area_species(FAO27$area_data, rank_range = 11:20, h_value = 5, lang = "both")
 ```
 
 All arguments of `fishing_area_species()`. "Time series chart" is `area_species.png`, "panel
@@ -211,7 +213,7 @@ sizes and two columns, and only the `text_*` arguments change it.
 | Argument | Meaning | Default |
 |---|---|---|
 | `area_data` | Catch data of an area: `fishing_area_data()$area_data` or any subset of `load_fao_data()` | |
-| `rank_range` | Ranks of the species shown, by total catch over all years: `c(1, 10)` the ten largest, `c(11, 20)` the next ten | `c(1, 10)` |
+| `rank_range` | Ranks of the species shown, by total catch over all years: `1:10` the ten largest, `11:20` the next ten, `c(5, 6)` the fifth and the sixth | `1:10` |
 | `plot` | Save the charts | `TRUE` |
 | `table` | Save the two tables in `tables/` | `TRUE` |
 | `timeseries_analysis` | `TRUE`: panel chart with linear trend and breakpoints; `FALSE`: panel chart with a smooth curve | `TRUE` |
@@ -233,11 +235,12 @@ sizes and two columns, and only the `text_*` arguments change it.
 | `ZH` | Older way of asking for Chinese: `TRUE` is `lang = "zh"` | `FALSE` |
 | `lang` | Language of the chart text and names: `"en"`, `"zh"` or `"both"` | `NULL`: `"zh"` if `ZH = TRUE`, else the language of `fao_settings()` |
 | `pptx` | Also save the charts as editable PowerPoint files in `figures/pptx/` | `FALSE`, or `pptx` of `fao_settings()` |
+| `plot_show` | Also draw each chart in the plot window (e.g. the Plots pane of RStudio) as it is saved | `FALSE`, or `plot_show` of `fao_settings()` |
 
 ## 3️⃣ `fishing_area_country()`: main countries
 
 ```{r, figures = TRUE}
-countries <- fishing_area_country(FAO27$area_data, rank_range = c(1, 10))
+countries <- fishing_area_country(FAO27$area_data, rank_range = 1:10)
 ```
 
 It works like `fishing_area_species()`, by country:
@@ -260,7 +263,7 @@ has fixed line widths, text sizes and two columns.
 | Argument | Meaning | Default |
 |---|---|---|
 | `area_data` | Catch data of an area: `fishing_area_data()$area_data` or any subset of `load_fao_data()` | |
-| `rank_range` | Ranks of the countries shown, by total catch over all years | `c(1, 10)` |
+| `rank_range` | Ranks of the countries shown, by total catch over all years: `1:10` the ten largest, `c(5, 6)` the fifth and the sixth | `1:10` |
 | `plot` | Save the charts | `TRUE` |
 | `table` | Save the two tables in `tables/` | `TRUE` |
 | `timeseries_analysis` | `TRUE`: panel chart with linear trend and breakpoints; `FALSE`: panel chart with a smooth curve | `TRUE` |
@@ -282,6 +285,7 @@ has fixed line widths, text sizes and two columns.
 | `ZH` | Older way of asking for Chinese: `TRUE` is `lang = "zh"` | `FALSE` |
 | `lang` | Language of the chart text and names: `"en"`, `"zh"` or `"both"` | `NULL`: `"zh"` if `ZH = TRUE`, else the language of `fao_settings()` |
 | `pptx` | Also save the charts as editable PowerPoint files | `FALSE`, or `pptx` of `fao_settings()` |
+| `plot_show` | Also draw each chart in the plot window (e.g. the Plots pane of RStudio) as it is saved | `FALSE`, or `plot_show` of `fao_settings()` |
 
 ## 📐 How the breakpoints are found {#breakpoints}
 
@@ -301,18 +305,34 @@ number of breakpoints is chosen by the Bayesian information criterion (BIC), as 
 The breakpoints show when the level of the catch changed, not why: changes in fishing, in the
 stocks, in markets or in reporting can all move the catch.
 
-## 🌏 Another area: the Northwest Pacific
+## 🌏 Another area: the Northwest Atlantic
 
-Any FAO area works the same way. The Northwest Pacific (area 61) is the largest fishing area:
+Any FAO area works the same way. The Northwest Atlantic (area 21) lies off Canada, the United
+States and Greenland:
 
 ```{r, figures = TRUE}
-FAO61 <- fishing_area_data("Pacific, Northwest")
-fishing_area_country(FAO61$area_data, rank_range = c(1, 8))
+FAO21 <- fishing_area_data("Atlantic, Northwest")
+fishing_area_country(FAO21$area_data, rank_range = 1:8)
 ```
+
+```{r, include = FALSE}
+area21 <- FAO21$area_data
+total21 <- tapply(area21$Production, area21$Year, sum, na.rm = TRUE)
+is_cod <- area21$ASFIS.species..Name. == "Atlantic cod"
+cod21 <- tapply(area21$Production[is_cod], area21$Year[is_cod], sum, na.rm = TRUE)
+mt21 <- function(x) formatC(x / 1e6, format = "f", digits = 1)
+kt21 <- function(x) formatC(x / 1e3, format = "f", digits = 0)
+```
+
+The catch of area 21 was largest in `r names(which.max(total21))` (`r mt21(max(total21))` million
+t) and was `r mt21(total21[[length(total21)]])` million t in `r names(total21)[length(total21)]`.
+Its Atlantic cod fell from `r kt21(cod21[["1990"]])` thousand t in 1990 to
+`r kt21(cod21[["1995"]])` thousand t in 1995: the cod off Newfoundland and Labrador collapsed, and
+Canada closed the fishery in 1992 (Hutchings and Myers 1994).
 
 ::: callout-tip
 Charts of different areas are saved under the same file names (e.g. `fishing_trend.png`), so
-use one working folder per area, e.g. `setwd("reports/FAO61")`.
+use one working folder per area, e.g. `setwd("reports/FAO21")`.
 :::
 
 ## 📖 References
@@ -345,6 +365,11 @@ Division [online]. Licence: CC-BY 4.0.
 FAO (2026). *Fishery and Aquaculture Statistics – Yearbook 2024*. FAO Yearbook of Fishery and
 Aquaculture Statistics. Rome: FAO.
 [doi:10.4060/ce1217en](https://doi.org/10.4060/ce1217en)
+
+Hutchings, J.A. and Myers, R.A. (1994). What can be learned from the collapse of a renewable
+resource? Atlantic cod, *Gadus morhua*, of Newfoundland and Labrador. *Canadian Journal of
+Fisheries and Aquatic Sciences* 51(9): 2126–2146.
+[doi:10.1139/f94-214](https://doi.org/10.1139/f94-214)
 
 Massicotte, P. and South, A. *rnaturalearth: World Map Data from Natural Earth*. R package.
 [doi:10.32614/CRAN.package.rnaturalearth](https://doi.org/10.32614/CRAN.package.rnaturalearth)

@@ -51,13 +51,16 @@ fao_area_map_files <- c(
 #' Aquaculture Division \[online\]. Licence: CC-BY 4.0.
 #' <https://www.fao.org/fishery/geonetwork?uuid=ac02a460-da52-11dc-9d70-0017f293bd28>
 #' @seealso [fishing_area_map()] for the map of one area and its subareas.
+#' @inheritParams summary_params
 #' @export
 #' @examples
 #' \dontrun{
 #' areas <- fao_areas(lang = "zh")
 #' areas[areas$type == "marine", c("area_code", "name", "catch_last_year")]
 #' }
-fao_areas <- function(data = NULL, plot = TRUE, table = TRUE, lang = NULL, pptx = fao_setting("pptx")) {
+fao_areas <- function(data = NULL, plot = TRUE, table = TRUE, lang = NULL, pptx = fao_setting("pptx"), plot_show = fao_setting("plot_show")) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   lang <- fao_lang(lang)
   if (is.null(data)) data <- load_fao_data()
   areas <- fao_group_table()$area
@@ -106,7 +109,9 @@ fao_areas <- function(data = NULL, plot = TRUE, table = TRUE, lang = NULL, pptx 
     attr(result, "plot") <- p
   }
   if (table) fao_save_table(result, "fao_major_areas")
-  invisible(result)
+  fao_run_result(result, run, "fao_areas(): FAO major fishing areas",
+                 main = fao_cols(result, c("area_code", "name_en", "ocean", "catch_last_year", "share_pct")),
+                 note = "Catch of each area in the last year of the data:", rows = 30)
 }
 
 #' Map of an FAO Major Fishing Area and Its Subareas
@@ -150,6 +155,7 @@ fao_areas <- function(data = NULL, plot = TRUE, table = TRUE, lang = NULL, pptx 
 #' version 3.0.0. [doi:10.32614/CRAN.package.ggOceanMaps](https://doi.org/10.32614/CRAN.package.ggOceanMaps),
 #' <https://github.com/MikkoVihtakari/ggOceanMaps>
 #' @seealso [fao_areas()] for all areas.
+#' @inheritParams summary_params
 #' @export
 #' @examples
 #' \dontrun{
@@ -162,7 +168,9 @@ fao_areas <- function(data = NULL, plot = TRUE, table = TRUE, lang = NULL, pptx 
 #' }
 fishing_area_map <- function(area, level = c("subarea", "division", "subdivision", "none"), bathymetry = TRUE,
                              labels = TRUE, engine = c("auto", "ggOceanMaps", "sf"), plot = TRUE, table = TRUE,
-                             lang = NULL, pptx = fao_setting("pptx")) {
+                             lang = NULL, pptx = fao_setting("pptx"), plot_show = fao_setting("plot_show")) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   level <- match.arg(level)
   engine <- match.arg(engine)
   lang <- fao_lang(lang)
@@ -239,9 +247,10 @@ fishing_area_map <- function(area, level = c("subarea", "division", "subdivision
                         warning = function(w) if (grepl("uneven", conditionMessage(w))) invokeRestart("muffleWarning"))
   }
   if (table && nrow(result_units) > 0) fao_save_table(result_units, name)
-  invisible(list(map = p, units = result_units, engine = engine,
-                 fao_map = paste0(fao_area_map_base, fao_area_map_files[[sprintf("%02d", as.integer(area$code))]], ".gif"),
-                 sources = sources$table))
+  fao_map <- paste0(fao_area_map_base, fao_area_map_files[[sprintf("%02d", as.integer(area$code))]], ".gif")
+  fao_run_result(list(map = p, units = result_units, engine = engine, fao_map = fao_map, sources = sources$table), run,
+                 fao_run_title("fishing_area_map", what = paste0("area ", area$code, ", ", area$name)),
+                 main = result_units, note = paste0("Drawn with ", engine, "; official FAO map: ", fao_map), rows = 20)
 }
 
 # All units of the bundled FAO area layer (major areas, subareas, divisions, subdivisions,

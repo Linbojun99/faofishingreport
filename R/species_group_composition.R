@@ -15,13 +15,15 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-#' species_group_composition(FAO34$area_data, lang = "zh")
+#' FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+#' species_group_composition(FAO27$area_data, lang = "zh")
 #' }
 species_group_composition <- function(area_data, group = c("isscaap", "major"), top_n = 8,
                                       plot = TRUE, table = TRUE, lang = NULL,
-                                      pptx = getOption("faofishingreport.pptx", FALSE),
+                                      pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"),
                                       label = NULL) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   group <- match.arg(group)
   lang <- fao_lang(lang)
   name <- fao_summary_name(fao_summary_label(area_data, label), paste0("group_", group))
@@ -40,5 +42,6 @@ species_group_composition <- function(area_data, group = c("isscaap", "major"), 
                      colors = fao_colors(levels(yearly$category), fao_label("other_group", lang)))
   }
   if (table) fao_save_table(summary_table, name)
-  invisible(list(yearly = yearly, table = summary_table))
+  fao_run_result(list(yearly = yearly, table = summary_table), run, fao_run_title("species_group_composition", area_data, label),
+                 main = fao_decade_brief(summary_table), note = "Catch (t) by decade (mean per year) and in the last year:")
 }

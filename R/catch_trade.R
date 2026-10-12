@@ -152,7 +152,9 @@
 #' }
 catch_trade <- function(country_name, min_capture_pct = 90, years = NULL, conversion = NULL, top_n = 8,
                         data = NULL, trade = NULL, plot = TRUE, table = TRUE, lang = NULL,
-                        pptx = getOption("faofishingreport.pptx", FALSE), label = NULL, data_version = "latest") {
+                        pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), label = NULL, data_version = "latest") {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   lang <- fao_lang(lang)
   name <- fao_summary_name(if (!is.null(label)) label else if (length(country_name) == 1) country_name else
     "selected_countries", "catch_trade")
@@ -214,7 +216,11 @@ catch_trade <- function(country_name, min_capture_pct = 90, years = NULL, conver
     fao_save_table(by_group, paste0(name, "_by_group"))
     fao_save_table(groups, paste0(name, "_groups"))
   }
-  invisible(list(yearly = yearly, by_group = by_group, groups = groups))
+  fao_run_result(list(yearly = yearly, by_group = by_group, groups = groups), run,
+                 fao_run_title("catch_trade", what = country_name),
+                 main = fao_cols(yearly, c("year", "catch_tonnes", "export_tonnes", "import_tonnes", "export_value",
+                                           "export_catch_pct")),
+                 note = "Catch and trade, last years:", from = "bottom")
 }
 
 

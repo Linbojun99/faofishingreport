@@ -56,11 +56,11 @@ cmsy_run(
     </details>
 
 `stocks`
-:   要运行的种群（可选）：`Stock`标识（例如"PIL_34"），或物种的FAO英文或中文名称、学名或FAO三字母代码（运行该物种的所有种群）。默认为NULL，即`input`中的所有种群。
+:   要运行的种群（可选）：`Stock`标识（例如"CAP_27"），或物种的FAO英文或中文名称、学名或FAO三字母代码（运行该物种的所有种群）。默认为NULL，即`input`中的所有种群。
 
     <details class="fao-en"><summary>English</summary>
 
-    Optional stocks to run: `Stock` identifiers (e.g. "PIL_34") or species, by
+    Optional stocks to run: `Stock` identifiers (e.g. "CAP_27") or species, by
     English or Chinese FAO name, scientific name or FAO 3-alpha code (all stocks of the
     species). Default is NULL, all stocks of `input`.
 
@@ -257,20 +257,20 @@ of fishery resources", Box 1.3 (assessment tiers and status classes).
 
 ```r
 cmsy_setup()                                       # once
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-input <- cmsy_input(FAO34$area_data)
+FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+input <- cmsy_input(FAO27$area_data)
 
-# Bigeye grunt, with the start year suggested by CMSY++ and a fixed seed
-result <- cmsy_run(input, stocks = "Brachydeuterus auritus", auto_start = TRUE, seed = 1)
+# Capelin, with the start year suggested by CMSY++ and a fixed seed
+result <- cmsy_run(input, stocks = "Mallotus villosus", auto_start = TRUE, seed = 1)
 result$summary[, c("Stock", "first_year", "B_Bmsy", "B_Bmsy_lcl", "B_Bmsy_ucl", "F_Fmsy", "status")]
 head(result$series)                                # catch, B/k, biomass, B/Bmsy, F/Fmsy by year
 
 # Every CMSY++ chart of the user guide, including the retrospective analysis
-result <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE,
+result <- cmsy_run(input, stocks = "CAP_27", seed = 1, auto_start = TRUE,
                    plots = c("analysis", "management", "kobe", "prior_posterior", "retrospective"))
 
 # Changed CMSY++ settings (see cmsy_defaults()): longer chains and a larger catch error
-result <- cmsy_run(input, stocks = "GRB_34", seed = 1,
+result <- cmsy_run(input, stocks = "CAP_27", seed = 1,
                    settings = list(n.iter = 100000, n.burnin = 50000, CV.C = 0.2))
 result$settings[result$settings$changed, c("setting", "cmsy_default", "used")]
 
@@ -278,8 +278,8 @@ result$settings[result$settings$changed, c("setting", "cmsy_default", "used")]
 result <- cmsy_run(input, stocks = input$stocks$Stock[1:10], parallel = 4, silent = TRUE)
 
 # Settings that would be used on Windows, and charts in the system's own windows
-result <- cmsy_run(input, stocks = "GRB_34", os = "windows")
-result <- cmsy_run(input, stocks = "GRB_34", device = "screen")
+result <- cmsy_run(input, stocks = "CAP_27", os = "windows")
+result <- cmsy_run(input, stocks = "CAP_27", device = "screen")
 
 # Versions and links of everything used, for the methods section of a report
 result$sources

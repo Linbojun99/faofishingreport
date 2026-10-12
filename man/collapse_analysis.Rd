@@ -18,6 +18,7 @@ collapse_analysis(
   table = TRUE,
   lang = NULL,
   pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show"),
   label = NULL
 )
 }
@@ -55,6 +56,11 @@ with no trend (Wilberg and Miller 2007).}
 \item{pptx}{A logical value. If TRUE, charts are also saved as editable PowerPoint files in
 \verb{figures/pptx/summary/}. Default is FALSE, which can be changed for all functions with
 \code{fao_settings(pptx = TRUE)}.}
+
+\item{plot_show}{A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+which can be changed for all functions with \code{fao_settings(plot_show = TRUE)}. The
+charts are saved as files (\code{plot = TRUE}) either way.}
 
 \item{label}{The name used in the output file names. Default is the fishing area (or the
 country) of the data.}
@@ -107,8 +113,8 @@ and Miller 2007), with the same start years and lengths as the real series, for 
 \examples{
 \dontrun{
 collapse_analysis(load_fao_data(), lang = "zh")                   # Mullon et al. (2005), world
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-collapse_analysis(FAO34$area_data, method = "worm2006")
+FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+collapse_analysis(FAO27$area_data, method = "worm2006")
 }
 }
 \references{

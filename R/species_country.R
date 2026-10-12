@@ -2,11 +2,15 @@
 #'
 #' This function takes a data frame and a specified species name,
 #' analyzes the data for the specified species, and identifies the top countries
-#' based on production within the specified rank range.
+#' by production at the ranks chosen with `rank_range`.
 #'
 #' @param area_data A data frame containing the fishing area data.
 #' @param species_name A string specifying the species to be analyzed.
-#' @param rank_range A numeric vector of length 2 specifying the rank range of countries to be analyzed.
+#' @param rank_range The ranks of the countries to show, ranked by their catch of the species: the ranks
+#'   listed, e.g. `1:10` (default) for the first ten, `c(5, 6)` for the fifth and sixth, or
+#'   `c(1, 10)` for the first and the tenth. Ranks beyond the number of countries are left out.
+#'   Until version 0.9.0 two numbers gave the first and the last rank (`c(1, 10)` was the
+#'   first ten).
 #' @param plot A logical value indicating whether to generate and save plots.
 #' @param table A logical value indicating whether to generate and save tables
 #' @param timeseries_analysis A logical value indicating whether to analysis timeseries.
@@ -31,17 +35,22 @@
 #'        also saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be
 #'        changed for all functions with `fao_settings(pptx = TRUE)`.
 #' @family species and country analyses
+#' @inheritParams summary_params
 #' @export
 #'
 #' @return A data frame with the yearly catch of the species by the ranked countries (the others
-#'         grouped); with `timeseries_analysis = TRUE`, a list of this data frame and the periods
-#'         between breakpoints of each country. Charts and tables are saved if `plot` and `table`
-#'         are TRUE.
+#'         grouped); with `timeseries_analysis = TRUE`, a list of this data frame
+#'         (`species_country_ranked`) and the periods between breakpoints of each country
+#'         (`coefs_data`). The result is returned invisibly, after a summary in the console (see
+#'         `show_data` in [fao_settings()]). Charts and tables are saved if `plot` and `table` are
+#'         TRUE.
 #' @examples
 #' \dontrun{
-#' species_country(FAO34[["area_data"]], species_name = "European pilchard(=Sardine)",c(1, 10), plot=TRUE,table=TRUE,h_value = 0.15) #area_data=Fao34
+#' FAO27 <- fishing_area_data("Atlantic, Northeast")
+#' species_country(FAO27$area_data, "Atlantic cod", rank_range = 1:10)    # the ten main countries
+#' species_country(FAO27$area_data, "Atlantic cod", rank_range = c(5, 6)) # the fifth and sixth
 #' }
-species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=TRUE,table=TRUE,timeseries_analysis=TRUE,h_value = 0.15,
+species_country <- function(area_data, species_name, rank_range = 1:10,plot=TRUE,table=TRUE,timeseries_analysis=TRUE,h_value = 0.15,
                             polygon_color="grey90",fill_scale=NULL,
                             axis_title_face="bold",
                             axis_title_size_map = 14,
@@ -50,7 +59,10 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
                             strip_text_face = "bold",
                             axis_text_size = 10, axis_title_size = 12,
                             strip_text_size = 12,ZH = FALSE, lang = NULL,
-                            pptx = getOption("faofishingreport.pptx", FALSE)) {
+                            pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show")) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
+  ranks <- fao_rank_select(rank_range)
 
   old_options <- options(scipen = 999, digits = 2)
   on.exit(options(old_options), add = TRUE)
@@ -124,7 +136,7 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
   # Adjusted code for ranked selection based on specified rank range
   species_country_ranked_total <- species_country_total %>%
     dplyr::arrange(desc(country_production)) %>%
-    dplyr::slice(rank_range[1]:rank_range[2]) %>%
+    fao_rank_slice(ranks, "countries") %>%
     dplyr::mutate(Country..Name. = forcats::fct_reorder(Country..Name., -country_production))
 
 
@@ -520,11 +532,11 @@ species_country <- function(area_data, species_name, rank_range = c(1, 10),plot=
     }
 
 
-if(timeseries_analysis)
-  {return(list(species_country_ranked,coefs_data))
-}
-else{
-  return(species_country_ranked)
-}
+  result <- if (timeseries_analysis) list(species_country_ranked = species_country_ranked, coefs_data = coefs_data) else species_country_ranked
+  fao_run_result(result, run, fao_run_title("species_country", area_data, what = species_name),
+                 main = fao_rank_table(species_country_ranked_total, ranks, "country", "Country..Name.",
+                                       c(catch_t = "country_production", share_pct = "percentage_country")),
+                 note = paste0("Ranks ", fao_ranks_text(ranks), " of ", nrow(species_country_total),
+                               " countries, by their catch of the species over all years:"))
   }
 

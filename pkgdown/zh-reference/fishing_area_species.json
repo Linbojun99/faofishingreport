@@ -1,6 +1,6 @@
 {
   "topic": "fishing_area_species",
-  "rd_md5": "1035326e057dcb48fb376d12055141a7",
+  "rd_md5": "215b485f9f9c27b3daa7826b75c1d6cb",
   "stale": false,
   "en": {
     "title": "Fishing Area Species Analysis",
@@ -9,7 +9,7 @@
     "value": "A list with `area_species` (yearly catch of every species item in the area),\n`area_species_ranked` (yearly catch of the ranked species, with the others grouped),\n`area_species_ranked_total` (total catch and rank of the selected species) and\n`coefs_data` (start year, end year and mean catch of each period between breakpoints).\nCharts and tables are saved if `plot` and `table` are TRUE.",
     "arguments": {
       "area_data": "A data frame containing the fishing area data.",
-      "rank_range": "A numeric vector of length 2 specifying the rank range of species to be analyzed.",
+      "rank_range": "The ranks of the species to show, ranked by their catch (see `rank_years`): the ranks\nlisted, e.g. `1:10` (default) for the first ten, `c(5, 6)` for the fifth and sixth, or\n`c(1, 10)` for the first and the tenth. Ranks beyond the number of species are left out.\nUntil version 0.9.0 two numbers gave the first and the last rank (`c(1, 10)` was the\nfirst ten).",
       "rank_years": "The number of recent years whose catch ranks the species items, e.g. 5 for the\nlast five years (as in the tables of `fao_report()`). Default is NULL: the catch of all years.\nThe charts show the whole series either way.",
       "plot": "A logical value indicating whether to generate and save plots.",
       "table": "A logical value indicating whether to generate and save tables",
@@ -36,18 +36,19 @@
       "h_value": "The minimum segment size passed to `strucchange::breakpoints()`: a fraction of\nthe series length (default 0.15) or a number of years.",
       "ZH": "A logical value. If TRUE, chart text and names are in Chinese. Default is FALSE. `ZH = TRUE` is the same as `lang = \"zh\"`.",
       "lang": "The language of the chart text and names: \"en\" (English), \"zh\" (Chinese) or \"both\"\n(Chinese and English). Default is NULL, which uses \"zh\" if `ZH = TRUE`, and otherwise the language\nset with `fao_settings()` (\"en\" unless changed).",
-      "pptx": "A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are\nalso saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be\nchanged for all functions with `fao_settings(pptx = TRUE)`."
+      "pptx": "A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are\nalso saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be\nchanged for all functions with `fao_settings(pptx = TRUE)`.",
+      "plot_show": "A logical value. If TRUE, each chart is also drawn in the plot window (e.g.\nthe Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,\nwhich can be changed for all functions with `fao_settings(plot_show = TRUE)`. The\ncharts are saved as files (`plot = TRUE`) either way."
     },
     "sections": {}
   },
   "zh": {
     "title": "渔区主要物种分析",
-    "description": "该函数分析渔区数据，并根据各物种按总产量（吨）的排名，为指定排名范围内的物种生成图表。",
+    "description": "该函数分析渔区数据，并根据各物种按总产量（吨）的排名，为`rank_range`所选名次的物种生成图表。",
     "details": "",
-    "value": "一个列表，包含`area_species`（渔区内每个物种条目逐年的产量）、`area_species_ranked`（排名范围内各物种逐年的产量，其余合并为一类）、`area_species_ranked_total`（所选物种的总产量和排名）和`coefs_data`（相邻突变点之间各时段的起始年`start_year`、结束年`end_year`和平均产量`intercept`）。`plot`和`table`为TRUE时保存图表和表格。",
+    "value": "一个列表，包含`area_species`（渔区内每个物种条目逐年的产量）、`area_species_ranked`（所选名次的各物种逐年的产量，其余合并为一类）、`area_species_ranked_total`（所选物种的总产量和排名）和`coefs_data`（相邻突变点之间各时段的起始年`start_year`、结束年`end_year`和平均产量`intercept`）。`plot`和`table`为TRUE时保存图表和表格。",
     "arguments": {
       "area_data": "包含渔区数据的数据框，例如`fishing_area_data()`返回的`area_data`。",
-      "rank_range": "长度为2的数值向量，指定要分析的物种的排名范围（按历年总产量排序），如`c(1, 10)`为前10名，`c(11, 20)`为其后10名。默认为`c(1, 10)`。",
+      "rank_range": "要显示的物种名次，按产量排序（见`rank_years`）：列出名次即可，例如`1:10`（默认）为前十名，`c(5, 6)`为第五和第六名，`c(1, 10)`为第一和第十名。超出物种数量的名次不显示。0.9.0及以前的版本中，两个数表示起止名次（`c(1, 10)`为前十名）。",
       "rank_years": "按最近几年的渔获量对物种条目排名时所用的年数，例如5表示最近五年（与`fao_report()`中的表格相同）。默认为NULL：按所有年份的渔获量排名。两种情况下图表都显示完整的序列。",
       "plot": "逻辑值，是否生成并保存图表。默认为TRUE。",
       "table": "逻辑值，是否生成表格并保存到`tables/`目录（`species_ranked_table.csv`和`species_coefs_data.csv`）。默认为TRUE。",
@@ -74,7 +75,8 @@
       "h_value": "突变点检验（`strucchange::breakpoints()`的参数`h`）中相邻突变点之间时段的最短长度：小于1时为占序列长度的比例，大于等于1时为年数。默认为0.15，即每个时段至少占序列长度的15%。",
       "ZH": "逻辑值。为TRUE时，图表文字和名称使用中文。默认为FALSE。`ZH = TRUE`等同于`lang = \"zh\"`。",
       "lang": "图表文字和名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL：`ZH = TRUE`时使用\"zh\"，否则使用`fao_settings()`设置的语言（未更改时为\"en\"）。",
-      "pptx": "逻辑值。图表总是以PNG格式保存在figures/png/；为TRUE时还另存为可编辑的PowerPoint文件，保存在figures/pptx/。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。"
+      "pptx": "逻辑值。图表总是以PNG格式保存在figures/png/；为TRUE时还另存为可编辑的PowerPoint文件，保存在figures/pptx/。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。",
+      "plot_show": "逻辑值。为TRUE时，每张图在保存的同时也画在绘图窗口中（例如RStudio的Plots窗格），便于立即查看。默认为FALSE，可以用`fao_settings(plot_show = TRUE)`为所有函数统一更改。无论是否显示，图表都会保存为文件（`plot = TRUE`）。"
     },
     "sections": {},
     "section_titles": {}

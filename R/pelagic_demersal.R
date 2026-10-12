@@ -138,7 +138,9 @@
 #' }
 pelagic_demersal <- function(area_data, definition = c("de_leiva_moreno", "grainger_garcia"),
                              pelagic = NULL, demersal = NULL, by = c("area", "division"), plot = TRUE, table = TRUE,
-                             lang = NULL, pptx = getOption("faofishingreport.pptx", FALSE), label = NULL) {
+                             lang = NULL, pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), label = NULL) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   definition <- match.arg(definition)
   by <- match.arg(by)
   lang <- fao_lang(lang)
@@ -209,7 +211,9 @@ pelagic_demersal <- function(area_data, definition = c("de_leiva_moreno", "grain
     fao_save_table(decades, paste0(name, "_decades"))
     fao_save_table(group_table, paste0(name, "_groups"))
   }
-  invisible(list(yearly = yearly, decades = decades, groups = group_table))
+  fao_run_result(list(yearly = yearly, decades = decades, groups = group_table), run, fao_run_title("pelagic_demersal", area_data, label),
+                 main = fao_cols(decades, c("area", "period", "pd_mean", "pd_min", "pd_max", "counted_pct")),
+                 note = "Pelagic to demersal ratio (P/D) by decade:")
 }
 
 

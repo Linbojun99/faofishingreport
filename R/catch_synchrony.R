@@ -61,13 +61,15 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-#' catch_synchrony(FAO34$area_data, lang = "zh")
-#' catch_synchrony(FAO34$area_data, by = "country", window = 15)
+#' FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+#' catch_synchrony(FAO27$area_data, lang = "zh")
+#' catch_synchrony(FAO27$area_data, by = "country", window = 15)
 #' }
 catch_synchrony <- function(area_data, by = c("species", "country"), detrend = c("linear", "none"), window = 20,
                             top_n = 20, min_median = 10, min_nonzero = 0.75, plot = TRUE, table = TRUE, lang = NULL,
-                            pptx = getOption("faofishingreport.pptx", FALSE), label = NULL) {
+                            pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), label = NULL) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   by <- match.arg(by)
   detrend <- match.arg(detrend)
   lang <- fao_lang(lang)
@@ -183,7 +185,11 @@ catch_synchrony <- function(area_data, by = c("species", "country"), detrend = c
     fao_save_table(cbind(series = rownames(correlation), as.data.frame(correlation, check.names = FALSE)),
                    paste0(name, "_correlation"))
   }
-  invisible(list(summary = summary, series = series, windows = windows, correlation = correlation))
+  fao_run_result(list(summary = summary, series = series, windows = windows, correlation = correlation), run, fao_run_title("catch_synchrony", area_data, label),
+                 main = data.frame(measure = names(summary),
+                                   value = vapply(summary, function(v) if (is.numeric(v)) format(signif(v, 3)) else as.character(v), ""),
+                                   stringsAsFactors = FALSE),
+                 note = "Synchrony of the catch series and the portfolio effect:", rows = 20)
 }
 
 # Synchrony (Loreau & de Mazancourt 2008), CVs (Thibaut & Connolly 2013) and portfolio effect

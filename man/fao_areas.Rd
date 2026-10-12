@@ -9,7 +9,8 @@ fao_areas(
   plot = TRUE,
   table = TRUE,
   lang = NULL,
-  pptx = fao_setting("pptx")
+  pptx = fao_setting("pptx"),
+  plot_show = fao_setting("plot_show")
 )
 }
 \arguments{
@@ -26,6 +27,11 @@ year. Default is NULL, the latest release (\code{load_fao_data()}).}
 
 \item{pptx}{A logical value. If TRUE, the map is also saved as an editable PowerPoint file in
 \verb{figures/pptx/area/}. Default is the value set with \code{fao_settings()} (FALSE unless changed).}
+
+\item{plot_show}{A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+which can be changed for all functions with \code{fao_settings(plot_show = TRUE)}. The
+charts are saved as files (\code{plot = TRUE}) either way.}
 }
 \value{
 Invisibly, a data frame with one row per area: \code{area_code}, \code{name_en}, \code{name} (in the

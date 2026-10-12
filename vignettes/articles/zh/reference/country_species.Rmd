@@ -11,13 +11,13 @@ description: "Analyze and Plot the Main Species Caught by a Country in a Fishing
 
 ## 说明
 
-该函数接收渔区数据和一个国家名称，分析该国的渔获量，并按产量找出排名在指定范围内的主要物种。
+该函数接收渔区数据和一个国家名称，分析该国的渔获量，并按产量找出`rank_range`所选名次的主要物种。
 
 <details class="fao-en"><summary>English</summary>
 
 This function takes the fishing area data and a country name,
 analyzes the catch of that country, and identifies the top species
-based on production within the specified rank range.
+by production at the ranks chosen with `rank_range`.
 
 </details>
 
@@ -27,7 +27,7 @@ based on production within the specified rank range.
 country_species(
   area_data,
   country_name,
-  rank_range = c(1, 10),
+  rank_range = 1:10,
   plot = TRUE,
   table = TRUE,
   timeseries_analysis = TRUE,
@@ -35,7 +35,8 @@ country_species(
   h_value = 0.15,
   ZH = FALSE,
   lang = NULL,
-  pptx = getOption("faofishingreport.pptx", FALSE)
+  pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show")
 )
 ```
 
@@ -60,11 +61,15 @@ country_species(
     </details>
 
 `rank_range`
-:   长度为2的数值向量，指定要分析的物种的排名范围（按该国历年总产量排序）。默认为`c(1, 10)`。
+:   要显示的物种名次，按该国的产量排序：列出名次即可，例如`1:10`（默认）为前十名，`c(5, 6)`为第五和第六名，`c(1, 10)`为第一和第十名。超出物种数量的名次不显示。0.9.0及以前的版本中，两个数表示起止名次（`c(1, 10)`为前十名）。
 
     <details class="fao-en"><summary>English</summary>
 
-    A numeric vector of length 2 specifying the rank range of species to be analyzed.
+    The ranks of the species to show, ranked by the catch of the country: the ranks
+    listed, e.g. `1:10` (default) for the first ten, `c(5, 6)` for the fifth and sixth, or
+    `c(1, 10)` for the first and the tenth. Ranks beyond the number of species are left out.
+    Until version 0.9.0 two numbers gave the first and the last rank (`c(1, 10)` was the
+    first ten).
 
     </details>
 
@@ -146,9 +151,21 @@ country_species(
 
     </details>
 
+`plot_show`
+:   逻辑值。为TRUE时，每张图在保存的同时也画在绘图窗口中（例如RStudio的Plots窗格），便于立即查看。默认为FALSE，可以用`fao_settings(plot_show = TRUE)`为所有函数统一更改。无论是否显示，图表都会保存为文件（`plot = TRUE`）。
+
+    <details class="fao-en"><summary>English</summary>
+
+    A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+    the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+    which can be changed for all functions with `fao_settings(plot_show = TRUE)`. The
+    charts are saved as files (`plot = TRUE`) either way.
+
+    </details>
+
 ## 返回值
 
-一个数据框，包含该国家逐年捕捞排名范围内各物种的产量（其余物种合并为一类）。`plot`和`table`为TRUE时保存图表和表格。
+一个数据框，包含该国家逐年捕捞所选名次各物种的产量（其余物种合并为一类）。`plot`和`table`为TRUE时保存图表和表格。
 
 <details class="fao-en"><summary>English</summary>
 
@@ -166,7 +183,9 @@ Other species and country analyses:
 ## 示例
 
 ```r
-country_species(FAO34[["area_data"]], country_name = "Morocco",c(1, 10), plot=TRUE,table=TRUE) #area_data=Fao34
+FAO27 <- fishing_area_data("Atlantic, Northeast")
+country_species(FAO27$area_data, "Norway", rank_range = 1:10)    # the ten main species
+country_species(FAO27$area_data, "Norway", rank_range = c(5, 6)) # the fifth and sixth
 ```
 
 

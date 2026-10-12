@@ -52,7 +52,9 @@
 #' employment_summary(c("Norway", "Viet Nam", "Peru"), employment = employment)
 #' }
 employment_summary <- function(country_name = NULL, employment = NULL, plot = TRUE, table = TRUE, lang = NULL,
-                               pptx = getOption("faofishingreport.pptx", FALSE), label = NULL) {
+                               pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), label = NULL) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   lang <- fao_lang(lang)
   if (is.null(employment)) employment <- load_fao_employment()
   world <- is.null(country_name)
@@ -88,7 +90,9 @@ employment_summary <- function(country_name = NULL, employment = NULL, plot = TR
 
   if (plot) fao_employment_plots(yearly, name, lang, pptx)
   if (table) fao_save_table(yearly, name)
-  invisible(list(yearly = yearly, notes = notes))
+  fao_run_result(list(yearly = yearly, notes = notes), run, fao_run_title("employment_summary", what = country_name),
+                 main = fao_cols(yearly, c("country", "year", "total", "marine_fishing", "inland", "aquaculture", "female_pct")),
+                 note = "People employed, last years:", from = "bottom")
 }
 
 # People by work area, sex and working time of one country (or the world) in each year
@@ -270,8 +274,10 @@ fao_employment_plots <- function(yearly, name, lang, pptx) {
 #' catch_per_fisher("India", weights = "fte", employment = employment, lang = "zh")
 #' }
 catch_per_fisher <- function(country_name, weights = c("headcount", "fte"), data = NULL, employment = NULL,
-                             plot = TRUE, table = TRUE, lang = NULL, pptx = getOption("faofishingreport.pptx", FALSE),
+                             plot = TRUE, table = TRUE, lang = NULL, pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"),
                              label = NULL, data_version = "latest") {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   weights <- match.arg(weights)
   lang <- fao_lang(lang)
   name <- fao_summary_name(if (!is.null(label)) label else if (length(country_name) == 1) country_name else
@@ -323,7 +329,10 @@ catch_per_fisher <- function(country_name, weights = c("headcount", "fte"), data
 
   if (plot) fao_fisher_plot(yearly, name, weights, lang, pptx)
   if (table) fao_save_table(yearly, name)
-  invisible(list(yearly = yearly, notes = notes))
+  fao_run_result(list(yearly = yearly, notes = notes), run, fao_run_title("catch_per_fisher", what = country_name),
+                 main = fao_cols(yearly, c("country", "year", "fishers", "catch_per_fisher", "marine_catch_per_fisher",
+                                           "inland_catch_per_fisher")),
+                 note = "Catch per fisher (t), last years:", from = "bottom")
 }
 
 # Catch, fishers and catch per fisher of one country in each year

@@ -1,16 +1,16 @@
 {
   "topic": "species_country",
-  "rd_md5": "ecf77d105f27a3d12dfd3fa460d20343",
+  "rd_md5": "ded8798aecb52de61bdbac4bd453f401",
   "stale": false,
   "en": {
     "title": "Analyze and Plot Specified Species Data Ranked by Country Production",
-    "description": "This function takes a data frame and a specified species name,\nanalyzes the data for the specified species, and identifies the top countries\nbased on production within the specified rank range.",
+    "description": "This function takes a data frame and a specified species name,\nanalyzes the data for the specified species, and identifies the top countries\nby production at the ranks chosen with `rank_range`.",
     "details": "",
-    "value": "A data frame with the yearly catch of the species by the ranked countries (the others\ngrouped); with `timeseries_analysis = TRUE`, a list of this data frame and the periods\nbetween breakpoints of each country. Charts and tables are saved if `plot` and `table`\nare TRUE.",
+    "value": "A data frame with the yearly catch of the species by the ranked countries (the others\ngrouped); with `timeseries_analysis = TRUE`, a list of this data frame\n(`species_country_ranked`) and the periods between breakpoints of each country\n(`coefs_data`). The result is returned invisibly, after a summary in the console (see\n`show_data` in `fao_settings()`). Charts and tables are saved if `plot` and `table` are\nTRUE.",
     "arguments": {
       "area_data": "A data frame containing the fishing area data.",
       "species_name": "A string specifying the species to be analyzed.",
-      "rank_range": "A numeric vector of length 2 specifying the rank range of countries to be analyzed.",
+      "rank_range": "The ranks of the countries to show, ranked by their catch of the species: the ranks\nlisted, e.g. `1:10` (default) for the first ten, `c(5, 6)` for the fifth and sixth, or\n`c(1, 10)` for the first and the tenth. Ranks beyond the number of countries are left out.\nUntil version 0.9.0 two numbers gave the first and the last rank (`c(1, 10)` was the\nfirst ten).",
       "plot": "A logical value indicating whether to generate and save plots.",
       "table": "A logical value indicating whether to generate and save tables",
       "timeseries_analysis": "A logical value indicating whether to analysis timeseries.",
@@ -27,19 +27,20 @@
       "strip_text_size": "The size of the strip text. Default is 12.",
       "ZH": "A logical value. If TRUE, chart text and names are in Chinese. Default is FALSE. `ZH = TRUE` is the same as `lang = \"zh\"`.",
       "lang": "The language of the chart text and names: \"en\" (English), \"zh\" (Chinese) or \"both\"\n(Chinese and English). Default is NULL, which uses \"zh\" if `ZH = TRUE`, and otherwise the language\nset with `fao_settings()` (\"en\" unless changed).",
-      "pptx": "A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are\nalso saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be\nchanged for all functions with `fao_settings(pptx = TRUE)`."
+      "pptx": "A logical value. Charts are always saved as PNG in `figures/png/`; if TRUE they are\nalso saved as editable PowerPoint files in `figures/pptx/`. Default is FALSE, which can be\nchanged for all functions with `fao_settings(pptx = TRUE)`.",
+      "plot_show": "A logical value. If TRUE, each chart is also drawn in the plot window (e.g.\nthe Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,\nwhich can be changed for all functions with `fao_settings(plot_show = TRUE)`. The\ncharts are saved as files (`plot = TRUE`) either way."
     },
     "sections": {}
   },
   "zh": {
     "title": "按国家产量排名分析指定物种并绘图",
-    "description": "该函数接收一个数据框和一个物种名称，分析该物种的数据，并按产量找出排名在指定范围内的主要国家。",
+    "description": "该函数接收一个数据框和一个物种名称，分析该物种的数据，并按产量找出`rank_range`所选名次的主要国家。",
     "details": "",
-    "value": "一个数据框，包含排名范围内各国家逐年捕捞该物种的产量（其余国家合并为一类）；`timeseries_analysis = TRUE`时返回一个列表，包含这个数据框和各国家相邻突变点之间的时段。`plot`和`table`为TRUE时保存图表和表格。",
+    "value": "一个数据框，包含所选名次的各国家逐年捕捞该物种的产量（其余国家合并为一类）；`timeseries_analysis = TRUE`时返回一个列表，包含这个数据框（`species_country_ranked`）和各国家相邻突变点之间的时段（`coefs_data`）。结果以不可见的方式返回，返回前在控制台显示结果摘要（见`fao_settings()`的`show_data`）。`plot`和`table`为TRUE时保存图表和表格。",
     "arguments": {
       "area_data": "包含渔区数据的数据框，例如`fishing_area_data()`返回的`area_data`。",
       "species_name": "字符串，要分析的物种（物种条目的英文名，与数据中一致，如\"European pilchard(=Sardine)\"）。",
-      "rank_range": "长度为2的数值向量，指定要分析的国家的排名范围（按该物种历年总产量排序）。默认为`c(1, 10)`。",
+      "rank_range": "要显示的国家名次，按各国该物种的产量排序：列出名次即可，例如`1:10`（默认）为前十名，`c(5, 6)`为第五和第六名，`c(1, 10)`为第一和第十名。超出国家数量的名次不显示。0.9.0及以前的版本中，两个数表示起止名次（`c(1, 10)`为前十名）。",
       "plot": "逻辑值，是否生成并保存图表。默认为TRUE。",
       "table": "逻辑值，是否生成表格并保存到`tables/`目录。默认为TRUE。",
       "timeseries_analysis": "逻辑值，决定分面图的内容和返回值：为TRUE（默认）时，分面图显示线性趋势线和突变点（相邻突变点之间各时段的平均产量），函数返回一个列表，包含所选国家逐年的产量和它们的突变点；为FALSE时，分面图显示平滑（loess）曲线，函数只返回所选国家逐年的产量。",
@@ -56,7 +57,8 @@
       "strip_text_size": "分面标签文字的大小。默认为12。目前不起作用：本函数的排名图、时间序列图、分面图和饼图使用固定的字号和字形。",
       "ZH": "逻辑值。为TRUE时，图表文字和名称使用中文。默认为FALSE。`ZH = TRUE`等同于`lang = \"zh\"`。",
       "lang": "图表文字和名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL：`ZH = TRUE`时使用\"zh\"，否则使用`fao_settings()`设置的语言（未更改时为\"en\"）。",
-      "pptx": "逻辑值。图表总是以PNG格式保存在figures/png/；为TRUE时还另存为可编辑的PowerPoint文件，保存在figures/pptx/。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。"
+      "pptx": "逻辑值。图表总是以PNG格式保存在figures/png/；为TRUE时还另存为可编辑的PowerPoint文件，保存在figures/pptx/。默认为FALSE，可以用`fao_settings(pptx = TRUE)`为所有函数统一更改。",
+      "plot_show": "逻辑值。为TRUE时，每张图在保存的同时也画在绘图窗口中（例如RStudio的Plots窗格），便于立即查看。默认为FALSE，可以用`fao_settings(plot_show = TRUE)`为所有函数统一更改。无论是否显示，图表都会保存为文件（`plot = TRUE`）。"
     },
     "sections": {},
     "section_titles": {}

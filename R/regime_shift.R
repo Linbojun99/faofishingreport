@@ -18,11 +18,13 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-#' regime_shift(FAO34$area_data, lang = "zh")
+#' FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+#' regime_shift(FAO27$area_data, lang = "zh")
 #' }
 regime_shift <- function(area_data, top_n = 20, h_value = 0.15, plot = TRUE, table = TRUE, lang = NULL,
-                         pptx = getOption("faofishingreport.pptx", FALSE), label = NULL) {
+                         pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), label = NULL) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   lang <- fao_lang(lang)
   name <- fao_summary_name(fao_summary_label(area_data, label), "regime_shift")
   last_year <- max(area_data$Year, na.rm = TRUE)
@@ -96,5 +98,7 @@ regime_shift <- function(area_data, top_n = 20, h_value = 0.15, plot = TRUE, tab
     fao_save_table(breaks, name)
     fao_save_table(counts, paste0(name, "_years"))
   }
-  invisible(list(breakpoints = breaks, yearly = counts))
+  fao_run_result(list(breakpoints = breaks, yearly = counts), run, fao_run_title("regime_shift", area_data, label),
+                 main = fao_cols(breaks, c("species", "first_year", "n_breakpoints", "breakpoint_years")),
+                 note = "Breakpoints of the catch of the main species:")
 }

@@ -54,6 +54,7 @@
 #' D. (2023). New developments in the analysis of catch time series as the basis for fish stock
 #' assessments: the CMSY++ method. Acta Ichthyologica et Piscatoria 53: 173-189.
 #' \doi{10.3897/aiep.53.105910}
+#' @inheritParams summary_params
 #' @export
 #' @examples
 #' \dontrun{
@@ -73,7 +74,9 @@
 cmsy_forecast <- function(result, stocks = NULL, years = 10, f = c(0.5, 0.6, 0.8, 0.95), status_quo = TRUE,
                           catch = NULL, sigma = 0.1, seed = NULL, plot = TRUE, table = TRUE, lang = NULL,
                           annotations = getOption("faofishingreport.cmsy_annotations", FALSE),
-                          pptx = getOption("faofishingreport.pptx", FALSE), silent = fao_setting("silent")) {
+                          pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), silent = fao_setting("silent")) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   if (!inherits(result, "cmsy_result")) stop("`result` must be the result of cmsy_run().", call. = FALSE)
   lang <- fao_lang(lang)
   ann <- cmsy_annotations(annotations)
@@ -155,7 +158,9 @@ cmsy_forecast <- function(result, stocks = NULL, years = 10, f = c(0.5, 0.6, 0.8
       plots$share <- p
     }
   }
-  invisible(list(projection = projection, share = share, plots = plots))
+  fao_run_result(list(projection = projection, share = share, plots = plots), run, "cmsy_forecast()",
+                 main = fao_cols(share[share$Year == max(share$Year), ], c("scenario_label", "Year", "share", "share_lcl", "share_ucl")),
+                 note = "Share of the stocks (%) at or above Bmsy in the last year projected:", quiet = silent)
 }
 
 # Projection of one stock from aligned posterior draws (CMSY++ process equation). As in CMSY++,
@@ -270,16 +275,17 @@ cmsy_chart_forecast <- function(projection, series, lang, ann) {
 #'        (and optionally `F_Fmsy`) and `source` (the name shown in the legend, e.g. the agency or
 #'        model of the other assessment).
 #' @return Invisibly, a list with `last_year` (one row per stock and run) and `plots`.
+#' @inheritParams summary_params
 #' @export
 #' @examples
 #' \dontrun{
 #' # Sensitivity to the start year
-#' run_1950 <- cmsy_run(input, stocks = "GRB_34", seed = 1)
-#' run_auto <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE)
+#' run_1950 <- cmsy_run(input, stocks = "CAP_27", seed = 1)
+#' run_auto <- cmsy_run(input, stocks = "CAP_27", seed = 1, auto_start = TRUE)
 #' cmsy_compare(`from 1950` = run_1950, `CMSY++ start year` = run_auto, annotations = "legend")
 #'
 #' # Sensitivity to a CMSY++ setting (see cmsy_defaults())
-#' run_cv <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE, settings = list(CV.C = 0.3))
+#' run_cv <- cmsy_run(input, stocks = "CAP_27", seed = 1, auto_start = TRUE, settings = list(CV.C = 0.3))
 #' cmsy_compare(default = run_auto, `CV.C = 0.3` = run_cv)$last_year
 #'
 #' # With another assessment of the same stock, read from a file with the columns
@@ -289,7 +295,9 @@ cmsy_chart_forecast <- function(projection, series, lang, ann) {
 #' }
 cmsy_compare <- function(..., stocks = NULL, external = NULL, lang = NULL,
                          annotations = getOption("faofishingreport.cmsy_annotations", FALSE),
-                         pptx = getOption("faofishingreport.pptx", FALSE), silent = fao_setting("silent")) {
+                         pptx = getOption("faofishingreport.pptx", FALSE), plot_show = fao_setting("plot_show"), silent = fao_setting("silent")) {
+  run <- fao_run_begin(plot_show)
+  on.exit(fao_run_end(run), add = TRUE)
   runs <- list(...)
   if (length(runs) == 0 || !all(vapply(runs, inherits, logical(1), "cmsy_result"))) {
     stop("Give one or more results of cmsy_run().", call. = FALSE)
@@ -335,7 +343,9 @@ cmsy_compare <- function(..., stocks = NULL, external = NULL, lang = NULL,
     fao_save_plot(p, file.path("cmsy", "compare", cmsy_safe_name(stock)), width = 10, height = 8, pptx = pptx)
     plots[[stock]] <- p
   }
-  invisible(list(last_year = last, plots = plots))
+  fao_run_result(list(last_year = last, plots = plots), run, "cmsy_compare()",
+                 main = fao_cols(last, c("Stock", "source", "Year", "B_Bmsy", "F_Fmsy")),
+                 note = "B/Bmsy and F/Fmsy of each run in its last year:", rows = 20, quiet = silent)
 }
 
 #' Tables of CMSY++ Priors and Results for Reports
@@ -379,6 +389,8 @@ cmsy_compare <- function(..., stocks = NULL, external = NULL, lang = NULL,
 #' cmsy_tables(result, lang = "both", table = FALSE)$results
 #' }
 cmsy_tables <- function(result, stocks = NULL, table = TRUE, lang = NULL, silent = fao_setting("silent")) {
+  run <- fao_run_begin()
+  on.exit(fao_run_end(run), add = TRUE)
   if (!inherits(result, "cmsy_result")) stop("`result` must be the result of cmsy_run().", call. = FALSE)
   lang <- fao_lang(lang)
   s <- result$summary[cmsy_has_results(result$summary$run_status), ]
@@ -411,7 +423,8 @@ cmsy_tables <- function(result, stocks = NULL, table = TRUE, lang = NULL, silent
     fao_write_csv(priors, file.path("tables", "cmsy", "cmsy_priors_table.csv"))
     fao_write_csv(results, file.path("tables", "cmsy", "cmsy_results_table.csv"))
   }
-  invisible(list(priors = priors, results = results))
+  fao_run_result(list(priors = priors, results = results), run, "cmsy_tables()", main = results,
+                 note = "Results with their 95% limits:", rows = 20, quiet = silent)
 }
 
 utils::globalVariables(c("scenario_label", "share", "share_lcl", "share_ucl", "source", "value"))

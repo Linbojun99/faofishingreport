@@ -41,6 +41,8 @@ fao_settings()
 #>   online          TRUE
 #>   sst             ersst5
 #>   silent          FALSE
+#>   show_data       TRUE
+#>   plot_show       FALSE
 #>   font            SimSun
 ```
 
@@ -72,6 +74,8 @@ fao_settings()
 | `online` | 是否允许函数联网查找FishBase的最新版本；设为`FALSE`时离线使用已下载的数据（见[🐠 FishBase](fishbase.html)） | `TRUE` |
 | `sst` | `fao_area_sst()`和`mean_temperature_catch()`使用的海表温度数据：`"ersst5"`（内置）、用`download_sst_data()`下载的数据产品（如`"hadisst1"`），或自己的NetCDF文件或文件夹的路径（见[🌡️ 海表温度](sst-mtc.html)） | `"ersst5"` |
 | `silent` | CMSY++函数是否不显示进度条和提示信息；函数自身的`silent`参数优先（见[📉 CMSY++](cmsy.html)） | `FALSE` |
+| `show_data` | 函数运行结束时是否在控制台显示结果摘要（分析对象、主要结果表、保存的文件、返回结果包含的部分）；结果以不可见的方式返回 | `TRUE` |
+| `plot_show` | 保存图表的同时是否把图画在绘图窗口中（RStudio的Plots窗格）；函数自身的`plot_show`参数优先 | `FALSE` |
 
 `fao_settings(reset = TRUE)`恢复全部默认设置。设置名称或取值有误时会立即报错，并列出可用的选项。每项设置都保存为R选项`faofishingreport.<名称>`，因此也可以用`options()`设置，例如写在`.Rprofile`文件中。`fao_settings()`以不可见的方式返回当前设置组成的列表。
 
@@ -81,12 +85,12 @@ fao_settings()
 
 ```{r, figures = "area_country.png"}
 fao_settings(lang = "zh")
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(lang = "both")
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 ```
 
 ```{r, include = FALSE}
@@ -99,12 +103,12 @@ fao_settings(lang = page_lang)
 
 ```{r, figures = "area_country.png"}
 fao_settings(theme = "classic")
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(theme = "minimal", base_size = 14)
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 ```
 
 也可以使用任意ggplot2主题，例如`fao_settings(theme = ggplot2::theme_light(base_size = 13))`。
@@ -115,17 +119,17 @@ fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 
 ```{r, figures = "area_country.png"}
 fao_settings(theme = "bw", base_size = 12, palette = "lancet")
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(palette = "Okabe-Ito")        # 色盲友好
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(palette = c("#0B2E5B", "#16A6B6", "#F28E2B", "#E15759", "#59A14F", "#B07AA1"))
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 fao_settings(palette = "npg")
 ```
 
@@ -211,7 +215,7 @@ fishing_area_data("Atlantic, Northeast")
 
 ```{r, include = FALSE}
 fao_settings(reset = TRUE)
-fao_settings(dpi = 100, lang = page_lang)
+fao_settings(dpi = 100, lang = page_lang, show_data = FALSE)
 ```
 
 ## 🔤 字体 {#fonts}
@@ -243,7 +247,7 @@ fao_settings(font = "Microsoft YaHei")
 
 ```{r, figures = "area_country.png"}
 fao_settings(grid = TRUE)
-fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = 1:6)
 fao_settings(grid = FALSE)
 ```
 

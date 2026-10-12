@@ -23,6 +23,13 @@ my_lang <- "zh"
 #默认只输出PNG图；需要可编辑的PPT图时，取消下面一行的注释（对所有函数生效），或在单个函数里加 pptx=TRUE
 #fao_settings(pptx = TRUE)
 
+#每个函数运行结束会在控制台显示结果摘要（主要结果表、保存的图表和表格）；结果需要赋值保存，如 x <- stock_status(...)
+#fao_settings(show_data = FALSE)    #不显示摘要
+#保存图表的同时在 RStudio 的 Plots 窗格显示：在单个函数里加 plot_show = TRUE，或对所有函数生效：
+#fao_settings(plot_show = TRUE)
+
+#rank_range 列出要显示的名次：1:10 为前十名，11:20 为其后十名，c(5, 6) 为第五和第六名
+
 
 
 ###============================================================================###
@@ -45,45 +52,45 @@ FAO27 <- fishing_area_data(area_name="Atlantic, Northeast", plot = TRUE,timeseri
 ###analyse species and country in Fishing area
 
 ###FAO27渔区的捕捞物种 fishing_area_species
-FAO27_species<-fishing_area_species(FAO27[["area_data"]], c(1, 10), plot=TRUE,table=TRUE,timeseries_analysis=TRUE,lang=my_lang) #area_data=Fao27
+FAO27_species<-fishing_area_species(FAO27[["area_data"]], 1:10, plot=TRUE,table=TRUE,timeseries_analysis=TRUE,lang=my_lang) #area_data=Fao27
 
 
 ###FAO27渔区的捕捞国家 fishing_area_country
-FAO27_country<-fishing_area_country(FAO27[["area_data"]], c(1, 10), plot=TRUE,table=TRUE,timeseries_analysis=TRUE,lang=my_lang) #area_data=Fao27
+FAO27_country<-fishing_area_country(FAO27[["area_data"]], 1:10, plot=TRUE,table=TRUE,timeseries_analysis=TRUE,lang=my_lang) #area_data=Fao27
 
 #物种和国家的中文名：fao_translate("Atlantic cod") 查询；查不到对应中文名的保留英文名
 #unique(FAO27[["area_data"]]$ASFIS.species..Name.)   #列出全部物种名
 
 ###主要捕捞物种的捕捞国家 species_country
 #Atlantic herring
-herring=species_country(FAO27[["area_data"]], species_name = "Atlantic herring",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
+herring=species_country(FAO27[["area_data"]], species_name = "Atlantic herring",1:10, plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
 
 #Blue whiting(=Poutassou)
-bluewhiting=species_country(FAO27[["area_data"]], species_name = "Blue whiting(=Poutassou)",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
+bluewhiting=species_country(FAO27[["area_data"]], species_name = "Blue whiting(=Poutassou)",1:10, plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
 
 #Atlantic mackerel
-mackerel=species_country(FAO27[["area_data"]], species_name = "Atlantic mackerel",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
+mackerel=species_country(FAO27[["area_data"]], species_name = "Atlantic mackerel",1:10, plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
 
 #Atlantic cod
-cod=species_country(FAO27[["area_data"]], species_name = "Atlantic cod",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
+cod=species_country(FAO27[["area_data"]], species_name = "Atlantic cod",1:10, plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
 
 #European sprat
-sprat=species_country(FAO27[["area_data"]], species_name = "European sprat",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
+sprat=species_country(FAO27[["area_data"]], species_name = "European sprat",1:10, plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
 
 #Capelin
-capelin=species_country(FAO27[["area_data"]], species_name = "Capelin",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
+capelin=species_country(FAO27[["area_data"]], species_name = "Capelin",1:10, plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
 
 #Saithe(=Pollock)
-saithe=species_country(FAO27[["area_data"]], species_name = "Saithe(=Pollock)",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
+saithe=species_country(FAO27[["area_data"]], species_name = "Saithe(=Pollock)",1:10, plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
 
 #Haddock
-haddock=species_country(FAO27[["area_data"]], species_name = "Haddock",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
+haddock=species_country(FAO27[["area_data"]], species_name = "Haddock",1:10, plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
 
 #European hake
-hake=species_country(FAO27[["area_data"]], species_name = "European hake",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
+hake=species_country(FAO27[["area_data"]], species_name = "European hake",1:10, plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
 
 #Atlantic horse mackerel
-horsemackerel=species_country(FAO27[["area_data"]], species_name = "Atlantic horse mackerel",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
+horsemackerel=species_country(FAO27[["area_data"]], species_name = "Atlantic horse mackerel",1:10, plot=TRUE,table=TRUE,lang=my_lang) #area_data=Fao27
 
 ###============================================================================###
 ###突变点检测默认 h_value=0.15；如果没出图或突变点太多，就把h_value调大（如3、5）
@@ -97,34 +104,34 @@ horsemackerel=species_country(FAO27[["area_data"]], species_name = "Atlantic hor
 
 ###主要捕捞国家的捕捞物种 country_species
 #Norway
-Norway<-country_species(FAO27[["area_data"]], country_name = "Norway",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang)
+Norway<-country_species(FAO27[["area_data"]], country_name = "Norway",1:10, plot=TRUE,table=TRUE,lang=my_lang)
 
 #Iceland
-Iceland<-country_species(FAO27[["area_data"]], country_name = "Iceland",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang)
+Iceland<-country_species(FAO27[["area_data"]], country_name = "Iceland",1:10, plot=TRUE,table=TRUE,lang=my_lang)
 
 #Russian Federation
-RussianFederation<-country_species(FAO27[["area_data"]], country_name = "Russian Federation",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang)
+RussianFederation<-country_species(FAO27[["area_data"]], country_name = "Russian Federation",1:10, plot=TRUE,table=TRUE,lang=my_lang)
 
 #United Kingdom
-UK<-country_species(FAO27[["area_data"]], country_name = "United Kingdom",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang)
+UK<-country_species(FAO27[["area_data"]], country_name = "United Kingdom",1:10, plot=TRUE,table=TRUE,lang=my_lang)
 
 #Denmark
-Denmark<-country_species(FAO27[["area_data"]], country_name = "Denmark",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang)
+Denmark<-country_species(FAO27[["area_data"]], country_name = "Denmark",1:10, plot=TRUE,table=TRUE,lang=my_lang)
 
 #Faroe Islands
-Faroe<-country_species(FAO27[["area_data"]], country_name = "Faroe Islands",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang)
+Faroe<-country_species(FAO27[["area_data"]], country_name = "Faroe Islands",1:10, plot=TRUE,table=TRUE,lang=my_lang)
 
 #France
-France<-country_species(FAO27[["area_data"]], country_name = "France",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang)
+France<-country_species(FAO27[["area_data"]], country_name = "France",1:10, plot=TRUE,table=TRUE,lang=my_lang)
 
 #Netherlands (Kingdom of the)
-Netherlands<-country_species(FAO27[["area_data"]], country_name = "Netherlands (Kingdom of the)",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang)
+Netherlands<-country_species(FAO27[["area_data"]], country_name = "Netherlands (Kingdom of the)",1:10, plot=TRUE,table=TRUE,lang=my_lang)
 
 #Spain
-Spain<-country_species(FAO27[["area_data"]], country_name = "Spain",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang)
+Spain<-country_species(FAO27[["area_data"]], country_name = "Spain",1:10, plot=TRUE,table=TRUE,lang=my_lang)
 
 #Ireland
-Ireland<-country_species(FAO27[["area_data"]], country_name = "Ireland",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang)
+Ireland<-country_species(FAO27[["area_data"]], country_name = "Ireland",1:10, plot=TRUE,table=TRUE,lang=my_lang)
 
 
 
@@ -185,11 +192,11 @@ mtc27_1970_2006 <- mean_temperature_catch(subset(FAO27[["area_data"]], Year >= 1
 
 
 ####major country：国家在全球所有渔区的捕捞情况
-Norway_analysis<-country_analysis(country_name = "Norway",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang)
+Norway_analysis<-country_analysis(country_name = "Norway",1:10, plot=TRUE,table=TRUE,lang=my_lang)
 
-Iceland_analysis<-country_analysis(country_name = "Iceland",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang)
+Iceland_analysis<-country_analysis(country_name = "Iceland",1:10, plot=TRUE,table=TRUE,lang=my_lang)
 
-RussianFederation_analysis<-country_analysis(country_name = "Russian Federation",c(1, 10), plot=TRUE,table=TRUE,lang=my_lang)
+RussianFederation_analysis<-country_analysis(country_name = "Russian Federation",1:10, plot=TRUE,table=TRUE,lang=my_lang)
 
 
 

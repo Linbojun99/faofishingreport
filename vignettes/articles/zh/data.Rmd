@@ -222,6 +222,7 @@ species_group_composition(subset(atlantic, Year >= 2000), label = "Atlantic sinc
 | `table` | 在`tables/`中保存表格 | `TRUE` |
 | `lang` | `"en"`、`"zh"`或`"both"` | `NULL`：使用`fao_settings()`中的语言 |
 | `pptx` | 同时在`figures/pptx/summary/`中保存可编辑的PowerPoint文件 | `FALSE`，或`fao_settings()`中的`pptx` |
+| `plot_show` | 保存图表的同时把图画在绘图窗口中（例如RStudio的Plots窗格） | `FALSE`，或`fao_settings()`中的`plot_show` |
 | `label` | 输出文件名中使用的名称 | `NULL`：数据所属的渔区（或国家） |
 
 更多示例：

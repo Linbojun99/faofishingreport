@@ -48,6 +48,13 @@
 #'   \item{silent}{Whether the CMSY++ functions (`cmsy_run()`, `cmsy_plot()`, ...) work
 #'     silently, without progress bars and messages. Default is FALSE. Their `silent` argument
 #'     still takes precedence.}
+#'   \item{show_data}{Whether an analysis function shows a short summary of its results in the
+#'     console when it finishes: what was analysed, the first rows of its main table, the charts
+#'     and tables it saved, and the parts of the result it returns. Default is TRUE. The results
+#'     are returned invisibly: assign them to keep them, e.g. `x <- stock_status(data)`.}
+#'   \item{plot_show}{Whether charts are also drawn in the plot window (e.g. the Plots pane of
+#'     RStudio) as they are saved. Default is FALSE. The `plot_show` argument of a function still
+#'     takes precedence.}
 #' }
 #' @param reset A logical value. If TRUE, all settings go back to their defaults first.
 #' @return Invisibly, a list of the current settings.
@@ -96,8 +103,10 @@ fao_settings <- function(..., reset = FALSE) {
     stop("online must be TRUE or FALSE.", call. = FALSE)
   }
   if (!is.null(new$sst)) fao_sst_check_setting(new$sst)
-  if (!is.null(new$silent) && !(is.logical(new$silent) && length(new$silent) == 1 && !is.na(new$silent))) {
-    stop("silent must be TRUE or FALSE.", call. = FALSE)
+  for (flag in intersect(c("silent", "show_data", "plot_show"), names(new))) {
+    if (!(is.logical(new[[flag]]) && length(new[[flag]]) == 1 && !is.na(new[[flag]]))) {
+      stop(flag, " must be TRUE or FALSE.", call. = FALSE)
+    }
   }
   if (length(new) > 0) options(stats::setNames(new, paste0("faofishingreport.", names(new))))
 
@@ -116,7 +125,8 @@ fao_settings <- function(..., reset = FALSE) {
 fao_defaults <- list(
   lang = "en", theme = "bw", base_size = 12, palette = "npg", map_palette = "deep-orange",
   map_center = 0, map_projection = "longlat", map_land = "grey90", map_ocean = NA,
-  grid = FALSE, dpi = 600, pptx = FALSE, data_dir = NULL, online = TRUE, sst = "ersst5", silent = FALSE
+  grid = FALSE, dpi = 600, pptx = FALSE, data_dir = NULL, online = TRUE, sst = "ersst5", silent = FALSE,
+  show_data = TRUE, plot_show = FALSE
 )
 
 fao_setting <- function(name) {

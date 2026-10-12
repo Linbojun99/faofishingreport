@@ -11,6 +11,8 @@ library(faofishingreport)   #加载时会显示识别到的系统和图表字体
 fao_settings(lang = "zh", theme = "classic", pptx = FALSE)
 #fao_settings(dpi = 300)
 #fao_settings(map_projection = "robinson", map_center = 180)   #太平洋居中的地图
+#fao_settings(plot_show = TRUE)    #保存图表的同时在 RStudio 的 Plots 窗格显示（单个函数可加 plot_show = TRUE）
+#fao_settings(show_data = FALSE)   #函数运行结束时不在控制台显示结果摘要
 
 
 
@@ -37,24 +39,24 @@ NEP_map <- fishing_area_map(67)
 NEP <- fishing_area_data("Pacific, Northeast")
 area67 <- NEP$area_data
 
-#主要物种（前10）和主要国家（前8）
-sp <- fishing_area_species(area67, rank_range = c(1, 10))
-co <- fishing_area_country(area67, rank_range = c(1, 8))
+#主要物种（前10）和主要国家（前8）；rank_range 列出名次，c(5, 6) 为第五和第六名
+sp <- fishing_area_species(area67, rank_range = 1:10)
+co <- fishing_area_country(area67, rank_range = 1:8)
 
 #物种和国家的中文名：fao_translate("Pacific cod") 查询；查不到对应中文名的保留英文名
 #unique(area67$ASFIS.species..Name.)   #列出全部物种名
 
 #主要物种的捕捞国家
-pollock <- species_country(area67, "Alaska pollock(=Walleye poll.)", rank_range = c(1, 5))
-hake    <- species_country(area67, "North Pacific hake", rank_range = c(1, 5))
-cod     <- species_country(area67, "Pacific cod", rank_range = c(1, 5))
-pink    <- species_country(area67, "Pink(=Humpback) salmon", rank_range = c(1, 5))
-sockeye <- species_country(area67, "Sockeye(=Red) salmon", rank_range = c(1, 5))
+pollock <- species_country(area67, "Alaska pollock(=Walleye poll.)", rank_range = 1:5)
+hake    <- species_country(area67, "North Pacific hake", rank_range = 1:5)
+cod     <- species_country(area67, "Pacific cod", rank_range = 1:5)
+pink    <- species_country(area67, "Pink(=Humpback) salmon", rank_range = 1:5)
+sockeye <- species_country(area67, "Sockeye(=Red) salmon", rank_range = 1:5)
 
 #主要国家的捕捞物种；country_analysis() 是该国在全球所有渔区的捕捞
-usa_67  <- country_species(area67, "United States of America", rank_range = c(1, 10))
-usa_all <- country_analysis("United States of America", rank_range = c(1, 10))
-canada_67 <- country_species(area67, "Canada", rank_range = c(1, 10))
+usa_67  <- country_species(area67, "United States of America", rank_range = 1:10)
+usa_all <- country_analysis("United States of America", rank_range = 1:10)
+canada_67 <- country_species(area67, "Canada", rank_range = 1:10)
 #突变点检测默认 h_value=0.15；如果没出图或突变点太多，就把h_value调大（如3、5）
 #"... is not continuous"（数据年份不连续）和 "Error in processing ... minimum segment size"（年数太少，
 #不做该国的突变点检测）只是提示，有图片出来就可以忽略
