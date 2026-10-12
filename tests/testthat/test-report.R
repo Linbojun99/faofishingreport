@@ -192,3 +192,9 @@ test_that("the diversity text says once that species and countries are equally c
   expect_equal(fao_section_diversity_values(ctx)$conc_text,
                "the catch was unconcentrated by species and highly concentrated by country")
 })
+
+test_that("the resolution of the report charts can be set, and is checked", {
+  expect_error(fao_report(27, dpi = 10), "at least 72")
+  expect_error(fao_report(27, dpi = "high"), "at least 72")
+  expect_equal(formals(fao_report)$dpi, 300)
+})

@@ -74,6 +74,9 @@
 #' @param font_zh The font of the Chinese body text. Default is "FangSong".
 #' @param citation The citation style of English reports: "apa" (default) or "fao" (the style
 #'        of FAO publications). Chinese reports use numbered citations (GB/T 7714).
+#' @param dpi The resolution of the charts of the report (the PNG files put in the Word file and
+#'        the LaTeX/PDF report). Default is 300; e.g. 600 for print. The charts of the report do
+#'        not follow `fao_settings(dpi = )`, which sets the resolution of the other functions.
 #' @param top_n The number of main species and countries in the charts and tables, and of
 #'        species assessed with CMSY++ (unless `cmsy_top` is given). Default is 10.
 #' @param data_version The FAO release to use, as in `load_fao_data()`. Default is "latest".
@@ -140,12 +143,15 @@
 #' }
 fao_report <- function(area, ..., file = NULL, format = "docx", lang = NULL, title = NULL, report_no = 1,
                        author = NULL, affiliation = NULL, project = NULL, date = Sys.Date(),
-                       font = NULL, font_zh = "FangSong", citation = c("apa", "fao"),
+                       font = NULL, font_zh = "FangSong", citation = c("apa", "fao"), dpi = 300,
                        top_n = 10, data_version = "latest",
                        total = TRUE, species = TRUE, countries = TRUE, groups = TRUE, status = TRUE,
                        quality = TRUE, diversity = TRUE, fleets = TRUE, shocks = FALSE, collapse = FALSE,
                        synchrony = FALSE, pelagic = FALSE, mtc = FALSE, distant = FALSE, cmsy = FALSE) {
   format <- match.arg(format, c("docx", "latex", "pdf"), several.ok = TRUE)
+  if (!is.numeric(dpi) || length(dpi) != 1 || is.na(dpi) || dpi < 72) {
+    stop("`dpi` must be one number of at least 72, e.g. 300 or 600.", call. = FALSE)
+  }
   if ("docx" %in% format) fao_check_report_packages()
   sections <- fao_report_sections()
   args <- fao_report_args(list(...), sections)
@@ -172,6 +178,7 @@ fao_report <- function(area, ..., file = NULL, format = "docx", lang = NULL, tit
   ctx$area <- area
   ctx$lang <- lang
   ctx$top_n <- top_n
+  ctx$dpi <- dpi
   ctx$data_version <- data_version
   ctx$cmsy_result <- if (inherits(cmsy, "cmsy_result")) cmsy
   ctx$cmsy_dir <- file.path(dirname(file), "cmsy")

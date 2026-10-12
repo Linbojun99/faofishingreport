@@ -43,8 +43,12 @@ test_that("UTF-8 CSV files are read with their Chinese text in any locale", {
   file <- withr::local_tempfile(fileext = ".csv")
   writeBin(c(as.raw(c(0xef, 0xbb, 0xbf)), charToRaw(enc2utf8("key,zh\ndepth,水深\n"))), file)
   withr::local_locale(c(LC_CTYPE = "C"))
-  x <- fao_read_csv_utf8(file, colClasses = "character")
+  expect_no_warning(x <- fao_read_csv_utf8(file, colClasses = "character"))
   expect_equal(names(x), c("key", "zh"))
   expect_equal(x$zh, "水深")
   expect_equal(Encoding(x$zh), "UTF-8")
+  # the same file without the byte order mark
+  writeBin(charToRaw(enc2utf8("key,zh\ndepth,水深\n")), file)
+  expect_no_warning(y <- fao_read_csv_utf8(file, colClasses = "character"))
+  expect_equal(y, x)
 })

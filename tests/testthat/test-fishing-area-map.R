@@ -66,3 +66,15 @@ test_that("small islands and parts are removed from the boundaries, the main par
   expect_length(out[[1]], 2)
   expect_equal(as.numeric(sf::st_area(out)), 100^2 - 20^2)
 })
+
+test_that("area maps are saved with the shape of the map, without empty bands above and below", {
+  box <- function(w, h) {
+    sf::st_sf(geometry = sf::st_sfc(sf::st_polygon(list(rbind(c(0, 0), c(w, 0), c(w, h), c(0, h), c(0, 0)))), crs = 3857))
+  }
+  map <- function(w, h) ggplot2::ggplot() + ggplot2::geom_sf(data = box(w, h)) + ggplot2::coord_sf(expand = FALSE)
+  expect_equal(fao_area_map_size(map(100, 50)), c(10, 9.2 * 0.5 + 1))
+  expect_equal(fao_area_map_size(map(100, 50), legend = TRUE), c(10, 7.6 * 0.5 + 1))
+  expect_equal(fao_area_map_size(map(100, 5))[2], 4)      # very wide: at least 4 inches
+  expect_equal(fao_area_map_size(map(10, 100))[2], 14)    # very tall: at most 14 inches
+  expect_equal(fao_area_map_size(ggplot2::ggplot()), c(10, 8))
+})

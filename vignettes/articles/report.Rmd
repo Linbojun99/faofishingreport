@@ -44,7 +44,7 @@ analysis, then the file written. Without `file`, the report is saved as
 `reports/FAO27_report_en.docx` in the working directory; on this page the working directory is a
 temporary folder.
 
-The analyses run in a temporary folder of their own, with charts at 300 dpi and no PowerPoint
+The analyses run in a temporary folder of their own, with charts at the resolution `dpi` (300 by default, e.g. `dpi = 600` for print) and no PowerPoint
 files. The charts end up in the Word file only, so the report leaves no chart files in your
 folder; run the analysis functions themselves to keep them (see
 [🌊 Fishing area analysis](fishing-areas.html)).
@@ -161,6 +161,7 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 | `font` | `NULL`: "Times New Roman" in Chinese reports, "Arial" in English reports | The font of Latin script and numbers; in English reports, of all text |
 | `font_zh` | `"FangSong"` | The Chinese font of the body text, title, tables and references; headings and captions stay in SimHei and KaiTi |
 | `citation` | `"apa"` | Citation style of English reports: `"apa"` or `"fao"`. Chinese reports always use numbered citations (GB/T 7714). |
+| `dpi` | `300` | Resolution of the charts of the report (e.g. `600` for print); `fao_settings(dpi = )` sets that of the other functions |
 | `top_n` | `10` | Number of main species and countries in the tables and charts, and of species assessed with CMSY++ (unless `cmsy_top` is given) |
 | `data_version` | `"latest"` | The FAO release to use, as in `load_fao_data()` |
 | `total`, `species`, `countries`, `groups`, `status`, `quality`, `diversity`, `fleets` | `TRUE` | Sections switched on by default (see [🧩 Sections](#sections)) |

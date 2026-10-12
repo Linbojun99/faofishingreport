@@ -234,7 +234,8 @@ fishing_area_map <- function(area, level = c("subarea", "division", "subdivision
   if (plot) {
     # The raster of depths of ggOceanMaps is drawn with geom_raster, which warns about the uneven
     # spacing of its projected cells; the map is right
-    withCallingHandlers(fao_save_plot(p, file.path("area", name), width = 10, height = 8, pptx = pptx),
+    size <- fao_area_map_size(p, legend = engine == "ggOceanMaps" && bathymetry)
+    withCallingHandlers(fao_save_plot(p, file.path("area", name), width = size[1], height = size[2], pptx = pptx),
                         warning = function(w) if (grepl("uneven", conditionMessage(w))) invokeRestart("muffleWarning"))
   }
   if (table && nrow(result_units) > 0) fao_save_table(result_units, name)
@@ -380,4 +381,17 @@ fao_drop_small_rings <- function(x, min_area) {
     sf::st_multipolygon(parts[keep])
   })
   sf::st_set_geometry(x, sf::st_sfc(geometry, crs = sf::st_crs(x)))
+}
+
+# Width and height (inches) of a saved area map: the height follows the shape of the map, so that
+# a wide map (e.g. the polar map of area 27) has no empty bands above and below it. Room is kept
+# for the depth legend on the right, the axes and the caption
+fao_area_map_size <- function(p, width = 10, legend = FALSE) {
+  ranges <- tryCatch({
+    panel <- suppressWarnings(ggplot2::ggplot_build(p))$layout$panel_params[[1]]
+    c(diff(panel$x_range), diff(panel$y_range))
+  }, error = function(e) NULL)
+  if (length(ranges) != 2 || any(!is.finite(ranges)) || ranges[1] <= 0) return(c(width, 8))
+  panel_width <- width - 0.8 - if (legend) 1.6 else 0
+  c(width, min(max(panel_width * ranges[2] / ranges[1] + 1, 4), 14))
 }

@@ -3,7 +3,7 @@
 
 # Runs CMSY++ on the main species of the area, keeping its results in `out_dir`. `args` are the
 # settings of cmsy_area() given to fao_report() with the prefix cmsy_ (they win over the defaults)
-fao_report_cmsy_run <- function(area_data, args, lang, out_dir) {
+fao_report_cmsy_run <- function(area_data, args, lang, out_dir, dpi = 300) {
   system <- cmsy_system(silent = TRUE)
   if (is.na(system$jags) || !all(system$packages$ok)) {
     stop("CMSY++ needs JAGS and the R packages ", paste(system$packages$package[!system$packages$ok], collapse = ", "),
@@ -15,7 +15,7 @@ fao_report_cmsy_run <- function(area_data, args, lang, out_dir) {
   args$charts <- union(args$charts, c("management", "kobe_all", "b_bmsy_all"))
   message("  CMSY++ for the ", if (is.null(args$species)) paste(args$top, "main species") else "chosen species",
           " (a few minutes)")
-  old_options <- options(faofishingreport.dpi = 300, faofishingreport.pptx = FALSE)
+  old_options <- options(faofishingreport.dpi = dpi, faofishingreport.pptx = FALSE)
   on.exit(options(old_options), add = TRUE)
   result <- suppressWarnings(suppressMessages(do.call(cmsy_area, args)))
   # Saved to write the report again without running CMSY++: cmsy = readRDS(<file>)

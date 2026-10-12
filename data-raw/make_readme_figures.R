@@ -3,7 +3,7 @@
 
 library(faofishingreport)
 fao_settings(reset = TRUE)
-fao_settings(dpi = 90)
+fao_settings(dpi = 300)   # README images: at least 300 dpi
 
 package_root <- getwd()
 work_dir <- tempfile("readme_figures_")
@@ -38,7 +38,7 @@ fao_settings(map_projection = "robinson", map_center = 180, map_palette = "YlOrR
 quiet(country_analysis("Norway"))
 copy_figure("country/Norwayfishing_area_map.png", "readme-area-map.png")
 fao_settings(reset = TRUE)
-fao_settings(dpi = 90)
+fao_settings(dpi = 300)   # README images: at least 300 dpi
 
 # Mean temperature of the catch, with the FishBase traits bundled with the package
 quiet(mean_temperature_catch(FAO27$area_data, version = "builtin", data_dir = work_dir))

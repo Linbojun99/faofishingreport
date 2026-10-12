@@ -130,7 +130,12 @@ fao_read_csv_utf8 <- function(file, ...) {
                            warning = function(w) {
                              if (grepl("not representable in native encoding", conditionMessage(w))) invokeRestart("muffleWarning")
                            })
-  names(x)[1] <- sub("^\xef\xbb\xbf", "", names(x)[1], useBytes = TRUE)
+  # the byte order mark (EF BB BF) is compared as bytes, so that no non-ASCII pattern has to be
+  # translated to the native encoding
+  first <- charToRaw(names(x)[1])
+  if (length(first) >= 3 && identical(first[1:3], as.raw(c(0xef, 0xbb, 0xbf)))) {
+    names(x)[1] <- rawToChar(first[-(1:3)])
+  }
   Encoding(names(x)) <- "UTF-8"
   x
 }

@@ -37,7 +37,7 @@ report
 
 渔区可以用代码（`27`）或英文名称（`"Atlantic, Northeast"`）指定。运行约需半分钟，期间以消息显示进度（本页未显示）：先是各项分析，然后是写入的文件。不指定`file`时，报告保存为工作目录下的`reports/FAO27_report_zh.docx`；本页的工作目录是一个临时文件夹。
 
-各项分析在另一个临时文件夹中运行，图表分辨率为300 dpi，不生成PowerPoint文件。图表只插入Word文件，不会在你的文件夹中留下图表文件；如需保留图表，请直接运行相应的分析函数（见[🌊 渔区分析](fishing-areas.html)）。
+各项分析在另一个临时文件夹中运行，图表分辨率由`dpi`参数设定（默认300 dpi，印刷可用`dpi = 600`），不生成PowerPoint文件。图表只插入Word文件，不会在你的文件夹中留下图表文件；如需保留图表，请直接运行相应的分析函数（见[🌊 渔区分析](fishing-areas.html)）。
 
 `fao_report()`以不可见的方式返回报告中的表格，因此请把结果赋给一个变量。近5年的主要渔获种类：
 
@@ -127,6 +127,7 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 | `font` | `NULL`：中文报告为“Times New Roman”，英文报告为“Arial” | 西文和数字的字体；英文报告中为全部文字的字体 |
 | `font_zh` | `"FangSong"` | 正文、标题、表格和参考文献的中文字体；各级标题和题注仍用黑体和楷体 |
 | `citation` | `"apa"` | 英文报告的引文格式：`"apa"`或`"fao"`。中文报告一律采用顺序编码制（GB/T 7714）。 |
+| `dpi` | `300` | 报告中图表的分辨率（印刷可用`600`）；其他函数的分辨率用`fao_settings(dpi = )`设置 |
 | `top_n` | `10` | 表格和图中主要种类和国家的数量，也是CMSY++评估的物种数（未指定`cmsy_top`时） |
 | `data_version` | `"latest"` | 使用的FAO数据版本，同`load_fao_data()` |
 | `total`、`species`、`countries`、`groups`、`status`、`quality`、`diversity`、`fleets` | `TRUE` | 默认开启的章节（见[🧩 分析章节](#sections)） |

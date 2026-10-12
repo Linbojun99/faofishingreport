@@ -115,14 +115,14 @@ fao_report_allowed_args <- function(fun) {
   setdiff(unique(args), c("...", "area", "area_data", "area_name", "lang", "pptx", "table"))
 }
 
-# Runs the analyses of the switched-on sections in a temporary folder (charts at 300 dpi, no
-# PowerPoint), keeping the result and the charts of each
+# Runs the analyses of the switched-on sections in a temporary folder (charts at the `dpi` of
+# fao_report(), no PowerPoint), keeping the result and the charts of each
 fao_report_run <- function(ctx) {
   work <- tempfile("fao_report_")
   dir.create(work)
   old_wd <- setwd(work)
   on.exit(setwd(old_wd), add = TRUE)
-  old_options <- options(faofishingreport.dpi = 300, faofishingreport.pptx = FALSE)
+  old_options <- options(faofishingreport.dpi = ctx$dpi, faofishingreport.pptx = FALSE)
   on.exit(options(old_options), add = TRUE)
   charts <- function() {
     files <- list.files(file.path(work, "figures", "png"), pattern = "[.]png$", recursive = TRUE, full.names = TRUE)
@@ -833,7 +833,7 @@ fao_section_distant_write <- function(x, ctx) {
 fao_section_cmsy_run <- function(ctx, args) {
   if (!is.null(ctx$cmsy_result)) return(list(value = ctx$cmsy_result, files = character(0)))
   args <- utils::modifyList(list(top = ctx$top_n), if (is.null(args)) list() else args)
-  list(value = fao_report_cmsy_run(ctx$area_data, args, ctx$lang, ctx$cmsy_dir), files = character(0))
+  list(value = fao_report_cmsy_run(ctx$area_data, args, ctx$lang, ctx$cmsy_dir, ctx$dpi), files = character(0))
 }
 
 fao_section_cmsy_values <- function(ctx) fao_report_cmsy_values(ctx$results$cmsy$value, ctx$lang)

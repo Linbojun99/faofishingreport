@@ -19,6 +19,7 @@ fao_report(
   font = NULL,
   font_zh = "FangSong",
   citation = c("apa", "fao"),
+  dpi = 300,
   top_n = 10,
   data_version = "latest",
   total = TRUE,
@@ -101,6 +102,10 @@ reports and "Arial" in English reports.}
 
 \item{citation}{The citation style of English reports: "apa" (default) or "fao" (the style
 of FAO publications). Chinese reports use numbered citations (GB/T 7714).}
+
+\item{dpi}{The resolution of the charts of the report (the PNG files put in the Word file and
+the LaTeX/PDF report). Default is 300; e.g. 600 for print. The charts of the report do
+not follow \code{fao_settings(dpi = )}, which sets the resolution of the other functions.}
 
 \item{top_n}{The number of main species and countries in the charts and tables, and of
 species assessed with CMSY++ (unless \code{cmsy_top} is given). Default is 10.}
