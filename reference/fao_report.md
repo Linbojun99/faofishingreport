@@ -26,6 +26,7 @@ fao_report(
   font = NULL,
   font_zh = "FangSong",
   citation = c("apa", "fao"),
+  dpi = 300,
   top_n = 10,
   data_version = "latest",
   total = TRUE,
@@ -176,6 +177,13 @@ fao_report(
   The citation style of English reports: "apa" (default) or "fao" (the
   style of FAO publications). Chinese reports use numbered citations
   (GB/T 7714).
+
+- dpi:
+
+  The resolution of the charts of the report (the PNG files put in the
+  Word file and the LaTeX/PDF report). Default is 300; e.g. 600 for
+  print. The charts of the report do not follow `fao_settings(dpi = )`,
+  which sets the resolution of the other functions.
 
 - top_n:
 

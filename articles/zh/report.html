@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -114,14 +114,14 @@ be completed”）。使用前请核对自动生成的文字。</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, file <span class="op">=</span> <span class="st">"FAO27_report_zh.docx"</span>, lang <span class="op">=</span> <span class="st">"zh"</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmpTdqgcv/faofishingreport_site_1dd7629f014b9/FAO27_report_zh.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmpYp92ZH/faofishingreport_site_1ddfa636ed00d/FAO27_report_zh.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, quality, diversity, fleets</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $analyses               results of the analyses: total, species, countries, groups, status, quality, diversity, fleets</span></span></code></pre></div>
 <p>渔区可以用代码（<code>27</code>）或英文名称（<code>"Atlantic, Northeast"</code>）指定。运行约需半分钟，期间以消息显示进度（本页未显示）：先是各项分析，然后是写入的文件。不指定<code>file</code>时，报告保存为工作目录下的<code>reports/FAO27_report_zh.docx</code>；本页的工作目录是一个临时文件夹。</p>
-<p>各项分析在另一个临时文件夹中运行，图表分辨率为300
-dpi，不生成PowerPoint文件。图表只插入Word文件，不会在你的文件夹中留下图表文件；如需保留图表，请直接运行相应的分析函数（见<a href="fishing-areas.html">🌊 渔区分析</a>）。</p>
+<p>各项分析在另一个临时文件夹中运行，图表分辨率由<code>dpi</code>参数设定（默认300
+dpi，印刷可用<code>dpi = 600</code>），不生成PowerPoint文件。图表只插入Word文件，不会在你的文件夹中留下图表文件；如需保留图表，请直接运行相应的分析函数（见<a href="fishing-areas.html">🌊 渔区分析</a>）。</p>
 <p><code><a href="../../reference/fao_report.html">fao_report()</a></code>以不可见的方式返回报告中的表格，因此请把结果赋给一个变量。近5年的主要渔获种类：</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">show_table</span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">main_species</span>, digits <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code></pre></div>
@@ -550,7 +550,7 @@ Computing, 2026[2026-10-12]. <a href="https://www.R-project.org/" class="externa
 </tr>
 <tr class="odd">
 <td align="left">[13] Lin H. faofishingreport: Analyse and report FAO
-Global Capture Production statistics. R package version 0.8.0[CP/OL].
+Global Capture Production statistics. R package version 0.9.0[CP/OL].
 2026[2026-10-12]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>.</td>
 </tr>
 <tr class="even">
@@ -658,31 +658,36 @@ Roman”，英文报告为“Arial”</td>
 7714）。</td>
 </tr>
 <tr class="odd">
+<td><code>dpi</code></td>
+<td><code>300</code></td>
+<td>报告中图表的分辨率（印刷可用<code>600</code>）；其他函数的分辨率用<code>fao_settings(dpi = )</code>设置</td>
+</tr>
+<tr class="even">
 <td><code>top_n</code></td>
 <td><code>10</code></td>
 <td>表格和图中主要种类和国家的数量，也是CMSY++评估的物种数（未指定<code>cmsy_top</code>时）</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>data_version</code></td>
 <td><code>"latest"</code></td>
 <td>使用的FAO数据版本，同<code><a href="../../reference/load_fao_data.html">load_fao_data()</a></code>
 </td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>
 <code>total</code>、<code>species</code>、<code>countries</code>、<code>groups</code>、<code>status</code>、<code>quality</code>、<code>diversity</code>、<code>fleets</code>
 </td>
 <td><code>TRUE</code></td>
 <td>默认开启的章节（见<a href="#sections">🧩 分析章节</a>）</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>
 <code>shocks</code>、<code>collapse</code>、<code>synchrony</code>、<code>pelagic</code>、<code>mtc</code>、<code>distant</code>
 </td>
 <td><code>FALSE</code></td>
 <td>默认关闭的章节</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>cmsy</code></td>
 <td><code>FALSE</code></td>
 <td>
@@ -872,7 +877,7 @@ v5数据时的Huang等（2017）、Pyper和Peterman（1998）、Alajmi等（2024
 <code class="sourceCode R"><span><span class="va">short</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, file <span class="op">=</span> <span class="st">"FAO27_short.docx"</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, quality <span class="op">=</span> <span class="cn">FALSE</span>, diversity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                    fleets <span class="op">=</span> <span class="cn">FALSE</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span>, status_smooth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">short</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmpTdqgcv/faofishingreport_site_1dd7629f014b9/FAO27_short.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmpYp92ZH/faofishingreport_site_1ddfa636ed00d/FAO27_short.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, pelagic</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -969,7 +974,7 @@ Computing, 2026[2026-10-12]. <a href="https://www.R-project.org/" class="externa
 </tr>
 <tr class="odd">
 <td align="left">[13] Lin H. faofishingreport: Analyse and report FAO
-Global Capture Production statistics. R package version 0.8.0[CP/OL].
+Global Capture Production statistics. R package version 0.9.0[CP/OL].
 2026[2026-10-12]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>.</td>
 </tr>
 <tr class="even">
@@ -1889,7 +1894,7 @@ London: Charles Griffin.</p>
 global catch data for inferences on the world’s marine fisheries.
 <em>Fish and Fisheries</em> 14(3): 293–311. <a href="https://doi.org/10.1111/j.1467-2979.2012.00469.x" class="external-link">doi:10.1111/j.1467-2979.2012.00469.x</a></p>
 <p>Lin, H. (2026). faofishingreport: Analyse and report FAO Global
-Capture Production statistics. R package version 0.8.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
+Capture Production statistics. R package version 0.9.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
 <p>Mann, H.B. (1945). Nonparametric tests against trend.
 <em>Econometrica</em> 13(3): 245–259. <a href="https://doi.org/10.2307/1907187" class="external-link">doi:10.2307/1907187</a></p>
 <p>R Core Team (2026). R: A language and environment for statistical

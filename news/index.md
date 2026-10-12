@@ -1,5 +1,36 @@
 # Changelog
 
+## faofishingreport 0.9.0
+
+### Charts
+
+- [`fishing_area_map()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_map.md)
+  saves each map with the shape of the area: the height follows the
+  width and length of the map (between 4 and 14 inches for a width of
+  10), so wide maps such as the polar map of area 27 no longer have
+  empty bands above and below.
+- The example charts of the home pages (README) are made at 300 dpi
+  instead of 90, so the maps are sharp.
+- [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
+  has a `dpi` argument for the resolution of the charts of the report
+  (300 by default, e.g. 600 for print); it was always 300. The other
+  functions keep their resolution set with `fao_settings(dpi = )` (600
+  by default).
+
+### Fixes
+
+- Reading the tables bundled with the package no longer gives a warning
+  about translating the byte order mark of the files in some locales.
+
+### Example scripts
+
+- The example scripts in the `Demo/` folder of the GitHub repository
+  (not part of the installed package) now use the areas of the articles:
+  `Demo_FAO27.R`, the whole workflow for the Northeast Atlantic (maps,
+  species and countries, summaries, temperature, CMSY++ with its MCMC
+  check and the report), and `Demo_FAO67.R`, the code of the Northeast
+  Pacific tutorial. The area 34 script was removed.
+
 ## faofishingreport 0.8.0
 
 ### New functions

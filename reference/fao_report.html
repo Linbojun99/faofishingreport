@@ -15,7 +15,7 @@ marked in grey, such as other data sources, the discussion and other references.
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -86,6 +86,7 @@ marked in grey, such as other data sources, the discussion and other references.
 <span>  font <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  font_zh <span class="op">=</span> <span class="st">"FangSong"</span>,</span>
 <span>  citation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"apa"</span>, <span class="st">"fao"</span><span class="op">)</span>,</span>
+<span>  dpi <span class="op">=</span> <span class="fl">300</span>,</span>
 <span>  top_n <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  data_version <span class="op">=</span> <span class="st">"latest"</span>,</span>
 <span>  total <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -199,6 +200,12 @@ reports and "Arial" in English reports.</p></dd>
 <dt id="arg-citation">citation<a class="anchor" aria-label="anchor" href="#arg-citation"></a></dt>
 <dd><p>The citation style of English reports: "apa" (default) or "fao" (the style
 of FAO publications). Chinese reports use numbered citations (GB/T 7714).</p></dd>
+
+
+<dt id="arg-dpi">dpi<a class="anchor" aria-label="anchor" href="#arg-dpi"></a></dt>
+<dd><p>The resolution of the charts of the report (the PNG files put in the Word file and
+the LaTeX/PDF report). Default is 300; e.g. 600 for print. The charts of the report do
+not follow <code>fao_settings(dpi = )</code>, which sets the resolution of the other functions.</p></dd>
 
 
 <dt id="arg-top-n">top_n<a class="anchor" aria-label="anchor" href="#arg-top-n"></a></dt>

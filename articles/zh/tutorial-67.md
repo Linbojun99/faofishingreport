@@ -674,7 +674,7 @@ CMSY++仅渔获量资源评估](https://linbojun99.github.io/faofishingreport/ar
 
 report <- fao_report(67, lang = "zh", shocks = TRUE, mtc = TRUE)
 report
-#> FAO report: /tmp/RtmpVTs0Gn/faofishingreport_site_21a373bafb089/reports/FAO67_report_zh.docx
+#> FAO report: /tmp/RtmpA3DImV/faofishingreport_site_21a7c4f644cbe/reports/FAO67_report_zh.docx
 #> Sections: total, species, countries, groups, status, quality, diversity, fleets, shocks, mtc
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (5 rows)

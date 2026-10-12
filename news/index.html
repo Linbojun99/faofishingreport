@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,6 +52,25 @@
       <small>Source: <a href="https://github.com/Linbojun99/faofishingreport/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.9.0" id="faofishingreport-090">faofishingreport 0.9.0<a class="anchor" aria-label="anchor" href="#faofishingreport-090"></a></h2>
+<div class="section level3">
+<h3 id="charts-0-9-0">Charts<a class="anchor" aria-label="anchor" href="#charts-0-9-0"></a></h3>
+<ul><li>
+<code><a href="../reference/fishing_area_map.html">fishing_area_map()</a></code> saves each map with the shape of the area: the height follows the width and length of the map (between 4 and 14 inches for a width of 10), so wide maps such as the polar map of area 27 no longer have empty bands above and below.</li>
+<li>The example charts of the home pages (README) are made at 300 dpi instead of 90, so the maps are sharp.</li>
+<li>
+<code><a href="../reference/fao_report.html">fao_report()</a></code> has a <code>dpi</code> argument for the resolution of the charts of the report (300 by default, e.g. 600 for print); it was always 300. The other functions keep their resolution set with <code>fao_settings(dpi = )</code> (600 by default).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="fixes-0-9-0">Fixes<a class="anchor" aria-label="anchor" href="#fixes-0-9-0"></a></h3>
+<ul><li>Reading the tables bundled with the package no longer gives a warning about translating the byte order mark of the files in some locales.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="example-scripts-0-9-0">Example scripts<a class="anchor" aria-label="anchor" href="#example-scripts-0-9-0"></a></h3>
+<ul><li>The example scripts in the <code>Demo/</code> folder of the GitHub repository (not part of the installed package) now use the areas of the articles: <code>Demo_FAO27.R</code>, the whole workflow for the Northeast Atlantic (maps, species and countries, summaries, temperature, CMSY++ with its MCMC check and the report), and <code>Demo_FAO67.R</code>, the code of the Northeast Pacific tutorial. The area 34 script was removed.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.8.0" id="faofishingreport-080">faofishingreport 0.8.0<a class="anchor" aria-label="anchor" href="#faofishingreport-080"></a></h2>
 <div class="section level3">
