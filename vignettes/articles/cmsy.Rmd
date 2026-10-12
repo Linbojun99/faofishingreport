@@ -476,7 +476,7 @@ show_table(mc[, c("stock", "label", "median", "rhat", "n_eff", "median_long", "r
 rk <- mc[mc$parameter %in% c("r", "k", "msy"), ]
 ```
 
-With the default settings the chains converged (Rhat at most `r sprintf("%.2f", max(mc$rhat))`), but the effective sample size of r, k and MSY was only `r round(min(rk$n_eff))` to `r round(max(rk$n_eff))`: successive draws of r and k are strongly correlated. With the longer chains it rose to `r round(min(rk$n_eff_long))` to `r round(max(rk$n_eff_long))`, while the medians hardly changed (last-year B/Bmsy of northern prawn `r sprintf("%.2f", green$B_Bmsy)` and `r sprintf("%.2f", green$B_Bmsy_long)`, of capelin `r sprintf("%.2f", over$B_Bmsy)` and `r sprintf("%.2f", over$B_Bmsy_long)`), at about `r round(green$long_seconds / green$default_seconds)` times the run time. For results to report, run CMSY++ with longer and more chains and check them:
+With the default settings the chains converged (Rhat at most `r sprintf("%.2f", max(mc$rhat))`), but the effective sample size of r, k and MSY was only `r round(min(rk$n_eff))` to `r round(max(rk$n_eff))`: successive draws of r and k are strongly correlated. With the longer chains it rose to `r round(min(rk$n_eff_long))` to `r round(max(rk$n_eff_long))`, while the medians hardly changed (last-year B/Bmsy of northern prawn `r sprintf("%.2f", green$B_Bmsy)` and `r sprintf("%.2f", green$B_Bmsy_long)`, of capelin `r sprintf("%.2f", over$B_Bmsy)` and `r sprintf("%.2f", over$B_Bmsy_long)`), and the runs took about five times as long (4 chains instead of 2 run side by side, but each five times longer). For results to report, run CMSY++ with longer and more chains and check them:
 
 ```{r, eval = FALSE}
 result <- cmsy_run(input, seed = 1, auto_start = TRUE,

@@ -438,7 +438,7 @@ show_table(mc[, c("stock", "label", "median", "rhat", "n_eff", "median_long", "r
 rk <- mc[mc$parameter %in% c("r", "k", "msy"), ]
 ```
 
-按默认设置，各条链已经收敛（Rhat最大为`r sprintf("%.2f", max(mc$rhat))`），但r、k和MSY的有效样本量只有`r round(min(rk$n_eff))`至`r round(max(rk$n_eff))`：r和k的相邻抽样高度相关。用更长的链时，有效样本量升至`r round(min(rk$n_eff_long))`至`r round(max(rk$n_eff_long))`，而中位数几乎不变（Northern prawn最后一年的B/Bmsy分别为`r sprintf("%.2f", green$B_Bmsy)`和`r sprintf("%.2f", green$B_Bmsy_long)`，毛鳞鱼分别为`r sprintf("%.2f", over$B_Bmsy)`和`r sprintf("%.2f", over$B_Bmsy_long)`），运行时间约为原来的`r round(green$long_seconds / green$default_seconds)`倍。要写进报告的结果，建议用更长、更多的链运行CMSY++，并检查收敛情况：
+按默认设置，各条链已经收敛（Rhat最大为`r sprintf("%.2f", max(mc$rhat))`），但r、k和MSY的有效样本量只有`r round(min(rk$n_eff))`至`r round(max(rk$n_eff))`：r和k的相邻抽样高度相关。用更长的链时，有效样本量升至`r round(min(rk$n_eff_long))`至`r round(max(rk$n_eff_long))`，而中位数几乎不变（Northern prawn最后一年的B/Bmsy分别为`r sprintf("%.2f", green$B_Bmsy)`和`r sprintf("%.2f", green$B_Bmsy_long)`，毛鳞鱼分别为`r sprintf("%.2f", over$B_Bmsy)`和`r sprintf("%.2f", over$B_Bmsy_long)`）；运行时间约为原来的五倍（4条链与2条链一样同时运行，但每条链长五倍）。要写进报告的结果，建议用更长、更多的链运行CMSY++，并检查收敛情况：
 
 ```{r, eval = FALSE}
 result <- cmsy_run(input, seed = 1, auto_start = TRUE,

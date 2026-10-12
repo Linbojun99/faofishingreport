@@ -82,8 +82,7 @@ for (kind in names(examples)) {
     B_Bmsy_ucl = s$B_Bmsy_ucl, F_Fmsy = s$F_Fmsy, p_green = s$p_green, p_red = s$p_red,
     p_overfished = s$p_overfished, MSY_t = s$MSY, forecast_catch_t = forecast_catch,
     B_Bmsy_1950 = detail_1950$summary$B_Bmsy, first_year_1950 = detail_1950$summary$first_year,
-    B_Bmsy_long = detail_long$summary$B_Bmsy, long_seconds = detail_long$summary$seconds,
-    default_seconds = detail$summary$seconds
+    B_Bmsy_long = detail_long$summary$B_Bmsy
   )
 }
 top_table <- all$summary[, c("Stock", "species_en", "scientific_name", "first_year", "B_Bmsy", "B_Bmsy_lcl", "B_Bmsy_ucl",
