@@ -181,9 +181,9 @@ mtc$trend      # 斜率（°C/十年）、Mann-Kendall检验、与SST的相关
 FishBase与SeaLifeBase物种特征](https://linbojun99.github.io/faofishingreport/articles/zh/fishbase.md)。默认`version = "latest"`时，联网的情况下第一次运行会下载所需的FishBase和SeaLifeBase表格（约23
 MB）；不联网时使用已下载的最新版本，没有下载过则使用包内置的表格。`version = "builtin"`总是使用内置表格，不需要下载。
 
-图的上半部分是MTC与渔区SST（及区内范围），下半部分是有偏好温度的渔获所占的比例（覆盖率）。覆盖率低于`min_coverage`的年份会淡化显示，并且不参与趋势计算。趋势分别按全部年份和`trend_from`之后的年份计算：线性回归斜率（°C/十年）、Mann-Kendall检验（Mann
-1945；Kendall
-1975，与[`peak_trend()`](https://linbojun99.github.io/faofishingreport/reference/peak_trend.md)相同），以及MTC与SST原序列和逐年差分的Pearson相关。
+图的上半部分是MTC与渔区SST（及区内范围），下半部分是有偏好温度的渔获所占的比例（覆盖率）。覆盖率低于`min_coverage`的年份会淡化显示，并且不参与趋势计算。趋势分别按全部年份和`trend_from`之后的年份计算：线性回归斜率（°C/十年）、经自相关校正的Mann-Kendall检验（Mann
+1945；Kendall 1975；Yue and Wang
+2004，与[`peak_trend()`](https://linbojun99.github.io/faofishingreport/reference/peak_trend.md)相同），以及MTC与SST原序列和逐年差分的Pearson相关。
 
 | 参数 | 含义 | 默认值 |
 |----|----|----|
@@ -251,8 +251,9 @@ mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern
 - **成因。**除了温度，捕捞对象、渔场、渔具、市场、管理和报告方式的变化也会改变MTC（如Alajmi
   et al. 2024；Lavin et
   al. 2023）。把某个变化归因于变暖之前，先用物种表中的`weight_pct`和`contribution_c`看清楚是哪些条目引起的。
-- **统计。**趋势用线性斜率和Mann-Kendall检验；与SST的对比用原序列和逐年差分的相关。两个序列都有自相关，所以p值偏小（Yue
-  et al. 2002；Pyper and Peterman
+- **统计。**趋势用线性斜率和Mann-Kendall检验；与SST的对比用原序列和逐年差分的相关。两个序列都有自相关：Mann-Kendall检验已做了校正（Yue
+  and Wang 2004），但斜率和相关的p值偏小（Yue et al. 2002；Pyper and
+  Peterman
   1998）；逐年差分的相关则可能漏掉只在几十年尺度上起作用的关系。在亚得里亚海，考虑自相关之后，MTC与SST的关系就不再显著（Kamberi
   et al. 2025）。
 
@@ -407,6 +408,11 @@ and survey data. *Frontiers in Marine Science* 2: 23.
 WoRMS Editorial Board. World Register of Marine Species. Flanders Marine
 Institute (VLIZ). <https://www.marinespecies.org>,
 [doi:10.14284/170](https://doi.org/10.14284/170)
+
+Yue, S. and Wang, C.Y. (2004). The Mann-Kendall test modified by
+effective sample size to detect trend in serially correlated
+hydrological series. *Water Resources Management* 18: 201–218.
+[doi:10.1023/B:WARM.0000043140.61082.60](https://doi.org/10.1023/B:WARM.0000043140.61082.60)
 
 Yue, S., Pilon, P., Phinney, B. and Cavadias, G. (2002). The influence
 of autocorrelation on the ability to detect trend in hydrological

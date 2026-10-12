@@ -12,6 +12,9 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 [![License:
 GPL-3](https://img.shields.io/badge/license-GPL--3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
+> 🌐 **English**：[faofishingreport English home page
+> (README)](https://linbojun99.github.io/faofishingreport/index.md)（网站右上角也可以随时切换英文）
+
 **faofishingreport** 把 [FAO
 全球捕捞产量统计](https://www.fao.org/fishery/collection/capture/en)（Global
 Capture
@@ -217,10 +220,15 @@ PowerPoint 到 `figures/pptx/`），表格保存在 `tables/`。
 
 ## 📖 文档
 
+**🧭 入门**
+
 - [🚀
   快速入门](https://linbojun99.github.io/faofishingreport/articles/zh/get-started.md)
 - [🎓 教程：东北太平洋（FAO
   67区）从零到报告](https://linbojun99.github.io/faofishingreport/articles/zh/tutorial-67.md)
+
+**📊 数据与分析**
+
 - [💾 FAO
   数据：下载与自定义](https://linbojun99.github.io/faofishingreport/articles/zh/data.md)
 - [🌊
@@ -237,14 +245,20 @@ PowerPoint 到 `figures/pptx/`），表格保存在 `tables/`。
   海表温度与渔获平均温度](https://linbojun99.github.io/faofishingreport/articles/zh/sst-mtc.md)
 - [🐠 FishBase 与 SeaLifeBase
   物种特征](https://linbojun99.github.io/faofishingreport/articles/zh/fishbase.md)
+
+**📝 评估与报告**
+
 - [📉 CMSY++
   资源评估](https://linbojun99.github.io/faofishingreport/articles/zh/cmsy.md)
 - [📝
   一键生成评估报告（Word、LaTeX、PDF）](https://linbojun99.github.io/faofishingreport/articles/zh/report.md)
-- 🧩 扩展（不纳入Word报告）：[🚢
-  贸易与就业](https://linbojun99.github.io/faofishingreport/articles/zh/trade-employment.md)
+
+**🧰 其他**
+
 - [🎨
   自定义图表与地图](https://linbojun99.github.io/faofishingreport/articles/zh/customise.md)
+- 🧩 扩展（不纳入Word报告）：[🚢
+  贸易与就业](https://linbojun99.github.io/faofishingreport/articles/zh/trade-employment.md)
 
 每篇文档最后都列出了所用方法和数据的参考文献及其 DOI
 或网址。每个函数的参数说明见[函数参考](https://linbojun99.github.io/faofishingreport/reference/index.md)（英文）。

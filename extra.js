@@ -263,6 +263,32 @@
       .catch(function () { /* reference index not available, e.g. a page opened from disk */ });
   }
 
+  // The explanation under a chart ("🔎 How to read it", the result for the area that follows it,
+  // and the title of the chart before it) is put in a box, so that each chart and its text stand
+  // apart from the next chart
+  function explainBoxes(main) {
+    var startsWith = function (el, tag) {
+      var node = el.firstChild;
+      while (node && node.nodeType === 3 && !node.textContent.trim()) node = node.nextSibling;
+      return !!node && node.nodeType === 1 && node.tagName === tag;
+    };
+    Array.prototype.slice.call(main.querySelectorAll("p")).forEach(function (p) {
+      if (p.textContent.trim().indexOf("\uD83D\uDD0E") !== 0 || p.closest(".fao-explain")) return;
+      var parts = [p];
+      var prev = p.previousElementSibling;
+      if (prev && prev.tagName === "P" && startsWith(prev, "STRONG")) parts.unshift(prev);
+      var next = p.nextElementSibling;
+      while (next && next.tagName === "P" && startsWith(next, "EM")) {
+        next.classList.add("fao-explain-result");
+        parts.push(next);
+        next = next.nextElementSibling;
+      }
+      var box = element("div", "fao-explain");
+      p.parentNode.insertBefore(box, parts[0]);
+      parts.forEach(function (part) { box.appendChild(part); });
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     var root = siteRoot();
     var rel = relative(window.location.href, root);
@@ -273,8 +299,10 @@
     var buttons = document.querySelectorAll('a.nav-link[href$="#lang"]');
     buttons.forEach(function (button) { button.classList.add("fao-lang-button"); });
 
-    // Keep the chosen language when an English page with a Chinese version is opened
-    if (!onZhPage && hasZhVersion && stored === "zh") {
+    // Keep the chosen language when an English page with a Chinese version is opened; the home
+    // page (the README) always opens in English, with the link to the Chinese home page at its top
+    var onHome = rel === "" || rel === "index.html";
+    if (!onZhPage && hasZhVersion && stored === "zh" && !onHome) {
       window.location.replace(root + counterpart(rel, true) + window.location.hash);
       return;
     }
@@ -291,6 +319,8 @@
     }
 
     referenceNav(root, lang);
+    var main = document.querySelector("main");
+    if (main) explainBoxes(main);
 
     buttons.forEach(function (button) {
       button.textContent = lang === "zh" ? "English" : "中文";

@@ -119,7 +119,11 @@ Invisibly, a list of three data frames:
 
 - by_group:
 
-  the same by country, group and year;
+  the same by country, group and year. In `yearly` and `by_group`, a
+  value is NA when it is not known: the country reported no catch (or no
+  trade) in that year, or the values are missing in the FAO data; it is
+  zero when the country reported that year but not this group or trade
+  flow;
 
 - groups:
 

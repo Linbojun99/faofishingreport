@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -122,7 +122,7 @@ Chinese reports). Check the generated text before you use it.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_report_en.docx"</span>, lang <span class="op">=</span> <span class="st">"en"</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmplhORJj/faofishingreport_site_1bb6333d4f500/FAO34_report_en.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmpWjKkxU/faofishingreport_site_1bbd662010bd2/FAO34_report_en.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, quality, diversity, fleets</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -181,7 +181,7 @@ so assign the result. The main species of the last five years:</p>
 <td align="right">8.1</td>
 <td align="left">2019</td>
 <td align="right">96.6</td>
-<td align="left">up</td>
+<td align="left">none</td>
 </tr>
 <tr class="odd">
 <td align="left">Bonga shad</td>
@@ -211,7 +211,7 @@ so assign the result. The main species of the last five years:</p>
 <td align="right">4.8</td>
 <td align="left">2018</td>
 <td align="right">32.8</td>
-<td align="left">down</td>
+<td align="left">none</td>
 </tr>
 <tr class="even">
 <td align="left">Marine fishes nei</td>
@@ -251,7 +251,7 @@ so assign the result. The main species of the last five years:</p>
 <td align="right">2.5</td>
 <td align="left">1991</td>
 <td align="right">34.9</td>
-<td align="left">down</td>
+<td align="left">none</td>
 </tr>
 <tr class="even">
 <td align="left">European anchovy</td>
@@ -350,7 +350,7 @@ officer package:</p>
 <span><span class="co">#&gt;      FAO Cover Title           FAO Figure        FAO Heading 1 </span></span>
 <span><span class="co">#&gt;                    1                   14                    4 </span></span>
 <span><span class="co">#&gt;        FAO Heading 2             FAO Note        FAO Reference </span></span>
-<span><span class="co">#&gt;                   11                    3                   11 </span></span>
+<span><span class="co">#&gt;                   11                    3                   14 </span></span>
 <span><span class="co">#&gt;    FAO Table Caption       FAO Table Text            FAO Title </span></span>
 <span><span class="co">#&gt;                    4                    4                    2</span></span></code></pre></div>
 <p>The headings, styles “FAO Heading 1” and “FAO Heading 2”:</p>
@@ -387,14 +387,13 @@ officer package:</p>
 <th align="left">abstract</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="left">FAO Major Fishing Area 34 (Atlantic, Eastern Central)
-is one of the important marine fishing areas of the world. Using the FAO
-Global Capture Production statistics for 1950–2024 (release 2026.1.0),
-this report analyses the catch trends, the main species, the main
-fishing countries, the composition of the catch, the status of the
-stocks, the quality of the data, the diversity of the catch and the
-catch of coastal and distant-water fleets, with breakpoint analysis,
-Mann-Kendall trend tests, stock status plots and diversity and
+<td align="left">Using the FAO Global Capture Production statistics for
+1950–2024 (release 2026.1.0), this report analyses, for FAO Major
+Fishing Area 34 (Atlantic, Eastern Central), the catch trends, the main
+species, the main fishing countries, the composition of the catch, the
+status of the stocks, the quality of the data, the diversity of the
+catch and the catch of coastal and distant-water fleets, with breakpoint
+analysis, Mann-Kendall trend tests, stock status plots and diversity and
 concentration indices. In 2024, the catch in the area was 5.10 million
 t, 6.3% of the world’s marine capture production. The catch peaked in
 2018 at 5.52 million t, and the catch of 2024 was 92.4% of the peak.
@@ -402,9 +401,8 @@ Breakpoints divide the catch series into 4 stages (1950–1968, 1969–1987,
 1988–2009 and 2010–2024). In the last five years, European
 pilchard(=Sardine) was the main species item, with 20.4% of the catch.
 Morocco was the main fishing country, with 27.7% of the catch of the
-last five years. In 2024, 36.1% of the stocks were over-exploited or
-collapsed. Monitoring and assessment of the main stocks, and the
-reporting of catch at species level, should be strengthened.</td>
+last five years. In 2024, 39.7% of the stocks were over-exploited or
+collapsed.</td>
 </tr></tbody>
 </table>
 <p>The captions of the figures and tables, numbered by report:</p>
@@ -413,8 +411,8 @@ reporting of catch at species level, should be strengthened.</td>
 <span><span class="fu">show_table</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>style <span class="op">=</span> <span class="va">captions</span><span class="op">$</span><span class="va">style_name</span>, caption <span class="op">=</span> <span class="va">captions</span><span class="op">$</span><span class="va">text</span><span class="op">)</span>, n <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
-<col width="11%">
-<col width="88%">
+<col width="10%">
+<col width="89%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">style</th>
@@ -439,14 +437,14 @@ production</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
-<td align="left">Figure 1-3. Catch of the main species items in FAO
-Major Fishing Area 34 (Atlantic, Eastern Central)</td>
+<td align="left">Figure 1-3. Catch of the main species items of the last
+five years in FAO Major Fishing Area 34 (Atlantic, Eastern Central)</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
-<td align="left">Figure 1-4. Catch of the main species items in FAO
-Major Fishing Area 34 (Atlantic, Eastern Central) and their
-breakpoints</td>
+<td align="left">Figure 1-4. Catch of the main species items of the last
+five years in FAO Major Fishing Area 34 (Atlantic, Eastern Central) and
+their breakpoints</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Table Caption</td>
@@ -455,8 +453,9 @@ Area 34 (Atlantic, Eastern Central), 2020–2024</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
-<td align="left">Figure 1-5. Catch of the main fishing countries in FAO
-Major Fishing Area 34 (Atlantic, Eastern Central)</td>
+<td align="left">Figure 1-5. Catch of the main fishing countries of the
+last five years in FAO Major Fishing Area 34 (Atlantic, Eastern
+Central)</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
@@ -465,9 +464,9 @@ Fishing Area 34 (Atlantic, Eastern Central)</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
-<td align="left">Figure 1-7. Catch of the main fishing countries in FAO
-Major Fishing Area 34 (Atlantic, Eastern Central) and their
-breakpoints</td>
+<td align="left">Figure 1-7. Catch of the main fishing countries of the
+last five years in FAO Major Fishing Area 34 (Atlantic, Eastern Central)
+and their breakpoints</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
@@ -565,13 +564,26 @@ Econometrics, 18(1), 1–22. <a href="https://doi.org/10.1002/jae.659" class="ex
 </td>
 </tr>
 <tr class="even">
+<td align="left">Benjamini, Y., &amp; Hochberg, Y. (1995). Controlling
+the false discovery rate: a practical and powerful approach to multiple
+testing. Journal of the Royal Statistical Society: Series B
+(Methodological), 57(1), 289–300. <a href="https://doi.org/10.1111/j.2517-6161.1995.tb02031.x" class="external-link uri">https://doi.org/10.1111/j.2517-6161.1995.tb02031.x</a>
+</td>
+</tr>
+<tr class="odd">
 <td align="left">FAO. (2026a). Fishery and Aquaculture Statistics –
 Yearbook 2024. <a href="https://doi.org/10.4060/ce1217en" class="external-link uri">https://doi.org/10.4060/ce1217en</a>
 </td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">FAO. (2026b). FishStat: Global capture production
 1950–2024 (Release 2026.1.0) [Data set]. <a href="https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip" class="external-link uri">https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip</a>
+</td>
+</tr>
+<tr class="odd">
+<td align="left">Garibaldi, L. (2012). The FAO global capture production
+database: a six-decade effort to catch the trend. Marine Policy, 36(3),
+760–768. <a href="https://doi.org/10.1016/j.marpol.2011.10.024" class="external-link uri">https://doi.org/10.1016/j.marpol.2011.10.024</a>
 </td>
 </tr>
 <tr class="even">
@@ -586,7 +598,7 @@ fisheries. Fish and Fisheries, 14(3), 293–311. <a href="https://doi.org/10.111
 </tr>
 <tr class="even">
 <td align="left">Lin, H. (2026). faofishingreport: Analyse and report
-FAO Global Capture Production statistics. R package version 0.6.0
+FAO Global Capture Production statistics. R package version 0.7.0
 [Computer software]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>
 </td>
 </tr>
@@ -611,6 +623,13 @@ communication. Bell System Technical Journal, 27(3), 379–423. <a href="https:/
 </td>
 </tr>
 <tr class="odd">
+<td align="left">Yue, S., &amp; Wang, C. Y. (2004). The Mann-Kendall
+test modified by effective sample size to detect trend in serially
+correlated hydrological series. Water Resources Management, 18(3),
+201–218. <a href="https://doi.org/10.1023/B:WARM.0000043140.61082.60" class="external-link uri">https://doi.org/10.1023/B:WARM.0000043140.61082.60</a>
+</td>
+</tr>
+<tr class="even">
 <td align="left">Zeileis, A., Kleiber, C., Krämer, W., &amp; Hornik, K.
 (2003). Testing and dating of structural changes in practice.
 Computational Statistics &amp; Data Analysis, 44(1-2), 109–123. <a href="https://doi.org/10.1016/S0167-9473(03)00030-6" class="external-link uri">https://doi.org/10.1016/S0167-9473(03)00030-6</a>
@@ -979,7 +998,7 @@ on, and stock status plots with smoothed catches:</p>
 <code class="sourceCode R"><span><span class="va">short</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_short.docx"</span>, lang <span class="op">=</span> <span class="st">"en"</span>, quality <span class="op">=</span> <span class="cn">FALSE</span>, diversity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                    fleets <span class="op">=</span> <span class="cn">FALSE</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span>, status_smooth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">short</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/RtmplhORJj/faofishingreport_site_1bb6333d4f500/FAO34_short.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/RtmpWjKkxU/faofishingreport_site_1bbd662010bd2/FAO34_short.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, pelagic</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -1018,12 +1037,19 @@ Econometrics, 18(1), 1–22. <a href="https://doi.org/10.1002/jae.659" class="ex
 </td>
 </tr>
 <tr class="even">
+<td align="left">Benjamini, Y., &amp; Hochberg, Y. (1995). Controlling
+the false discovery rate: a practical and powerful approach to multiple
+testing. Journal of the Royal Statistical Society: Series B
+(Methodological), 57(1), 289–300. <a href="https://doi.org/10.1111/j.2517-6161.1995.tb02031.x" class="external-link uri">https://doi.org/10.1111/j.2517-6161.1995.tb02031.x</a>
+</td>
+</tr>
+<tr class="odd">
 <td align="left">Caddy, J. F. (1993). Toward a comparative evaluation of
 human impacts on fishery ecosystems of enclosed and semi‐enclosed seas.
 Reviews in Fisheries Science, 1(1), 57–95. <a href="https://doi.org/10.1080/10641269309388535" class="external-link uri">https://doi.org/10.1080/10641269309388535</a>
 </td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">de Leiva Moreno, J. I., Agostini, V. N., Caddy, J. F.,
 &amp; Carocci, F. (2000). Is the pelagic-demersal ratio from fishery
 landings a useful proxy for nutrient availability? A preliminary data
@@ -1031,48 +1057,55 @@ exploration for the semi-enclosed seas around Europe. ICES Journal of
 Marine Science, 57(4), 1091–1102. <a href="https://doi.org/10.1006/jmsc.2000.0705" class="external-link uri">https://doi.org/10.1006/jmsc.2000.0705</a>
 </td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">FAO. (2026a). Fishery and Aquaculture Statistics –
 Yearbook 2024. <a href="https://doi.org/10.4060/ce1217en" class="external-link uri">https://doi.org/10.4060/ce1217en</a>
 </td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">FAO. (2026b). FishStat: Global capture production
 1950–2024 (Release 2026.1.0) [Data set]. <a href="https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip" class="external-link uri">https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip</a>
 </td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Hondorp, D. W., Breitburg, D. L., &amp; Davias, L. A.
 (2010). Eutrophication and Fisheries: Separating the Effects of Nitrogen
 Loads and Hypoxia on the Pelagic-to-Demersal Ratio and other Measures of
 Landings Composition. Marine and Coastal Fisheries, 2(1), 339–361. <a href="https://doi.org/10.1577/C09-020.1" class="external-link uri">https://doi.org/10.1577/C09-020.1</a>
 </td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Kendall, M. G. (1975). Rank correlation methods (4th
 ed.). Charles Griffin.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Kleisner, K., Zeller, D., Froese, R., &amp; Pauly, D.
 (2013). Using global catch data for inferences on the world’s marine
 fisheries. Fish and Fisheries, 14(3), 293–311. <a href="https://doi.org/10.1111/j.1467-2979.2012.00469.x" class="external-link uri">https://doi.org/10.1111/j.1467-2979.2012.00469.x</a>
 </td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">Lin, H. (2026). faofishingreport: Analyse and report
-FAO Global Capture Production statistics. R package version 0.6.0
+FAO Global Capture Production statistics. R package version 0.7.0
 [Computer software]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>
 </td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Mann, H. B. (1945). Nonparametric tests against trend.
 Econometrica, 13(3), 245–259. <a href="https://doi.org/10.2307/1907187" class="external-link uri">https://doi.org/10.2307/1907187</a>
 </td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">R Core Team. (2026). R: A language and environment for
 statistical computing [Computer software]. R Foundation for Statistical
 Computing. <a href="https://www.R-project.org/" class="external-link uri">https://www.R-project.org/</a>
+</td>
+</tr>
+<tr class="odd">
+<td align="left">Yue, S., &amp; Wang, C. Y. (2004). The Mann-Kendall
+test modified by effective sample size to detect trend in serially
+correlated hydrological series. Water Resources Management, 18(3),
+201–218. <a href="https://doi.org/10.1023/B:WARM.0000043140.61082.60" class="external-link uri">https://doi.org/10.1023/B:WARM.0000043140.61082.60</a>
 </td>
 </tr>
 <tr class="even">
@@ -1795,7 +1828,7 @@ guide and the FAO data</td>
 <td align="right">6.7</td>
 <td align="left">2021</td>
 <td align="right">81.0</td>
-<td align="left">up</td>
+<td align="left">none</td>
 </tr>
 <tr class="even">
 <td align="left">Ghana</td>
@@ -1804,7 +1837,7 @@ guide and the FAO data</td>
 <td align="right">6.5</td>
 <td align="left">1999</td>
 <td align="right">98.1</td>
-<td align="left">up</td>
+<td align="left">none</td>
 </tr>
 <tr class="odd">
 <td align="left">Sierra Leone</td>
@@ -1813,7 +1846,7 @@ guide and the FAO data</td>
 <td align="right">4.0</td>
 <td align="left">2022</td>
 <td align="right">97.1</td>
-<td align="left">up</td>
+<td align="left">none</td>
 </tr>
 <tr class="even">
 <td align="left">Cameroon</td>
@@ -1840,7 +1873,7 @@ guide and the FAO data</td>
 <td align="right">2.5</td>
 <td align="left">2019</td>
 <td align="right">79.9</td>
-<td align="left">up</td>
+<td align="left">none</td>
 </tr>
 </tbody>
 </table>
@@ -1916,13 +1949,13 @@ with the columns <code>key</code>, <code>en</code> and
 <code class="sourceCode R"><span><span class="va">texts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"report_text.csv"</span>, package <span class="op">=</span> <span class="st">"faofishingreport"</span><span class="op">)</span>,</span>
 <span>                  fileEncoding <span class="op">=</span> <span class="st">"UTF-8"</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">texts</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 269</span></span>
+<span><span class="co">#&gt; [1] 298</span></span>
 <span><span class="fu">show_table</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">texts</span><span class="op">[</span><span class="va">texts</span><span class="op">$</span><span class="va">key</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h_status"</span>, <span class="st">"status_p2"</span>, <span class="st">"concl_status"</span><span class="op">)</span>, <span class="op">]</span>, row.names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="2%">
-<col width="55%">
-<col width="41%">
+<col width="56%">
+<col width="40%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">key</th>
@@ -1941,7 +1974,7 @@ with the columns <code>key</code>, <code>en</code> and
 catch may also result from management measures, markets or changes in
 reporting {cite:kleisner2013}, so the results show the general state of
 exploitation and do not replace stock assessments.</td>
-<td align="left">需要指出的是，资源开发状态图仅基于渔获量数据，渔获量的下降也可能源于管理措施、市场需求或统计方式的变化{cite:kleisner2013}，其结果仅反映资源开发的大致状况，不能替代基于资源评估模型的结论。</td>
+<td align="left">资源开发状态图仅基于渔获量数据，渔获量的下降也可能源于管理措施、市场需求或统计方式的变化{cite:kleisner2013}，其结果仅反映资源开发的大致状况，不能替代基于资源评估模型的结论。</td>
 </tr>
 <tr class="odd">
 <td align="left">concl_status</td>
@@ -2152,7 +2185,7 @@ London: Charles Griffin.</p>
 global catch data for inferences on the world’s marine fisheries.
 <em>Fish and Fisheries</em> 14(3): 293–311. <a href="https://doi.org/10.1111/j.1467-2979.2012.00469.x" class="external-link">doi:10.1111/j.1467-2979.2012.00469.x</a></p>
 <p>Lin, H. (2026). faofishingreport: Analyse and report FAO Global
-Capture Production statistics. R package version 0.6.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
+Capture Production statistics. R package version 0.7.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
 <p>Mann, H.B. (1945). Nonparametric tests against trend.
 <em>Econometrica</em> 13(3): 245–259. <a href="https://doi.org/10.2307/1907187" class="external-link">doi:10.2307/1907187</a></p>
 <p>R Core Team (2026). R: A language and environment for statistical

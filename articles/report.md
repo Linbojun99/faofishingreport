@@ -34,7 +34,7 @@ Chinese reports). Check the generated text before you use it.
 
 report <- fao_report(34, file = "FAO34_report_en.docx", lang = "en")
 report
-#> FAO report: /tmp/RtmplhORJj/faofishingreport_site_1bb6333d4f500/FAO34_report_en.docx
+#> FAO report: /tmp/RtmpWjKkxU/faofishingreport_site_1bbd662010bd2/FAO34_report_en.docx
 #> Sections: total, species, countries, groups, status, quality, diversity, fleets
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -66,14 +66,14 @@ show_table(report$main_species, digits = 1)
 | species | species_en | scientific_name | mean_catch_t | share_pct | peak_year | pct_of_peak | trend_10_years |
 |:---|:---|:---|---:|---:|:---|---:|:---|
 | European pilchard(=Sardine) | European pilchard(=Sardine) | Sardina pilchardus | 1,041,854.9 | 20.4 | 2018 | 52.6 | none |
-| Atlantic chub mackerel | Atlantic chub mackerel | Scomber colias | 414,307.8 | 8.1 | 2019 | 96.6 | up |
+| Atlantic chub mackerel | Atlantic chub mackerel | Scomber colias | 414,307.8 | 8.1 | 2019 | 96.6 | none |
 | Bonga shad | Bonga shad | Ethmalosa fimbriata | 348,662.7 | 6.8 | 2017 | 87.1 | none |
 | Jack and horse mackerels nei | Jack and horse mackerels nei | Trachurus spp. | 263,295.6 | 5.1 | 2010 | 58.7 | none |
-| Sardinellas nei | Sardinellas nei | Sardinella spp. | 246,900.5 | 4.8 | 2018 | 32.8 | down |
+| Sardinellas nei | Sardinellas nei | Sardinella spp. | 246,900.5 | 4.8 | 2018 | 32.8 | none |
 | Marine fishes nei | Marine fishes nei | Actinopterygii | 243,873.7 | 4.8 | 1995 | 60.5 | none |
 | Madeiran sardinella | Madeiran sardinella | Sardinella maderensis | 243,476.6 | 4.8 | 2021 | 73.4 | none |
 | Skipjack tuna | Skipjack tuna | Katsuwonus pelamis | 195,951.7 | 3.8 | 2018 | 69.2 | none |
-| Round sardinella | Round sardinella | Sardinella aurita | 127,328.2 | 2.5 | 1991 | 34.9 | down |
+| Round sardinella | Round sardinella | Sardinella aurita | 127,328.2 | 2.5 | 1991 | 34.9 | none |
 | European anchovy | European anchovy | Engraulis encrasicolus | 124,334.4 | 2.4 | 1990 | 48.9 | up |
 
 ## 📑 What the report contains
@@ -143,7 +143,7 @@ table(word$style_name)
 #>      FAO Cover Title           FAO Figure        FAO Heading 1 
 #>                    1                   14                    4 
 #>        FAO Heading 2             FAO Note        FAO Reference 
-#>                   11                    3                   11 
+#>                   11                    3                   14 
 #>    FAO Table Caption       FAO Table Text            FAO Title 
 #>                    4                    4                    2
 ```
@@ -186,7 +186,7 @@ show_table(data.frame(abstract))
 
 | abstract |
 |:---|
-| FAO Major Fishing Area 34 (Atlantic, Eastern Central) is one of the important marine fishing areas of the world. Using the FAO Global Capture Production statistics for 1950–2024 (release 2026.1.0), this report analyses the catch trends, the main species, the main fishing countries, the composition of the catch, the status of the stocks, the quality of the data, the diversity of the catch and the catch of coastal and distant-water fleets, with breakpoint analysis, Mann-Kendall trend tests, stock status plots and diversity and concentration indices. In 2024, the catch in the area was 5.10 million t, 6.3% of the world’s marine capture production. The catch peaked in 2018 at 5.52 million t, and the catch of 2024 was 92.4% of the peak. Breakpoints divide the catch series into 4 stages (1950–1968, 1969–1987, 1988–2009 and 2010–2024). In the last five years, European pilchard(=Sardine) was the main species item, with 20.4% of the catch. Morocco was the main fishing country, with 27.7% of the catch of the last five years. In 2024, 36.1% of the stocks were over-exploited or collapsed. Monitoring and assessment of the main stocks, and the reporting of catch at species level, should be strengthened. |
+| Using the FAO Global Capture Production statistics for 1950–2024 (release 2026.1.0), this report analyses, for FAO Major Fishing Area 34 (Atlantic, Eastern Central), the catch trends, the main species, the main fishing countries, the composition of the catch, the status of the stocks, the quality of the data, the diversity of the catch and the catch of coastal and distant-water fleets, with breakpoint analysis, Mann-Kendall trend tests, stock status plots and diversity and concentration indices. In 2024, the catch in the area was 5.10 million t, 6.3% of the world’s marine capture production. The catch peaked in 2018 at 5.52 million t, and the catch of 2024 was 92.4% of the peak. Breakpoints divide the catch series into 4 stages (1950–1968, 1969–1987, 1988–2009 and 2010–2024). In the last five years, European pilchard(=Sardine) was the main species item, with 20.4% of the catch. Morocco was the main fishing country, with 27.7% of the catch of the last five years. In 2024, 39.7% of the stocks were over-exploited or collapsed. |
 
 The captions of the figures and tables, numbered by report:
 
@@ -201,12 +201,12 @@ show_table(data.frame(style = captions$style_name, caption = captions$text), n =
 | FAO Caption | Figure 1-1. Catch in FAO Major Fishing Area 34 (Atlantic, Eastern Central) and its breakpoints, 1950–2024 |
 | FAO Caption | Figure 1-2. Share of FAO Major Fishing Area 34 (Atlantic, Eastern Central) in the world’s marine capture production |
 | FAO Table Caption | Table 1-1. Main species items in FAO Major Fishing Area 34 (Atlantic, Eastern Central), 2020–2024 |
-| FAO Caption | Figure 1-3. Catch of the main species items in FAO Major Fishing Area 34 (Atlantic, Eastern Central) |
-| FAO Caption | Figure 1-4. Catch of the main species items in FAO Major Fishing Area 34 (Atlantic, Eastern Central) and their breakpoints |
+| FAO Caption | Figure 1-3. Catch of the main species items of the last five years in FAO Major Fishing Area 34 (Atlantic, Eastern Central) |
+| FAO Caption | Figure 1-4. Catch of the main species items of the last five years in FAO Major Fishing Area 34 (Atlantic, Eastern Central) and their breakpoints |
 | FAO Table Caption | Table 1-2. Main fishing countries in FAO Major Fishing Area 34 (Atlantic, Eastern Central), 2020–2024 |
-| FAO Caption | Figure 1-5. Catch of the main fishing countries in FAO Major Fishing Area 34 (Atlantic, Eastern Central) |
+| FAO Caption | Figure 1-5. Catch of the main fishing countries of the last five years in FAO Major Fishing Area 34 (Atlantic, Eastern Central) |
 | FAO Caption | Figure 1-6. Total catch of each country in FAO Major Fishing Area 34 (Atlantic, Eastern Central) |
-| FAO Caption | Figure 1-7. Catch of the main fishing countries in FAO Major Fishing Area 34 (Atlantic, Eastern Central) and their breakpoints |
+| FAO Caption | Figure 1-7. Catch of the main fishing countries of the last five years in FAO Major Fishing Area 34 (Atlantic, Eastern Central) and their breakpoints |
 | FAO Caption | Figure 1-8. Catch in FAO Major Fishing Area 34 (Atlantic, Eastern Central) by ISSCAAP species group |
 | FAO Caption | Figure 1-9. Stock status plot of FAO Major Fishing Area 34 (Atlantic, Eastern Central) (share of stocks) |
 | FAO Caption | Figure 1-10. Stock status plot of FAO Major Fishing Area 34 (Atlantic, Eastern Central) (share of catch) |
@@ -240,15 +240,18 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 | reference |
 |:---|
 | Bai, J., & Perron, P. (2003). Computation and analysis of multiple structural change models. Journal of Applied Econometrics, 18(1), 1–22. <https://doi.org/10.1002/jae.659> |
+| Benjamini, Y., & Hochberg, Y. (1995). Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal Statistical Society: Series B (Methodological), 57(1), 289–300. <https://doi.org/10.1111/j.2517-6161.1995.tb02031.x> |
 | FAO. (2026a). Fishery and Aquaculture Statistics – Yearbook 2024. <https://doi.org/10.4060/ce1217en> |
 | FAO. (2026b). FishStat: Global capture production 1950–2024 (Release 2026.1.0) \[Data set\]. <https://www.fao.org/fishery/static/Data/Capture_2026.1.0.zip> |
+| Garibaldi, L. (2012). The FAO global capture production database: a six-decade effort to catch the trend. Marine Policy, 36(3), 760–768. <https://doi.org/10.1016/j.marpol.2011.10.024> |
 | Kendall, M. G. (1975). Rank correlation methods (4th ed.). Charles Griffin. |
 | Kleisner, K., Zeller, D., Froese, R., & Pauly, D. (2013). Using global catch data for inferences on the world’s marine fisheries. Fish and Fisheries, 14(3), 293–311. <https://doi.org/10.1111/j.1467-2979.2012.00469.x> |
-| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.6.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
+| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.7.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
 | Mann, H. B. (1945). Nonparametric tests against trend. Econometrica, 13(3), 245–259. <https://doi.org/10.2307/1907187> |
 | R Core Team. (2026). R: A language and environment for statistical computing \[Computer software\]. R Foundation for Statistical Computing. <https://www.R-project.org/> |
 | Rhoades, S. A. (1993). The Herfindahl-Hirschman index. Federal Reserve Bulletin, 79(3), 188–189. |
 | Shannon, C. E. (1948). A mathematical theory of communication. Bell System Technical Journal, 27(3), 379–423. <https://doi.org/10.1002/j.1538-7305.1948.tb01338.x> |
+| Yue, S., & Wang, C. Y. (2004). The Mann-Kendall test modified by effective sample size to detect trend in serially correlated hydrological series. Water Resources Management, 18(3), 201–218. <https://doi.org/10.1023/B:WARM.0000043140.61082.60> |
 | Zeileis, A., Kleiber, C., Krämer, W., & Hornik, K. (2003). Testing and dating of structural changes in practice. Computational Statistics & Data Analysis, 44(1-2), 109–123. <https://doi.org/10.1016/S0167-9473(03)00030-6> |
 
 ## 🧾 Arguments
@@ -340,7 +343,7 @@ and stock status plots with smoothed catches:
 short <- fao_report(34, file = "FAO34_short.docx", lang = "en", quality = FALSE, diversity = FALSE,
                     fleets = FALSE, pelagic = TRUE, status_smooth = TRUE)
 short
-#> FAO report: /tmp/RtmplhORJj/faofishingreport_site_1bb6333d4f500/FAO34_short.docx
+#> FAO report: /tmp/RtmpWjKkxU/faofishingreport_site_1bbd662010bd2/FAO34_short.docx
 #> Sections: total, species, countries, groups, status, pelagic
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -375,6 +378,7 @@ show_table(data.frame(reference = short_word$text[short_word$style_name == "FAO 
 | reference |
 |:---|
 | Bai, J., & Perron, P. (2003). Computation and analysis of multiple structural change models. Journal of Applied Econometrics, 18(1), 1–22. <https://doi.org/10.1002/jae.659> |
+| Benjamini, Y., & Hochberg, Y. (1995). Controlling the false discovery rate: a practical and powerful approach to multiple testing. Journal of the Royal Statistical Society: Series B (Methodological), 57(1), 289–300. <https://doi.org/10.1111/j.2517-6161.1995.tb02031.x> |
 | Caddy, J. F. (1993). Toward a comparative evaluation of human impacts on fishery ecosystems of enclosed and semi‐enclosed seas. Reviews in Fisheries Science, 1(1), 57–95. <https://doi.org/10.1080/10641269309388535> |
 | de Leiva Moreno, J. I., Agostini, V. N., Caddy, J. F., & Carocci, F. (2000). Is the pelagic-demersal ratio from fishery landings a useful proxy for nutrient availability? A preliminary data exploration for the semi-enclosed seas around Europe. ICES Journal of Marine Science, 57(4), 1091–1102. <https://doi.org/10.1006/jmsc.2000.0705> |
 | FAO. (2026a). Fishery and Aquaculture Statistics – Yearbook 2024. <https://doi.org/10.4060/ce1217en> |
@@ -382,9 +386,10 @@ show_table(data.frame(reference = short_word$text[short_word$style_name == "FAO 
 | Hondorp, D. W., Breitburg, D. L., & Davias, L. A. (2010). Eutrophication and Fisheries: Separating the Effects of Nitrogen Loads and Hypoxia on the Pelagic-to-Demersal Ratio and other Measures of Landings Composition. Marine and Coastal Fisheries, 2(1), 339–361. <https://doi.org/10.1577/C09-020.1> |
 | Kendall, M. G. (1975). Rank correlation methods (4th ed.). Charles Griffin. |
 | Kleisner, K., Zeller, D., Froese, R., & Pauly, D. (2013). Using global catch data for inferences on the world’s marine fisheries. Fish and Fisheries, 14(3), 293–311. <https://doi.org/10.1111/j.1467-2979.2012.00469.x> |
-| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.6.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
+| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.7.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
 | Mann, H. B. (1945). Nonparametric tests against trend. Econometrica, 13(3), 245–259. <https://doi.org/10.2307/1907187> |
 | R Core Team. (2026). R: A language and environment for statistical computing \[Computer software\]. R Foundation for Statistical Computing. <https://www.R-project.org/> |
+| Yue, S., & Wang, C. Y. (2004). The Mann-Kendall test modified by effective sample size to detect trend in serially correlated hydrological series. Water Resources Management, 18(3), 201–218. <https://doi.org/10.1023/B:WARM.0000043140.61082.60> |
 | Zeileis, A., Kleiber, C., Krämer, W., & Hornik, K. (2003). Testing and dating of structural changes in practice. Computational Statistics & Data Analysis, 44(1-2), 109–123. <https://doi.org/10.1016/S0167-9473(03)00030-6> |
 
 The methods paragraphs describe the default settings of each analysis,
@@ -705,12 +710,12 @@ show_table(report$main_countries, digits = 1)
 | Mauritania | Mauritania | 674,299.1 | 13.2 | 2018 | 65.4 | none |
 | Senegal | Senegal | 464,480.7 | 9.1 | 2017 | 93.6 | none |
 | Nigeria | Nigeria | 441,470.9 | 8.6 | 2017 | 94.4 | none |
-| Guinea | Guinea | 343,164.0 | 6.7 | 2021 | 81.0 | up |
-| Ghana | Ghana | 333,652.8 | 6.5 | 1999 | 98.1 | up |
-| Sierra Leone | Sierra Leone | 205,312.0 | 4.0 | 2022 | 97.1 | up |
+| Guinea | Guinea | 343,164.0 | 6.7 | 2021 | 81.0 | none |
+| Ghana | Ghana | 333,652.8 | 6.5 | 1999 | 98.1 | none |
+| Sierra Leone | Sierra Leone | 205,312.0 | 4.0 | 2022 | 97.1 | none |
 | Cameroon | Cameroon | 198,094.6 | 3.9 | 2019 | 78.8 | none |
 | Belize | Belize | 190,814.7 | 3.7 | 2010 | 51.1 | none |
-| Georgia | Georgia | 127,022.0 | 2.5 | 2019 | 79.9 | up |
+| Georgia | Georgia | 127,022.0 | 2.5 | 2019 | 79.9 | none |
 
 ``` r
 
@@ -740,14 +745,14 @@ one row per piece of text with the columns `key`, `en` and `zh`:
 texts <- read.csv(system.file("extdata", "report_text.csv", package = "faofishingreport"),
                   fileEncoding = "UTF-8", colClasses = "character")
 nrow(texts)
-#> [1] 269
+#> [1] 298
 show_table(data.frame(texts[texts$key %in% c("h_status", "status_p2", "concl_status"), ], row.names = NULL))
 ```
 
 | key | en | zh |
 |:---|:---|:---|
 | h_status | Stock status | 资源开发状态 |
-| status_p2 | Stock status plots rely on catch data only: a falling catch may also result from management measures, markets or changes in reporting {cite:kleisner2013}, so the results show the general state of exploitation and do not replace stock assessments. | 需要指出的是，资源开发状态图仅基于渔获量数据，渔获量的下降也可能源于管理措施、市场需求或统计方式的变化{cite:kleisner2013}，其结果仅反映资源开发的大致状况，不能替代基于资源评估模型的结论。 |
+| status_p2 | Stock status plots rely on catch data only: a falling catch may also result from management measures, markets or changes in reporting {cite:kleisner2013}, so the results show the general state of exploitation and do not replace stock assessments. | 资源开发状态图仅基于渔获量数据，渔获量的下降也可能源于管理措施、市场需求或统计方式的变化{cite:kleisner2013}，其结果仅反映资源开发的大致状况，不能替代基于资源评估模型的结论。 |
 | concl_status | In {last_year}, {oc_pct}% of the stocks were over-exploited or collapsed. | {last_year} 年处于过度开发和崩溃状态的资源占 {oc_pct}%。 |
 
 - `{last_year}`, `{oc_pct}`, … are placeholders, filled in with the
@@ -856,7 +861,7 @@ Fisheries* 14(3): 293–311.
 [doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
 
 Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture
-Production statistics. R package version 0.6.0.
+Production statistics. R package version 0.7.0.
 <https://linbojun99.github.io/faofishingreport/>
 
 Mann, H.B. (1945). Nonparametric tests against trend. *Econometrica*

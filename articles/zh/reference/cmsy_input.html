@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -168,7 +168,7 @@ and country.
 </dd>
 <dt><code>priors</code></dt>
 <dd>
-可选的数据框，给出用于替代默认值的先验和设置，每个种群或物种一行。用<code>Stock</code>、<code>alpha3</code>、<code>species_en</code>或<code>species</code>列识别各行（<code>species</code>：任何名称，与<code>species</code>参数相同），并可包含ID文件的以下任意列：<code>Resilience</code>、<code>r.low</code>、<code>r.hi</code>、<code>stb.low</code>、<code>stb.hi</code>、<code>int.yr</code>、<code>intb.low</code>、<code>intb.hi</code>、<code>endb.low</code>、<code>endb.hi</code>、<code>StartYear</code>、<code>EndYear</code>和<code>Comment</code>。在这里给出的值，其来源记为”user”（用户）。
+可选的数据框，给出用于替代默认值的先验和设置，每个种群或物种一行。用<code>Stock</code>、<code>alpha3</code>、<code>species_en</code>或<code>species</code>列识别各行（<code>species</code>：任何名称，与<code>species</code>参数相同），并可包含ID文件的以下任意列：<code>Resilience</code>、<code>r.low</code>、<code>r.hi</code>、<code>stb.low</code>、<code>stb.hi</code>、<code>int.yr</code>、<code>intb.low</code>、<code>intb.hi</code>、<code>endb.low</code>、<code>endb.hi</code>、<code>StartYear</code>、<code>EndYear</code>和<code>Comment</code>。在这里给出的值，其来源记为”user”（用户）。只给出<code>Resilience</code>而没有给出<code>r.low</code>和<code>r.hi</code>时，FishBase或SeaLifeBase中的r范围由该恢复力对应的范围替代（只要同时给出<code>r.low</code>和<code>r.hi</code>，CMSY++就使用这两个值）。每一行适用于其最具体的标识所对应的种群：有<code>Stock</code>时只适用于该种群，即使该行也给出了物种；否则适用于该物种的所有种群。物种的行先于单个种群的行应用，因此为某个种群给出的值优先。
 <details class="fao-en"><summary>
 English
 </summary>
@@ -181,7 +181,15 @@ one row per stock or species. It identifies the rows by a
 <code>stb.low</code>, <code>stb.hi</code>, <code>int.yr</code>,
 <code>intb.low</code>, <code>intb.hi</code>, <code>endb.low</code>,
 <code>endb.hi</code>, <code>StartYear</code>, <code>EndYear</code> and
-<code>Comment</code>. Values given here are recorded as “user”.
+<code>Comment</code>. Values given here are recorded as “user”. A
+<code>Resilience</code> given without <code>r.low</code> and
+<code>r.hi</code> replaces the r range from FishBase or SeaLifeBase with
+the range of that resilience (CMSY++ uses <code>r.low</code> and
+<code>r.hi</code> whenever both are given). A row applies to the stocks
+of its most specific identifier: only its stock when it has a
+<code>Stock</code>, even if it also names the species; else all stocks
+of its species. Rows for a species are applied before rows for one
+stock, so the values given for a stock take precedence.
 </details>
 </dd>
 <dt><code>default_resilience</code></dt>

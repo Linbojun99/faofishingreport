@@ -15,7 +15,7 @@ and the pairwise correlations of the series."><meta property="og:image" content=
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -145,7 +145,10 @@ country) of the data.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Invisibly, a list with <code>summary</code> (synchrony, CVs and portfolio effect), <code>series</code> (mean,
-standard deviation, CV and share of the total variability of each series), <code>windows</code>
+standard deviation and CV of each series, the share of its standard deviation in the
+sum of the standard deviations, <code>sd_share_pct</code>, and its contribution to the variance
+of the total catch, <code>variance_contribution_pct</code>: its covariance with the total divided
+by the variance of the total, negative for a series that damps the total), <code>windows</code>
 (the measures in each moving window) and <code>correlation</code> (pairwise correlations of the series).</p>
     </div>
     <div class="section level2">

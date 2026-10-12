@@ -106,7 +106,7 @@ employment_summary(
 
 以不可见方式返回一个由两个数据框组成的列表：
 
-- **yearly**：每个国家（或全世界）每年一行：水产养殖、海洋沿海捕捞、深海捕捞和未细分海洋捕捞的人数，海洋捕捞合计、内陆捕捞、未说明工作领域的人数和总人数；女性、男性和性别未知的人数；全职、兼职、临时和工作时间未知的人数；已知者中女性和各类工作时间所占的比例，性别或工作时间未知者所占的比例，以及估计值所占的比例；
+- **yearly**：每个国家（或全世界）每年一行：水产养殖、海洋沿海捕捞、深海捕捞和未细分海洋捕捞的人数，海洋捕捞合计、内陆捕捞、未说明工作领域的人数和总人数；女性、男性和性别未知的人数；全职、兼职、临时和工作时间未知的人数；已知者中女性和各类工作时间所占的比例，性别或工作时间未知者所占的比例，以及估计值所占的比例；在报告的第一年与最后一年之间，没有任何记录（未报告）的年份为NA；
 - **notes**：FAO对这些国家的注释。
 
 图表保存在`figures/png/summary/`：`<label>_employment.png`（按工作领域分列的人数，堆积图）和`<label>_employment_composition.png`（女性和全职从业者的比例，以及性别未知和工作时间未知的比例）。表格`<label>_employment.csv`保存在`tables/`。
@@ -121,7 +121,8 @@ Invisibly, a list of two data frames:
   women, men and sex unknown; full time, part time, occasional and
   working time unknown; the share of women and of each working time
   among those known, the share with sex or working time unknown, and the
-  share in estimated values;
+  share in estimated values; NA in the years without any record (not
+  reported), between the first and last years reported;
 - **notes**: FAO’s notes on the countries.
 
 Charts are saved in `figures/png/summary/`: `<label>_employment.png`

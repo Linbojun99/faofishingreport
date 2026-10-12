@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -121,12 +121,12 @@ part of CMSY++ it affects.</p>
 <dl>
 <dt><code>settings</code></dt>
 <dd>
-可选的命名列表，给出更改后的设置，例如<code>list(sigmaR = 0.2)</code>，用于将它们与默认值并列显示并进行检查。
+可选的命名列表，给出更改后的设置，例如<code>list(CV.C = 0.2)</code>，用于将它们与默认值并列显示并进行检查。
 <details class="fao-en"><summary>
 English
 </summary>
 Optional named list of changed settings,
-e.g. <code>list(sigmaR = 0.2)</code>, to show them next to the defaults
+e.g. <code>list(CV.C = 0.2)</code>, to show them next to the defaults
 and check them.
 </details>
 </dd>
@@ -157,10 +157,19 @@ English
 <div class="section level2">
 <h2 id="详细说明">详细说明<a class="anchor" aria-label="anchor" href="#%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E"></a>
 </h2>
+<p>代码中的两项设置<code>sigmaR</code>和<code>ni</code>在<code>CMSY++16.R</code>中有赋值，但代码中没有任何地方使用它们：模型的过程误差在JAGS中由先验<code>itau2 ~ dgamma(4, 0.01)</code>估计，因此修改<code>sigmaR</code>不会改变任何结果。它们标为”not
+used”（不使用），不能修改，以免把一次运行误当作过程误差的敏感性分析。</p>
 <p>标为”BSM”的设置只在给出资源丰度数据（CPUE或生物量）时才起作用；FAO数据没有资源丰度数据，因此仅用FAO数据时，只有标为”all”的设置会改变结果。CMSY++的图表和输出开关（<code>mgraphs</code>、<code>kobe.plot</code>、<code>pp.plot</code>、<code>retros</code>、<code>save.plots</code>、<code>write.output</code>等）由<code><a href="../../../reference/cmsy_run.html">cmsy_run()</a></code>的<code>plots</code>参数设定，文件名则由运行过程本身设定。</p>
 <details class="fao-en"><summary>
 English
-</summary><p>Settings marked “BSM” only matter when abundance data (CPUE or
+</summary><p>Two settings of the code, <code>sigmaR</code> and <code>ni</code>,
+are set in <code>CMSY++16.R</code> but used nowhere in it: the process
+error of the model is estimated in JAGS with the prior
+<code>itau2 ~ dgamma(4, 0.01)</code>, so changing <code>sigmaR</code>
+would not change any result. They are listed as “not used” and cannot be
+changed, so that a run is not taken for a sensitivity analysis of the
+process error.</p>
+<p>Settings marked “BSM” only matter when abundance data (CPUE or
 biomass) are given; FAO data have none, so with FAO data alone only the
 settings marked “all” change the results. The chart and output switches
 of CMSY++ (<code>mgraphs</code>, <code>kobe.plot</code>,
@@ -182,8 +191,8 @@ for CMSY++. GEOMAR, Germany, 17 pp. <a href="https://oceanrep.geomar.de/id/epri
 <code class="sourceCode R"><span><span class="co"># All settings with their CMSY++ defaults</span></span>
 <span><span class="fu"><a href="../../../reference/cmsy_defaults.html">cmsy_defaults</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Check changed settings before a run: here a larger process error and longer chains</span></span>
-<span><span class="fu"><a href="../../../reference/cmsy_defaults.html">cmsy_defaults</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sigmaR <span class="op">=</span> <span class="fl">0.2</span>, n.iter <span class="op">=</span> <span class="fl">100000</span>, n.burnin <span class="op">=</span> <span class="fl">50000</span><span class="op">)</span>, lang <span class="op">=</span> <span class="st">"zh"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Check changed settings before a run: here a larger catch error and longer chains</span></span>
+<span><span class="fu"><a href="../../../reference/cmsy_defaults.html">cmsy_defaults</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CV.C <span class="op">=</span> <span class="fl">0.2</span>, n.iter <span class="op">=</span> <span class="fl">100000</span>, n.burnin <span class="op">=</span> <span class="fl">50000</span><span class="op">)</span>, lang <span class="op">=</span> <span class="st">"zh"</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

@@ -237,10 +237,10 @@ temperature (the coverage). Years in which this share is below
 `min_coverage` are faded and left out of the trends. Trends are computed
 over all years and over the years from `trend_from`: the slope of a
 linear regression (°C per decade), a Mann-Kendall test (Mann 1945;
-Kendall 1975) as in
-[`peak_trend()`](https://linbojun99.github.io/faofishingreport/reference/peak_trend.md),
-and the Pearson correlation of MTC and SST, for the series and for their
-year-to-year differences.
+Kendall 1975) corrected for autocorrelation as in
+[`peak_trend()`](https://linbojun99.github.io/faofishingreport/reference/peak_trend.md)
+(Yue and Wang 2004), and the Pearson correlation of MTC and SST, for the
+series and for their year-to-year differences.
 
 | Argument | Meaning | Default |
 |----|----|----|
@@ -343,12 +343,13 @@ preferred temperatures have not all been checked.
   table) before attributing it to warming.
 - **Statistics.** Trends are linear slopes and Mann-Kendall tests; the
   comparison with SST uses correlations of the series and of their
-  year-to-year differences. Both series are autocorrelated, so the
-  p-values are too small (Yue et al. 2002; Pyper and Peterman 1998), and
-  the correlation of differences can miss a relation that acts only over
-  decades. In the Adriatic Sea, the relation of MTC with SST was no
-  longer significant once autocorrelation was accounted for (Kamberi et
-  al. 2025).
+  year-to-year differences. Both series are autocorrelated: the
+  Mann-Kendall test is corrected for it (Yue and Wang 2004), but the
+  p-values of the slopes and correlations are too small (Yue et
+  al. 2002; Pyper and Peterman 1998), and the correlation of differences
+  can miss a relation that acts only over decades. In the Adriatic Sea,
+  the relation of MTC with SST was no longer significant once
+  autocorrelation was accounted for (Kamberi et al. 2025).
 
 ### Files
 
@@ -511,6 +512,11 @@ and survey data. *Frontiers in Marine Science* 2: 23.
 WoRMS Editorial Board. World Register of Marine Species. Flanders Marine
 Institute (VLIZ). <https://www.marinespecies.org>,
 [doi:10.14284/170](https://doi.org/10.14284/170)
+
+Yue, S. and Wang, C.Y. (2004). The Mann-Kendall test modified by
+effective sample size to detect trend in serially correlated
+hydrological series. *Water Resources Management* 18: 201–218.
+[doi:10.1023/B:WARM.0000043140.61082.60](https://doi.org/10.1023/B:WARM.0000043140.61082.60)
 
 Yue, S., Pilon, P., Phinney, B. and Cavadias, G. (2002). The influence
 of autocorrelation on the ability to detect trend in hydrological

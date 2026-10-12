@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -250,14 +250,18 @@ the country) of the data.
 <div class="section level2">
 <h2 id="返回值">返回值<a class="anchor" aria-label="anchor" href="#%E8%BF%94%E5%9B%9E%E5%80%BC"></a>
 </h2>
-<p>以不可见方式返回一个列表，包括<code>summary</code>（同步性、各项CV和组合效应）、<code>series</code>（每条序列的平均值、标准差、CV及其占总变异性的比例）、<code>windows</code>（每个滑动窗口中的各项指标）和<code>correlation</code>（序列之间的两两相关系数）。</p>
+<p>以不可见方式返回一个列表，包括<code>summary</code>（同步性、各项CV和组合效应）、<code>series</code>（每条序列的平均值、标准差和CV，其标准差占各序列标准差之和的比例<code>sd_share_pct</code>，以及其对总渔获量方差的贡献<code>variance_contribution_pct</code>：即该序列与总量的协方差除以总量的方差，缓冲总量波动的序列为负值）、<code>windows</code>（每个滑动窗口中的各项指标）和<code>correlation</code>（序列之间的两两相关系数）。</p>
 <details class="fao-en"><summary>
 English
 </summary><p>Invisibly, a list with <code>summary</code> (synchrony, CVs and
-portfolio effect), <code>series</code> (mean, standard deviation, CV and
-share of the total variability of each series), <code>windows</code>
-(the measures in each moving window) and <code>correlation</code>
-(pairwise correlations of the series).</p>
+portfolio effect), <code>series</code> (mean, standard deviation and CV
+of each series, the share of its standard deviation in the sum of the
+standard deviations, <code>sd_share_pct</code>, and its contribution to
+the variance of the total catch, <code>variance_contribution_pct</code>:
+its covariance with the total divided by the variance of the total,
+negative for a series that damps the total), <code>windows</code> (the
+measures in each moving window) and <code>correlation</code> (pairwise
+correlations of the series).</p>
 </details>
 </div>
 <div class="section level2">

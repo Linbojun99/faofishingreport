@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,6 +62,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">fishing_area_species</span><span class="op">(</span></span>
 <span>  <span class="va">area_data</span>,</span>
 <span>  rank_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<span>  rank_years <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  timeseries_analysis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -101,6 +102,12 @@
 
 <dt id="arg-rank-range">rank_range<a class="anchor" aria-label="anchor" href="#arg-rank-range"></a></dt>
 <dd><p>A numeric vector of length 2 specifying the rank range of species to be analyzed.</p></dd>
+
+
+<dt id="arg-rank-years">rank_years<a class="anchor" aria-label="anchor" href="#arg-rank-years"></a></dt>
+<dd><p>The number of recent years whose catch ranks the species items, e.g. 5 for the
+last five years (as in the tables of <code><a href="fao_report.html">fao_report()</a></code>). Default is NULL: the catch of all years.
+The charts show the whole series either way.</p></dd>
 
 
 <dt id="arg-plot">plot<a class="anchor" aria-label="anchor" href="#arg-plot"></a></dt>

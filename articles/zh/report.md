@@ -30,7 +30,7 @@ be completed”）。使用前请核对自动生成的文字。
 
 report <- fao_report(34, file = "FAO34_report_zh.docx", lang = "zh")
 report
-#> FAO report: /tmp/Rtmp6y5rpK/faofishingreport_site_1bdc641b0492b/FAO34_report_zh.docx
+#> FAO report: /tmp/Rtmp5Px3TF/faofishingreport_site_1be39fc084b0/FAO34_report_zh.docx
 #> Sections: total, species, countries, groups, status, quality, diversity, fleets
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -53,14 +53,14 @@ show_table(report$main_species, digits = 1)
 | species | species_en | scientific_name | mean_catch_t | share_pct | peak_year | pct_of_peak | trend_10_years |
 |:---|:---|:---|---:|---:|:---|---:|:---|
 | 沙丁鱼 | European pilchard(=Sardine) | Sardina pilchardus | 1,041,854.9 | 20.4 | 2018 | 52.6 | none |
-| 科利鲭 | Atlantic chub mackerel | Scomber colias | 414,307.8 | 8.1 | 2019 | 96.6 | up |
+| 科利鲭 | Atlantic chub mackerel | Scomber colias | 414,307.8 | 8.1 | 2019 | 96.6 | none |
 | 筛鲱 | Bonga shad | Ethmalosa fimbriata | 348,662.7 | 6.8 | 2017 | 87.1 | none |
 | 竹筴鱼属物种 | Jack and horse mackerels nei | Trachurus spp. | 263,295.6 | 5.1 | 2010 | 58.7 | none |
-| 未分类的沙丁鱼 | Sardinellas nei | Sardinella spp. | 246,900.5 | 4.8 | 2018 | 32.8 | down |
+| 未分类的沙丁鱼 | Sardinellas nei | Sardinella spp. | 246,900.5 | 4.8 | 2018 | 32.8 | none |
 | 未分类的海洋鱼类 | Marine fishes nei | Actinopterygii | 243,873.7 | 4.8 | 1995 | 60.5 | none |
 | 短体小沙丁鱼 | Madeiran sardinella | Sardinella maderensis | 243,476.6 | 4.8 | 2021 | 73.4 | none |
 | 鲣 | Skipjack tuna | Katsuwonus pelamis | 195,951.7 | 3.8 | 2018 | 69.2 | none |
-| 金色小沙丁鱼 | Round sardinella | Sardinella aurita | 127,328.2 | 2.5 | 1991 | 34.9 | down |
+| 金色小沙丁鱼 | Round sardinella | Sardinella aurita | 127,328.2 | 2.5 | 1991 | 34.9 | none |
 | 欧洲鳀 | European anchovy | Engraulis encrasicolus | 124,334.4 | 2.4 | 1990 | 48.9 | up |
 
 ## 📑 报告包含哪些内容
@@ -105,7 +105,7 @@ table(word$style_name)
 #>      FAO Cover Title           FAO Figure        FAO Heading 1 
 #>                    1                   14                    4 
 #>        FAO Heading 2             FAO Note        FAO Reference 
-#>                   11                    3                   11 
+#>                   11                    3                   14 
 #>    FAO Table Caption       FAO Table Text            FAO Title 
 #>                    4                    4                    2
 ```
@@ -147,7 +147,7 @@ show_table(data.frame(abstract))
 
 | abstract |
 |:---|
-| FAO 34渔区（中东大西洋）是全球重要的海洋捕捞海域之一。本报告根据联合国粮食及农业组织（FAO）全球捕捞产量统计1950–2024年数据（2026.1.0版），采用突变点检测、Mann-Kendall趋势检验、资源开发状态图和多样性与集中度指数，分析了该海域渔获量的变化、主要渔获种类、主要捕捞国家（地区）、渔获类群组成、资源开发状态、数据质量、渔获多样性和沿岸国与远洋捕捞。结果表明，2024年该海域渔获量为509.9万t，占全球海洋捕捞产量的6.3%；历史最高渔获量出现在2018年（552.0万t），2024年渔获量为峰值的92.4%。渔获量变化可划分为4个阶段（1950–1968年、1969–1987年、1988–2009年和2010–2024年）。近5年沙丁鱼是最主要的渔获种类，占总渔获量的20.4%。摩洛哥是最主要的捕捞国家（地区），占近5年渔获量的27.7%。2024年处于过度开发或崩溃状态的资源占36.1%。建议加强主要渔获种类的资源监测与评估，提高渔获统计的物种分辨率。 |
+| 本报告根据联合国粮食及农业组织（FAO）全球捕捞产量统计1950–2024年数据（2026.1.0版），采用突变点检测、Mann-Kendall趋势检验、资源开发状态图和多样性与集中度指数，分析了FAO 34渔区（中东大西洋）的渔获量变化、主要渔获种类、主要捕捞国家（地区）、渔获类群组成、资源开发状态、数据质量、渔获多样性和沿岸国与远洋捕捞。结果表明，2024年该海域渔获量为509.9万t，占全球海洋捕捞产量的6.3%；历史最高渔获量出现在2018年（552.0万t），2024年渔获量为峰值的92.4%。渔获量变化可划分为4个阶段（1950–1968年、1969–1987年、1988–2009年和2010–2024年）。近5年沙丁鱼是最主要的渔获种类，占总渔获量的20.4%。摩洛哥是最主要的捕捞国家（地区），占近5年渔获量的27.7%。2024年处于过度开发或崩溃状态的资源占39.7%。 |
 
 图表题注，按报告编号：
 
@@ -162,12 +162,12 @@ show_table(data.frame(style = captions$style_name, caption = captions$text), n =
 | FAO Caption | 图1-1 1950–2024年FAO 34渔区（中东大西洋）渔获量变化及突变点 |
 | FAO Caption | 图1-2 FAO 34渔区（中东大西洋）渔获量占全球海洋捕捞产量的比例 |
 | FAO Table Caption | 表1-1 近5年（2020–2024年）FAO 34渔区（中东大西洋）主要渔获种类 |
-| FAO Caption | 图1-3 FAO 34渔区（中东大西洋）主要渔获种类的渔获量变化 |
-| FAO Caption | 图1-4 FAO 34渔区（中东大西洋）主要渔获种类的渔获量变化及突变点 |
+| FAO Caption | 图1-3 FAO 34渔区（中东大西洋）近5年主要渔获种类的历年渔获量 |
+| FAO Caption | 图1-4 FAO 34渔区（中东大西洋）近5年主要渔获种类的历年渔获量及突变点 |
 | FAO Table Caption | 表1-2 近5年（2020–2024年）FAO 34渔区（中东大西洋）主要捕捞国家（地区） |
-| FAO Caption | 图1-5 FAO 34渔区（中东大西洋）主要捕捞国家（地区）的渔获量变化 |
+| FAO Caption | 图1-5 FAO 34渔区（中东大西洋）近5年主要捕捞国家（地区）的历年渔获量 |
 | FAO Caption | 图1-6 各国家和地区在FAO 34渔区（中东大西洋）的累计渔获量 |
-| FAO Caption | 图1-7 FAO 34渔区（中东大西洋）主要捕捞国家（地区）的渔获量变化及突变点 |
+| FAO Caption | 图1-7 FAO 34渔区（中东大西洋）近5年主要捕捞国家（地区）的历年渔获量及突变点 |
 | FAO Caption | 图1-8 FAO 34渔区（中东大西洋）各ISSCAAP类群的渔获量占比 |
 | FAO Caption | 图1-9 FAO 34渔区（中东大西洋）资源开发状态（按资源数量） |
 | FAO Caption | 图1-10 FAO 34渔区（中东大西洋）资源开发状态（按渔获量） |
@@ -206,11 +206,14 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 | \[4\] Zeileis A, Kleiber C, Krämer W, et al. Testing and dating of structural changes in practice\[J\]. Computational Statistics & Data Analysis, 2003, 44(1-2): 109-123. DOI: 10.1016/S0167-9473(03)00030-6. |
 | \[5\] Mann H B. Nonparametric tests against trend\[J\]. Econometrica, 1945, 13(3): 245-259. DOI: 10.2307/1907187. |
 | \[6\] Kendall M G. Rank correlation methods\[M\]. 4th ed. London: Charles Griffin, 1975. |
-| \[7\] Kleisner K, Zeller D, Froese R, et al. Using global catch data for inferences on the world’s marine fisheries\[J\]. Fish and Fisheries, 2013, 14(3): 293-311. DOI: 10.1111/j.1467-2979.2012.00469.x. |
-| \[8\] Shannon C E. A mathematical theory of communication\[J\]. Bell System Technical Journal, 1948, 27(3): 379-423. DOI: 10.1002/j.1538-7305.1948.tb01338.x. |
-| \[9\] Rhoades S A. The Herfindahl-Hirschman index\[J\]. Federal Reserve Bulletin, 1993, 79(3): 188-189. |
-| \[10\] R Core Team. R: A language and environment for statistical computing\[CP/OL\]. Vienna: R Foundation for Statistical Computing, 2026\[2026-10-11\]. <https://www.R-project.org/>. |
-| \[11\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.6.0\[CP/OL\]. 2026\[2026-10-11\]. <https://linbojun99.github.io/faofishingreport/>. |
+| \[7\] Yue S, Wang C Y. The Mann-Kendall test modified by effective sample size to detect trend in serially correlated hydrological series\[J\]. Water Resources Management, 2004, 18(3): 201-218. DOI: 10.1023/B:WARM.0000043140.61082.60. |
+| \[8\] Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing\[J\]. Journal of the Royal Statistical Society: Series B (Methodological), 1995, 57(1): 289-300. DOI: 10.1111/j.2517-6161.1995.tb02031.x. |
+| \[9\] Kleisner K, Zeller D, Froese R, et al. Using global catch data for inferences on the world’s marine fisheries\[J\]. Fish and Fisheries, 2013, 14(3): 293-311. DOI: 10.1111/j.1467-2979.2012.00469.x. |
+| \[10\] Shannon C E. A mathematical theory of communication\[J\]. Bell System Technical Journal, 1948, 27(3): 379-423. DOI: 10.1002/j.1538-7305.1948.tb01338.x. |
+| \[11\] Rhoades S A. The Herfindahl-Hirschman index\[J\]. Federal Reserve Bulletin, 1993, 79(3): 188-189. |
+| \[12\] R Core Team. R: A language and environment for statistical computing\[CP/OL\]. Vienna: R Foundation for Statistical Computing, 2026\[2026-10-12\]. <https://www.R-project.org/>. |
+| \[13\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.7.0\[CP/OL\]. 2026\[2026-10-12\]. <https://linbojun99.github.io/faofishingreport/>. |
+| \[14\] Garibaldi L. The FAO global capture production database: a six-decade effort to catch the trend\[J\]. Marine Policy, 2012, 36(3): 760-768. DOI: 10.1016/j.marpol.2011.10.024. |
 
 ## 🧾 参数
 
@@ -286,7 +289,7 @@ CMSY++资源评估](https://linbojun99.github.io/faofishingreport/articles/zh/cm
 short <- fao_report(34, file = "FAO34_short.docx", lang = "zh", quality = FALSE, diversity = FALSE,
                     fleets = FALSE, pelagic = TRUE, status_smooth = TRUE)
 short
-#> FAO report: /tmp/Rtmp6y5rpK/faofishingreport_site_1bdc641b0492b/FAO34_short.docx
+#> FAO report: /tmp/Rtmp5Px3TF/faofishingreport_site_1be39fc084b0/FAO34_short.docx
 #> Sections: total, species, countries, groups, status, pelagic
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -325,12 +328,14 @@ show_table(data.frame(reference = short_word$text[short_word$style_name == "FAO 
 | \[4\] Zeileis A, Kleiber C, Krämer W, et al. Testing and dating of structural changes in practice\[J\]. Computational Statistics & Data Analysis, 2003, 44(1-2): 109-123. DOI: 10.1016/S0167-9473(03)00030-6. |
 | \[5\] Mann H B. Nonparametric tests against trend\[J\]. Econometrica, 1945, 13(3): 245-259. DOI: 10.2307/1907187. |
 | \[6\] Kendall M G. Rank correlation methods\[M\]. 4th ed. London: Charles Griffin, 1975. |
-| \[7\] Kleisner K, Zeller D, Froese R, et al. Using global catch data for inferences on the world’s marine fisheries\[J\]. Fish and Fisheries, 2013, 14(3): 293-311. DOI: 10.1111/j.1467-2979.2012.00469.x. |
-| \[8\] Caddy J F. Toward a comparative evaluation of human impacts on fishery ecosystems of enclosed and semi‐enclosed seas\[J\]. Reviews in Fisheries Science, 1993, 1(1): 57-95. DOI: 10.1080/10641269309388535. |
-| \[9\] de Leiva Moreno J I, Agostini V N, Caddy J F, et al. Is the pelagic-demersal ratio from fishery landings a useful proxy for nutrient availability? A preliminary data exploration for the semi-enclosed seas around Europe\[J\]. ICES Journal of Marine Science, 2000, 57(4): 1091-1102. DOI: 10.1006/jmsc.2000.0705. |
-| \[10\] R Core Team. R: A language and environment for statistical computing\[CP/OL\]. Vienna: R Foundation for Statistical Computing, 2026\[2026-10-11\]. <https://www.R-project.org/>. |
-| \[11\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.6.0\[CP/OL\]. 2026\[2026-10-11\]. <https://linbojun99.github.io/faofishingreport/>. |
-| \[12\] Hondorp D W, Breitburg D L, Davias L A. Eutrophication and Fisheries: Separating the Effects of Nitrogen Loads and Hypoxia on the Pelagic-to-Demersal Ratio and other Measures of Landings Composition\[J\]. Marine and Coastal Fisheries, 2010, 2(1): 339-361. DOI: 10.1577/C09-020.1. |
+| \[7\] Yue S, Wang C Y. The Mann-Kendall test modified by effective sample size to detect trend in serially correlated hydrological series\[J\]. Water Resources Management, 2004, 18(3): 201-218. DOI: 10.1023/B:WARM.0000043140.61082.60. |
+| \[8\] Benjamini Y, Hochberg Y. Controlling the false discovery rate: a practical and powerful approach to multiple testing\[J\]. Journal of the Royal Statistical Society: Series B (Methodological), 1995, 57(1): 289-300. DOI: 10.1111/j.2517-6161.1995.tb02031.x. |
+| \[9\] Kleisner K, Zeller D, Froese R, et al. Using global catch data for inferences on the world’s marine fisheries\[J\]. Fish and Fisheries, 2013, 14(3): 293-311. DOI: 10.1111/j.1467-2979.2012.00469.x. |
+| \[10\] Caddy J F. Toward a comparative evaluation of human impacts on fishery ecosystems of enclosed and semi‐enclosed seas\[J\]. Reviews in Fisheries Science, 1993, 1(1): 57-95. DOI: 10.1080/10641269309388535. |
+| \[11\] de Leiva Moreno J I, Agostini V N, Caddy J F, et al. Is the pelagic-demersal ratio from fishery landings a useful proxy for nutrient availability? A preliminary data exploration for the semi-enclosed seas around Europe\[J\]. ICES Journal of Marine Science, 2000, 57(4): 1091-1102. DOI: 10.1006/jmsc.2000.0705. |
+| \[12\] R Core Team. R: A language and environment for statistical computing\[CP/OL\]. Vienna: R Foundation for Statistical Computing, 2026\[2026-10-12\]. <https://www.R-project.org/>. |
+| \[13\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.7.0\[CP/OL\]. 2026\[2026-10-12\]. <https://linbojun99.github.io/faofishingreport/>. |
+| \[14\] Hondorp D W, Breitburg D L, Davias L A. Eutrophication and Fisheries: Separating the Effects of Nitrogen Loads and Hypoxia on the Pelagic-to-Demersal Ratio and other Measures of Landings Composition\[J\]. Marine and Coastal Fisheries, 2010, 2(1): 339-361. DOI: 10.1577/C09-020.1. |
 
 分析方法段落描述的是各项分析的默认设置，例如资源开发状态图的纳入标准和突变点检测中15%的最小分段长度。修改这类设置（`status_smooth = TRUE`、`status_min_catch = 10000`、`species_h_value = 0.2`等）后，结果会随之改变，但需要自己在1.2
 分析方法中说明所做的修改。
@@ -566,12 +571,12 @@ show_table(report$main_countries, digits = 1)
 | 毛里塔尼亚 | Mauritania | 674,299.1 | 13.2 | 2018 | 65.4 | none |
 | 塞内加尔 | Senegal | 464,480.7 | 9.1 | 2017 | 93.6 | none |
 | 尼日利亚 | Nigeria | 441,470.9 | 8.6 | 2017 | 94.4 | none |
-| 几内亚 | Guinea | 343,164.0 | 6.7 | 2021 | 81.0 | up |
-| 加纳 | Ghana | 333,652.8 | 6.5 | 1999 | 98.1 | up |
-| 塞拉利昂 | Sierra Leone | 205,312.0 | 4.0 | 2022 | 97.1 | up |
+| 几内亚 | Guinea | 343,164.0 | 6.7 | 2021 | 81.0 | none |
+| 加纳 | Ghana | 333,652.8 | 6.5 | 1999 | 98.1 | none |
+| 塞拉利昂 | Sierra Leone | 205,312.0 | 4.0 | 2022 | 97.1 | none |
 | 喀麦隆 | Cameroon | 198,094.6 | 3.9 | 2019 | 78.8 | none |
 | 伯利兹 | Belize | 190,814.7 | 3.7 | 2010 | 51.1 | none |
-| 格鲁吉亚 | Georgia | 127,022.0 | 2.5 | 2019 | 79.9 | up |
+| 格鲁吉亚 | Georgia | 127,022.0 | 2.5 | 2019 | 79.9 | none |
 
 ``` r
 
@@ -600,14 +605,14 @@ show_table(stocks[, c("species_name", "peak_year", "peak_tonnes", "pct_of_peak",
 texts <- read.csv(system.file("extdata", "report_text.csv", package = "faofishingreport"),
                   fileEncoding = "UTF-8", colClasses = "character")
 nrow(texts)
-#> [1] 269
+#> [1] 298
 show_table(data.frame(texts[texts$key %in% c("h_status", "status_p2", "concl_status"), ], row.names = NULL))
 ```
 
 | key | en | zh |
 |:---|:---|:---|
 | h_status | Stock status | 资源开发状态 |
-| status_p2 | Stock status plots rely on catch data only: a falling catch may also result from management measures, markets or changes in reporting {cite:kleisner2013}, so the results show the general state of exploitation and do not replace stock assessments. | 需要指出的是，资源开发状态图仅基于渔获量数据，渔获量的下降也可能源于管理措施、市场需求或统计方式的变化{cite:kleisner2013}，其结果仅反映资源开发的大致状况，不能替代基于资源评估模型的结论。 |
+| status_p2 | Stock status plots rely on catch data only: a falling catch may also result from management measures, markets or changes in reporting {cite:kleisner2013}, so the results show the general state of exploitation and do not replace stock assessments. | 资源开发状态图仅基于渔获量数据，渔获量的下降也可能源于管理措施、市场需求或统计方式的变化{cite:kleisner2013}，其结果仅反映资源开发的大致状况，不能替代基于资源评估模型的结论。 |
 | concl_status | In {last_year}, {oc_pct}% of the stocks were over-exploited or collapsed. | {last_year} 年处于过度开发和崩溃状态的资源占 {oc_pct}%。 |
 
 - `{last_year}`、`{oc_pct}`等是占位符，由分析结果填入。请只使用原文中已有的占位符，未知的占位符会使报告报错停止。
@@ -709,7 +714,7 @@ Fisheries* 14(3): 293–311.
 [doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
 
 Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture
-Production statistics. R package version 0.6.0.
+Production statistics. R package version 0.7.0.
 <https://linbojun99.github.io/faofishingreport/>
 
 Mann, H.B. (1945). Nonparametric tests against trend. *Econometrica*

@@ -76,6 +76,40 @@ peak_trend(
 Invisibly, a data frame with one row per series (the first row is the
 total).
 
+## Details
+
+Catch series are autocorrelated, which makes the usual Mann-Kendall test
+find too many trends, so the variance of the test is corrected with the
+effective sample size of an AR(1) process (Yue and Wang 2004), from the
+lag-1 autocorrelation of the detrended series corrected for its
+small-sample bias (Kendall 1954; `lag1_autocorrelation`); `p_value_iid`
+is the p value of the usual test, for comparison. Over ten years the
+autocorrelation is poorly known and the correction is only partial:
+strongly autocorrelated series still show trends too often. `trend`
+tests each series on its own (`p_value` \< 0.05): with many series, some
+trends are found by chance, and `q_value` gives the p values adjusted
+for the number of series in the result, the total excepted (Benjamini
+and Hochberg 1995). Read trends with `p_value` \< 0.05 as exploratory,
+and give as significant the trends with `q_value` \< 0.05, as
+[`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
+does for the main species and countries.
+
+## References
+
+Benjamini, Y. and Hochberg, Y. (1995). Controlling the false discovery
+rate: a practical and powerful approach to multiple testing. Journal of
+the Royal Statistical Society: Series B 57: 289-300.
+[doi:10.1111/j.2517-6161.1995.tb02031.x](https://doi.org/10.1111/j.2517-6161.1995.tb02031.x)
+
+Kendall, M.G. (1954). Note on bias in the estimation of autocorrelation.
+Biometrika 41: 403-404.
+[doi:10.1093/biomet/41.3-4.403](https://doi.org/10.1093/biomet/41.3-4.403)
+
+Yue, S. and Wang, C.Y. (2004). The Mann-Kendall test modified by
+effective sample size to detect trend in serially correlated
+hydrological series. Water Resources Management 18: 201-218.
+[doi:10.1023/B:WARM.0000043140.61082.60](https://doi.org/10.1023/B%3AWARM.0000043140.61082.60)
+
 ## See also
 
 Other summary analyses:

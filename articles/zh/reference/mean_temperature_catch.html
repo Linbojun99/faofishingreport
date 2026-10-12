@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -479,31 +479,34 @@ chart before reading a trend.</p>
 <h2 id="趋势及与sst的比较">趋势及与SST的比较<a class="anchor" aria-label="anchor" href="#%E8%B6%8B%E5%8A%BF%E5%8F%8A%E4%B8%8Esst%E7%9A%84%E6%AF%94%E8%BE%83"></a>
 </h2>
 <p>趋势按全部年份和<code>trend_from</code>以来的年份分别计算，只使用覆盖率不低于<code>min_coverage</code>的年份：计算线性回归的斜率（°C/十年），并与<code><a href="../../../reference/peak_trend.html">peak_trend()</a></code>一样进行Mann-Kendall检验（年份与MTC之间的Kendall
-τ）。MTC与渔区SST的比较，看两者的斜率，以及两个序列之间和它们的逐年差分之间的Pearson相关。</p>
-<p>这些只是简单的描述性统计。Cheung等（2013）用同时纳入捕捞努力量、大尺度海洋指数和自相关的模型，估计每个大海洋生态系统的变化速率，并在各生态系统之间分析MTC与SST变化速率的关系；区域性研究使用了滞后相关、回归和模型（Tsikliras和Stergiou，2014；Liang等，2018；Kamberi等，2025）。两个序列都存在自相关，所以这里给出的p值（把各年视为相互独立）偏小（Yue等，2002；Pyper和Peterman，1998）。两个都随时间上升的序列，即使彼此无关，也会表现出相关；逐年差分的相关可以避免这一问题，但可能漏掉只在几十年尺度上起作用的关系（Pyper和Peterman，1998）。在亚得里亚海，考虑自相关之后，MTC与SST之间的关系不再显著（Kamberi等，2025）。</p>
+τ），其方差按自相关做了校正（Yue和Wang，2004；<code>kendall_p_iid</code>是常规检验的p值）。MTC与渔区SST的比较，看两者的斜率，以及两个序列之间和它们的逐年差分之间的Pearson相关。</p>
+<p>这些只是简单的描述性统计。Cheung等（2013）用同时纳入捕捞努力量、大尺度海洋指数和自相关的模型，估计每个大海洋生态系统的变化速率，并在各生态系统之间分析MTC与SST变化速率的关系；区域性研究使用了滞后相关、回归和模型（Tsikliras和Stergiou，2014；Liang等，2018；Kamberi等，2025）。两个序列都存在自相关：Mann-Kendall检验考虑了这一点，但回归斜率和相关系数的p值把各年视为相互独立，因而偏小（Yue等，2002；Pyper和Peterman，1998）。两个都随时间上升的序列，即使彼此无关，也会表现出相关；逐年差分的相关可以避免这一问题，但可能漏掉只在几十年尺度上起作用的关系（Pyper和Peterman，1998）。在亚得里亚海，考虑自相关之后，MTC与SST之间的关系不再显著（Kamberi等，2025）。</p>
 <details class="fao-en"><summary>
 English
 </summary><p>Trends are calculated over all years and over the years from
 <code>trend_from</code>, using only years whose coverage is at least
 <code>min_coverage</code>: the slope of a linear regression (°C per
-decade) and a Mann-Kendall test (Kendall’s tau between year and MTC), as
-in <code><a href="../../../reference/peak_trend.html">peak_trend()</a></code>. The MTC is compared with the SST of the
-area by their slopes and by the Pearson correlation of the two series
-and of their year-to-year differences.</p>
+decade) and a Mann-Kendall test (Kendall’s tau between year and MTC)
+with its variance corrected for autocorrelation (Yue and Wang 2004;
+<code>kendall_p_iid</code> is the p value of the usual test), as in
+<code><a href="../../../reference/peak_trend.html">peak_trend()</a></code>. The MTC is compared with the SST of the area
+by their slopes and by the Pearson correlation of the two series and of
+their year-to-year differences.</p>
 <p>These are simple descriptive statistics. Cheung et al. (2013)
 estimated the rate of change of each large marine ecosystem with models
 that also included fishing effort, a large-scale ocean index and
 autocorrelation, and related the rates of MTC and SST across ecosystems;
 regional studies used lagged correlations, regressions and models
 (Tsikliras and Stergiou 2014; Liang et al. 2018; Kamberi et al. 2025).
-Both series are autocorrelated, so the p-values given here, which treat
-years as independent, are too small (Yue et al. 2002; Pyper and Peterman
-1998). Two series that both rise over time are correlated even when they
-are not related; the correlation of differences avoids this, but can
-miss a relation that acts only over decades (Pyper and Peterman 1998).
-In the Adriatic Sea, the relation of MTC with SST was no longer
-significant once autocorrelation was accounted for (Kamberi et
-al. 2025).</p>
+Both series are autocorrelated: the Mann-Kendall test takes this into
+account, but the p-values of the regression slope and of the
+correlations treat years as independent and are too small (Yue et
+al. 2002; Pyper and Peterman 1998). Two series that both rise over time
+are correlated even when they are not related; the correlation of
+differences avoids this, but can miss a relation that acts only over
+decades (Pyper and Peterman 1998). In the Adriatic Sea, the relation of
+MTC with SST was no longer significant once autocorrelation was
+accounted for (Kamberi et al. 2025).</p>
 </details>
 </div>
 <div class="section level2">
@@ -593,6 +596,9 @@ Progress Series 515: 281-284. <a href="https://doi.org/10.3354/meps11005" class=
 <p>Tsikliras, A.C., Peristeraki, P., Tserpes, G. and Stergiou, K.I.
 (2015). Mean temperature of the catch (MTC) in the Greek Seas based on
 landings and survey data. Frontiers in Marine Science 2: 23. <a href="https://doi.org/10.3389/fmars.2015.00023" class="external-link">doi:10.3389/fmars.2015.00023</a></p>
+<p>Yue, S. and Wang, C.Y. (2004). The Mann-Kendall test modified by
+effective sample size to detect trend in serially correlated
+hydrological series. Water Resources Management 18: 201-218. <a href="https://doi.org/10.1023/B:WARM.0000043140.61082.60" class="external-link">doi:10.1023/B:WARM.0000043140.61082.60</a></p>
 <p>Yue, S., Pilon, P., Phinney, B. and Cavadias, G. (2002). The
 influence of autocorrelation on the ability to detect trend in
 hydrological series. Hydrological Processes 16: 1807-1829. <a href="https://doi.org/10.1002/hyp.1095" class="external-link">doi:10.1002/hyp.1095</a></p>

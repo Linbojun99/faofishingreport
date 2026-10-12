@@ -168,7 +168,7 @@ catch_trade(
 以不可见方式返回一个包含三个数据框的列表：
 
 - **yearly**：所比较的类群合计，每个国家每年一行：渔获量（活重吨），出口、进口和转口量（产品重量吨），出口额和进口额（千美元），单位价值（美元/千克），出口量占渔获量的百分比，净出口量，所比较的类群在该国渔获量和出口额中所占的比例，出口额中估算部分所占的比例，以及没有归入所比较类群的鱼粉和鱼油的贸易。使用`conversion`时，还包括折算为活重当量的贸易量、已折算部分所占的比例和表观供给量；
-- **by_group**：同样的内容，按国家、类群和年份；
+- **by_group**：同样的内容，按国家、类群和年份。在`yearly`和`by_group`中，数值未知时为NA：该国当年没有报告渔获量（或贸易），或FAO数据中的数值缺失；该国当年有报告、但没有这一类群或贸易流向时为零；
 - **groups**：每个国家在最近五年中有渔获或出口的每个ISSCAAP类群一行：是否参与比较，捕捞在该类群全球产量中所占比例的最低值，最近五年的年均渔获量、出口量和出口额，以及该类群占出口额的比例（`export_value_pct`）。
 
 图表保存在`figures/png/summary/`：`<label>_catch_trade.png`（逐年的渔获量、出口和进口，每个国家一个分图）和`<label>_catch_trade_groups.png`（同样的内容，针对前`top_n`个类群；有多个国家时，每个国家一个文件，文件名以国家名结尾）。表格保存在`tables/`：`<label>_catch_trade.csv`、`..._by_group.csv`和`..._groups.csv`。
@@ -186,7 +186,11 @@ Invisibly, a list of three data frames:
   fish oil not assigned to a group compared. With `conversion`, also the
   trade in live weight equivalent, the share converted and the apparent
   supply;
-- **by_group**: the same by country, group and year;
+- **by_group**: the same by country, group and year. In `yearly` and
+  `by_group`, a value is NA when it is not known: the country reported
+  no catch (or no trade) in that year, or the values are missing in the
+  FAO data; it is zero when the country reported that year but not this
+  group or trade flow;
 - **groups**: one row per country and ISSCAAP group with catch or
   exports in the last five years: whether it is compared, the lowest
   share of capture in its world production, the mean yearly catch,

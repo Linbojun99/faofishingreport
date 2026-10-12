@@ -18,6 +18,7 @@ specified country based on their ranking in terms of total tonnes.
 fishing_area_country(
   area_data,
   rank_range = c(1, 10),
+  rank_years = NULL,
   plot = TRUE,
   table = TRUE,
   timeseries_analysis = TRUE,
@@ -65,6 +66,18 @@ fishing_area_country(
 
   A numeric vector of length 2 specifying the rank range of country to
   be analyzed.
+
+- `rank_years`:
+
+  按最近几年的渔获量对国家排名时所用的年数，例如5表示最近五年（与[`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)中的表格相同）。默认为NULL：按所有年份的渔获量排名。两种情况下图表都显示完整的序列。
+
+  English
+
+  The number of recent years whose catch ranks the countries, e.g. 5 for
+  the last five years (as in the tables of
+  [`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)).
+  Default is NULL: the catch of all years. The charts show the whole
+  series either way.
 
 - `plot`:
 

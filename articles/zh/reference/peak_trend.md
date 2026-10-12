@@ -126,6 +126,48 @@ English
 Invisibly, a data frame with one row per series (the first row is the
 total).
 
+## 详细说明
+
+渔获量序列存在自相关，会使常规的Mann-Kendall检验发现过多的趋势，因此用AR(1)过程的有效样本量校正检验的方差（Yue和Wang，2004）；所用的自相关是去趋势序列的滞后1期自相关，并校正了其小样本偏差（Kendall，1954；`lag1_autocorrelation`）。`p_value_iid`是常规检验的p值，供比较。只有十年数据时，自相关难以估计准确，校正也只是部分的：自相关很强的序列仍然会过于频繁地显示出趋势。`trend`对每条序列单独检验（`p_value`
+\<
+0.05）：序列很多时，有些趋势是偶然发现的，`q_value`给出按结果中的序列数（总量除外）校正后的p值（Benjamini和Hochberg，1995）。应把`p_value`
+\< 0.05的趋势视为探索性结果，把`q_value` \<
+0.05的趋势作为显著趋势报告，[`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)对主要物种和国家就是这样做的。
+
+English
+
+Catch series are autocorrelated, which makes the usual Mann-Kendall test
+find too many trends, so the variance of the test is corrected with the
+effective sample size of an AR(1) process (Yue and Wang 2004), from the
+lag-1 autocorrelation of the detrended series corrected for its
+small-sample bias (Kendall 1954; `lag1_autocorrelation`); `p_value_iid`
+is the p value of the usual test, for comparison. Over ten years the
+autocorrelation is poorly known and the correction is only partial:
+strongly autocorrelated series still show trends too often. `trend`
+tests each series on its own (`p_value` \< 0.05): with many series, some
+trends are found by chance, and `q_value` gives the p values adjusted
+for the number of series in the result, the total excepted (Benjamini
+and Hochberg 1995). Read trends with `p_value` \< 0.05 as exploratory,
+and give as significant the trends with `q_value` \< 0.05, as
+[`fao_report()`](https://linbojun99.github.io/faofishingreport/reference/fao_report.md)
+does for the main species and countries.
+
+## 参考文献
+
+Benjamini, Y. and Hochberg, Y. (1995). Controlling the false discovery
+rate: a practical and powerful approach to multiple testing. Journal of
+the Royal Statistical Society: Series B 57: 289-300.
+[doi:10.1111/j.2517-6161.1995.tb02031.x](https://doi.org/10.1111/j.2517-6161.1995.tb02031.x)
+
+Kendall, M.G. (1954). Note on bias in the estimation of autocorrelation.
+Biometrika 41: 403-404.
+[doi:10.1093/biomet/41.3-4.403](https://doi.org/10.1093/biomet/41.3-4.403)
+
+Yue, S. and Wang, C.Y. (2004). The Mann-Kendall test modified by
+effective sample size to detect trend in serially correlated
+hydrological series. Water Resources Management 18: 201-218.
+[doi:10.1023/B:WARM.0000043140.61082.60](https://doi.org/10.1023/B:WARM.0000043140.61082.60)
+
 ## 另请参阅
 
 Other summary analyses:

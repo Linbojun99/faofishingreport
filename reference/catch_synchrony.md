@@ -90,9 +90,13 @@ catch_synchrony(
 ## Value
 
 Invisibly, a list with `summary` (synchrony, CVs and portfolio effect),
-`series` (mean, standard deviation, CV and share of the total
-variability of each series), `windows` (the measures in each moving
-window) and `correlation` (pairwise correlations of the series).
+`series` (mean, standard deviation and CV of each series, the share of
+its standard deviation in the sum of the standard deviations,
+`sd_share_pct`, and its contribution to the variance of the total catch,
+`variance_contribution_pct`: its covariance with the total divided by
+the variance of the total, negative for a series that damps the total),
+`windows` (the measures in each moving window) and `correlation`
+(pairwise correlations of the series).
 
 ## Details
 

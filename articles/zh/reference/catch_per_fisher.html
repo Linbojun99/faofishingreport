@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -241,7 +241,7 @@ The FAO data release of the catch data; see
 <div class="section level2">
 <h2 id="返回值">返回值<a class="anchor" aria-label="anchor" href="#%E8%BF%94%E5%9B%9E%E5%80%BC"></a>
 </h2>
-<p>以不可见方式返回一个列表，包括<code>yearly</code>（每个国家每年一行：海洋和内陆渔获量；海洋、内陆和全部渔民人数（按<code>weights</code>计）及各自的人均渔获；按人数计的渔民人数、养殖从业者人数、未说明工作领域的从业者人数及其占全部从业者的比例；渔民中估计值所占的比例和工作时间未知者所占的比例；以及渔民人数是否与上一年相同）和<code>notes</code>（FAO对这些国家的注释）。图表<code>&lt;label&gt;_catch_per_fisher.png</code>保存在<code>figures/png/summary/</code>，表格<code>&lt;label&gt;_catch_per_fisher.csv</code>保存在<code>tables/</code>。</p>
+<p>以不可见方式返回一个列表，包括<code>yearly</code>（每个国家每年一行：海洋和内陆渔获量；海洋、内陆和全部渔民人数（按<code>weights</code>计）及各自的人均渔获；按人数计的渔民人数、养殖从业者人数、未说明工作领域的从业者人数及其占全部从业者的比例；渔民中估计值所占的比例和工作时间未知者所占的比例；以及渔民人数是否与上一年相同；该国没有报告渔获量或从业者的年份为NA）和<code>notes</code>（FAO对这些国家的注释）。图表<code>&lt;label&gt;_catch_per_fisher.png</code>保存在<code>figures/png/summary/</code>，表格<code>&lt;label&gt;_catch_per_fisher.csv</code>保存在<code>tables/</code>。</p>
 <details class="fao-en"><summary>
 English
 </summary><p>Invisibly, a list with <code>yearly</code> (one row per country and
@@ -249,7 +249,8 @@ year: marine and inland catch, marine, inland and all fishers, catch per
 fisher of each, the number of fishers as people, fish farmers, workers
 of unspecified work area and their share of all workers, the share of
 fishers in estimated values or with unknown working time, and whether
-the number of fishers is unchanged from the year before) and
+the number of fishers is unchanged from the year before; NA in the years
+in which the country reported no catch or no workers) and
 <code>notes</code> (FAO’s notes on the countries). The chart
 <code>&lt;label&gt;_catch_per_fisher.png</code> is saved in
 <code>figures/png/summary/</code> and the table

@@ -128,12 +128,12 @@ cmsy_area(
 
 - `settings`:
 
-  可选，用于替换CMSY++默认值的CMSY++设置（命名列表），例如`list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000)`。各项设置、默认值及其作用见[`cmsy_defaults()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_defaults.md)。默认不做更改：CMSY++使用自己的默认值运行。所用的设置保存在运行文件夹的`settings_used.csv`和`result$settings`中。
+  可选，用于替换CMSY++默认值的CMSY++设置（命名列表），例如`list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000)`。各项设置、默认值及其作用见[`cmsy_defaults()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_defaults.md)。默认不做更改：CMSY++使用自己的默认值运行。所用的设置保存在运行文件夹的`settings_used.csv`和`result$settings`中。
 
   English
 
   Optional named list of CMSY++ settings that replace its defaults, e.g.
-  `list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000)`. See
+  `list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000)`. See
   [`cmsy_defaults()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_defaults.md)
   for the settings, their defaults and what they do. Default is no
   change: CMSY++ runs with its own defaults. The settings used are saved

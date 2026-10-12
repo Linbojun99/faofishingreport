@@ -11,7 +11,7 @@ occur by year, by FAO fishing area, by country or by species group.'><meta prope
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -156,7 +156,8 @@ code at <a href="https://github.com/jagephart/Shock_Detection" class="external-l
 
 </dl><p>A shock has recovered in the first later year in which catch is back to at least 95% of that
 baseline. The yearly shock frequency is the number of shocks in a year divided by the number of
-series with catch in that year (Cottrell et al. 2019); the shock rate of an area, country or
+series analysed in that year (Cottrell et al. 2019): a series counts from its first year with
+catch to the last year, including years in which its catch fell to zero; the shock rate of an area, country or
 species group is the number of shocks divided by the number of its series (Gephart et al. 2017).</p>
 <p>Both studies analysed national totals (all species and areas of a country); with <code>by = "country"</code> and the data of all areas (<code><a href="load_fao_data.html">load_fao_data()</a></code>) the series are the same. Neither study
 states a minimum series length; <code>min_years</code> is a choice of this package, as is ending the series

@@ -57,7 +57,14 @@ cmsy_input(
   the `species` argument) and can have any of the ID file columns
   `Resilience`, `r.low`, `r.hi`, `stb.low`, `stb.hi`, `int.yr`,
   `intb.low`, `intb.hi`, `endb.low`, `endb.hi`, `StartYear`, `EndYear`
-  and `Comment`. Values given here are recorded as "user".
+  and `Comment`. Values given here are recorded as "user". A
+  `Resilience` given without `r.low` and `r.hi` replaces the r range
+  from FishBase or SeaLifeBase with the range of that resilience (CMSY++
+  uses `r.low` and `r.hi` whenever both are given). A row applies to the
+  stocks of its most specific identifier: only its stock when it has a
+  `Stock`, even if it also names the species; else all stocks of its
+  species. Rows for a species are applied before rows for one stock, so
+  the values given for a stock take precedence.
 
 - default_resilience:
 
@@ -217,7 +224,7 @@ input <- cmsy_input(FAO34$area_data, species = c("European pilchard(=Sardine)", 
 # Expert B/k priors (user guide Tables 1 and 3): sardine thought to be depleted in the last year
 input <- cmsy_input(FAO34$area_data, species = "PIL", table = FALSE,
                     priors = data.frame(species = "Sardina pilchardus", endb.low = 0.2, endb.hi = 0.5))
-#> 1 stocks ready for CMSY++ (catch only, no abundance data); 0 left out (see $excluded).
+#> 1 stock ready for CMSY++ (catch only, no abundance data); 0 left out (see $excluded).
 input$id[, c("Stock", "endb.low", "endb.hi")]
 #>    Stock endb.low endb.hi
 #> 1 PIL_34      0.2     0.5

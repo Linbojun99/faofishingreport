@@ -236,7 +236,8 @@ fao_report(
   sources. Default is FALSE. The result of an earlier
   [`cmsy_area()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_area.md)
   run can also be given, to write the report without running CMSY++
-  again. CMSY++ needs JAGS: see
+  again; it must be of the same area and FAO release as the report
+  (`data_version`), else the report stops. CMSY++ needs JAGS: see
   [`cmsy_setup()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_setup.md).
 
 ## Value

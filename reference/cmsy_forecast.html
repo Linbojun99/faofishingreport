@@ -11,7 +11,7 @@ last-year fishing mortality) or constant catches, and draws the projected B/Bmsy
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,7 +97,7 @@ FAO name, scientific name or FAO 3-alpha code. Default is NULL, all stocks that 
 
 
 <dt id="arg-years">years<a class="anchor" aria-label="anchor" href="#arg-years"></a></dt>
-<dd><p>Number of years to project. Default is 10.</p></dd>
+<dd><p>Number of years to project after the latest last year of the stocks. Default is 10.</p></dd>
 
 
 <dt id="arg-f">f<a class="anchor" aria-label="anchor" href="#arg-f"></a></dt>
@@ -157,16 +157,25 @@ with <code>fao_settings(silent = TRUE)</code>.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Invisibly, a list with <code>projection</code> (by stock, scenario and year: median B/Bmsy,
 F/Fmsy and catch with 95% limits, and the probability that B is at least Bmsy) and
-<code>share</code> (by scenario and year: share of stocks at or above Bmsy, with 95% limits).</p>
+<code>share</code> (by scenario and year: share of stocks at or above Bmsy, with 95% limits, and
+the number of stocks).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>CMSY++16.R has no projection, so it is done here with the CMSY++ model itself: the Schaefer
-surplus-production model in which productivity declines linearly below B/k = 0.25 (CMSY++16.R
-and Froese et al. 2023), started from the posterior draws of r, k and last-year B/k of the
-run (which come from the same MCMC iterations), with lognormal process error (<code>sigma</code>, 0.1 by
-default as <code>sigmaR</code> in CMSY++). In the F scenarios Fmsy is reduced linearly below half of Bmsy,
-as in the management results of CMSY++. Catch is F times biomass, as CMSY++ defines F.</p>
+surplus-production model in which productivity declines linearly below B/k = 0.25 (CMSY++16.R and
+Froese et al. 2023), started from the posterior draws of r, k and last-year B/k of the run (which
+come from the same MCMC iterations), with lognormal process error of standard deviation <code>sigma</code>
+(0.1 by default, the value <code>CMSY++16.R</code> gives to its unused setting <code>sigmaR</code>; the CMSY++ model
+itself estimates its process error). As in CMSY++, the biomass of a year is the biomass before
+the catch of that year, F is the catch divided by that biomass, and F/Fmsy uses an Fmsy reduced
+linearly below half of Bmsy (CMSY++16.R). The catch of the last year of the data is kept, so the
+biomass of the next year is that of the CMSY++ model; the scenarios set the catch from the first
+projected year on. In the F scenarios the catch is the scenario F times the biomass of the same
+year, so F/Fmsy is the scenario value.</p>
+<p>Stocks whose data end in different years are each projected from their own last year to the
+same final year (the latest last year plus <code>years</code>); the share of stocks at or above Bmsy is
+given from the latest last year on, when every stock has a value.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>

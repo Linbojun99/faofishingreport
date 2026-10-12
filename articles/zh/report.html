@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -114,7 +114,7 @@ be completed”）。使用前请核对自动生成的文字。</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_report_zh.docx"</span>, lang <span class="op">=</span> <span class="st">"zh"</span><span class="op">)</span></span>
 <span><span class="va">report</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/Rtmp6y5rpK/faofishingreport_site_1bdc641b0492b/FAO34_report_zh.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/Rtmp5Px3TF/faofishingreport_site_1be39fc084b0/FAO34_report_zh.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, quality, diversity, fleets</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -165,7 +165,7 @@ dpi，不生成PowerPoint文件。图表只插入Word文件，不会在你的文
 <td align="right">8.1</td>
 <td align="left">2019</td>
 <td align="right">96.6</td>
-<td align="left">up</td>
+<td align="left">none</td>
 </tr>
 <tr class="odd">
 <td align="left">筛鲱</td>
@@ -195,7 +195,7 @@ dpi，不生成PowerPoint文件。图表只插入Word文件，不会在你的文
 <td align="right">4.8</td>
 <td align="left">2018</td>
 <td align="right">32.8</td>
-<td align="left">down</td>
+<td align="left">none</td>
 </tr>
 <tr class="even">
 <td align="left">未分类的海洋鱼类</td>
@@ -235,7 +235,7 @@ dpi，不生成PowerPoint文件。图表只插入Word文件，不会在你的文
 <td align="right">2.5</td>
 <td align="left">1991</td>
 <td align="right">34.9</td>
-<td align="left">down</td>
+<td align="left">none</td>
 </tr>
 <tr class="even">
 <td align="left">欧洲鳀</td>
@@ -304,7 +304,7 @@ Around Us等）。</li>
 <span><span class="co">#&gt;      FAO Cover Title           FAO Figure        FAO Heading 1 </span></span>
 <span><span class="co">#&gt;                    1                   14                    4 </span></span>
 <span><span class="co">#&gt;        FAO Heading 2             FAO Note        FAO Reference </span></span>
-<span><span class="co">#&gt;                   11                    3                   11 </span></span>
+<span><span class="co">#&gt;                   11                    3                   14 </span></span>
 <span><span class="co">#&gt;    FAO Table Caption       FAO Table Text            FAO Title </span></span>
 <span><span class="co">#&gt;                    4                    4                    2</span></span></code></pre></div>
 <p>各级标题，即样式为“FAO Heading 1”和“FAO Heading 2”的段落：</p>
@@ -340,8 +340,8 @@ Around Us等）。</li>
 <th align="left">abstract</th>
 </tr></thead>
 <tbody><tr class="odd">
-<td align="left">FAO
-34渔区（中东大西洋）是全球重要的海洋捕捞海域之一。本报告根据联合国粮食及农业组织（FAO）全球捕捞产量统计1950–2024年数据（2026.1.0版），采用突变点检测、Mann-Kendall趋势检验、资源开发状态图和多样性与集中度指数，分析了该海域渔获量的变化、主要渔获种类、主要捕捞国家（地区）、渔获类群组成、资源开发状态、数据质量、渔获多样性和沿岸国与远洋捕捞。结果表明，2024年该海域渔获量为509.9万t，占全球海洋捕捞产量的6.3%；历史最高渔获量出现在2018年（552.0万t），2024年渔获量为峰值的92.4%。渔获量变化可划分为4个阶段（1950–1968年、1969–1987年、1988–2009年和2010–2024年）。近5年沙丁鱼是最主要的渔获种类，占总渔获量的20.4%。摩洛哥是最主要的捕捞国家（地区），占近5年渔获量的27.7%。2024年处于过度开发或崩溃状态的资源占36.1%。建议加强主要渔获种类的资源监测与评估，提高渔获统计的物种分辨率。</td>
+<td align="left">本报告根据联合国粮食及农业组织（FAO）全球捕捞产量统计1950–2024年数据（2026.1.0版），采用突变点检测、Mann-Kendall趋势检验、资源开发状态图和多样性与集中度指数，分析了FAO
+34渔区（中东大西洋）的渔获量变化、主要渔获种类、主要捕捞国家（地区）、渔获类群组成、资源开发状态、数据质量、渔获多样性和沿岸国与远洋捕捞。结果表明，2024年该海域渔获量为509.9万t，占全球海洋捕捞产量的6.3%；历史最高渔获量出现在2018年（552.0万t），2024年渔获量为峰值的92.4%。渔获量变化可划分为4个阶段（1950–1968年、1969–1987年、1988–2009年和2010–2024年）。近5年沙丁鱼是最主要的渔获种类，占总渔获量的20.4%。摩洛哥是最主要的捕捞国家（地区），占近5年渔获量的27.7%。2024年处于过度开发或崩溃状态的资源占39.7%。</td>
 </tr></tbody>
 </table>
 <p>图表题注，按报告编号：</p>
@@ -376,12 +376,12 @@ Around Us等）。</li>
 <tr class="even">
 <td align="left">FAO Caption</td>
 <td align="left">图1-3 FAO
-34渔区（中东大西洋）主要渔获种类的渔获量变化</td>
+34渔区（中东大西洋）近5年主要渔获种类的历年渔获量</td>
 </tr>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">图1-4 FAO
-34渔区（中东大西洋）主要渔获种类的渔获量变化及突变点</td>
+34渔区（中东大西洋）近5年主要渔获种类的历年渔获量及突变点</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Table Caption</td>
@@ -391,7 +391,7 @@ Around Us等）。</li>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">图1-5 FAO
-34渔区（中东大西洋）主要捕捞国家（地区）的渔获量变化</td>
+34渔区（中东大西洋）近5年主要捕捞国家（地区）的历年渔获量</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
@@ -401,7 +401,7 @@ Around Us等）。</li>
 <tr class="odd">
 <td align="left">FAO Caption</td>
 <td align="left">图1-7 FAO
-34渔区（中东大西洋）主要捕捞国家（地区）的渔获量变化及突变点</td>
+34渔区（中东大西洋）近5年主要捕捞国家（地区）的历年渔获量及突变点</td>
 </tr>
 <tr class="even">
 <td align="left">FAO Caption</td>
@@ -516,29 +516,47 @@ Econometrica, 1945, 13(3): 245-259. DOI: 10.2307/1907187.</td>
 ed. London: Charles Griffin, 1975.</td>
 </tr>
 <tr class="odd">
-<td align="left">[7] Kleisner K, Zeller D, Froese R, et al. Using global
+<td align="left">[7] Yue S, Wang C Y. The Mann-Kendall test modified by
+effective sample size to detect trend in serially correlated
+hydrological series[J]. Water Resources Management, 2004, 18(3):
+201-218. DOI: 10.1023/B:WARM.0000043140.61082.60.</td>
+</tr>
+<tr class="even">
+<td align="left">[8] Benjamini Y, Hochberg Y. Controlling the false
+discovery rate: a practical and powerful approach to multiple
+testing[J]. Journal of the Royal Statistical Society: Series B
+(Methodological), 1995, 57(1): 289-300. DOI:
+10.1111/j.2517-6161.1995.tb02031.x.</td>
+</tr>
+<tr class="odd">
+<td align="left">[9] Kleisner K, Zeller D, Froese R, et al. Using global
 catch data for inferences on the world’s marine fisheries[J]. Fish and
 Fisheries, 2013, 14(3): 293-311. DOI:
 10.1111/j.1467-2979.2012.00469.x.</td>
 </tr>
 <tr class="even">
-<td align="left">[8] Shannon C E. A mathematical theory of
+<td align="left">[10] Shannon C E. A mathematical theory of
 communication[J]. Bell System Technical Journal, 1948, 27(3): 379-423.
 DOI: 10.1002/j.1538-7305.1948.tb01338.x.</td>
 </tr>
 <tr class="odd">
-<td align="left">[9] Rhoades S A. The Herfindahl-Hirschman index[J].
+<td align="left">[11] Rhoades S A. The Herfindahl-Hirschman index[J].
 Federal Reserve Bulletin, 1993, 79(3): 188-189.</td>
 </tr>
 <tr class="even">
-<td align="left">[10] R Core Team. R: A language and environment for
+<td align="left">[12] R Core Team. R: A language and environment for
 statistical computing[CP/OL]. Vienna: R Foundation for Statistical
-Computing, 2026[2026-10-11]. <a href="https://www.R-project.org/" class="external-link uri">https://www.R-project.org/</a>.</td>
+Computing, 2026[2026-10-12]. <a href="https://www.R-project.org/" class="external-link uri">https://www.R-project.org/</a>.</td>
 </tr>
 <tr class="odd">
-<td align="left">[11] Lin H. faofishingreport: Analyse and report FAO
-Global Capture Production statistics. R package version 0.6.0[CP/OL].
-2026[2026-10-11]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>.</td>
+<td align="left">[13] Lin H. faofishingreport: Analyse and report FAO
+Global Capture Production statistics. R package version 0.7.0[CP/OL].
+2026[2026-10-12]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>.</td>
+</tr>
+<tr class="even">
+<td align="left">[14] Garibaldi L. The FAO global capture production
+database: a six-decade effort to catch the trend[J]. Marine Policy,
+2012, 36(3): 760-768. DOI: 10.1016/j.marpol.2011.10.024.</td>
 </tr>
 </tbody>
 </table>
@@ -854,7 +872,7 @@ v5数据时的Huang等（2017）、Pyper和Peterman（1998）、Alajmi等（2024
 <code class="sourceCode R"><span><span class="va">short</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, file <span class="op">=</span> <span class="st">"FAO34_short.docx"</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, quality <span class="op">=</span> <span class="cn">FALSE</span>, diversity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>                    fleets <span class="op">=</span> <span class="cn">FALSE</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span>, status_smooth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">short</span></span>
-<span><span class="co">#&gt; FAO report: /tmp/Rtmp6y5rpK/faofishingreport_site_1bdc641b0492b/FAO34_short.docx</span></span>
+<span><span class="co">#&gt; FAO report: /tmp/Rtmp5Px3TF/faofishingreport_site_1be39fc084b0/FAO34_short.docx</span></span>
 <span><span class="co">#&gt; Sections: total, species, countries, groups, status, pelagic</span></span>
 <span><span class="co">#&gt;   $main_species           main species of the last five years (10 rows)</span></span>
 <span><span class="co">#&gt;   $main_countries         main fishing countries of the last five years (10 rows)</span></span>
@@ -913,36 +931,49 @@ Econometrica, 1945, 13(3): 245-259. DOI: 10.2307/1907187.</td>
 ed. London: Charles Griffin, 1975.</td>
 </tr>
 <tr class="odd">
-<td align="left">[7] Kleisner K, Zeller D, Froese R, et al. Using global
+<td align="left">[7] Yue S, Wang C Y. The Mann-Kendall test modified by
+effective sample size to detect trend in serially correlated
+hydrological series[J]. Water Resources Management, 2004, 18(3):
+201-218. DOI: 10.1023/B:WARM.0000043140.61082.60.</td>
+</tr>
+<tr class="even">
+<td align="left">[8] Benjamini Y, Hochberg Y. Controlling the false
+discovery rate: a practical and powerful approach to multiple
+testing[J]. Journal of the Royal Statistical Society: Series B
+(Methodological), 1995, 57(1): 289-300. DOI:
+10.1111/j.2517-6161.1995.tb02031.x.</td>
+</tr>
+<tr class="odd">
+<td align="left">[9] Kleisner K, Zeller D, Froese R, et al. Using global
 catch data for inferences on the world’s marine fisheries[J]. Fish and
 Fisheries, 2013, 14(3): 293-311. DOI:
 10.1111/j.1467-2979.2012.00469.x.</td>
 </tr>
 <tr class="even">
-<td align="left">[8] Caddy J F. Toward a comparative evaluation of human
-impacts on fishery ecosystems of enclosed and semi‐enclosed seas[J].
-Reviews in Fisheries Science, 1993, 1(1): 57-95. DOI:
+<td align="left">[10] Caddy J F. Toward a comparative evaluation of
+human impacts on fishery ecosystems of enclosed and semi‐enclosed
+seas[J]. Reviews in Fisheries Science, 1993, 1(1): 57-95. DOI:
 10.1080/10641269309388535.</td>
 </tr>
 <tr class="odd">
-<td align="left">[9] de Leiva Moreno J I, Agostini V N, Caddy J F, et
+<td align="left">[11] de Leiva Moreno J I, Agostini V N, Caddy J F, et
 al. Is the pelagic-demersal ratio from fishery landings a useful proxy
 for nutrient availability? A preliminary data exploration for the
 semi-enclosed seas around Europe[J]. ICES Journal of Marine Science,
 2000, 57(4): 1091-1102. DOI: 10.1006/jmsc.2000.0705.</td>
 </tr>
 <tr class="even">
-<td align="left">[10] R Core Team. R: A language and environment for
+<td align="left">[12] R Core Team. R: A language and environment for
 statistical computing[CP/OL]. Vienna: R Foundation for Statistical
-Computing, 2026[2026-10-11]. <a href="https://www.R-project.org/" class="external-link uri">https://www.R-project.org/</a>.</td>
+Computing, 2026[2026-10-12]. <a href="https://www.R-project.org/" class="external-link uri">https://www.R-project.org/</a>.</td>
 </tr>
 <tr class="odd">
-<td align="left">[11] Lin H. faofishingreport: Analyse and report FAO
-Global Capture Production statistics. R package version 0.6.0[CP/OL].
-2026[2026-10-11]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>.</td>
+<td align="left">[13] Lin H. faofishingreport: Analyse and report FAO
+Global Capture Production statistics. R package version 0.7.0[CP/OL].
+2026[2026-10-12]. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a>.</td>
 </tr>
 <tr class="even">
-<td align="left">[12] Hondorp D W, Breitburg D L, Davias L A.
+<td align="left">[14] Hondorp D W, Breitburg D L, Davias L A.
 Eutrophication and Fisheries: Separating the Effects of Nitrogen Loads
 and Hypoxia on the Pelagic-to-Demersal Ratio and other Measures of
 Landings Composition[J]. Marine and Coastal Fisheries, 2010, 2(1):
@@ -1531,7 +1562,7 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 <td align="right">6.7</td>
 <td align="left">2021</td>
 <td align="right">81.0</td>
-<td align="left">up</td>
+<td align="left">none</td>
 </tr>
 <tr class="even">
 <td align="left">加纳</td>
@@ -1540,7 +1571,7 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 <td align="right">6.5</td>
 <td align="left">1999</td>
 <td align="right">98.1</td>
-<td align="left">up</td>
+<td align="left">none</td>
 </tr>
 <tr class="odd">
 <td align="left">塞拉利昂</td>
@@ -1549,7 +1580,7 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 <td align="right">4.0</td>
 <td align="left">2022</td>
 <td align="right">97.1</td>
-<td align="left">up</td>
+<td align="left">none</td>
 </tr>
 <tr class="even">
 <td align="left">喀麦隆</td>
@@ -1576,7 +1607,7 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 <td align="right">2.5</td>
 <td align="left">2019</td>
 <td align="right">79.9</td>
-<td align="left">up</td>
+<td align="left">none</td>
 </tr>
 </tbody>
 </table>
@@ -1642,13 +1673,13 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 <code class="sourceCode R"><span><span class="va">texts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/utils/read.table.html" class="external-link">read.csv</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"report_text.csv"</span>, package <span class="op">=</span> <span class="st">"faofishingreport"</span><span class="op">)</span>,</span>
 <span>                  fileEncoding <span class="op">=</span> <span class="st">"UTF-8"</span>, colClasses <span class="op">=</span> <span class="st">"character"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">texts</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 269</span></span>
+<span><span class="co">#&gt; [1] 298</span></span>
 <span><span class="fu">show_table</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span><span class="va">texts</span><span class="op">[</span><span class="va">texts</span><span class="op">$</span><span class="va">key</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"h_status"</span>, <span class="st">"status_p2"</span>, <span class="st">"concl_status"</span><span class="op">)</span>, <span class="op">]</span>, row.names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <table class="table">
 <colgroup>
 <col width="2%">
-<col width="55%">
-<col width="41%">
+<col width="56%">
+<col width="40%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">key</th>
@@ -1667,7 +1698,7 @@ CMSY++资源评估</a>：FAO数据只有渔获量，评估结果仅供参考。<
 catch may also result from management measures, markets or changes in
 reporting {cite:kleisner2013}, so the results show the general state of
 exploitation and do not replace stock assessments.</td>
-<td align="left">需要指出的是，资源开发状态图仅基于渔获量数据，渔获量的下降也可能源于管理措施、市场需求或统计方式的变化{cite:kleisner2013}，其结果仅反映资源开发的大致状况，不能替代基于资源评估模型的结论。</td>
+<td align="left">资源开发状态图仅基于渔获量数据，渔获量的下降也可能源于管理措施、市场需求或统计方式的变化{cite:kleisner2013}，其结果仅反映资源开发的大致状况，不能替代基于资源评估模型的结论。</td>
 </tr>
 <tr class="odd">
 <td align="left">concl_status</td>
@@ -1858,7 +1889,7 @@ London: Charles Griffin.</p>
 global catch data for inferences on the world’s marine fisheries.
 <em>Fish and Fisheries</em> 14(3): 293–311. <a href="https://doi.org/10.1111/j.1467-2979.2012.00469.x" class="external-link">doi:10.1111/j.1467-2979.2012.00469.x</a></p>
 <p>Lin, H. (2026). faofishingreport: Analyse and report FAO Global
-Capture Production statistics. R package version 0.6.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
+Capture Production statistics. R package version 0.7.0. <a href="https://linbojun99.github.io/faofishingreport/" class="uri">https://linbojun99.github.io/faofishingreport/</a></p>
 <p>Mann, H.B. (1945). Nonparametric tests against trend.
 <em>Econometrica</em> 13(3): 245–259. <a href="https://doi.org/10.2307/1907187" class="external-link">doi:10.2307/1907187</a></p>
 <p>R Core Team (2026). R: A language and environment for statistical

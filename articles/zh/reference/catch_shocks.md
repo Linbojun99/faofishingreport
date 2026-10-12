@@ -146,7 +146,7 @@ distance）超过阈值的年份为候选骤变；其中只保留渔获量低于
 - **“cottrell2019”（默认）**：LOESS平滑，span为0.6，库克距离大于0.3；损失量以前7年渔获量的中位数为基线计算，因此序列的前7年不可能出现骤变（Cottrell等，2019，Methods部分；其代码见<https://github.com/cottrellr/shocks>）。
 - **“gephart2017”**：lowess平滑，span为2/3，库克距离大于0.35；损失量以前5年渔获量的平均值为基线计算（Gephart等，2017，第2节；其代码见<https://github.com/jagephart/Shock_Detection>）。
 
-骤变之后，渔获量首次回到该基线至少95%的那一年即为恢复。逐年骤变频率是某年的骤变次数除以该年有渔获量的序列数（Cottrell等，2019）；一个渔区、国家或物种类群的骤变率是其骤变次数除以其序列数（Gephart等，2017）。
+骤变之后，渔获量首次回到该基线至少95%的那一年即为恢复。逐年骤变频率是某年的骤变次数除以该年参与分析的序列数（Cottrell等，2019）：一条序列从其有渔获量的第一年起一直计到最后一年，包括渔获量降为零的年份；一个渔区、国家或物种类群的骤变率是其骤变次数除以其序列数（Gephart等，2017）。
 
 两项研究分析的都是国家总量（一个国家所有物种和所有渔区的合计）；使用`by = "country"`和全部渔区的数据（[`load_fao_data()`](https://linbojun99.github.io/faofishingreport/reference/load_fao_data.md)）时，序列与之相同。两项研究都没有规定序列的最短长度；`min_years`是本包的设定。同样由本包设定的是：已不存在的国家（例如苏联）的序列在其最后一个有渔获量的年份结束，以免把国家的消失计为一次骤变。波动很大的序列（例如秘鲁鳀）可能检测不到骤变，因为大幅变化在这类序列中很常见（Gephart等，2017）。
 
@@ -170,10 +170,11 @@ catch fell below the level of the preceding years are kept:
 
 A shock has recovered in the first later year in which catch is back to
 at least 95% of that baseline. The yearly shock frequency is the number
-of shocks in a year divided by the number of series with catch in that
-year (Cottrell et al. 2019); the shock rate of an area, country or
-species group is the number of shocks divided by the number of its
-series (Gephart et al. 2017).
+of shocks in a year divided by the number of series analysed in that
+year (Cottrell et al. 2019): a series counts from its first year with
+catch to the last year, including years in which its catch fell to zero;
+the shock rate of an area, country or species group is the number of
+shocks divided by the number of its series (Gephart et al. 2017).
 
 Both studies analysed national totals (all species and areas of a
 country); with `by = "country"` and the data of all areas

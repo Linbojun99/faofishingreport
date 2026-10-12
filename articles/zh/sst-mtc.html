@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -506,9 +506,9 @@ al. 2013）是渔获物种偏好温度的平均值，按渔获量加权：</p>
 <p>偏好温度来自FishBase和SeaLifeBase（<code>TempPrefMean</code>），由<code><a href="../../reference/fishbase_match.html">fishbase_match()</a></code>与FAO物种条目对应；数据怎样获取、怎样匹配，见<a href="fishbase.html">🐠
 FishBase与SeaLifeBase物种特征</a>。默认<code>version = "latest"</code>时，联网的情况下第一次运行会下载所需的FishBase和SeaLifeBase表格（约23
 MB）；不联网时使用已下载的最新版本，没有下载过则使用包内置的表格。<code>version = "builtin"</code>总是使用内置表格，不需要下载。</p>
-<p>图的上半部分是MTC与渔区SST（及区内范围），下半部分是有偏好温度的渔获所占的比例（覆盖率）。覆盖率低于<code>min_coverage</code>的年份会淡化显示，并且不参与趋势计算。趋势分别按全部年份和<code>trend_from</code>之后的年份计算：线性回归斜率（°C/十年）、Mann-Kendall检验（Mann
-1945；Kendall
-1975，与<code><a href="../../reference/peak_trend.html">peak_trend()</a></code>相同），以及MTC与SST原序列和逐年差分的Pearson相关。</p>
+<p>图的上半部分是MTC与渔区SST（及区内范围），下半部分是有偏好温度的渔获所占的比例（覆盖率）。覆盖率低于<code>min_coverage</code>的年份会淡化显示，并且不参与趋势计算。趋势分别按全部年份和<code>trend_from</code>之后的年份计算：线性回归斜率（°C/十年）、经自相关校正的Mann-Kendall检验（Mann
+1945；Kendall 1975；Yue and Wang
+2004，与<code><a href="../../reference/peak_trend.html">peak_trend()</a></code>相同），以及MTC与SST原序列和逐年差分的Pearson相关。</p>
 <table class="table">
 <colgroup>
 <col width="33%">
@@ -644,8 +644,9 @@ al. 2018），没有任何文献规定最低覆盖率，<code>min_coverage = 50
 et al. 2024；Lavin et
 al. 2023）。把某个变化归因于变暖之前，先用物种表中的<code>weight_pct</code>和<code>contribution_c</code>看清楚是哪些条目引起的。</li>
 <li>
-<strong>统计。</strong>趋势用线性斜率和Mann-Kendall检验；与SST的对比用原序列和逐年差分的相关。两个序列都有自相关，所以p值偏小（Yue
-et al. 2002；Pyper and Peterman
+<strong>统计。</strong>趋势用线性斜率和Mann-Kendall检验；与SST的对比用原序列和逐年差分的相关。两个序列都有自相关：Mann-Kendall检验已做了校正（Yue
+and Wang 2004），但斜率和相关的p值偏小（Yue et al. 2002；Pyper and
+Peterman
 1998）；逐年差分的相关则可能漏掉只在几十年尺度上起作用的关系。在亚得里亚海，考虑自相关之后，MTC与SST的关系就不再显著（Kamberi
 et al. 2025）。</li>
 </ul>
@@ -782,6 +783,9 @@ Progress Series</em> 515: 281–284. <a href="https://doi.org/10.3354/meps11005"
 landings and survey data. <em>Frontiers in Marine Science</em> 2: 23. <a href="https://doi.org/10.3389/fmars.2015.00023" class="external-link">doi:10.3389/fmars.2015.00023</a></p>
 <p>WoRMS Editorial Board. World Register of Marine Species. Flanders
 Marine Institute (VLIZ). <a href="https://www.marinespecies.org" class="external-link uri">https://www.marinespecies.org</a>, <a href="https://doi.org/10.14284/170" class="external-link">doi:10.14284/170</a></p>
+<p>Yue, S. and Wang, C.Y. (2004). The Mann-Kendall test modified by
+effective sample size to detect trend in serially correlated
+hydrological series. <em>Water Resources Management</em> 18: 201–218. <a href="https://doi.org/10.1023/B:WARM.0000043140.61082.60" class="external-link">doi:10.1023/B:WARM.0000043140.61082.60</a></p>
 <p>Yue, S., Pilon, P., Phinney, B. and Cavadias, G. (2002). The
 influence of autocorrelation on the ability to detect trend in
 hydrological series. <em>Hydrological Processes</em> 16: 1807–1829. <a href="https://doi.org/10.1002/hyp.1095" class="external-link">doi:10.1002/hyp.1095</a></p>

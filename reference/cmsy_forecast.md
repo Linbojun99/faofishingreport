@@ -42,7 +42,8 @@ cmsy_forecast(
 
 - years:
 
-  Number of years to project. Default is 10.
+  Number of years to project after the latest last year of the stocks.
+  Default is 10.
 
 - f:
 
@@ -106,7 +107,7 @@ cmsy_forecast(
 Invisibly, a list with `projection` (by stock, scenario and year: median
 B/Bmsy, F/Fmsy and catch with 95% limits, and the probability that B is
 at least Bmsy) and `share` (by scenario and year: share of stocks at or
-above Bmsy, with 95% limits).
+above Bmsy, with 95% limits, and the number of stocks).
 
 ## Details
 
@@ -115,9 +116,21 @@ itself: the Schaefer surplus-production model in which productivity
 declines linearly below B/k = 0.25 (CMSY++16.R and Froese et al. 2023),
 started from the posterior draws of r, k and last-year B/k of the run
 (which come from the same MCMC iterations), with lognormal process error
-(`sigma`, 0.1 by default as `sigmaR` in CMSY++). In the F scenarios Fmsy
-is reduced linearly below half of Bmsy, as in the management results of
-CMSY++. Catch is F times biomass, as CMSY++ defines F.
+of standard deviation `sigma` (0.1 by default, the value `CMSY++16.R`
+gives to its unused setting `sigmaR`; the CMSY++ model itself estimates
+its process error). As in CMSY++, the biomass of a year is the biomass
+before the catch of that year, F is the catch divided by that biomass,
+and F/Fmsy uses an Fmsy reduced linearly below half of Bmsy
+(CMSY++16.R). The catch of the last year of the data is kept, so the
+biomass of the next year is that of the CMSY++ model; the scenarios set
+the catch from the first projected year on. In the F scenarios the catch
+is the scenario F times the biomass of the same year, so F/Fmsy is the
+scenario value.
+
+Stocks whose data end in different years are each projected from their
+own last year to the same final year (the latest last year plus
+`years`); the share of stocks at or above Bmsy is given from the latest
+last year on, when every stock has a value.
 
 ## References
 

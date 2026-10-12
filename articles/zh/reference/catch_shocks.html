@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -256,7 +256,7 @@ distance）超过阈值的年份为候选骤变；其中只保留渔获量低于
 <li>
 <strong>“gephart2017”</strong>：lowess平滑，span为2/3，库克距离大于0.35；损失量以前5年渔获量的平均值为基线计算（Gephart等，2017，第2节；其代码见<a href="https://github.com/jagephart/Shock_Detection" class="external-link uri">https://github.com/jagephart/Shock_Detection</a>）。</li>
 </ul>
-<p>骤变之后，渔获量首次回到该基线至少95%的那一年即为恢复。逐年骤变频率是某年的骤变次数除以该年有渔获量的序列数（Cottrell等，2019）；一个渔区、国家或物种类群的骤变率是其骤变次数除以其序列数（Gephart等，2017）。</p>
+<p>骤变之后，渔获量首次回到该基线至少95%的那一年即为恢复。逐年骤变频率是某年的骤变次数除以该年参与分析的序列数（Cottrell等，2019）：一条序列从其有渔获量的第一年起一直计到最后一年，包括渔获量降为零的年份；一个渔区、国家或物种类群的骤变率是其骤变次数除以其序列数（Gephart等，2017）。</p>
 <p>两项研究分析的都是国家总量（一个国家所有物种和所有渔区的合计）；使用<code>by = "country"</code>和全部渔区的数据（<code><a href="../../../reference/load_fao_data.html">load_fao_data()</a></code>）时，序列与之相同。两项研究都没有规定序列的最短长度；<code>min_years</code>是本包的设定。同样由本包设定的是：已不存在的国家（例如苏联）的序列在其最后一个有渔获量的年份结束，以免把国家的消失计为一次骤变。波动很大的序列（例如秘鲁鳀）可能检测不到骤变，因为大幅变化在这类序列中很常见（Gephart等，2017）。</p>
 <details class="fao-en"><summary>
 English
@@ -279,10 +279,11 @@ previous 5 years (Gephart et al. 2017, section 2, and their code at <a href="ht
 </ul>
 <p>A shock has recovered in the first later year in which catch is back
 to at least 95% of that baseline. The yearly shock frequency is the
-number of shocks in a year divided by the number of series with catch in
-that year (Cottrell et al. 2019); the shock rate of an area, country or
-species group is the number of shocks divided by the number of its
-series (Gephart et al. 2017).</p>
+number of shocks in a year divided by the number of series analysed in
+that year (Cottrell et al. 2019): a series counts from its first year
+with catch to the last year, including years in which its catch fell to
+zero; the shock rate of an area, country or species group is the number
+of shocks divided by the number of its series (Gephart et al. 2017).</p>
 <p>Both studies analysed national totals (all species and areas of a
 country); with <code>by = "country"</code> and the data of all areas
 (<code><a href="../../../reference/load_fao_data.html">load_fao_data()</a></code>) the series are the same. Neither study

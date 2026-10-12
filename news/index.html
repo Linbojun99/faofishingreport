@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,6 +52,69 @@
       <small>Source: <a href="https://github.com/Linbojun99/faofishingreport/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.7.0" id="faofishingreport-070">faofishingreport 0.7.0<a class="anchor" aria-label="anchor" href="#faofishingreport-070"></a></h2>
+<p>This version corrects errors found in a review of the code and of the statistics. Some results change: see “Changed results”.</p>
+<div class="section level3">
+<h3 id="changed-results-0-7-0">Changed results<a class="anchor" aria-label="anchor" href="#changed-results-0-7-0"></a></h3>
+<ul><li>
+<code><a href="../reference/cmsy_forecast.html">cmsy_forecast()</a></code> follows the timing of CMSY++: the biomass of a year is the biomass before that year’s catch, the last year of the data keeps its catch, and the catch of an F scenario is the scenario F times the biomass of the same year. F/Fmsy uses an Fmsy reduced below half of Bmsy, as in CMSY++, so it equals the scenario value (before, 0.5 Fmsy gave 0.45). Projections differ from those of earlier versions.</li>
+<li>Trends in <code><a href="../reference/peak_trend.html">peak_trend()</a></code>, <code><a href="../reference/mean_temperature_catch.html">mean_temperature_catch()</a></code> and the report are tested with a Mann-Kendall test whose variance is corrected for autocorrelation (Yue and Wang 2004); <code>p_value_iid</code> keeps the p value of the usual test and <code>lag1_autocorrelation</code> the autocorrelation used. <code><a href="../reference/peak_trend.html">peak_trend()</a></code> adds <code>q_value</code>, the p values adjusted for the number of series (Benjamini and Hochberg 1995), and the report calls a trend of a main species or country significant only when its q value is below 0.05. Fewer trends are significant than before.</li>
+<li>
+<code><a href="../reference/catch_synchrony.html">catch_synchrony()</a></code>: <code>share_of_variability_pct</code>, the share of each standard deviation in their sum, is renamed <code>sd_share_pct</code>, and the new <code>variance_contribution_pct</code> gives the contribution of each series to the variance of the total catch (its covariance with the total). The report names the series that contribute most to the variance.</li>
+<li>
+<code><a href="../reference/catch_shocks.html">catch_shocks()</a></code>: the yearly shock frequency divides by the series analysed in that year, including series whose catch fell to zero, so it can no longer exceed 100%.</li>
+<li>Decade means (tables of <code><a href="../reference/fishing_area_species.html">fishing_area_species()</a></code>, <code><a href="../reference/fishing_area_country.html">fishing_area_country()</a></code>, <code><a href="../reference/species_country.html">species_country()</a></code>, <code><a href="../reference/country_species.html">country_species()</a></code>, <code><a href="../reference/country_analysis.html">country_analysis()</a></code> and the appendix of the report) divide the catch of a decade by the years of the data in that decade, the same for every item; before, they depended on the years an item or the items chosen had records, and <code><a href="../reference/country_analysis.html">country_analysis()</a></code> averaged the rows of several areas.</li>
+<li>Employment, catch per fisher and trade: years that a country did not report are missing (<code>NA</code>), not zero, and missing trade quantities stay missing; a group or flow not reported in a year that the country did report is zero. The employment chart shows stacked bars by year, with gaps for years not reported.</li>
+<li>SST from NetCDF files: the weights of the grid cells are saved by grid and cover every cell with values, also cells without values in the first year; dates follow the calendar of the file (360-day, 365-day and 366-day calendars) and the time of the origin. Tables computed from your own files with earlier versions are computed again the next time they are used.</li>
+<li>
+<code><a href="../reference/catch_synchrony.html">catch_synchrony()</a></code> computes moving windows as soon as the series are as long as the window (20 years give one window).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="cmsy-integration-0-7-0">CMSY++ integration<a class="anchor" aria-label="anchor" href="#cmsy-integration-0-7-0"></a></h3>
+<p>These changes concern how the package runs CMSY++. The model of <code>CMSY++16.R</code> is unchanged, and no change was added to its code (the changes the package makes to run it, for file names, graphics devices and saving results, are listed in <code>code_changes.csv</code> of each run and in <code>result$changes</code>).</p>
+<ul><li>
+<code>sigmaR</code> and <code>ni</code> are set in <code>CMSY++16.R</code> but not used by its code (the process error of the model is estimated with the prior <code>itau2 ~ dgamma(4, 0.01)</code>): <code><a href="../reference/cmsy_defaults.html">cmsy_defaults()</a></code> lists them as “not used”, and <code>cmsy_run(settings = )</code> refuses to change them, so that a run is not taken for a sensitivity analysis of the process error. Examples use <code>CV.C</code> instead.</li>
+<li>B/k and r priors must be given as pairs of lower and upper bounds (CMSY++ uses a prior only when both are given), with lower &lt; upper, B/k between 0 and 1, and an intermediate prior with a year between the start and end years; <code><a href="../reference/cmsy_input.html">cmsy_input()</a></code> and <code><a href="../reference/cmsy_run.html">cmsy_run()</a></code> stop with the stocks concerned. A prior is recorded as the user’s only when both bounds are given.</li>
+<li>Stocks by country of countries without an ISO3 code (e.g. “Germany, Fed. Rep. of” and “Germany,New Länder”) get the numeric code of the FAO country list (“COD_27_UN280”) instead of sharing “XXX”; <code><a href="../reference/cmsy_input.html">cmsy_input()</a></code> and <code><a href="../reference/cmsy_run.html">cmsy_run()</a></code> check that stock identifiers, folders and stock-year catches are unique.</li>
+<li>
+<code><a href="../reference/cmsy_run.html">cmsy_run()</a></code> reports how each run ended: <code>run_status</code> is “ok” (finished), “partial” (the main analysis saved its results but a later step, such as the retrospective analysis, failed or ran out of time), “failed” or “timeout”, and <code>exit</code> keeps the original message; a stock that runs out of time is stopped. Results of “ok” and “partial” stocks are used by the other functions.</li>
+<li>
+<code>auto_start = TRUE</code> smooths the catch with the bandwidth <code>bw</code> of the run, as CMSY++ does, instead of always 3.</li>
+<li>The report says that the CMSY++ results are completed model runs and, when the B/k priors came from the neural network, that these were not checked stock by stock (the CMSY++ user guide notes they “may not be appropriate for your stock”), so the results are not validated assessments.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="bug-fixes-0-7-0">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-7-0"></a></h3>
+<ul><li>
+<code><a href="../reference/fao_report.html">fao_report()</a></code>: the charts of the main species and countries show the items of the tables, ranked by the last five years (new argument <code>rank_years</code> of <code><a href="../reference/fishing_area_species.html">fishing_area_species()</a></code> and <code><a href="../reference/fishing_area_country.html">fishing_area_country()</a></code>); a CMSY++ result given with <code>cmsy =</code> must be of the area and FAO release of the report; <code>collapse_null_model = FALSE</code>, <code>groups_group = "major"</code> and own pelagic and demersal groups (<code>pelagic_pelagic</code>, <code>pelagic_demersal</code>) are described in the text as used; the portfolio effect is described as positive, absent or negative; a slope of the mean temperature of the catch without a significant trend keeps its sign.</li>
+<li>
+<code><a href="../reference/cmsy_input.html">cmsy_input()</a></code>: a prior row with a <code>Stock</code> applies to that stock only, rows for a species are applied before rows for one stock, and a <code>Resilience</code> given without <code>r.low</code> and <code>r.hi</code> replaces the FishBase r range; when no stock is ready, the excluded stocks are returned instead of an error.</li>
+<li>
+<code><a href="../reference/cmsy_area.html">cmsy_area()</a></code> keeps the results of an earlier run until the new run has finished, and stops before deleting anything when the input is wrong.</li>
+<li>
+<code><a href="../reference/cmsy_forecast.html">cmsy_forecast()</a></code> projects stocks whose data end in different years to the same final year, and the share of stocks at or above Bmsy gives the number of stocks.</li>
+<li>
+<code><a href="../reference/fishing_area_data.html">fishing_area_data()</a></code> keeps the FAO release of the data, so <code><a href="../reference/cmsy_input.html">cmsy_input()</a></code> records the release actually used; when data do not record it, <code><a href="../reference/cmsy_input.html">cmsy_input()</a></code> says which release is assumed.</li>
+<li>
+<code><a href="../reference/regime_shift.html">regime_shift()</a></code> leaves out species without catch instead of stopping.</li>
+<li>The tables of <code><a href="../reference/species_country.html">species_country()</a></code> keep “Other nei” when it is among the ranked countries.</li>
+<li>
+<code><a href="../reference/fao_report.html">fao_report()</a></code>: the stock status paragraph gave the shares of collapsed and rebuilding stocks in the wrong order, and its total of over-exploited and collapsed stocks added rebuilding stocks instead of collapsed ones.</li>
+<li>
+<code><a href="../reference/fao_report.html">fao_report()</a></code>: the Word file gives the author of the report as “last modified by”, not the login name of the computer that wrote it.</li>
+<li>Report text: the abstract no longer opens with a general sentence on the area or ends with a recommendation; the sentence on under-reporting cites Garibaldi (2012); the conclusion on diversity gives the HHI, and equal concentration by species and by country is said once; the P/D paragraph and conclusion do not name the most recent period twice; counts of CMSY++ stocks agree with their verbs and say “no stock” (“没有种群”) instead of 0; English sentences no longer start with a number; lists whose items contain commas are separated by semicolons; Chinese notes no longer open with “需要指出的是”.</li>
+<li>
+<code><a href="../reference/cmsy_input.html">cmsy_input()</a></code> and <code><a href="../reference/cmsy_area.html">cmsy_area()</a></code> messages say “1 stock” instead of “1 stocks”.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="website-0-7-0">Website<a class="anchor" aria-label="anchor" href="#website-0-7-0"></a></h3>
+<ul><li>Pages are less crowded: wider line spacing (above all in Chinese), main sections separated by a thin line, subsections marked with a bar, and more space between paragraphs, list items, code, tables and figures.</li>
+<li>In the tutorial, the explanation under each chart (“How to read it” and the result for area 67) is in its own box, with a dashed line before the result, so that each chart and its text stand apart from the next chart.</li>
+<li>The documentation links on the home pages are grouped (start here, data and analyses, assessment and report, more) instead of one run of links.</li>
+<li>Charts in the articles no longer show the path of their file below them.</li>
+<li>The home page (the README) always opens in English, also after Chinese pages were visited (other pages keep the chosen language); the Chinese home page links to it at its top.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.6.0" id="faofishingreport-060">faofishingreport 0.6.0<a class="anchor" aria-label="anchor" href="#faofishingreport-060"></a></h2>
 <div class="section level3">

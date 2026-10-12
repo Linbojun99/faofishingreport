@@ -317,7 +317,7 @@ fao_report(
 
 - `cmsy`:
 
-  逻辑值。为TRUE时，还会用CMSY++（[`cmsy_area()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_area.md)）评估主要物种，报告中增加资源评估部分，包括每个物种的结果，以及生物学参考点、先验及其来源的附表。默认为FALSE。也可以传入之前[`cmsy_area()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_area.md)运行的结果，这样无需再次运行CMSY++即可生成报告。CMSY++需要JAGS：见[`cmsy_setup()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_setup.md)。
+  逻辑值。为TRUE时，还会用CMSY++（[`cmsy_area()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_area.md)）评估主要物种，报告中增加资源评估部分，包括每个物种的结果，以及生物学参考点、先验及其来源的附表。默认为FALSE。也可以传入之前[`cmsy_area()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_area.md)运行的结果，这样无需再次运行CMSY++即可生成报告；该结果必须与报告属于同一渔区和同一FAO数据版本（`data_version`），否则停止生成报告。CMSY++需要JAGS：见[`cmsy_setup()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_setup.md)。
 
   English
 
@@ -329,7 +329,8 @@ fao_report(
   sources. Default is FALSE. The result of an earlier
   [`cmsy_area()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_area.md)
   run can also be given, to write the report without running CMSY++
-  again. CMSY++ needs JAGS: see
+  again; it must be of the same area and FAO release as the report
+  (`data_version`), else the report stops. CMSY++ needs JAGS: see
   [`cmsy_setup()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_setup.md).
 
 ## 返回值

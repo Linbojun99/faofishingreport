@@ -13,7 +13,7 @@ settings argument), what each one does and which part of CMSY++ it affects.'><me
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,7 +76,7 @@ values in CMSY++, the values <code><a href="cmsy_run.html">cmsy_run()</a></code>
 
 
 <dl><dt id="arg-settings">settings<a class="anchor" aria-label="anchor" href="#arg-settings"></a></dt>
-<dd><p>Optional named list of changed settings, e.g. <code>list(sigmaR = 0.2)</code>, to show
+<dd><p>Optional named list of changed settings, e.g. <code>list(CV.C = 0.2)</code>, to show
 them next to the defaults and check them.</p></dd>
 
 
@@ -92,7 +92,11 @@ the language set with <code><a href="fao_settings.html">fao_settings()</a></code
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Settings marked "BSM" only matter when abundance data (CPUE or biomass) are given; FAO data
+    <p>Two settings of the code, <code>sigmaR</code> and <code>ni</code>, are set in <code>CMSY++16.R</code> but used nowhere in it: the
+process error of the model is estimated in JAGS with the prior <code>itau2 ~ dgamma(4, 0.01)</code>, so
+changing <code>sigmaR</code> would not change any result. They are listed as "not used" and cannot be
+changed, so that a run is not taken for a sensitivity analysis of the process error.</p>
+<p>Settings marked "BSM" only matter when abundance data (CPUE or biomass) are given; FAO data
 have none, so with FAO data alone only the settings marked "all" change the results. The chart
 and output switches of CMSY++ (<code>mgraphs</code>, <code>kobe.plot</code>, <code>pp.plot</code>, <code>retros</code>, <code>save.plots</code>,
 <code>write.output</code>, ...) are set by the <code>plots</code> argument of <code><a href="cmsy_run.html">cmsy_run()</a></code>, and the file names by
@@ -111,7 +115,7 @@ Germany, 17 pp. <a href="https://oceanrep.geomar.de/id/eprint/52147/" class="ext
 <span class="r-out co"><span class="r-pr">#&gt;</span>         setting cmsy_default       used changed applies_to</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1          CV.C         0.15       0.15   FALSE        all</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2       CV.cpue          0.2        0.2   FALSE        BSM</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3        sigmaR          0.1        0.1   FALSE        all</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        sigmaR          0.1        0.1   FALSE   not used</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4    cor.log.rk        -0.76      -0.76   FALSE     charts</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5   rk.cor.beta   2.52, 3.37 2.52, 3.37   FALSE        all</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6           nbk            3          3   FALSE        BSM</span>
@@ -119,7 +123,7 @@ Germany, 17 pp. <a href="https://oceanrep.geomar.de/id/eprint/52147/" class="ext
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8    ct_MSY.lim         1.21       1.21   FALSE        all</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 9  q.biomass.pr     0.9, 1.1   0.9, 1.1   FALSE        BSM</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 10            n         5000       5000   FALSE     charts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11           ni            3          3   FALSE        all</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11           ni            3          3   FALSE   not used</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 12          nab            3          3   FALSE        BSM</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 13           bw            3          3   FALSE        all</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 14 e.creep.line         TRUE       TRUE   FALSE     charts</span>
@@ -128,33 +132,33 @@ Germany, 17 pp. <a href="https://oceanrep.geomar.de/id/eprint/52147/" class="ext
 <span class="r-out co"><span class="r-pr">#&gt;</span> 17       n.iter        60000      60000   FALSE        all</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 18     n.burnin        30000      30000   FALSE        all</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 19       n.thin           10         10   FALSE        all</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                       description</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                                       Coefficient of variation of the catch (observation error)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                                              Minimum realistic coefficient of variation of CPUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                                                              Process error (standard deviation)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                                             Correlation of log r and log k, used only in charts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                                                        Beta prior of the r-k correlation plus 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  Number of B/k priors used by BSM: 1 (first year), 2 (and intermediate year), 3 (and last year)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7                                                    Use the abundance data to set the B/k priors</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8                      Ratio of catch to the MSY prior above which the B/k prior is kept constant</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9                                            Prior range of q when the abundance data are biomass</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10                                        Number of points of the r-k cloud in the analysis chart</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11                                                   Iterations of r-k-start biomass combinations</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12                                         Minimum number of years with abundance data to run BSM</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13                                                 Bandwidth of ksmooth() for smoothing the catch</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14                              Show the CPUE not corrected for effort creep in the biomass chart</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15                            Year for which B, F, B/Bmsy and F/Fmsy are also reported (NA: none)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16                                                                   Number of MCMC chains (JAGS)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17                                                     Number of MCMC iterations per chain (JAGS)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18                                                            Number of burn-in iterations (JAGS)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19                                                             Thinning of the MCMC chains (JAGS)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                                                                        description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                                                                                                                        Coefficient of variation of the catch (observation error)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                                                                                                                               Minimum realistic coefficient of variation of CPUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  Not used by CMSY++16.R: the code sets it (sigR &lt;- sigmaR) but never uses it; the model estimates its process error with the prior itau2 ~ dgamma(4, 0.01). It cannot be changed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                                                                                                                              Correlation of log r and log k, used only in charts</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                                                                                                                                         Beta prior of the r-k correlation plus 1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                                                                                   Number of B/k priors used by BSM: 1 (first year), 2 (and intermediate year), 3 (and last year)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7                                                                                                                                     Use the abundance data to set the B/k priors</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                                                                                                       Ratio of catch to the MSY prior above which the B/k prior is kept constant</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9                                                                                                                             Prior range of q when the abundance data are biomass</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10                                                                                                                         Number of points of the r-k cloud in the analysis chart</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11                                                                                                Not used by CMSY++16.R: the code sets it but never uses it. It cannot be changed</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12                                                                                                                          Minimum number of years with abundance data to run BSM</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13                                                                                                                                  Bandwidth of ksmooth() for smoothing the catch</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14                                                                                                               Show the CPUE not corrected for effort creep in the biomass chart</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15                                                                                                             Year for which B, F, B/Bmsy and F/Fmsy are also reported (NA: none)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16                                                                                                                                                    Number of MCMC chains (JAGS)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17                                                                                                                                      Number of MCMC iterations per chain (JAGS)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18                                                                                                                                             Number of burn-in iterations (JAGS)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19                                                                                                                                              Thinning of the MCMC chains (JAGS)</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Check changed settings before a run: here a larger process error and longer chains</span></span></span>
-<span class="r-in"><span><span class="fu">cmsy_defaults</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sigmaR <span class="op">=</span> <span class="fl">0.2</span>, n.iter <span class="op">=</span> <span class="fl">100000</span>, n.burnin <span class="op">=</span> <span class="fl">50000</span><span class="op">)</span>, lang <span class="op">=</span> <span class="st">"zh"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Check changed settings before a run: here a larger catch error and longer chains</span></span></span>
+<span class="r-in"><span><span class="fu">cmsy_defaults</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CV.C <span class="op">=</span> <span class="fl">0.2</span>, n.iter <span class="op">=</span> <span class="fl">100000</span>, n.burnin <span class="op">=</span> <span class="fl">50000</span><span class="op">)</span>, lang <span class="op">=</span> <span class="st">"zh"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>         setting cmsy_default       used changed applies_to</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1          CV.C         0.15       0.15   FALSE        all</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1          CV.C         0.15        0.2    TRUE        all</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2       CV.cpue          0.2        0.2   FALSE        BSM</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3        sigmaR          0.1        0.2    TRUE        all</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3        sigmaR          0.1        0.1   FALSE   not used</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 4    cor.log.rk        -0.76      -0.76   FALSE     charts</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 5   rk.cor.beta   2.52, 3.37 2.52, 3.37   FALSE        all</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 6           nbk            3          3   FALSE        BSM</span>
@@ -162,7 +166,7 @@ Germany, 17 pp. <a href="https://oceanrep.geomar.de/id/eprint/52147/" class="ext
 <span class="r-out co"><span class="r-pr">#&gt;</span> 8    ct_MSY.lim         1.21       1.21   FALSE        all</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 9  q.biomass.pr     0.9, 1.1   0.9, 1.1   FALSE        BSM</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 10            n         5000       5000   FALSE     charts</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11           ni            3          3   FALSE        all</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11           ni            3          3   FALSE   not used</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 12          nab            3          3   FALSE        BSM</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 13           bw            3          3   FALSE        all</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 14 e.creep.line         TRUE       TRUE   FALSE     charts</span>
@@ -171,26 +175,26 @@ Germany, 17 pp. <a href="https://oceanrep.geomar.de/id/eprint/52147/" class="ext
 <span class="r-out co"><span class="r-pr">#&gt;</span> 17       n.iter        60000     100000    TRUE        all</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 18     n.burnin        30000      50000    TRUE        all</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 19       n.thin           10         10   FALSE        all</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                         description</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1                                          渔获量观测误差的变异系数</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2                                               CPUE 的最小变异系数</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                                                过程误差（标准差）</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                             log r 与 log k 的相关系数，仅用于作图</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                                     r-k 相关系数加 1 的 beta 先验</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 6  BSM 使用的 B/k 先验个数：1（首年）、2（加中间年）、3（再加末年）</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 7                                           用丰度数据设定 B/k 先验</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 8                 渔获量与 MSY 先验之比超过此值时，B/k 先验保持不变</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 9                                   丰度数据为生物量时 q 的先验范围</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 10                                          分析图中 r-k 点云的点数</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 11                                     r-k-起始生物量组合的迭代次数</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 12                                  运行 BSM 所需丰度数据的最少年数</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 13                                    渔获量平滑（ksmooth()）的带宽</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 14          在生物量图中显示未按渔效增长（effort creep）校正的 CPUE</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 15        另外报告该年 B、F、B/Bmsy 和 F/Fmsy 的年份（NA 为不报告）</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 16                                                MCMC 链数（JAGS）</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 17                                   每条链的 MCMC 迭代次数（JAGS）</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 18                                  预烧（burn-in）迭代次数（JAGS）</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 19                                            MCMC 抽稀间隔（JAGS）</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                                                                                  description</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1                                                                                                   渔获量观测误差的变异系数</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2                                                                                                        CPUE 的最小变异系数</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  CMSY++16.R不使用：代码中有赋值（sigR &lt;- sigmaR），但从未使用；模型的过程误差由先验 itau2 ~ dgamma(4, 0.01) 估计。不能修改</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                                                                                      log r 与 log k 的相关系数，仅用于作图</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                                                                                              r-k 相关系数加 1 的 beta 先验</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 6                                                           BSM 使用的 B/k 先验个数：1（首年）、2（加中间年）、3（再加末年）</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 7                                                                                                    用丰度数据设定 B/k 先验</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 8                                                                          渔获量与 MSY 先验之比超过此值时，B/k 先验保持不变</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 9                                                                                            丰度数据为生物量时 q 的先验范围</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 10                                                                                                   分析图中 r-k 点云的点数</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 11                                                                      CMSY++16.R不使用：代码中有赋值，但从未使用。不能修改</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 12                                                                                           运行 BSM 所需丰度数据的最少年数</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 13                                                                                             渔获量平滑（ksmooth()）的带宽</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 14                                                                   在生物量图中显示未按渔效增长（effort creep）校正的 CPUE</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 15                                                                 另外报告该年 B、F、B/Bmsy 和 F/Fmsy 的年份（NA 为不报告）</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 16                                                                                                         MCMC 链数（JAGS）</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 17                                                                                            每条链的 MCMC 迭代次数（JAGS）</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 18                                                                                           预烧（burn-in）迭代次数（JAGS）</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 19                                                                                                     MCMC 抽稀间隔（JAGS）</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

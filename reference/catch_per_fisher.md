@@ -94,9 +94,10 @@ and inland catch, marine, inland and all fishers, catch per fisher of
 each, the number of fishers as people, fish farmers, workers of
 unspecified work area and their share of all workers, the share of
 fishers in estimated values or with unknown working time, and whether
-the number of fishers is unchanged from the year before) and `notes`
-(FAO's notes on the countries). The chart `<label>_catch_per_fisher.png`
-is saved in `figures/png/summary/` and the table
+the number of fishers is unchanged from the year before; NA in the years
+in which the country reported no catch or no workers) and `notes` (FAO's
+notes on the countries). The chart `<label>_catch_per_fisher.png` is
+saved in `figures/png/summary/` and the table
 `<label>_catch_per_fisher.csv` in `tables/`.
 
 ## Counting fishers

@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -225,8 +225,8 @@ run) and <code>plots</code>.</p>
 <span><span class="fu"><a href="../../../reference/cmsy_compare.html">cmsy_compare</a></span><span class="op">(</span>`from 1950` <span class="op">=</span> <span class="va">run_1950</span>, `CMSY++ start year` <span class="op">=</span> <span class="va">run_auto</span>, annotations <span class="op">=</span> <span class="st">"legend"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Sensitivity to a CMSY++ setting (see cmsy_defaults())</span></span>
-<span><span class="va">run_sigma</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_run.html">cmsy_run</a></span><span class="op">(</span><span class="va">input</span>, stocks <span class="op">=</span> <span class="st">"GRB_34"</span>, seed <span class="op">=</span> <span class="fl">1</span>, auto_start <span class="op">=</span> <span class="cn">TRUE</span>, settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>sigmaR <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../../../reference/cmsy_compare.html">cmsy_compare</a></span><span class="op">(</span>default <span class="op">=</span> <span class="va">run_auto</span>, `sigmaR = 0.2` <span class="op">=</span> <span class="va">run_sigma</span><span class="op">)</span><span class="op">$</span><span class="va">last_year</span></span>
+<span><span class="va">run_cv</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_run.html">cmsy_run</a></span><span class="op">(</span><span class="va">input</span>, stocks <span class="op">=</span> <span class="st">"GRB_34"</span>, seed <span class="op">=</span> <span class="fl">1</span>, auto_start <span class="op">=</span> <span class="cn">TRUE</span>, settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>CV.C <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../../../reference/cmsy_compare.html">cmsy_compare</a></span><span class="op">(</span>default <span class="op">=</span> <span class="va">run_auto</span>, `CV.C = 0.3` <span class="op">=</span> <span class="va">run_cv</span><span class="op">)</span><span class="op">$</span><span class="va">last_year</span></span>
 <span></span>
 <span><span class="co"># With another assessment of the same stock, read from a file with the columns</span></span>
 <span><span class="co"># Stock, Year, B_Bmsy (optionally F_Fmsy) and source</span></span>

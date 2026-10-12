@@ -13,7 +13,7 @@ exports, how much of the same groups it imports, and the value of this trade."><
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -162,7 +162,10 @@ to a group compared. With <code>conversion</code>, also the trade in live weight
 share converted and the apparent supply;</p></dd>
 
 <dt>by_group</dt>
-<dd><p>the same by country, group and year;</p></dd>
+<dd><p>the same by country, group and year. In <code>yearly</code> and <code>by_group</code>, a value is
+NA when it is not known: the country reported no catch (or no trade) in that year, or the
+values are missing in the FAO data; it is zero when the country reported that year but not
+this group or trade flow;</p></dd>
 
 <dt>groups</dt>
 <dd><p>one row per country and ISSCAAP group with catch or exports in the last five

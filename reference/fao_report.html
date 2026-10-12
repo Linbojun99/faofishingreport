@@ -15,7 +15,7 @@ marked in grey, such as other data sources, the discussion and other references.
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -234,7 +234,9 @@ distant-water fleets in the area (<code><a href="distant_water_profile.html">dis
 (<code><a href="cmsy_area.html">cmsy_area()</a></code>), and the report has a part on the assessment, with the results of
 every species and appendix tables of the reference points, priors and their sources.
 Default is FALSE. The result of an earlier <code><a href="cmsy_area.html">cmsy_area()</a></code> run can also be given, to
-write the report without running CMSY++ again. CMSY++ needs JAGS: see <code><a href="cmsy_setup.html">cmsy_setup()</a></code>.</p></dd>
+write the report without running CMSY++ again; it must be of the same area and FAO
+release as the report (<code>data_version</code>), else the report stops. CMSY++ needs JAGS: see
+<code><a href="cmsy_setup.html">cmsy_setup()</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

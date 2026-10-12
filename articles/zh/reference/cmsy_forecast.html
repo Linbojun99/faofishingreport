@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -154,11 +154,12 @@ Default is NULL, all stocks that ran.
 </dd>
 <dt><code>years</code></dt>
 <dd>
-预测的年数。默认为10。
+在各种群最后一年中最晚的一年之后预测的年数。默认为10。
 <details class="fao-en"><summary>
 English
 </summary>
-Number of years to project. Default is 10.
+Number of years to project after the latest last year of the stocks.
+Default is 10.
 </details>
 </dd>
 <dt><code>f</code></dt>
@@ -272,13 +273,14 @@ be changed for the session with
 <div class="section level2">
 <h2 id="返回值">返回值<a class="anchor" aria-label="anchor" href="#%E8%BF%94%E5%9B%9E%E5%80%BC"></a>
 </h2>
-<p>以不可见方式返回一个列表，包含<code>projection</code>（按种群、情景和年份：B/Bmsy、F/Fmsy和渔获量的中位数及95%置信限，以及B至少达到Bmsy的概率）和<code>share</code>（按情景和年份：处于或高于Bmsy的种群所占比例及其95%置信限）。</p>
+<p>以不可见方式返回一个列表，包含<code>projection</code>（按种群、情景和年份：B/Bmsy、F/Fmsy和渔获量的中位数及95%置信限，以及B至少达到Bmsy的概率）和<code>share</code>（按情景和年份：处于或高于Bmsy的种群所占比例及其95%置信限，以及种群数）。</p>
 <details class="fao-en"><summary>
 English
 </summary><p>Invisibly, a list with <code>projection</code> (by stock, scenario
 and year: median B/Bmsy, F/Fmsy and catch with 95% limits, and the
 probability that B is at least Bmsy) and <code>share</code> (by scenario
-and year: share of stocks at or above Bmsy, with 95% limits).</p>
+and year: share of stocks at or above Bmsy, with 95% limits, and the
+number of stocks).</p>
 </details>
 </div>
 <div class="section level2">
@@ -286,7 +288,8 @@ and year: share of stocks at or above Bmsy, with 95% limits).</p>
 </h2>
 <p>CMSY++16.R本身没有预测功能，因此这里用CMSY++的模型本身进行预测：生产力在B/k
 =
-0.25以下线性下降的Schaefer剩余产量模型（CMSY++16.R和Froese等，2023），从本次运行中r、k和最后一年B/k的后验抽样值（来自相同的MCMC迭代）出发，并加入对数正态过程误差（<code>sigma</code>，默认为0.1，与CMSY++中的<code>sigmaR</code>相同）。在F情景中，生物量低于Bmsy的一半时Fmsy线性降低，与CMSY++管理结果中的做法相同。渔获量等于F乘以生物量，与CMSY++对F的定义一致。</p>
+0.25以下线性下降的Schaefer剩余产量模型（CMSY++16.R和Froese等，2023），从本次运行中r、k和最后一年B/k的后验抽样值（来自相同的MCMC迭代）出发，并加入标准差为<code>sigma</code>的对数正态过程误差（默认为0.1，即<code>CMSY++16.R</code>给其未使用的设置<code>sigmaR</code>的值；CMSY++模型本身估计其过程误差）。与CMSY++相同，某一年的生物量是该年捕捞之前的生物量，F是渔获量除以该生物量，F/Fmsy所用的Fmsy在生物量低于Bmsy的一半时线性降低（CMSY++16.R）。保留数据最后一年的渔获量，因此下一年的生物量即为CMSY++模型给出的生物量；各情景从预测的第一年起设定渔获量。在F情景中，渔获量等于情景的F乘以同一年的生物量，因此F/Fmsy等于情景值。</p>
+<p>数据结束年份不同的种群，各自从其最后一年预测到同一个最终年份（各种群最后一年中最晚的一年加上<code>years</code>）；处于或高于Bmsy的种群所占比例从这一最晚的最后一年起给出，此时每个种群都有值。</p>
 <details class="fao-en"><summary>
 English
 </summary><p>CMSY++16.R has no projection, so it is done here with the CMSY++
@@ -294,10 +297,20 @@ model itself: the Schaefer surplus-production model in which
 productivity declines linearly below B/k = 0.25 (CMSY++16.R and Froese
 et al. 2023), started from the posterior draws of r, k and last-year B/k
 of the run (which come from the same MCMC iterations), with lognormal
-process error (<code>sigma</code>, 0.1 by default as <code>sigmaR</code>
-in CMSY++). In the F scenarios Fmsy is reduced linearly below half of
-Bmsy, as in the management results of CMSY++. Catch is F times biomass,
-as CMSY++ defines F.</p>
+process error of standard deviation <code>sigma</code> (0.1 by default,
+the value <code>CMSY++16.R</code> gives to its unused setting
+<code>sigmaR</code>; the CMSY++ model itself estimates its process
+error). As in CMSY++, the biomass of a year is the biomass before the
+catch of that year, F is the catch divided by that biomass, and F/Fmsy
+uses an Fmsy reduced linearly below half of Bmsy (CMSY++16.R). The catch
+of the last year of the data is kept, so the biomass of the next year is
+that of the CMSY++ model; the scenarios set the catch from the first
+projected year on. In the F scenarios the catch is the scenario F times
+the biomass of the same year, so F/Fmsy is the scenario value.</p>
+<p>Stocks whose data end in different years are each projected from
+their own last year to the same final year (the latest last year plus
+<code>years</code>); the share of stocks at or above Bmsy is given from
+the latest last year on, when every stock has a value.</p>
 </details>
 </div>
 <div class="section level2">

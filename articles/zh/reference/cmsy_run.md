@@ -141,12 +141,12 @@ cmsy_run(
 
 - `settings`:
 
-  可选的命名列表，给出用于替代CMSY++默认值的设置，例如`list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000)`。各项设置、其默认值和作用见[`cmsy_defaults()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_defaults.md)。默认为不作更改：CMSY++使用其自身的默认值运行。所用的设置保存在运行文件夹的`settings_used.csv`和`result$settings`中。
+  可选的命名列表，给出用于替代CMSY++默认值的设置，例如`list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000)`。各项设置、其默认值和作用见[`cmsy_defaults()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_defaults.md)。默认为不作更改：CMSY++使用其自身的默认值运行。所用的设置保存在运行文件夹的`settings_used.csv`和`result$settings`中。
 
   English
 
   Optional named list of CMSY++ settings that replace its defaults, e.g.
-  `list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000)`. See
+  `list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000)`. See
   [`cmsy_defaults()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_defaults.md)
   for the settings, their defaults and what they do. Default is no
   change: CMSY++ runs with its own defaults. The settings used are saved
@@ -186,16 +186,19 @@ cmsy_run(
 
 - `timeout`:
 
-  单个种群的最长运行时间，单位为秒；超过该时间仍在运行的种群报告为失败。默认为3600。
+  单个种群的最长运行时间（秒）；超过后仍在运行的种群会被终止，并记为”timeout”（如果其主分析已经完成，则记为”partial”）。默认值为3600。
 
   English
 
   Maximum time for one stock, in seconds; a stock still running after it
-  is reported as failed. Default is 3600.
+  is stopped and reported as “timeout” (or “partial” if its main
+  analysis had finished). Default is 3600.
 
 ## 返回值
 
-以不可见方式返回一个`cmsy_result`类的列表，包含`summary`（每个种群一行：生物学参考点、最后一年的状态及其95%置信限、Kobe象限概率、所用的先验及其来源链接）、`series`（逐年：渔获量、预测渔获量、B/k、生物量、B/Bmsy、F和F/Fmsy，以及95%置信限）、`kobe`（最后一年的后验抽样值）、`details`（每个种群：r、k和B/k的后验抽样值、先验、回顾性分析的各次运行）、`logs`、`sources`（CMSY++、JAGS、R和数据的版本）和`changes`（对CMSY++代码所做的修改）。汇总表保存在tables/cmsy/。
+以不可见方式返回一个`cmsy_result`类的列表，包含`summary`（每个种群一行：生物学参考点、最后一年的状态及其95%置信限、Kobe象限概率、所用的先验及其来源链接）、`series`（逐年：渔获量、预测渔获量、B/k、生物量、B/Bmsy、F和F/Fmsy，以及95%置信限）、`kobe`（最后一年的后验抽样值）、`details`（每个种群：r、k和B/k的后验抽样值、先验、回顾性分析的各次运行）、`logs`、`sources`（CMSY++、JAGS、R和数据的版本）和`changes`（对CMSY++代码所做的修改）。汇总表保存在tables/cmsy/。其中的`run_status`在该种群运行无错误结束时为”ok”；主分析已保存结果、但之后的步骤（回顾性分析或某张图）失败或超时时为”partial”；没有结果时为”failed”或”timeout”；`exit`记录运行是怎样结束的。其他函数使用”ok”和”partial”种群的结果。运行完成并不等于评估经过核实：神经网络给出的B/k先验”may
+not be appropriate for your
+stock”（可能不适合你的种群，CMSY++用户手册），因此应逐个种群核对（自行设定先验见[`cmsy_input()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_input.md)）。
 
 English
 
@@ -207,7 +210,16 @@ with 95% limits), `kobe` (the last-year draws), `details` (per stock:
 posterior draws of r, k and B/k, the priors, retrospective runs),
 `logs`, `sources` (the versions of CMSY++, JAGS, R and the data) and
 `changes` (the changes made to the CMSY++ code). The summary is saved in
-`tables/cmsy/`.
+`tables/cmsy/`. Its `run_status` is “ok” when the run of the stock
+finished without error, “partial” when the main analysis saved its
+results but a later step (the retrospective analysis or a chart) failed
+or ran out of time, and “failed” or “timeout” when there are no results;
+`exit` says how the run ended. The other functions use the results of
+“ok” and “partial” stocks. A finished run is not a validated assessment:
+the B/k priors suggested by the neural network “may not be appropriate
+for your stock” (CMSY++ user guide), so check them stock by stock (see
+[`cmsy_input()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_input.md)
+for setting your own).
 
 ## 详细说明
 
@@ -265,9 +277,9 @@ head(result$series)                                # catch, B/k, biomass, B/Bmsy
 result <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE,
                    plots = c("analysis", "management", "kobe", "prior_posterior", "retrospective"))
 
-# Changed CMSY++ settings (see cmsy_defaults()): longer chains and a larger process error
+# Changed CMSY++ settings (see cmsy_defaults()): longer chains and a larger catch error
 result <- cmsy_run(input, stocks = "GRB_34", seed = 1,
-                   settings = list(n.iter = 100000, n.burnin = 50000, sigmaR = 0.15))
+                   settings = list(n.iter = 100000, n.burnin = 50000, CV.C = 0.2))
 result$settings[result$settings$changed, c("setting", "cmsy_default", "used")]
 
 # The ten main stocks, four at a time, without progress bar or messages

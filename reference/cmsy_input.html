@@ -13,7 +13,7 @@ FishBase and SeaLifeBase table (see cmsy_priors()), with the source of each valu
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -110,7 +110,14 @@ countries; or "country": one stock per species item, fishing area and country.</
 per stock or species. It identifies the rows by a <code>Stock</code>, <code>alpha3</code>, <code>species_en</code> or
 <code>species</code> column (<code>species</code>: any name, as in the <code>species</code> argument) and can have any of the ID file columns <code>Resilience</code>, <code>r.low</code>, <code>r.hi</code>,
 <code>stb.low</code>, <code>stb.hi</code>, <code>int.yr</code>, <code>intb.low</code>, <code>intb.hi</code>, <code>endb.low</code>, <code>endb.hi</code>,
-<code>StartYear</code>, <code>EndYear</code> and <code>Comment</code>. Values given here are recorded as "user".</p></dd>
+<code>StartYear</code>, <code>EndYear</code> and <code>Comment</code>. Values given here are recorded as "user". A
+<code>Resilience</code> given without <code>r.low</code> and <code>r.hi</code> replaces the r range from FishBase or
+SeaLifeBase with the range of that resilience (CMSY++ uses <code>r.low</code> and <code>r.hi</code> whenever
+both are given). A row
+applies to the stocks of its most specific identifier: only its stock when it has a
+<code>Stock</code>, even if it also names the species; else all stocks of its species. Rows for a
+species are applied before rows for one stock, so the values given for a stock take
+precedence.</p></dd>
 
 
 <dt id="arg-default-resilience">default_resilience<a class="anchor" aria-label="anchor" href="#arg-default-resilience"></a></dt>
@@ -255,7 +262,7 @@ Piscatoria 53: 173-189. <a href="https://doi.org/10.3897/aiep.53.105910" class="
 <span class="r-in"><span><span class="co"># Expert B/k priors (user guide Tables 1 and 3): sardine thought to be depleted in the last year</span></span></span>
 <span class="r-in"><span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu">cmsy_input</span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, species <span class="op">=</span> <span class="st">"PIL"</span>, table <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
 <span class="r-in"><span>                    priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"Sardina pilchardus"</span>, endb.low <span class="op">=</span> <span class="fl">0.2</span>, endb.hi <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> 1 stocks ready for CMSY++ (catch only, no abundance data); 0 left out (see $excluded).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> 1 stock ready for CMSY++ (catch only, no abundance data); 0 left out (see $excluded).</span>
 <span class="r-in"><span><span class="va">input</span><span class="op">$</span><span class="va">id</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Stock"</span>, <span class="st">"endb.low"</span>, <span class="st">"endb.hi"</span><span class="op">)</span><span class="op">]</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    Stock endb.low endb.hi</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1 PIL_34      0.2     0.5</span>

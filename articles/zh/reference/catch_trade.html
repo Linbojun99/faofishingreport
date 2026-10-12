@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -275,7 +275,7 @@ The FAO data release of the catch data; see
 <li>
 <strong>yearly</strong>：所比较的类群合计，每个国家每年一行：渔获量（活重吨），出口、进口和转口量（产品重量吨），出口额和进口额（千美元），单位价值（美元/千克），出口量占渔获量的百分比，净出口量，所比较的类群在该国渔获量和出口额中所占的比例，出口额中估算部分所占的比例，以及没有归入所比较类群的鱼粉和鱼油的贸易。使用<code>conversion</code>时，还包括折算为活重当量的贸易量、已折算部分所占的比例和表观供给量；</li>
 <li>
-<strong>by_group</strong>：同样的内容，按国家、类群和年份；</li>
+<strong>by_group</strong>：同样的内容，按国家、类群和年份。在<code>yearly</code>和<code>by_group</code>中，数值未知时为NA：该国当年没有报告渔获量（或贸易），或FAO数据中的数值缺失；该国当年有报告、但没有这一类群或贸易流向时为零；</li>
 <li>
 <strong>groups</strong>：每个国家在最近五年中有渔获或出口的每个ISSCAAP类群一行：是否参与比较，捕捞在该类群全球产量中所占比例的最低值，最近五年的年均渔获量、出口量和出口额，以及该类群占出口额的比例（<code>export_value_pct</code>）。</li>
 </ul>
@@ -295,7 +295,11 @@ of fishmeal and fish oil not assigned to a group compared. With
 <code>conversion</code>, also the trade in live weight equivalent, the
 share converted and the apparent supply;</li>
 <li>
-<strong>by_group</strong>: the same by country, group and year;</li>
+<strong>by_group</strong>: the same by country, group and year. In
+<code>yearly</code> and <code>by_group</code>, a value is NA when it is
+not known: the country reported no catch (or no trade) in that year, or
+the values are missing in the FAO data; it is zero when the country
+reported that year but not this group or trade flow;</li>
 <li>
 <strong>groups</strong>: one row per country and ISSCAAP group with
 catch or exports in the last five years: whether it is compared, the

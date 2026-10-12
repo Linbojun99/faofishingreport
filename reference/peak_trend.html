@@ -13,7 +13,7 @@ Mann-Kendall trend test (Kendall's tau between year and catch)."><meta property=
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -131,6 +131,30 @@ country) of the data.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Invisibly, a data frame with one row per series (the first row is the total).</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>Catch series are autocorrelated, which makes the usual Mann-Kendall test find too many trends,
+so the variance of the test is corrected with the effective sample size of an AR(1) process
+(Yue and Wang 2004), from the lag-1 autocorrelation of the detrended series corrected for its
+small-sample bias (Kendall 1954; <code>lag1_autocorrelation</code>); <code>p_value_iid</code> is the p value of the
+usual test, for comparison. Over ten years the autocorrelation is poorly known and the
+correction is only partial: strongly autocorrelated series still show trends too often. <code>trend</code> tests each series on its own
+(<code>p_value</code> &lt; 0.05): with many series, some trends are found by chance, and <code>q_value</code> gives the
+p values adjusted for the number of series in the result, the total excepted (Benjamini and
+Hochberg 1995). Read trends with <code>p_value</code> &lt; 0.05 as exploratory, and give as significant
+the trends with <code>q_value</code> &lt; 0.05, as <code><a href="fao_report.html">fao_report()</a></code> does for the main species and countries.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Benjamini, Y. and Hochberg, Y. (1995). Controlling the false discovery rate: a practical and
+powerful approach to multiple testing. Journal of the Royal Statistical Society: Series B 57:
+289-300. <a href="https://doi.org/10.1111/j.2517-6161.1995.tb02031.x" class="external-link">doi:10.1111/j.2517-6161.1995.tb02031.x</a></p>
+<p>Kendall, M.G. (1954). Note on bias in the estimation of autocorrelation. Biometrika 41: 403-404.
+<a href="https://doi.org/10.1093/biomet/41.3-4.403" class="external-link">doi:10.1093/biomet/41.3-4.403</a></p>
+<p>Yue, S. and Wang, C.Y. (2004). The Mann-Kendall test modified by effective sample size to
+detect trend in serially correlated hydrological series. Water Resources Management 18:
+201-218. <a href="https://doi.org/10.1023/B%3AWARM.0000043140.61082.60" class="external-link">doi:10.1023/B:WARM.0000043140.61082.60</a></p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

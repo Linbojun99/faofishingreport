@@ -72,7 +72,7 @@ cmsy_input(
 
 - `priors`:
 
-  可选的数据框，给出用于替代默认值的先验和设置，每个种群或物种一行。用`Stock`、`alpha3`、`species_en`或`species`列识别各行（`species`：任何名称，与`species`参数相同），并可包含ID文件的以下任意列：`Resilience`、`r.low`、`r.hi`、`stb.low`、`stb.hi`、`int.yr`、`intb.low`、`intb.hi`、`endb.low`、`endb.hi`、`StartYear`、`EndYear`和`Comment`。在这里给出的值，其来源记为”user”（用户）。
+  可选的数据框，给出用于替代默认值的先验和设置，每个种群或物种一行。用`Stock`、`alpha3`、`species_en`或`species`列识别各行（`species`：任何名称，与`species`参数相同），并可包含ID文件的以下任意列：`Resilience`、`r.low`、`r.hi`、`stb.low`、`stb.hi`、`int.yr`、`intb.low`、`intb.hi`、`endb.low`、`endb.hi`、`StartYear`、`EndYear`和`Comment`。在这里给出的值，其来源记为”user”（用户）。只给出`Resilience`而没有给出`r.low`和`r.hi`时，FishBase或SeaLifeBase中的r范围由该恢复力对应的范围替代（只要同时给出`r.low`和`r.hi`，CMSY++就使用这两个值）。每一行适用于其最具体的标识所对应的种群：有`Stock`时只适用于该种群，即使该行也给出了物种；否则适用于该物种的所有种群。物种的行先于单个种群的行应用，因此为某个种群给出的值优先。
 
   English
 
@@ -82,7 +82,14 @@ cmsy_input(
   the `species` argument) and can have any of the ID file columns
   `Resilience`, `r.low`, `r.hi`, `stb.low`, `stb.hi`, `int.yr`,
   `intb.low`, `intb.hi`, `endb.low`, `endb.hi`, `StartYear`, `EndYear`
-  and `Comment`. Values given here are recorded as “user”.
+  and `Comment`. Values given here are recorded as “user”. A
+  `Resilience` given without `r.low` and `r.hi` replaces the r range
+  from FishBase or SeaLifeBase with the range of that resilience (CMSY++
+  uses `r.low` and `r.hi` whenever both are given). A row applies to the
+  stocks of its most specific identifier: only its stock when it has a
+  `Stock`, even if it also names the species; else all stocks of its
+  species. Rows for a species are applied before rows for one stock, so
+  the values given for a stock take precedence.
 
 - `default_resilience`:
 

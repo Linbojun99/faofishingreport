@@ -140,7 +140,7 @@ catch_per_fisher(
 
 ## 返回值
 
-以不可见方式返回一个列表，包括`yearly`（每个国家每年一行：海洋和内陆渔获量；海洋、内陆和全部渔民人数（按`weights`计）及各自的人均渔获；按人数计的渔民人数、养殖从业者人数、未说明工作领域的从业者人数及其占全部从业者的比例；渔民中估计值所占的比例和工作时间未知者所占的比例；以及渔民人数是否与上一年相同）和`notes`（FAO对这些国家的注释）。图表`<label>_catch_per_fisher.png`保存在`figures/png/summary/`，表格`<label>_catch_per_fisher.csv`保存在`tables/`。
+以不可见方式返回一个列表，包括`yearly`（每个国家每年一行：海洋和内陆渔获量；海洋、内陆和全部渔民人数（按`weights`计）及各自的人均渔获；按人数计的渔民人数、养殖从业者人数、未说明工作领域的从业者人数及其占全部从业者的比例；渔民中估计值所占的比例和工作时间未知者所占的比例；以及渔民人数是否与上一年相同；该国没有报告渔获量或从业者的年份为NA）和`notes`（FAO对这些国家的注释）。图表`<label>_catch_per_fisher.png`保存在`figures/png/summary/`，表格`<label>_catch_per_fisher.csv`保存在`tables/`。
 
 English
 
@@ -149,9 +149,10 @@ and inland catch, marine, inland and all fishers, catch per fisher of
 each, the number of fishers as people, fish farmers, workers of
 unspecified work area and their share of all workers, the share of
 fishers in estimated values or with unknown working time, and whether
-the number of fishers is unchanged from the year before) and `notes`
-(FAO’s notes on the countries). The chart `<label>_catch_per_fisher.png`
-is saved in `figures/png/summary/` and the table
+the number of fishers is unchanged from the year before; NA in the years
+in which the country reported no catch or no workers) and `notes` (FAO’s
+notes on the countries). The chart `<label>_catch_per_fisher.png` is
+saved in `figures/png/summary/` and the table
 `<label>_catch_per_fisher.csv` in `tables/`.
 
 ## 渔民的计数方法

@@ -75,7 +75,8 @@ Invisibly, a list of two data frames:
   men and sex unknown; full time, part time, occasional and working time
   unknown; the share of women and of each working time among those
   known, the share with sex or working time unknown, and the share in
-  estimated values;
+  estimated values; NA in the years without any record (not reported),
+  between the first and last years reported;
 
 - notes:
 

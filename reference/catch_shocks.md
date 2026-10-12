@@ -109,10 +109,11 @@ catch fell below the level of the preceding years are kept:
 
 A shock has recovered in the first later year in which catch is back to
 at least 95% of that baseline. The yearly shock frequency is the number
-of shocks in a year divided by the number of series with catch in that
-year (Cottrell et al. 2019); the shock rate of an area, country or
-species group is the number of shocks divided by the number of its
-series (Gephart et al. 2017).
+of shocks in a year divided by the number of series analysed in that
+year (Cottrell et al. 2019): a series counts from its first year with
+catch to the last year, including years in which its catch fell to zero;
+the shock rate of an area, country or species group is the number of
+shocks divided by the number of its series (Gephart et al. 2017).
 
 Both studies analysed national totals (all species and areas of a
 country); with `by = "country"` and the data of all areas

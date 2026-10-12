@@ -15,7 +15,7 @@ tables. Progress bars follow each step."><meta property="og:image" content="http
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -136,7 +136,7 @@ its two MCMC chains. Default is half the number of processor cores.</p></dd>
 
 <dt id="arg-settings">settings<a class="anchor" aria-label="anchor" href="#arg-settings"></a></dt>
 <dd><p>Optional named list of CMSY++ settings that replace its defaults, e.g.
-<code>list(sigmaR = 0.2, n.iter = 100000, n.burnin = 50000)</code>. See <code><a href="cmsy_defaults.html">cmsy_defaults()</a></code> for the
+<code>list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000)</code>. See <code><a href="cmsy_defaults.html">cmsy_defaults()</a></code> for the
 settings, their defaults and what they do. Default is no change: CMSY++ runs with its own
 defaults. The settings used are saved in <code>settings_used.csv</code> of the run folder and in
 <code>result$settings</code>.</p></dd>
