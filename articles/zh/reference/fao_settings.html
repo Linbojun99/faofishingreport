@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -161,6 +161,10 @@ ERSST
 v5，内置于本包）、用<code><a href="../../../reference/download_sst_data.html">download_sst_data()</a></code>下载的数据产品（如”hadisst1”），或你自己的NetCDF文件的路径，或一个存放NetCDF文件的文件夹的路径（见<code><a href="../../../reference/fao_area_sst.html">fao_area_sst()</a></code>）。</li>
 <li>
 <strong>silent</strong>：CMSY++函数（<code><a href="../../../reference/cmsy_run.html">cmsy_run()</a></code>、<code><a href="../../../reference/cmsy_plot.html">cmsy_plot()</a></code>等）是否静默运行，不显示进度条和提示信息。默认为FALSE。这些函数自身的<code>silent</code>参数仍然优先。</li>
+<li>
+<strong>show_data</strong>：分析函数运行结束时，是否在控制台显示结果摘要：分析的对象、主要结果表的前几行、保存的图表和表格，以及返回结果包含的部分。默认为TRUE。结果以不可见的方式返回：赋值即可保存，例如<code>x &lt;- stock_status(data)</code>。</li>
+<li>
+<strong>plot_show</strong>：保存图表的同时是否把图画在绘图窗口中（例如RStudio的Plots窗格）。默认为FALSE。函数自身的<code>plot_show</code>参数仍然优先。</li>
 </ul>
 <details class="fao-en"><summary>
 English
@@ -244,6 +248,18 @@ the path of your own NetCDF file, or of a folder of NetCDF files (see
 (<code><a href="../../../reference/cmsy_run.html">cmsy_run()</a></code>, <code><a href="../../../reference/cmsy_plot.html">cmsy_plot()</a></code>, …) work silently,
 without progress bars and messages. Default is FALSE. Their
 <code>silent</code> argument still takes precedence.</li>
+<li>
+<strong>show_data</strong>: Whether an analysis function shows a
+short summary of its results in the console when it finishes: what was
+analysed, the first rows of its main table, the charts and tables it
+saved, and the parts of the result it returns. Default is TRUE. The
+results are returned invisibly: assign them to keep them,
+e.g. <code>x &lt;- stock_status(data)</code>.</li>
+<li>
+<strong>plot_show</strong>: Whether charts are also drawn in the
+plot window (e.g. the Plots pane of RStudio) as they are saved. Default
+is FALSE. The <code>plot_show</code> argument of a function still takes
+precedence.</li>
 </ul></details>
 </dd>
 <dt><code>reset</code></dt>

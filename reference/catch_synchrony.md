@@ -23,6 +23,7 @@ catch_synchrony(
   table = TRUE,
   lang = NULL,
   pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show"),
   label = NULL
 )
 ```
@@ -81,6 +82,14 @@ catch_synchrony(
   A logical value. If TRUE, charts are also saved as editable PowerPoint
   files in `figures/pptx/summary/`. Default is FALSE, which can be
   changed for all functions with `fao_settings(pptx = TRUE)`.
+
+- plot_show:
+
+  A logical value. If TRUE, each chart is also drawn in the plot window
+  (e.g. the Plots pane of RStudio) as it is saved, to look at it at
+  once. Default is FALSE, which can be changed for all functions with
+  `fao_settings(plot_show = TRUE)`. The charts are saved as files
+  (`plot = TRUE`) either way.
 
 - label:
 
@@ -160,8 +169,8 @@ effects. Ecology Letters 16: 140-150.
 
 ``` r
 if (FALSE) { # \dontrun{
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-catch_synchrony(FAO34$area_data, lang = "zh")
-catch_synchrony(FAO34$area_data, by = "country", window = 15)
+FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+catch_synchrony(FAO27$area_data, lang = "zh")
+catch_synchrony(FAO27$area_data, by = "country", window = 15)
 } # }
 ```

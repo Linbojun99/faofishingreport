@@ -50,6 +50,8 @@ fao_settings(..., reset = FALSE)
     ERSST
     v5，内置于本包）、用[`download_sst_data()`](https://linbojun99.github.io/faofishingreport/reference/download_sst_data.md)下载的数据产品（如”hadisst1”），或你自己的NetCDF文件的路径，或一个存放NetCDF文件的文件夹的路径（见[`fao_area_sst()`](https://linbojun99.github.io/faofishingreport/reference/fao_area_sst.md)）。
   - **silent**：CMSY++函数（[`cmsy_run()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_run.md)、[`cmsy_plot()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_plot.md)等）是否静默运行，不显示进度条和提示信息。默认为FALSE。这些函数自身的`silent`参数仍然优先。
+  - **show_data**：分析函数运行结束时，是否在控制台显示结果摘要：分析的对象、主要结果表的前几行、保存的图表和表格，以及返回结果包含的部分。默认为TRUE。结果以不可见的方式返回：赋值即可保存，例如`x <- stock_status(data)`。
+  - **plot_show**：保存图表的同时是否把图画在绘图窗口中（例如RStudio的Plots窗格）。默认为FALSE。函数自身的`plot_show`参数仍然优先。
 
   English
 
@@ -122,6 +124,16 @@ fao_settings(..., reset = FALSE)
     [`cmsy_plot()`](https://linbojun99.github.io/faofishingreport/reference/cmsy_plot.md),
     …) work silently, without progress bars and messages. Default is
     FALSE. Their `silent` argument still takes precedence.
+  - **show_data**: Whether an analysis function shows a short summary of
+    its results in the console when it finishes: what was analysed, the
+    first rows of its main table, the charts and tables it saved, and
+    the parts of the result it returns. Default is TRUE. The results are
+    returned invisibly: assign them to keep them,
+    e.g. `x <- stock_status(data)`.
+  - **plot_show**: Whether charts are also drawn in the plot window
+    (e.g. the Plots pane of RStudio) as they are saved. Default is
+    FALSE. The `plot_show` argument of a function still takes
+    precedence.
 
 - `reset`:
 

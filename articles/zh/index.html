@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -282,6 +282,9 @@ FAO 官方中文名。</li>
 <strong>自定义风格</strong>：主题、色板、地图投影（Robinson、Mollweide、Equal
 Earth 等）和太平洋居中地图，用 <code><a href="../../reference/fao_settings.html">fao_settings()</a></code>
 设置一次即可。</li>
+<li>🖥️
+<strong>结果一目了然</strong>：每项分析结束时在控制台显示结果摘要（主要结果表和保存的文件）；<code>plot_show = TRUE</code>
+时同时在绘图窗口显示图表。</li>
 <li>💻 <strong>Windows、macOS、Linux
 通用</strong>：自动选用系统里的中文字体，导出的表格用 Excel
 打开中文不乱码。</li>
@@ -316,8 +319,8 @@ Earth 等）和太平洋居中地图，用 <code><a href="../../reference/fao_se
 <span></span>
 <span><span class="co"># FAO 27 渔区：东北大西洋</span></span>
 <span><span class="va">FAO27</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../../reference/fishing_area_species.html">fishing_area_species</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, rank_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../../reference/fishing_area_country.html">fishing_area_country</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, rank_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">species</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fishing_area_species.html">fishing_area_species</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, rank_range <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>   <span class="co"># c(5, 6)为第五和第六名</span></span>
+<span><span class="va">countries</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../reference/fishing_area_country.html">fishing_area_country</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, rank_range <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, plot_show <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># 大西洋鳕由哪些国家捕捞；挪威主要捕什么</span></span>
 <span><span class="fu"><a href="../../reference/species_country.html">species_country</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, <span class="st">"Atlantic cod"</span><span class="op">)</span></span>

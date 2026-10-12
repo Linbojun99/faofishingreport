@@ -4,7 +4,7 @@
 
 ## 说明
 
-该函数分析渔区数据，并根据各国家按总产量（吨）的排名，为指定排名范围内的国家生成图表。
+该函数分析渔区数据，并根据各国家按总产量（吨）的排名，为`rank_range`所选名次的国家生成图表。
 
 English
 
@@ -17,7 +17,7 @@ specified country based on their ranking in terms of total tonnes.
 
 fishing_area_country(
   area_data,
-  rank_range = c(1, 10),
+  rank_range = 1:10,
   rank_years = NULL,
   plot = TRUE,
   table = TRUE,
@@ -44,7 +44,8 @@ fishing_area_country(
   h_value = 0.15,
   ZH = FALSE,
   lang = NULL,
-  pptx = getOption("faofishingreport.pptx", FALSE)
+  pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show")
 )
 ```
 
@@ -60,12 +61,16 @@ fishing_area_country(
 
 - `rank_range`:
 
-  长度为2的数值向量，指定要分析的国家的排名范围（按历年总产量排序），如`c(1, 10)`为前10名，`c(11, 20)`为其后10名。默认为`c(1, 10)`。
+  要显示的国家名次，按产量排序（见`rank_years`）：列出名次即可，例如`1:10`（默认）为前十名，`c(5, 6)`为第五和第六名，`c(1, 10)`为第一和第十名。超出国家数量的名次不显示。0.9.0及以前的版本中，两个数表示起止名次（`c(1, 10)`为前十名）。
 
   English
 
-  A numeric vector of length 2 specifying the rank range of country to
-  be analyzed.
+  The ranks of the countries to show, ranked by their catch (see
+  `rank_years`): the ranks listed, e.g. `1:10` (default) for the first
+  ten, `c(5, 6)` for the fifth and sixth, or `c(1, 10)` for the first
+  and the tenth. Ranks beyond the number of countries are left out.
+  Until version 0.9.0 two numbers gave the first and the last rank
+  (`c(1, 10)` was the first ten).
 
 - `rank_years`:
 
@@ -305,9 +310,21 @@ fishing_area_country(
   `figures/pptx/`. Default is FALSE, which can be changed for all
   functions with `fao_settings(pptx = TRUE)`.
 
+- `plot_show`:
+
+  逻辑值。为TRUE时，每张图在保存的同时也画在绘图窗口中（例如RStudio的Plots窗格），便于立即查看。默认为FALSE，可以用`fao_settings(plot_show = TRUE)`为所有函数统一更改。无论是否显示，图表都会保存为文件（`plot = TRUE`）。
+
+  English
+
+  A logical value. If TRUE, each chart is also drawn in the plot window
+  (e.g. the Plots pane of RStudio) as it is saved, to look at it at
+  once. Default is FALSE, which can be changed for all functions with
+  `fao_settings(plot_show = TRUE)`. The charts are saved as files
+  (`plot = TRUE`) either way.
+
 ## 返回值
 
-一个列表，包含`area_country`（渔区内每个国家逐年的产量）、`area_country_ranked`（排名范围内各国家逐年的产量，其余合并为一类）、`area_country_ranked_total`（所选国家的总产量和排名）和`coefs_data`（相邻突变点之间各时段的起始年`start_year`、结束年`end_year`和平均产量`intercept`）。`plot`和`table`为TRUE时保存图表和表格。
+一个列表，包含`area_country`（渔区内每个国家逐年的产量）、`area_country_ranked`（所选名次的各国家逐年的产量，其余合并为一类）、`area_country_ranked_total`（所选国家的总产量和排名）和`coefs_data`（相邻突变点之间各时段的起始年`start_year`、结束年`end_year`和平均产量`intercept`）。`plot`和`table`为TRUE时保存图表和表格。
 
 English
 
@@ -328,5 +345,7 @@ Other fishing area analyses:
 
 ``` r
 
-fishing_area_country(FAO34[["area_data"]], c(1, 10), plot=TRUE,table=TRUE,h_value=0.15) #area_data=Fao34
+FAO27 <- fishing_area_data("Atlantic, Northeast")
+fishing_area_country(FAO27$area_data, rank_range = 1:10)    # the ten main countries
+fishing_area_country(FAO27$area_data, rank_range = c(5, 6)) # the fifth and sixth
 ```

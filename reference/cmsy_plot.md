@@ -137,6 +137,7 @@ cmsy_plot(
   annotations = getOption("faofishingreport.cmsy_annotations", FALSE),
   lang = NULL,
   pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show"),
   silent = fao_setting("silent"),
   mcmc_colors = NULL
 )
@@ -186,6 +187,14 @@ cmsy_plot(
   PowerPoint files in figures/pptx/cmsy/\<stock\>/ and
   figures/pptx/cmsy/summary/. Default is FALSE, which can be changed for
   all functions with `fao_settings(pptx = TRUE)`.
+
+- plot_show:
+
+  A logical value. If TRUE, each chart is also drawn in the plot window
+  (e.g. the Plots pane of RStudio) as it is saved, to look at it at
+  once. Default is FALSE, which can be changed for all functions with
+  `fao_settings(plot_show = TRUE)`. The charts are saved as files
+  (`plot = TRUE`) either way.
 
 - silent:
 
@@ -249,7 +258,7 @@ if (FALSE) { # \dontrun{
 cmsy_plot(result, lang = "zh")
 
 # Kobe plot and prior-posterior densities of one species, with all annotations
-cmsy_plot(result, stocks = "Brachydeuterus auritus", charts = c("kobe", "prior_posterior"),
+cmsy_plot(result, stocks = "Mallotus villosus", charts = c("kobe", "prior_posterior"),
           annotations = TRUE, lang = "both")
 
 # Only titles and legends

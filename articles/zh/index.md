@@ -100,6 +100,9 @@ FAO 27 区（东北大西洋）及其亚区 27.1 至 27.14
   Earth 等）和太平洋居中地图，用
   [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
   设置一次即可。
+- 🖥️
+  **结果一目了然**：每项分析结束时在控制台显示结果摘要（主要结果表和保存的文件）；`plot_show = TRUE`
+  时同时在绘图窗口显示图表。
 - 💻 **Windows、macOS、Linux
   通用**：自动选用系统里的中文字体，导出的表格用 Excel 打开中文不乱码。
 
@@ -136,8 +139,8 @@ fishing_area_map(27)
 
 # FAO 27 渔区：东北大西洋
 FAO27 <- fishing_area_data("Atlantic, Northeast")
-fishing_area_species(FAO27$area_data, rank_range = c(1, 10))
-fishing_area_country(FAO27$area_data, rank_range = c(1, 10))
+species <- fishing_area_species(FAO27$area_data, rank_range = 1:10)   # c(5, 6)为第五和第六名
+countries <- fishing_area_country(FAO27$area_data, rank_range = 1:10, plot_show = TRUE)
 
 # 大西洋鳕由哪些国家捕捞；挪威主要捕什么
 species_country(FAO27$area_data, "Atlantic cod")

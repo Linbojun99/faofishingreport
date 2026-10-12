@@ -13,7 +13,7 @@ faofishingreport.&amp;lt;name&amp;gt;, so it can also be set with options()."><m
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -150,6 +150,17 @@ NetCDF file, or of a folder of NetCDF files (see <code><a href="fao_area_sst.htm
 <dd><p>Whether the CMSY++ functions (<code><a href="cmsy_run.html">cmsy_run()</a></code>, <code><a href="cmsy_plot.html">cmsy_plot()</a></code>, ...) work
 silently, without progress bars and messages. Default is FALSE. Their <code>silent</code> argument
 still takes precedence.</p></dd>
+
+<dt>show_data</dt>
+<dd><p>Whether an analysis function shows a short summary of its results in the
+console when it finishes: what was analysed, the first rows of its main table, the charts
+and tables it saved, and the parts of the result it returns. Default is TRUE. The results
+are returned invisibly: assign them to keep them, e.g. <code>x &lt;- stock_status(data)</code>.</p></dd>
+
+<dt>plot_show</dt>
+<dd><p>Whether charts are also drawn in the plot window (e.g. the Plots pane of
+RStudio) as they are saved. Default is FALSE. The <code>plot_show</code> argument of a function still
+takes precedence.</p></dd>
 
 
 </dl></dd>

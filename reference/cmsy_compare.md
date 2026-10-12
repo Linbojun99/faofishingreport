@@ -17,6 +17,7 @@ cmsy_compare(
   lang = NULL,
   annotations = getOption("faofishingreport.cmsy_annotations", FALSE),
   pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show"),
   silent = fao_setting("silent")
 )
 ```
@@ -63,6 +64,14 @@ cmsy_compare(
   which can be changed for all functions with
   `fao_settings(pptx = TRUE)`.
 
+- plot_show:
+
+  A logical value. If TRUE, each chart is also drawn in the plot window
+  (e.g. the Plots pane of RStudio) as it is saved, to look at it at
+  once. Default is FALSE, which can be changed for all functions with
+  `fao_settings(plot_show = TRUE)`. The charts are saved as files
+  (`plot = TRUE`) either way.
+
 - silent:
 
   A logical value. If TRUE, the messages on how the stocks were matched
@@ -79,12 +88,12 @@ Invisibly, a list with `last_year` (one row per stock and run) and
 ``` r
 if (FALSE) { # \dontrun{
 # Sensitivity to the start year
-run_1950 <- cmsy_run(input, stocks = "GRB_34", seed = 1)
-run_auto <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE)
+run_1950 <- cmsy_run(input, stocks = "CAP_27", seed = 1)
+run_auto <- cmsy_run(input, stocks = "CAP_27", seed = 1, auto_start = TRUE)
 cmsy_compare(`from 1950` = run_1950, `CMSY++ start year` = run_auto, annotations = "legend")
 
 # Sensitivity to a CMSY++ setting (see cmsy_defaults())
-run_cv <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE, settings = list(CV.C = 0.3))
+run_cv <- cmsy_run(input, stocks = "CAP_27", seed = 1, auto_start = TRUE, settings = list(CV.C = 0.3))
 cmsy_compare(default = run_auto, `CV.C = 0.3` = run_cv)$last_year
 
 # With another assessment of the same stock, read from a file with the columns

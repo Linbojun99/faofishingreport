@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,6 +52,26 @@
       <small>Source: <a href="https://github.com/Linbojun99/faofishingreport/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.0" id="faofishingreport-100">faofishingreport 1.0.0<a class="anchor" aria-label="anchor" href="#faofishingreport-100"></a></h2>
+<div class="section level3">
+<h3 id="changes-that-need-attention-1-0-0">Changes that need attention<a class="anchor" aria-label="anchor" href="#changes-that-need-attention-1-0-0"></a></h3>
+<ul><li>
+<code>rank_range</code> of <code><a href="../reference/fishing_area_species.html">fishing_area_species()</a></code>, <code><a href="../reference/fishing_area_country.html">fishing_area_country()</a></code>, <code><a href="../reference/species_country.html">species_country()</a></code>, <code><a href="../reference/country_species.html">country_species()</a></code> and <code><a href="../reference/country_analysis.html">country_analysis()</a></code> lists the ranks to show: <code>1:10</code> (the new default) for the first ten, <code>11:20</code> for the next ten, <code>c(5, 6)</code> for the fifth and the sixth. Until 0.9.0 two numbers were the first and the last rank, so <code>c(1, 10)</code> now shows only ranks 1 and 10; a note says so once per session. Ranks beyond the data are left out, and an error is given when none is left. The report (<code><a href="../reference/fao_report.html">fao_report()</a></code>) uses the first <code>top_n</code> ranks as before.</li>
+<li>The analysis functions return their results invisibly, after a summary in the console (below): assign them to keep them, e.g. <code>species &lt;- fishing_area_species(...)</code>. The list returned by <code><a href="../reference/species_country.html">species_country()</a></code> with <code>timeseries_analysis = TRUE</code> has names (<code>species_country_ranked</code>, <code>coefs_data</code>); <code>[[1]]</code> and <code>[[2]]</code> still work.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="results-in-the-console-and-charts-on-screen-1-0-0">Results in the console and charts on screen<a class="anchor" aria-label="anchor" href="#results-in-the-console-and-charts-on-screen-1-0-0"></a></h3>
+<ul><li>When an analysis finishes, it shows a short summary in the console: what was analysed, the first rows of its main table (e.g. the species at the chosen ranks with their catch and share), the charts and tables it saved, and the parts of the result it returns. <code>fao_settings(show_data = FALSE)</code> turns the summaries off. The functions run by another one (e.g. by <code><a href="../reference/fao_report.html">fao_report()</a></code> or <code><a href="../reference/cmsy_area.html">cmsy_area()</a></code>) stay quiet, and the CMSY++ functions follow their <code>silent</code> argument.</li>
+<li>New argument <code>plot_show</code> of every function that draws charts, and setting <code>fao_settings(plot_show = TRUE)</code> for all of them: each chart is also drawn in the plot window (e.g. the Plots pane of RStudio) as it is saved. <code>plot = TRUE</code> still saves the chart files, and <code>plot_show</code> is FALSE by default.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="website-1-0-0">Website<a class="anchor" aria-label="anchor" href="#website-1-0-0"></a></h3>
+<ul><li>Every article ends with links to the previous and the next article, in the order of the menu, and to the list of all articles.</li>
+<li>The last section of the fishing area article shows the Northwest Atlantic (area 21), whose Atlantic cod collapsed in the early 1990s (Hutchings and Myers 1994), instead of the Northwest Pacific. The get-started article shows the summary in the console and <code>plot_show</code>.</li>
+<li>The examples of the function reference use area 27 instead of area 34.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.9.0" id="faofishingreport-090">faofishingreport 0.9.0<a class="anchor" aria-label="anchor" href="#faofishingreport-090"></a></h2>
 <div class="section level3">

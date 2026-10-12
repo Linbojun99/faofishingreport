@@ -22,6 +22,7 @@ collapse_analysis(
   table = TRUE,
   lang = NULL,
   pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show"),
   label = NULL
 )
 ```
@@ -89,6 +90,14 @@ collapse_analysis(
   A logical value. If TRUE, charts are also saved as editable PowerPoint
   files in `figures/pptx/summary/`. Default is FALSE, which can be
   changed for all functions with `fao_settings(pptx = TRUE)`.
+
+- plot_show:
+
+  A logical value. If TRUE, each chart is also drawn in the plot window
+  (e.g. the Plots pane of RStudio) as it is saved, to look at it at
+  once. Default is FALSE, which can be changed for all functions with
+  `fao_settings(plot_show = TRUE)`. The charts are saved as files
+  (`plot = TRUE`) either way.
 
 - label:
 
@@ -169,7 +178,7 @@ biodiversity loss on ocean ecosystem services. Science 314: 787-790.
 ``` r
 if (FALSE) { # \dontrun{
 collapse_analysis(load_fao_data(), lang = "zh")                   # Mullon et al. (2005), world
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-collapse_analysis(FAO34$area_data, method = "worm2006")
+FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+collapse_analysis(FAO27$area_data, method = "worm2006")
 } # }
 ```

@@ -264,7 +264,7 @@ Institute (VLIZ). <https://www.marinespecies.org>,
 
 ``` r
 
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-match <- fishbase_match(FAO34$area_data, lang = "zh")
+FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+match <- fishbase_match(FAO27$area_data, lang = "zh")
 head(match[, c("species_name", "status", "match_type", "trophic_level", "url")])
 ```

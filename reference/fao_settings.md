@@ -136,6 +136,21 @@ fao_settings(..., reset = FALSE)
       ...) work silently, without progress bars and messages. Default is
       FALSE. Their `silent` argument still takes precedence.
 
+  show_data
+
+  :   Whether an analysis function shows a short summary of its results
+      in the console when it finishes: what was analysed, the first rows
+      of its main table, the charts and tables it saved, and the parts
+      of the result it returns. Default is TRUE. The results are
+      returned invisibly: assign them to keep them, e.g.
+      `x <- stock_status(data)`.
+
+  plot_show
+
+  :   Whether charts are also drawn in the plot window (e.g. the Plots
+      pane of RStudio) as they are saved. Default is FALSE. The
+      `plot_show` argument of a function still takes precedence.
+
 - reset:
 
   A logical value. If TRUE, all settings go back to their defaults

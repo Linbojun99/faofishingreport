@@ -248,6 +248,7 @@ series and for their year-to-year differences.
 | `table` | Save the tables in `tables/` | `TRUE` |
 | `lang` | Language of the chart text and names: `"en"`, `"zh"` or `"both"` | `NULL`: the language of [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md) |
 | `pptx` | Also save the charts as editable PowerPoint files in `figures/pptx/summary/` | `FALSE` |
+| `plot_show` | Also draw each chart in the plot window (e.g. the Plots pane of RStudio) as it is saved | `FALSE`, or `plot_show` of [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md) |
 | `label` | Name at the start of the output file names | the fishing area (or country) of the data |
 | `data_dir` | Folder where downloaded data are kept | [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) |
 

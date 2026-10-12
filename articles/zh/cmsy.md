@@ -33,6 +33,7 @@ BY
 | `table` | 是否保存表格（在`tables/cmsy/`） | `TRUE` |
 | `lang` | 图中文字、名称和表格列名的语言：`"en"`、`"zh"`或`"both"` | `NULL`：使用[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)设定的语言（未修改时为`"en"`） |
 | `pptx` | 是否同时把图保存为可编辑的PowerPoint文件（在`figures/pptx/cmsy/`） | `FALSE`；`fao_settings(pptx = TRUE)`可对所有函数生效 |
+| `plot_show` | 保存图表的同时把图画在绘图窗口中（例如RStudio的Plots窗格） | `FALSE`，或[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)中的`plot_show` |
 | `annotations` | 在坐标轴标题和刻度之外加入的文字：`FALSE`不加，`TRUE`全部加入，或`"title"`、`"subtitle"`、`"caption"`、`"legend"`和`"labels"`（图内文字）中的任意几项 | `FALSE`；`options(faofishingreport.cmsy_annotations = TRUE)`可改变本次会话的默认值 |
 | `silent` | 是否不显示进度条和提示信息 | `FALSE`；`fao_settings(silent = TRUE)`可改变本次会话的默认值 |
 | `data_dir` | 存放下载文件的文件夹 | [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) |

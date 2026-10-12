@@ -23,7 +23,7 @@ projection centred on the area, without depth."><meta property="og:image" conten
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -92,7 +92,8 @@ projection centred on the area, without depth.</p>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  lang <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  pptx <span class="op">=</span> <span class="fu">fao_setting</span><span class="op">(</span><span class="st">"pptx"</span><span class="op">)</span></span>
+<span>  pptx <span class="op">=</span> <span class="fu">fao_setting</span><span class="op">(</span><span class="st">"pptx"</span><span class="op">)</span>,</span>
+<span>  plot_show <span class="op">=</span> <span class="fu">fao_setting</span><span class="op">(</span><span class="st">"plot_show"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -141,6 +142,13 @@ asked for are drawn with their outline only.</p></dd>
 <dt id="arg-pptx">pptx<a class="anchor" aria-label="anchor" href="#arg-pptx"></a></dt>
 <dd><p>A logical value. If TRUE, the map is also saved as an editable PowerPoint file in
 <code>figures/pptx/area/</code>. Default is the value set with <code><a href="fao_settings.html">fao_settings()</a></code> (FALSE unless changed).</p></dd>
+
+
+<dt id="arg-plot-show">plot_show<a class="anchor" aria-label="anchor" href="#arg-plot-show"></a></dt>
+<dd><p>A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+which can be changed for all functions with <code>fao_settings(plot_show = TRUE)</code>. The
+charts are saved as files (<code>plot = TRUE</code>) either way.</p></dd>
 
 </dl></div>
     <div class="section level2">

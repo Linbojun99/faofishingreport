@@ -191,6 +191,7 @@ MB）；不联网时使用已下载的最新版本，没有下载过则使用包
 | `table` | 是否把表格保存到`tables/` | `TRUE` |
 | `lang` | 图中文字和名称的语言：`"en"`、`"zh"`或`"both"` | `NULL`：使用[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)设定的语言 |
 | `pptx` | 是否同时把图保存为可编辑的PowerPoint文件，存放在`figures/pptx/summary/` | `FALSE` |
+| `plot_show` | 保存图表的同时把图画在绘图窗口中（例如RStudio的Plots窗格） | `FALSE`，或[`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)中的`plot_show` |
 | `label` | 输出文件名开头的名称 | 数据所属的渔区（或国家） |
 | `data_dir` | 存放下载数据的文件夹 | [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) |
 

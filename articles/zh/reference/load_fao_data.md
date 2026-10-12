@@ -61,5 +61,5 @@ Other FAO data:
 ``` r
 
 data <- load_fao_data()
-FAO34 <- subset(data, FAO.major.fishing.area..Name. == "Atlantic, Eastern Central")
+FAO27 <- subset(data, FAO.major.fishing.area..Name. == "Atlantic, Northeast")
 ```

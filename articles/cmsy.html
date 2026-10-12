@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -177,6 +177,15 @@ scientific name or FAO 3-alpha code (all stocks of the species)</td>
 it for all functions</td>
 </tr>
 <tr class="odd">
+<td><code>plot_show</code></td>
+<td>Also draw each chart in the plot window (e.g. the Plots pane of
+RStudio) as it is saved</td>
+<td>
+<code>FALSE</code>, or <code>plot_show</code> of
+<code><a href="../reference/fao_settings.html">fao_settings()</a></code>
+</td>
+</tr>
+<tr class="even">
 <td><code>annotations</code></td>
 <td>Text added to the axis titles and labels: <code>FALSE</code> none,
 <code>TRUE</code> all, or any of <code>"title"</code>,
@@ -187,14 +196,14 @@ and <code>"labels"</code> (text inside the chart)</td>
 <code>options(faofishingreport.cmsy_annotations = TRUE)</code> changes
 it for the session</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>silent</code></td>
 <td>Print no progress bars and messages</td>
 <td>
 <code>FALSE</code>; <code>fao_settings(silent = TRUE)</code> changes
 it for the session</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>data_dir</code></td>
 <td>Folder where downloads are kept</td>
 <td><code><a href="../reference/fao_data_dir.html">fao_data_dir()</a></code></td>

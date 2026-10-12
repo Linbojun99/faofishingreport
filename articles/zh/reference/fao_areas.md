@@ -25,7 +25,8 @@ fao_areas(
   plot = TRUE,
   table = TRUE,
   lang = NULL,
-  pptx = fao_setting("pptx")
+  pptx = fao_setting("pptx"),
+  plot_show = fao_setting("plot_show")
 )
 ```
 
@@ -82,6 +83,18 @@ fao_areas(
   PowerPoint file in `figures/pptx/area/`. Default is the value set with
   [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
   (FALSE unless changed).
+
+- `plot_show`:
+
+  逻辑值。为TRUE时，每张图在保存的同时也画在绘图窗口中（例如RStudio的Plots窗格），便于立即查看。默认为FALSE，可以用`fao_settings(plot_show = TRUE)`为所有函数统一更改。无论是否显示，图表都会保存为文件（`plot = TRUE`）。
+
+  English
+
+  A logical value. If TRUE, each chart is also drawn in the plot window
+  (e.g. the Plots pane of RStudio) as it is saved, to look at it at
+  once. Default is FALSE, which can be changed for all functions with
+  `fao_settings(plot_show = TRUE)`. The charts are saved as files
+  (`plot = TRUE`) either way.
 
 ## 返回值
 

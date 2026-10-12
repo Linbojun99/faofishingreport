@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -145,11 +145,11 @@ The result of <code><a href="../../../reference/cmsy_input.html">cmsy_input()</a
 </dd>
 <dt><code>stocks</code></dt>
 <dd>
-要运行的种群（可选）：<code>Stock</code>标识（例如”PIL_34”），或物种的FAO英文或中文名称、学名或FAO三字母代码（运行该物种的所有种群）。默认为NULL，即<code>input</code>中的所有种群。
+要运行的种群（可选）：<code>Stock</code>标识（例如”CAP_27”），或物种的FAO英文或中文名称、学名或FAO三字母代码（运行该物种的所有种群）。默认为NULL，即<code>input</code>中的所有种群。
 <details class="fao-en"><summary>
 English
 </summary>
-Optional stocks to run: <code>Stock</code> identifiers (e.g. “PIL_34”)
+Optional stocks to run: <code>Stock</code> identifiers (e.g. “CAP_27”)
 or species, by English or Chinese FAO name, scientific name or FAO
 3-alpha code (all stocks of the species). Default is NULL, all stocks of
 <code>input</code>.
@@ -370,20 +370,20 @@ tiers and status classes). <a href="https://openknowledge.fao.org/server/api/cor
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../../reference/cmsy_setup.html">cmsy_setup</a></span><span class="op">(</span><span class="op">)</span>                                       <span class="co"># once</span></span>
-<span><span class="va">FAO34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_input.html">cmsy_input</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span></span>
+<span><span class="va">FAO27</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_input.html">cmsy_input</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Bigeye grunt, with the start year suggested by CMSY++ and a fixed seed</span></span>
-<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_run.html">cmsy_run</a></span><span class="op">(</span><span class="va">input</span>, stocks <span class="op">=</span> <span class="st">"Brachydeuterus auritus"</span>, auto_start <span class="op">=</span> <span class="cn">TRUE</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co"># Capelin, with the start year suggested by CMSY++ and a fixed seed</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_run.html">cmsy_run</a></span><span class="op">(</span><span class="va">input</span>, stocks <span class="op">=</span> <span class="st">"Mallotus villosus"</span>, auto_start <span class="op">=</span> <span class="cn">TRUE</span>, seed <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">result</span><span class="op">$</span><span class="va">summary</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Stock"</span>, <span class="st">"first_year"</span>, <span class="st">"B_Bmsy"</span>, <span class="st">"B_Bmsy_lcl"</span>, <span class="st">"B_Bmsy_ucl"</span>, <span class="st">"F_Fmsy"</span>, <span class="st">"status"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">series</span><span class="op">)</span>                                <span class="co"># catch, B/k, biomass, B/Bmsy, F/Fmsy by year</span></span>
 <span></span>
 <span><span class="co"># Every CMSY++ chart of the user guide, including the retrospective analysis</span></span>
-<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_run.html">cmsy_run</a></span><span class="op">(</span><span class="va">input</span>, stocks <span class="op">=</span> <span class="st">"GRB_34"</span>, seed <span class="op">=</span> <span class="fl">1</span>, auto_start <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_run.html">cmsy_run</a></span><span class="op">(</span><span class="va">input</span>, stocks <span class="op">=</span> <span class="st">"CAP_27"</span>, seed <span class="op">=</span> <span class="fl">1</span>, auto_start <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>                   plots <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"analysis"</span>, <span class="st">"management"</span>, <span class="st">"kobe"</span>, <span class="st">"prior_posterior"</span>, <span class="st">"retrospective"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Changed CMSY++ settings (see cmsy_defaults()): longer chains and a larger catch error</span></span>
-<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_run.html">cmsy_run</a></span><span class="op">(</span><span class="va">input</span>, stocks <span class="op">=</span> <span class="st">"GRB_34"</span>, seed <span class="op">=</span> <span class="fl">1</span>,</span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_run.html">cmsy_run</a></span><span class="op">(</span><span class="va">input</span>, stocks <span class="op">=</span> <span class="st">"CAP_27"</span>, seed <span class="op">=</span> <span class="fl">1</span>,</span>
 <span>                   settings <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>n.iter <span class="op">=</span> <span class="fl">100000</span>, n.burnin <span class="op">=</span> <span class="fl">50000</span>, CV.C <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">result</span><span class="op">$</span><span class="va">settings</span><span class="op">[</span><span class="va">result</span><span class="op">$</span><span class="va">settings</span><span class="op">$</span><span class="va">changed</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"setting"</span>, <span class="st">"cmsy_default"</span>, <span class="st">"used"</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
@@ -391,8 +391,8 @@ tiers and status classes). <a href="https://openknowledge.fao.org/server/api/cor
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_run.html">cmsy_run</a></span><span class="op">(</span><span class="va">input</span>, stocks <span class="op">=</span> <span class="va">input</span><span class="op">$</span><span class="va">stocks</span><span class="op">$</span><span class="va">Stock</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">]</span>, parallel <span class="op">=</span> <span class="fl">4</span>, silent <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Settings that would be used on Windows, and charts in the system's own windows</span></span>
-<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_run.html">cmsy_run</a></span><span class="op">(</span><span class="va">input</span>, stocks <span class="op">=</span> <span class="st">"GRB_34"</span>, os <span class="op">=</span> <span class="st">"windows"</span><span class="op">)</span></span>
-<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_run.html">cmsy_run</a></span><span class="op">(</span><span class="va">input</span>, stocks <span class="op">=</span> <span class="st">"GRB_34"</span>, device <span class="op">=</span> <span class="st">"screen"</span><span class="op">)</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_run.html">cmsy_run</a></span><span class="op">(</span><span class="va">input</span>, stocks <span class="op">=</span> <span class="st">"CAP_27"</span>, os <span class="op">=</span> <span class="st">"windows"</span><span class="op">)</span></span>
+<span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_run.html">cmsy_run</a></span><span class="op">(</span><span class="va">input</span>, stocks <span class="op">=</span> <span class="st">"CAP_27"</span>, device <span class="op">=</span> <span class="st">"screen"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Versions and links of everything used, for the methods section of a report</span></span>
 <span><span class="va">result</span><span class="op">$</span><span class="va">sources</span></span></code></pre></div>

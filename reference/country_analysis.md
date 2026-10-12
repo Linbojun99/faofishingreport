@@ -2,14 +2,14 @@
 
 This function takes a country name, analyzes the catch of that country
 in all FAO fishing areas, and identifies the top species and fishing
-areas based on production within the specified rank range.
+areas by production at the ranks chosen with `rank_range`.
 
 ## Usage
 
 ``` r
 country_analysis(
   country_name,
-  rank_range = c(1, 10),
+  rank_range = 1:10,
   plot = TRUE,
   table = TRUE,
   timeseries_analysis = TRUE,
@@ -19,7 +19,8 @@ country_analysis(
   fill_scale = NULL,
   lang = NULL,
   data_version = "latest",
-  pptx = getOption("faofishingreport.pptx", FALSE)
+  pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show")
 )
 ```
 
@@ -31,8 +32,12 @@ country_analysis(
 
 - rank_range:
 
-  A numeric vector of length 2 specifying the rank range of species to
-  be analyzed.
+  The ranks of the species to show, ranked by the catch of the country:
+  the ranks listed, e.g. `1:10` (default) for the first ten, `c(5, 6)`
+  for the fifth and sixth, or `c(1, 10)` for the first and the tenth.
+  Ranks beyond the number of species are left out. Until version 0.9.0
+  two numbers gave the first and the last rank (`c(1, 10)` was the first
+  ten).
 
 - plot:
 
@@ -95,6 +100,14 @@ country_analysis(
   `figures/pptx/`. Default is FALSE, which can be changed for all
   functions with `fao_settings(pptx = TRUE)`.
 
+- plot_show:
+
+  A logical value. If TRUE, each chart is also drawn in the plot window
+  (e.g. the Plots pane of RStudio) as it is saved, to look at it at
+  once. Default is FALSE, which can be changed for all functions with
+  `fao_settings(plot_show = TRUE)`. The charts are saved as files
+  (`plot = TRUE`) either way.
+
 ## Value
 
 A list with `country_species_ranked` (yearly catch of the ranked
@@ -114,6 +127,6 @@ Other species and country analyses:
 
 ``` r
 if (FALSE) { # \dontrun{
-country_analysis(country_name = "Morocco",c(1, 10), plot=TRUE,table=TRUE)
+country_analysis("Norway", rank_range = 1:10)   # the ten main species of Norway
 } # }
 ```

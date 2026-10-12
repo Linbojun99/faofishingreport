@@ -24,6 +24,7 @@ cmsy_mcmc(
   colors = NULL,
   lang = NULL,
   pptx = fao_setting("pptx"),
+  plot_show = fao_setting("plot_show"),
   silent = fao_setting("silent")
 )
 ```
@@ -83,6 +84,14 @@ cmsy_mcmc(
   PowerPoint files. Default is the value set with
   [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md)
   (FALSE unless changed).
+
+- plot_show:
+
+  A logical value. If TRUE, each chart is also drawn in the plot window
+  (e.g. the Plots pane of RStudio) as it is saved, to look at it at
+  once. Default is FALSE, which can be changed for all functions with
+  `fao_settings(plot_show = TRUE)`. The charts are saved as files
+  (`plot = TRUE`) either way.
 
 - silent:
 

@@ -14,6 +14,7 @@ area_overview(
   table = TRUE,
   lang = NULL,
   pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show"),
   data_version = "latest"
 )
 ```
@@ -46,6 +47,14 @@ area_overview(
   A logical value. If TRUE, charts are also saved as editable PowerPoint
   files in `figures/pptx/summary/`. Default is FALSE, which can be
   changed for all functions with `fao_settings(pptx = TRUE)`.
+
+- plot_show:
+
+  A logical value. If TRUE, each chart is also drawn in the plot window
+  (e.g. the Plots pane of RStudio) as it is saved, to look at it at
+  once. Default is FALSE, which can be changed for all functions with
+  `fao_settings(plot_show = TRUE)`. The charts are saved as files
+  (`plot = TRUE`) either way.
 
 - data_version:
 

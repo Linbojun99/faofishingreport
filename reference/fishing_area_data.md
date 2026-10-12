@@ -37,7 +37,8 @@ fishing_area_data(
   ZH = FALSE,
   lang = NULL,
   data_version = "latest",
-  pptx = getOption("faofishingreport.pptx", FALSE)
+  pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show")
 )
 ```
 
@@ -181,6 +182,14 @@ fishing_area_data(
   `figures/pptx/`. Default is FALSE, which can be changed for all
   functions with `fao_settings(pptx = TRUE)`.
 
+- plot_show:
+
+  A logical value. If TRUE, each chart is also drawn in the plot window
+  (e.g. the Plots pane of RStudio) as it is saved, to look at it at
+  once. Default is FALSE, which can be changed for all functions with
+  `fao_settings(plot_show = TRUE)`. The charts are saved as files
+  (`plot = TRUE`) either way.
+
 ## Value
 
 A list with `area_data` (the FAO data of the area), `coefs_data` (start
@@ -198,6 +207,6 @@ Other fishing area analyses:
 ``` r
 if (FALSE) { # \dontrun{
 # Firstly, data preparing and loading.
-FAO34 <- fishing_area_data(area_name="Atlantic, Eastern Central", plot = TRUE, timeseries_analysis=TRUE)
+FAO27 <- fishing_area_data("Atlantic, Northeast")
 } # }
 ```

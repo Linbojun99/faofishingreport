@@ -37,6 +37,7 @@ function list only its own arguments.
 | `table` | Save the tables in `tables/` | `TRUE` |
 | `lang` | Language of the chart text and names: `"en"`, `"zh"` or `"both"` | `NULL`: the language of [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md) (`"en"` unless changed) |
 | `pptx` | Also save the charts as editable PowerPoint files in `figures/pptx/summary/` | `FALSE`; `fao_settings(pptx = TRUE)` changes it for all functions |
+| `plot_show` | Also draw each chart in the plot window (e.g. the Plots pane of RStudio) as it is saved | `FALSE`, or `plot_show` of [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md) |
 | `label` | Name at the start of the output file names | `NULL`: the fishing area of the data (or its country; `"selected_data"` for several areas and countries) |
 
 ## 🧺 Species group composition

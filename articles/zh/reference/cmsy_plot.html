@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -263,6 +263,7 @@ studies: healthy (at least 1), slightly overfished (0.8-1), overfished
 <span>  annotations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"faofishingreport.cmsy_annotations"</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span>
 <span>  lang <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pptx <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"faofishingreport.pptx"</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span>  plot_show <span class="op">=</span> <span class="fu">fao_setting</span><span class="op">(</span><span class="st">"plot_show"</span><span class="op">)</span>,</span>
 <span>  silent <span class="op">=</span> <span class="fu">fao_setting</span><span class="op">(</span><span class="st">"silent"</span><span class="op">)</span>,</span>
 <span>  mcmc_colors <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -346,6 +347,19 @@ figures/pptx/cmsy/summary/. Default is FALSE, which can be changed for
 all functions with <code>fao_settings(pptx = TRUE)</code>.
 </details>
 </dd>
+<dt><code>plot_show</code></dt>
+<dd>
+逻辑值。为TRUE时，每张图在保存的同时也画在绘图窗口中（例如RStudio的Plots窗格），便于立即查看。默认为FALSE，可以用<code>fao_settings(plot_show = TRUE)</code>为所有函数统一更改。无论是否显示，图表都会保存为文件（<code>plot = TRUE</code>）。
+<details class="fao-en"><summary>
+English
+</summary>
+A logical value. If TRUE, each chart is also drawn in the plot window
+(e.g. the Plots pane of RStudio) as it is saved, to look at it at once.
+Default is FALSE, which can be changed for all functions with
+<code>fao_settings(plot_show = TRUE)</code>. The charts are saved as
+files (<code>plot = TRUE</code>) either way.
+</details>
+</dd>
 <dt><code>silent</code></dt>
 <dd>
 逻辑值。为FALSE（默认）时，用进度条显示已绘制的种群数；为TRUE时不输出任何内容。可以用<code>fao_settings(silent = TRUE)</code>更改本次R会话的默认值。
@@ -425,7 +439,7 @@ Journal of Marine Science 56: 473-488. <a href="https://doi.org/10.1006/jmsc.199
 <span><span class="fu"><a href="../../../reference/cmsy_plot.html">cmsy_plot</a></span><span class="op">(</span><span class="va">result</span>, lang <span class="op">=</span> <span class="st">"zh"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Kobe plot and prior-posterior densities of one species, with all annotations</span></span>
-<span><span class="fu"><a href="../../../reference/cmsy_plot.html">cmsy_plot</a></span><span class="op">(</span><span class="va">result</span>, stocks <span class="op">=</span> <span class="st">"Brachydeuterus auritus"</span>, charts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kobe"</span>, <span class="st">"prior_posterior"</span><span class="op">)</span>,</span>
+<span><span class="fu"><a href="../../../reference/cmsy_plot.html">cmsy_plot</a></span><span class="op">(</span><span class="va">result</span>, stocks <span class="op">=</span> <span class="st">"Mallotus villosus"</span>, charts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"kobe"</span>, <span class="st">"prior_posterior"</span><span class="op">)</span>,</span>
 <span>          annotations <span class="op">=</span> <span class="cn">TRUE</span>, lang <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Only titles and legends</span></span>

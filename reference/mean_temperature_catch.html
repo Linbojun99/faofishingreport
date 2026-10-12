@@ -15,7 +15,7 @@ species of warmer waters make up a larger part of the catch."><meta property="og
 
     <a class="navbar-brand me-2" href="../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,6 +85,7 @@ species of warmer waters make up a larger part of the catch.</p>
 <span>  table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  lang <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pptx <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"faofishingreport.pptx"</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span>  plot_show <span class="op">=</span> <span class="fu">fao_setting</span><span class="op">(</span><span class="st">"plot_show"</span><span class="op">)</span>,</span>
 <span>  label <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  data_dir <span class="op">=</span> <span class="fu"><a href="fao_data_dir.html">fao_data_dir</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -162,6 +163,13 @@ catch data of <code><a href="load_fao_divisions.html">load_fao_divisions()</a></
 <dd><p>A logical value. If TRUE, charts are also saved as editable PowerPoint files in
 <code>figures/pptx/summary/</code>. Default is FALSE, which can be changed for all functions with
 <code>fao_settings(pptx = TRUE)</code>.</p></dd>
+
+
+<dt id="arg-plot-show">plot_show<a class="anchor" aria-label="anchor" href="#arg-plot-show"></a></dt>
+<dd><p>A logical value. If TRUE, each chart is also drawn in the plot window (e.g.
+the Plots pane of RStudio) as it is saved, to look at it at once. Default is FALSE,
+which can be changed for all functions with <code>fao_settings(plot_show = TRUE)</code>. The
+charts are saved as files (<code>plot = TRUE</code>) either way.</p></dd>
 
 
 <dt id="arg-label">label<a class="anchor" aria-label="anchor" href="#arg-label"></a></dt>
@@ -370,27 +378,27 @@ Register of Marine Species. <a href="https://www.marinespecies.org" class="exter
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="va">FAO34</span> <span class="op">&lt;-</span> <span class="fu"><a href="fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">mtc</span> <span class="op">&lt;-</span> <span class="fu">mean_temperature_catch</span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, lang <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">FAO27</span> <span class="op">&lt;-</span> <span class="fu"><a href="fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mtc</span> <span class="op">&lt;-</span> <span class="fu">mean_temperature_catch</span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, lang <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">mtc</span><span class="op">$</span><span class="va">trend</span></span></span>
 <span class="r-in"><span><span class="co"># The items with the largest catch: check their match and preferred temperature with the links</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">mtc</span><span class="op">$</span><span class="va">species</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"species_name"</span>, <span class="st">"match_type"</span>, <span class="st">"temp_pref_mean"</span>, <span class="st">"catch_pct"</span>, <span class="st">"used"</span>, <span class="st">"url"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">20</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># After checking tables/Atlantic__Eastern_Central_mtc_species.csv (column `checked`, and</span></span></span>
 <span class="r-in"><span><span class="co"># corrected values with their source in `note`), run again with the checked table</span></span></span>
-<span class="r-in"><span><span class="fu">mean_temperature_catch</span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, match <span class="op">=</span> <span class="st">"tables/Atlantic__Eastern_Central_mtc_species.csv"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mean_temperature_catch</span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, match <span class="op">=</span> <span class="st">"tables/Atlantic__Northeast_mtc_species.csv"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Other SST data: your own NetCDF file (or folder), or a product downloaded once</span></span></span>
-<span class="r-in"><span><span class="fu">mean_temperature_catch</span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, sst <span class="op">=</span> <span class="st">"D:/data/HadISST_sst.nc"</span>, label <span class="op">=</span> <span class="st">"FAO34_hadisst"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mean_temperature_catch</span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, sst <span class="op">=</span> <span class="st">"D:/data/HadISST_sst.nc"</span>, label <span class="op">=</span> <span class="st">"FAO27_hadisst"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="download_sst_data.html">download_sst_data</a></span><span class="op">(</span><span class="st">"cobe2"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">mean_temperature_catch</span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, sst <span class="op">=</span> <span class="st">"cobe2"</span>, label <span class="op">=</span> <span class="st">"FAO34_cobe2"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mean_temperature_catch</span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, sst <span class="op">=</span> <span class="st">"cobe2"</span>, label <span class="op">=</span> <span class="st">"FAO27_cobe2"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># The GFCM divisions of the Mediterranean and Black Sea</span></span></span>
 <span class="r-in"><span><span class="fu">mean_temperature_catch</span><span class="op">(</span><span class="fu"><a href="load_fao_divisions.html">load_fao_divisions</a></span><span class="op">(</span><span class="st">"GFCM"</span><span class="op">)</span>, by <span class="op">=</span> <span class="st">"division"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># The period studied by Cheung et al. (2013)</span></span></span>
-<span class="r-in"><span><span class="fu">mean_temperature_catch</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, <span class="va">Year</span> <span class="op">&gt;=</span> <span class="fl">1970</span> <span class="op">&amp;</span> <span class="va">Year</span> <span class="op">&lt;=</span> <span class="fl">2006</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                       label <span class="op">=</span> <span class="st">"FAO34_1970_2006"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mean_temperature_catch</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, <span class="va">Year</span> <span class="op">&gt;=</span> <span class="fl">1970</span> <span class="op">&amp;</span> <span class="va">Year</span> <span class="op">&lt;=</span> <span class="fl">2006</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                       label <span class="op">=</span> <span class="st">"FAO27_1970_2006"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># All FAO major marine fishing areas, one chart panel per area</span></span></span>
 <span class="r-in"><span><span class="va">marine</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="fu"><a href="load_fao_data.html">load_fao_data</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">FAO.major.fishing.area..Name.</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="fao_area_sst.html">fao_area_sst</a></span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">area_en</span><span class="op">)</span></span></span>

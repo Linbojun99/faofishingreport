@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -97,12 +97,13 @@
 <div class="section level2">
 <h2 id="说明">说明<a class="anchor" aria-label="anchor" href="#%E8%AF%B4%E6%98%8E"></a>
 </h2>
-<p>该函数接收一个国家名称，分析该国在全部FAO渔区的渔获量，并按产量找出排名在指定范围内的主要物种和渔区（排名范围<code>rank_range</code>只用于物种；渔区图表包括该国作业的全部渔区）。</p>
+<p>该函数接收一个国家名称，分析该国在全部FAO渔区的渔获量，并按产量找出<code>rank_range</code>所选名次的主要物种和渔区（<code>rank_range</code>只用于物种；渔区图表包括该国作业的全部渔区）。</p>
 <details class="fao-en"><summary>
 English
 </summary><p>This function takes a country name, analyzes the catch of that
 country in all FAO fishing areas, and identifies the top species and
-fishing areas based on production within the specified rank range.</p>
+fishing areas by production at the ranks chosen with
+<code>rank_range</code>.</p>
 </details>
 </div>
 <div class="section level2">
@@ -111,7 +112,7 @@ fishing areas based on production within the specified rank range.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../../../reference/country_analysis.html">country_analysis</a></span><span class="op">(</span></span>
 <span>  <span class="va">country_name</span>,</span>
-<span>  rank_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span>,</span>
+<span>  rank_range <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  table <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  timeseries_analysis <span class="op">=</span> <span class="cn">TRUE</span>,</span>
@@ -121,7 +122,8 @@ fishing areas based on production within the specified rank range.</p>
 <span>  fill_scale <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  lang <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  data_version <span class="op">=</span> <span class="st">"latest"</span>,</span>
-<span>  pptx <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"faofishingreport.pptx"</span>, <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  pptx <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"faofishingreport.pptx"</span>, <span class="cn">FALSE</span><span class="op">)</span>,</span>
+<span>  plot_show <span class="op">=</span> <span class="fu">fao_setting</span><span class="op">(</span><span class="st">"plot_show"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
@@ -139,12 +141,16 @@ A string specifying the country to be analyzed.
 </dd>
 <dt><code>rank_range</code></dt>
 <dd>
-长度为2的数值向量，指定要分析的物种的排名范围（按该国历年总产量排序）。默认为<code>c(1, 10)</code>。
+要显示的物种名次，按该国的产量排序：列出名次即可，例如<code>1:10</code>（默认）为前十名，<code>c(5, 6)</code>为第五和第六名，<code>c(1, 10)</code>为第一和第十名。超出物种数量的名次不显示。0.9.0及以前的版本中，两个数表示起止名次（<code>c(1, 10)</code>为前十名）。
 <details class="fao-en"><summary>
 English
 </summary>
-A numeric vector of length 2 specifying the rank range of species to be
-analyzed.
+The ranks of the species to show, ranked by the catch of the country:
+the ranks listed, e.g. <code>1:10</code> (default) for the first ten,
+<code>c(5, 6)</code> for the fifth and sixth, or <code>c(1, 10)</code>
+for the first and the tenth. Ranks beyond the number of species are left
+out. Until version 0.9.0 two numbers gave the first and the last rank
+(<code>c(1, 10)</code> was the first ten).
 </details>
 </dd>
 <dt><code>plot</code></dt>
@@ -254,12 +260,25 @@ can be changed for all functions with
 <code>fao_settings(pptx = TRUE)</code>.
 </details>
 </dd>
+<dt><code>plot_show</code></dt>
+<dd>
+逻辑值。为TRUE时，每张图在保存的同时也画在绘图窗口中（例如RStudio的Plots窗格），便于立即查看。默认为FALSE，可以用<code>fao_settings(plot_show = TRUE)</code>为所有函数统一更改。无论是否显示，图表都会保存为文件（<code>plot = TRUE</code>）。
+<details class="fao-en"><summary>
+English
+</summary>
+A logical value. If TRUE, each chart is also drawn in the plot window
+(e.g. the Plots pane of RStudio) as it is saved, to look at it at once.
+Default is FALSE, which can be changed for all functions with
+<code>fao_settings(plot_show = TRUE)</code>. The charts are saved as
+files (<code>plot = TRUE</code>) either way.
+</details>
+</dd>
 </dl>
 </div>
 <div class="section level2">
 <h2 id="返回值">返回值<a class="anchor" aria-label="anchor" href="#%E8%BF%94%E5%9B%9E%E5%80%BC"></a>
 </h2>
-<p>一个列表，包含<code>country_species_ranked</code>（排名范围内各物种逐年的产量）、<code>country_species_ranked_coefs_data</code>（各物种相邻突变点之间的时段）、<code>table</code>（按物种和FAO渔区统计的产量）、<code>country_species_area_total</code>（各物种在各渔区的总产量）和<code>country_yearly_area_production</code>（各渔区逐年的产量）。<code>plot</code>和<code>table</code>为TRUE时保存图表和表格。</p>
+<p>一个列表，包含<code>country_species_ranked</code>（所选名次的各物种逐年的产量）、<code>country_species_ranked_coefs_data</code>（各物种相邻突变点之间的时段）、<code>table</code>（按物种和FAO渔区统计的产量）、<code>country_species_area_total</code>（各物种在各渔区的总产量）和<code>country_yearly_area_production</code>（各渔区逐年的产量）。<code>plot</code>和<code>table</code>为TRUE时保存图表和表格。</p>
 <details class="fao-en"><summary>
 English
 </summary><p>A list with <code>country_species_ranked</code> (yearly catch of the
@@ -282,7 +301,7 @@ are TRUE.</p>
 <h2 id="示例">示例<a class="anchor" aria-label="anchor" href="#%E7%A4%BA%E4%BE%8B"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../../../reference/country_analysis.html">country_analysis</a></span><span class="op">(</span>country_name <span class="op">=</span> <span class="st">"Morocco"</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span>, plot<span class="op">=</span><span class="cn">TRUE</span>,table<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../../../reference/country_analysis.html">country_analysis</a></span><span class="op">(</span><span class="st">"Norway"</span>, rank_range <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>   <span class="co"># the ten main species of Norway</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

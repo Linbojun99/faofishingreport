@@ -31,7 +31,7 @@
 
     <a class="navbar-brand me-2" href="index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -245,6 +245,7 @@
 <li>📝 <strong>Assessment report in one call</strong>: <code><a href="reference/fao_report.html">fao_report()</a></code> writes a report in Chinese or English, as Word, LaTeX or PDF (cover, abstract, data and methods, results, conclusions, references, appendix), with every analysis switched on or off and the settings of each function given with a prefix.</li>
 <li>🌐 <strong>English, Chinese or bilingual</strong> charts with the official FAO Chinese names.</li>
 <li>🎨 <strong>Your style</strong>: themes, colour palettes, map projections (Robinson, Mollweide, Equal Earth, …) and Pacific-centred maps, set once with <code><a href="reference/fao_settings.html">fao_settings()</a></code>.</li>
+<li>🖥️ <strong>Results at a glance</strong>: every analysis ends with a summary in the console (its main table and the files it saved); <code>plot_show = TRUE</code> also draws its charts in the plot window.</li>
 <li>💻 <strong>Windows, macOS and Linux</strong>: a Chinese font is chosen automatically; tables open in Excel with Chinese names intact.</li>
 </ul>
 </div>
@@ -273,8 +274,8 @@
 <span></span>
 <span><span class="co"># FAO major fishing area 27, Northeast Atlantic</span></span>
 <span><span class="va">FAO27</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/fishing_area_species.html">fishing_area_species</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, rank_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/fishing_area_country.html">fishing_area_country</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, rank_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">species</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fishing_area_species.html">fishing_area_species</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, rank_range <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>   <span class="co"># c(5, 6): ranks 5 and 6</span></span>
+<span><span class="va">countries</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/fishing_area_country.html">fishing_area_country</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, rank_range <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10</span>, plot_show <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Who catches Atlantic cod, what Norway catches</span></span>
 <span><span class="fu"><a href="reference/species_country.html">species_country</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, <span class="st">"Atlantic cod"</span>, lang <span class="op">=</span> <span class="st">"both"</span><span class="op">)</span></span>

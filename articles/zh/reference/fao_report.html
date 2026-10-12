@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -154,12 +154,12 @@ discussion and other references.</p>
 <dl>
 <dt><code>area</code></dt>
 <dd>
-FAO主要渔区：名称（例如”Atlantic, Eastern Central”）或代码（例如34）。
+FAO主要渔区：名称（例如”Atlantic, Northeast”）或代码（例如27）。
 <details class="fao-en"><summary>
 English
 </summary>
-The FAO major fishing area: its name, e.g. “Atlantic, Eastern Central”,
-or its code, e.g. 34.
+The FAO major fishing area: its name, e.g. “Atlantic, Northeast”, or its
+code, e.g. 27.
 </details>
 </dd>
 <dt><code>...</code></dt>
@@ -250,15 +250,15 @@ Chinese report).
 <dt><code>title</code></dt>
 <dd>
 报告标题。默认根据渔区生成，例如”FAO
-34渔区（中东大西洋）海洋捕捞产量评估”（英文报告为”Assessment of Marine
-Capture Production in FAO Major Fishing Area 34 (Atlantic, Eastern
-Central)“）。
+27渔区（东北大西洋）海洋捕捞产量评估”（英文报告为”Assessment of Marine
+Capture Production in FAO Major Fishing Area 27 (Atlantic,
+Northeast)“）。
 <details class="fao-en"><summary>
 English
 </summary>
 The report title. Default is generated from the area, e.g. “Assessment
-of Marine Capture Production in FAO Major Fishing Area 34 (Atlantic,
-Eastern Central)”.
+of Marine Capture Production in FAO Major Fishing Area 27 (Atlantic,
+Northeast)”.
 </details>
 </dd>
 <dt><code>report_no</code></dt>
@@ -496,27 +496,27 @@ the package source: edit them to change the wording.</p>
 <h2 id="示例">示例<a class="anchor" aria-label="anchor" href="#%E7%A4%BA%E4%BE%8B"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span><span class="op">)</span>                                  <span class="co"># Chinese or English, from fao_settings()</span></span>
-<span><span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, author <span class="op">=</span> <span class="st">"Hongyu Lin"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"en"</span>, font <span class="op">=</span> <span class="st">"Times New Roman"</span>, citation <span class="op">=</span> <span class="st">"fao"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span><span class="op">)</span>                                  <span class="co"># Chinese or English, from fao_settings()</span></span>
+<span><span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, author <span class="op">=</span> <span class="st">"Hongyu Lin"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"en"</span>, font <span class="op">=</span> <span class="st">"Times New Roman"</span>, citation <span class="op">=</span> <span class="st">"fao"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># The other analyses of the package, with their settings</span></span>
-<span><span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, shocks <span class="op">=</span> <span class="cn">TRUE</span>, collapse <span class="op">=</span> <span class="cn">TRUE</span>, synchrony <span class="op">=</span> <span class="cn">TRUE</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span><span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, shocks <span class="op">=</span> <span class="cn">TRUE</span>, collapse <span class="op">=</span> <span class="cn">TRUE</span>, synchrony <span class="op">=</span> <span class="cn">TRUE</span>, pelagic <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>           mtc <span class="op">=</span> <span class="cn">TRUE</span>, distant <span class="op">=</span> <span class="cn">TRUE</span>, collapse_method <span class="op">=</span> <span class="st">"worm2006"</span>, distant_countries <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Only some sections, with settings of their functions</span></span>
-<span><span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, quality <span class="op">=</span> <span class="cn">FALSE</span>, diversity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span><span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, quality <span class="op">=</span> <span class="cn">FALSE</span>, diversity <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>           species_h_value <span class="op">=</span> <span class="fl">0.2</span>, status_smooth <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># With a CMSY++ assessment of the 10 main species (a few minutes)</span></span>
-<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">report</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">report</span>                                         <span class="co"># the tables it returns</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">cmsy_reference_points</span><span class="op">)</span>             <span class="co"># r, k, MSY, B/Bmsy, ... with 95% limits</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">report</span><span class="op">$</span><span class="va">cmsy_priors</span><span class="op">)</span>                       <span class="co"># priors, sources and links</span></span>
-<span><span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, top_n <span class="op">=</span> <span class="fl">15</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span>, cmsy_top <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, top_n <span class="op">=</span> <span class="fl">15</span>, cmsy <span class="op">=</span> <span class="cn">TRUE</span>, cmsy_top <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Reuse CMSY++ results to rewrite the report</span></span>
-<span><span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">34</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"reports"</span>, <span class="st">"cmsy"</span>, <span class="st">"Atlantic__Eastern_Central"</span>,</span>
+<span><span class="fu"><a href="../../../reference/fao_report.html">fao_report</a></span><span class="op">(</span><span class="fl">27</span>, lang <span class="op">=</span> <span class="st">"zh"</span>, cmsy <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="st">"reports"</span>, <span class="st">"cmsy"</span>, <span class="st">"Atlantic__Northeast"</span>,</span>
 <span>                                                      <span class="st">"cmsy_result.rds"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

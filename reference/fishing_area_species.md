@@ -8,7 +8,7 @@ specified species based on their ranking in terms of total tonnes.
 ``` r
 fishing_area_species(
   area_data,
-  rank_range = c(1, 10),
+  rank_range = 1:10,
   rank_years = NULL,
   plot = TRUE,
   table = TRUE,
@@ -35,7 +35,8 @@ fishing_area_species(
   h_value = 0.15,
   ZH = FALSE,
   lang = NULL,
-  pptx = getOption("faofishingreport.pptx", FALSE)
+  pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show")
 )
 ```
 
@@ -47,8 +48,12 @@ fishing_area_species(
 
 - rank_range:
 
-  A numeric vector of length 2 specifying the rank range of species to
-  be analyzed.
+  The ranks of the species to show, ranked by their catch (see
+  `rank_years`): the ranks listed, e.g. `1:10` (default) for the first
+  ten, `c(5, 6)` for the fifth and sixth, or `c(1, 10)` for the first
+  and the tenth. Ranks beyond the number of species are left out. Until
+  version 0.9.0 two numbers gave the first and the last rank (`c(1, 10)`
+  was the first ten).
 
 - rank_years:
 
@@ -180,6 +185,14 @@ fishing_area_species(
   `figures/pptx/`. Default is FALSE, which can be changed for all
   functions with `fao_settings(pptx = TRUE)`.
 
+- plot_show:
+
+  A logical value. If TRUE, each chart is also drawn in the plot window
+  (e.g. the Plots pane of RStudio) as it is saved, to look at it at
+  once. Default is FALSE, which can be changed for all functions with
+  `fao_settings(plot_show = TRUE)`. The charts are saved as files
+  (`plot = TRUE`) either way.
+
 ## Value
 
 A list with `area_species` (yearly catch of every species item in the
@@ -199,6 +212,8 @@ Other fishing area analyses:
 
 ``` r
 if (FALSE) { # \dontrun{
-fishing_area_species(FAO34[["area_data"]], c(1, 10), plot=TRUE,table=TRUE,h_value = 0.15) #area_data=Fao34
+FAO27 <- fishing_area_data("Atlantic, Northeast")
+fishing_area_species(FAO27$area_data, rank_range = 1:10)    # the ten main species
+fishing_area_species(FAO27$area_data, rank_range = 11:20)   # the next ten
 } # }
 ```

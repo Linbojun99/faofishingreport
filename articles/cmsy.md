@@ -49,6 +49,7 @@ them; the tables of each function below list its other arguments.
 | `table` | Save the tables (in `tables/cmsy/`) | `TRUE` |
 | `lang` | Language of the chart text, names and table columns: `"en"`, `"zh"` or `"both"` | `NULL`: the language of [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md) (`"en"` unless changed) |
 | `pptx` | Also save the charts as editable PowerPoint files (in `figures/pptx/cmsy/`) | `FALSE`; `fao_settings(pptx = TRUE)` changes it for all functions |
+| `plot_show` | Also draw each chart in the plot window (e.g. the Plots pane of RStudio) as it is saved | `FALSE`, or `plot_show` of [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md) |
 | `annotations` | Text added to the axis titles and labels: `FALSE` none, `TRUE` all, or any of `"title"`, `"subtitle"`, `"caption"`, `"legend"` and `"labels"` (text inside the chart) | `FALSE`; `options(faofishingreport.cmsy_annotations = TRUE)` changes it for the session |
 | `silent` | Print no progress bars and messages | `FALSE`; `fao_settings(silent = TRUE)` changes it for the session |
 | `data_dir` | Folder where downloads are kept | [`fao_data_dir()`](https://linbojun99.github.io/faofishingreport/reference/fao_data_dir.md) |

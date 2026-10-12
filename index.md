@@ -97,6 +97,9 @@ FAO area 27, Northeast Atlantic, and its subareas 27.1 to 27.14
 - 🎨 **Your style**: themes, colour palettes, map projections (Robinson,
   Mollweide, Equal Earth, …) and Pacific-centred maps, set once with
   [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md).
+- 🖥️ **Results at a glance**: every analysis ends with a summary in the
+  console (its main table and the files it saved); `plot_show = TRUE`
+  also draws its charts in the plot window.
 - 💻 **Windows, macOS and Linux**: a Chinese font is chosen
   automatically; tables open in Excel with Chinese names intact.
 
@@ -133,8 +136,8 @@ fishing_area_map(27)
 
 # FAO major fishing area 27, Northeast Atlantic
 FAO27 <- fishing_area_data("Atlantic, Northeast")
-fishing_area_species(FAO27$area_data, rank_range = c(1, 10))
-fishing_area_country(FAO27$area_data, rank_range = c(1, 10))
+species <- fishing_area_species(FAO27$area_data, rank_range = 1:10)   # c(5, 6): ranks 5 and 6
+countries <- fishing_area_country(FAO27$area_data, rank_range = 1:10, plot_show = TRUE)
 
 # Who catches Atlantic cod, what Norway catches
 species_country(FAO27$area_data, "Atlantic cod", lang = "both")

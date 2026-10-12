@@ -305,6 +305,7 @@ trends](https://linbojun99.github.io/faofishingreport/articles/status-trends.md)
 | `table` | Save the tables in `tables/` | `TRUE` |
 | `lang` | `"en"`, `"zh"` or `"both"` | `NULL`: the language of [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md) |
 | `pptx` | Also save editable PowerPoint files in `figures/pptx/summary/` | `FALSE`, or `pptx` of [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md) |
+| `plot_show` | Also draw each chart in the plot window (e.g. the Plots pane of RStudio) as it is saved | `FALSE`, or `plot_show` of [`fao_settings()`](https://linbojun99.github.io/faofishingreport/reference/fao_settings.md) |
 | `label` | Name used in the output file names | `NULL`: the fishing area (or country) of the data |
 
 More examples:

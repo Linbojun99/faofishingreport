@@ -103,6 +103,7 @@ html[lang="zh-CN"] body {
 .fao-pager .fao-pager-index { flex: 0 0 auto; justify-content: center; font-weight: 600; }
 .fao-pager .fao-pager-empty { visibility: hidden; }
 .fao-pager-label { font-size: 0.8rem; color: var(--bs-secondary-color); }
+.fao-pager-title { font-weight: 600; overflow-wrap: anywhere; }
 .fao-pager-group { font-size: 0.75rem; color: var(--bs-secondary-color); }
 @media (max-width: 575.98px) {
   .fao-pager { flex-direction: column; }

@@ -36,6 +36,7 @@ catch_per_fisher(
   table = TRUE,
   lang = NULL,
   pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show"),
   label = NULL,
   data_version = "latest"
 )
@@ -118,6 +119,18 @@ catch_per_fisher(
   A logical value. If TRUE, charts are also saved as editable PowerPoint
   files in `figures/pptx/summary/`. Default is FALSE, which can be
   changed for all functions with `fao_settings(pptx = TRUE)`.
+
+- `plot_show`:
+
+  逻辑值。为TRUE时，每张图在保存的同时也画在绘图窗口中（例如RStudio的Plots窗格），便于立即查看。默认为FALSE，可以用`fao_settings(plot_show = TRUE)`为所有函数统一更改。无论是否显示，图表都会保存为文件（`plot = TRUE`）。
+
+  English
+
+  A logical value. If TRUE, each chart is also drawn in the plot window
+  (e.g. the Plots pane of RStudio) as it is saved, to look at it at
+  once. Default is FALSE, which can be changed for all functions with
+  `fao_settings(plot_show = TRUE)`. The charts are saved as files
+  (`plot = TRUE`) either way.
 
 - `label`:
 

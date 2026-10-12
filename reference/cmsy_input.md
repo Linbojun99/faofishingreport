@@ -39,9 +39,8 @@ cmsy_input(
 
   Optional species to keep, by English or Chinese FAO name, both
   together (as shown with `lang = "both"`), scientific name or FAO
-  3-alpha code, e.g.
-  `c("European pilchard(=Sardine)", "Sardinella aurita", "BOG")` or
-  Chinese names. Default is NULL, all species.
+  3-alpha code, e.g. `c("Atlantic herring", "Mallotus villosus", "PRA")`
+  or Chinese names. Default is NULL, all species.
 
 - by:
 
@@ -160,95 +159,155 @@ the CMSY++ method. Acta Ichthyologica et Piscatoria 53: 173-189.
 
 ``` r
 # \donttest{
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
+FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
 #> Using FAO Global Capture Production release 2026.1.0 (bundled with the package, 1950-2024)
+#> 
+#> ── fishing_area_data(): Atlantic, Northeast ────────────────────────────────────
+#> 142,447 records, 1950-2024; catch in 2024: 7,842,194 t. Periods of the total catch (breakpoints) and their mean catch:
+#>  from   to mean_catch_t
+#>  1950 1964    7,251,706
+#>  1965 2005   10,855,609
+#>  2006 2024    8,806,378
+#> Results returned: $area_data, $coefs_data, $act_world_map
 
 # All species of the area that CMSY++ can assess with catch only
-input <- cmsy_input(FAO34$area_data, table = FALSE)
-#> 120 stocks ready for CMSY++ (catch only, no abundance data); 360 left out (see $excluded).
+input <- cmsy_input(FAO27$area_data, table = FALSE)
+#> 220 stocks ready for CMSY++ (catch only, no abundance data); 534 left out (see $excluded).
+#> 
+#> ── cmsy_input(): Atlantic, Northeast ───────────────────────────────────────────
+#> 220 stocks ready for CMSY++, 534 left out:
+#>   Stock                  species_en first_year last_year Resilience r.low  r.hi
+#>  HER_27 Atlantic herring                  1950      2024 Medium     0.288 0.654
+#>  COD_27 Atlantic cod                      1950      2024 Medium     0.336 0.764
+#>  CAP_27 Capelin                           1950      2024 Medium     0.412 0.937
+#>  WHB_27 Blue whiting(=Poutassou)          1950      2024 Medium     0.307 0.698
+#>  MAC_27 Atlantic mackerel                 1950      2024 Medium     0.283 0.644
+#>  SPR_27 European sprat                    1950      2024 Medium     0.318 0.722
+#>  POK_27 Saithe(=Pollock)                  1950      2024 Medium     0.344 0.781
+#>  HAD_27 Haddock                           1950      2024 Medium     0.328 0.746
+#>  NOP_27 Norway pout                       1959      2024 Medium     0.329 0.747
+#>  PIL_27 European pilchard(=Sardine)       1950      2024 Medium     0.415 0.942
+#>   ... 210 more rows (220 in all)
+#> Results returned: $catch, $id, $stocks, $excluded, $by, $name, $fao_version, $created
 input
-#> CMSY++ input from FAO capture 2026.1.0: 120 stocks ready, 360 left out
-#>   Stock                  species_en                      area first_year
-#>  PIL_34 European pilchard(=Sardine) Atlantic, Eastern Central       1950
-#>  SAA_34            Round sardinella Atlantic, Eastern Central       1950
-#>  VMA_34      Atlantic chub mackerel Atlantic, Eastern Central       1950
-#>  BOA_34                  Bonga shad Atlantic, Eastern Central       1950
-#>  SKJ_34               Skipjack tuna Atlantic, Eastern Central       1950
-#>  ANE_34            European anchovy Atlantic, Eastern Central       1950
-#>  YFT_34              Yellowfin tuna Atlantic, Eastern Central       1955
-#>  SAE_34         Madeiran sardinella Atlantic, Eastern Central       1950
-#>  BET_34                 Bigeye tuna Atlantic, Eastern Central       1950
-#>  LHT_34          Largehead hairtail Atlantic, Eastern Central       1959
-#>  last_year Resilience r.low  r.hi
-#>       2024     Medium 0.415 0.942
-#>       2024       High 0.429 0.976
-#>       2024     Medium 0.394 0.895
-#>       2024       High 0.151 0.342
-#>       2024     Medium 0.346 0.787
-#>       2024     Medium 0.390 0.886
-#>       2024     Medium 0.238 0.540
-#>       2024     Medium 0.379 0.862
-#>       2024     Medium 0.341 0.775
-#>       2024     Medium 0.139 0.315
+#> CMSY++ input from FAO capture 2026.1.0: 220 stocks ready, 534 left out
+#>   Stock                  species_en                area first_year last_year
+#>  HER_27            Atlantic herring Atlantic, Northeast       1950      2024
+#>  COD_27                Atlantic cod Atlantic, Northeast       1950      2024
+#>  CAP_27                     Capelin Atlantic, Northeast       1950      2024
+#>  WHB_27    Blue whiting(=Poutassou) Atlantic, Northeast       1950      2024
+#>  MAC_27           Atlantic mackerel Atlantic, Northeast       1950      2024
+#>  SPR_27              European sprat Atlantic, Northeast       1950      2024
+#>  POK_27            Saithe(=Pollock) Atlantic, Northeast       1950      2024
+#>  HAD_27                     Haddock Atlantic, Northeast       1950      2024
+#>  NOP_27                 Norway pout Atlantic, Northeast       1959      2024
+#>  PIL_27 European pilchard(=Sardine) Atlantic, Northeast       1950      2024
+#>  Resilience r.low  r.hi
+#>      Medium 0.288 0.654
+#>      Medium 0.336 0.764
+#>      Medium 0.412 0.937
+#>      Medium 0.307 0.698
+#>      Medium 0.283 0.644
+#>      Medium 0.318 0.722
+#>      Medium 0.344 0.781
+#>      Medium 0.328 0.746
+#>      Medium 0.329 0.747
+#>      Medium 0.415 0.942
 head(input$stocks[, c("Stock", "species_en", "first_year", "Resilience", "r.low", "r.hi", "r_source")])
-#>    Stock                  species_en first_year Resilience r.low  r.hi
-#> 1 PIL_34 European pilchard(=Sardine)       1950     Medium 0.415 0.942
-#> 2 SAA_34            Round sardinella       1950       High 0.429 0.976
-#> 3 VMA_34      Atlantic chub mackerel       1950     Medium 0.394 0.895
-#> 4 BOA_34                  Bonga shad       1950       High 0.151 0.342
-#> 5 SKJ_34               Skipjack tuna       1950     Medium 0.346 0.787
-#> 6 ANE_34            European anchovy       1950     Medium 0.390 0.886
-#>                                                                r_source
-#> 1        FishBase prior r, 95% CL (Based on 26 full stock assessments.)
-#> 2          FishBase prior r, 95% CL (Based on 1 full stock assessment.)
-#> 3 FishBase prior r, 95% CL (Based on 6 data-limited stock assessments.)
-#> 4          FishBase prior r, 95% CL (Based on 1 full stock assessment.)
-#> 5         FishBase prior r, 95% CL (Based on 9 full stock assessments.)
-#> 6        FishBase prior r, 95% CL (Based on 21 full stock assessments.)
+#>    Stock               species_en first_year Resilience r.low  r.hi
+#> 1 HER_27         Atlantic herring       1950     Medium 0.288 0.654
+#> 2 COD_27             Atlantic cod       1950     Medium 0.336 0.764
+#> 3 CAP_27                  Capelin       1950     Medium 0.412 0.937
+#> 4 WHB_27 Blue whiting(=Poutassou)       1950     Medium 0.307 0.698
+#> 5 MAC_27        Atlantic mackerel       1950     Medium 0.283 0.644
+#> 6 SPR_27           European sprat       1950     Medium 0.318 0.722
+#>                                                         r_source
+#> 1 FishBase prior r, 95% CL (Based on 53 full stock assessments.)
+#> 2 FishBase prior r, 95% CL (Based on 66 full stock assessments.)
+#> 3  FishBase prior r, 95% CL (Based on 5 full stock assessments.)
+#> 4  FishBase prior r, 95% CL (Based on 9 full stock assessments.)
+#> 5 FishBase prior r, 95% CL (Based on 10 full stock assessments.)
+#> 6 FishBase prior r, 95% CL (Based on 17 full stock assessments.)
 table(input$excluded$reason)                      # why the others are left out
 #> 
 #>                                                       fewer than 10 years 
-#>                                                                        31 
+#>                                                                        10 
 #>                                             more than 20% of years filled 
-#>                                                                        29 
+#>                                                                        20 
 #> no resilience or r prior: give it in `priors` or set `default_resilience` 
-#>                                                                         4 
+#>                                                                        22 
 #>                                                  total catch below 1000 t 
-#>                                                                       296 
+#>                                                                       482 
 
 # Some species only, by English name, scientific name or FAO 3-alpha code
-input <- cmsy_input(FAO34$area_data, species = c("European pilchard(=Sardine)", "Sardinella aurita", "GRB"),
+input <- cmsy_input(FAO27$area_data, species = c("Atlantic herring", "Mallotus villosus", "PRA"),
                     table = FALSE)
 #> 3 stocks ready for CMSY++ (catch only, no abundance data); 0 left out (see $excluded).
+#> 
+#> ── cmsy_input(): Atlantic, Northeast ───────────────────────────────────────────
+#> 3 stocks ready for CMSY++, 0 left out:
+#>   Stock       species_en first_year last_year Resilience r.low  r.hi
+#>  HER_27 Atlantic herring       1950      2024 Medium     0.288 0.654
+#>  CAP_27 Capelin                1950      2024 Medium     0.412 0.937
+#>  PRA_27 Northern prawn         1950      2024 Medium     0.408 0.927
+#> Results returned: $catch, $id, $stocks, $excluded, $by, $name, $fao_version, $created
 
-# Expert B/k priors (user guide Tables 1 and 3): sardine thought to be depleted in the last year
-input <- cmsy_input(FAO34$area_data, species = "PIL", table = FALSE,
-                    priors = data.frame(species = "Sardina pilchardus", endb.low = 0.2, endb.hi = 0.5))
+# Expert B/k priors (user guide Tables 1 and 3): capelin thought to be depleted in the last year
+input <- cmsy_input(FAO27$area_data, species = "CAP", table = FALSE,
+                    priors = data.frame(species = "Mallotus villosus", endb.low = 0.2, endb.hi = 0.5))
 #> 1 stock ready for CMSY++ (catch only, no abundance data); 0 left out (see $excluded).
+#> 
+#> ── cmsy_input(): Atlantic, Northeast ───────────────────────────────────────────
+#> 1 stocks ready for CMSY++, 0 left out:
+#>   Stock species_en first_year last_year Resilience r.low  r.hi
+#>  CAP_27 Capelin          1950      2024 Medium     0.412 0.937
+#> Results returned: $catch, $id, $stocks, $excluded, $by, $name, $fao_version, $created
 input$id[, c("Stock", "endb.low", "endb.hi")]
 #>    Stock endb.low endb.hi
-#> 1 PIL_34      0.2     0.5
+#> 1 CAP_27      0.2     0.5
 
 # A start year chosen by the user, and a resilience for species without a FishBase prior
-input <- cmsy_input(FAO34$area_data, table = FALSE, default_resilience = "Medium",
-                    priors = data.frame(alpha3 = "PIL", StartYear = 1973))
-#> 124 stocks ready for CMSY++ (catch only, no abundance data); 356 left out (see $excluded).
+input <- cmsy_input(FAO27$area_data, table = FALSE, default_resilience = "Medium",
+                    priors = data.frame(alpha3 = "CAP", StartYear = 1980))
+#> 242 stocks ready for CMSY++ (catch only, no abundance data); 512 left out (see $excluded).
+#> 
+#> ── cmsy_input(): Atlantic, Northeast ───────────────────────────────────────────
+#> 242 stocks ready for CMSY++, 512 left out:
+#>   Stock                  species_en first_year last_year Resilience r.low  r.hi
+#>  HER_27 Atlantic herring                  1950      2024 Medium     0.288 0.654
+#>  COD_27 Atlantic cod                      1950      2024 Medium     0.336 0.764
+#>  CAP_27 Capelin                           1950      2024 Medium     0.412 0.937
+#>  WHB_27 Blue whiting(=Poutassou)          1950      2024 Medium     0.307 0.698
+#>  MAC_27 Atlantic mackerel                 1950      2024 Medium     0.283 0.644
+#>  SPR_27 European sprat                    1950      2024 Medium     0.318 0.722
+#>  POK_27 Saithe(=Pollock)                  1950      2024 Medium     0.344 0.781
+#>  HAD_27 Haddock                           1950      2024 Medium     0.328 0.746
+#>  NOP_27 Norway pout                       1959      2024 Medium     0.329 0.747
+#>  PIL_27 European pilchard(=Sardine)       1950      2024 Medium     0.415 0.942
+#>   ... 232 more rows (242 in all)
+#> Results returned: $catch, $id, $stocks, $excluded, $by, $name, $fao_version, $created
 
 # One stock per country instead of one per area
-by_country <- cmsy_input(FAO34$area_data, species = "PIL", by = "country", table = FALSE)
-#> 11 stocks ready for CMSY++ (catch only, no abundance data); 22 left out (see $excluded).
+by_country <- cmsy_input(FAO27$area_data, species = "CAP", by = "country", table = FALSE)
+#> 6 stocks ready for CMSY++ (catch only, no abundance data); 12 left out (see $excluded).
+#> 
+#> ── cmsy_input(): Atlantic, Northeast ───────────────────────────────────────────
+#> 6 stocks ready for CMSY++, 12 left out:
+#>       Stock species_en first_year last_year Resilience r.low  r.hi
+#>  CAP_27_NOR Capelin          1950      2024 Medium     0.412 0.937
+#>  CAP_27_ISL Capelin          1963      2023 Medium     0.412 0.937
+#>  CAP_27_SUN Capelin          1950      1991 Medium     0.412 0.937
+#>  CAP_27_RUS Capelin          1992      2024 Medium     0.412 0.937
+#>  CAP_27_FRO Capelin          1975      2024 Medium     0.412 0.937
+#>  CAP_27_GRL Capelin          1974      2024 Medium     0.412 0.937
+#> Results returned: $catch, $id, $stocks, $excluded, $by, $name, $fao_version, $created
 by_country$stocks[, c("Stock", "country", "first_year", "last_year")]
-#>         Stock                      country first_year last_year
-#> 1  PIL_34_MAR                      Morocco       1950      2024
-#> 2  PIL_34_SUN           Un. Sov. Soc. Rep.       1958      1991
-#> 3  PIL_34_ESP                        Spain       1950      2024
-#> 4  PIL_34_MRT                   Mauritania       1997      2024
-#> 5  PIL_34_RUS           Russian Federation       1992      2024
-#> 6  PIL_34_UKR                      Ukraine       1992      2017
-#> 7  PIL_34_NLD Netherlands (Kingdom of the)       1996      2024
-#> 8  PIL_34_BLZ                       Belize       1997      2024
-#> 9  PIL_34_LTU                    Lithuania       1992      2024
-#> 10 PIL_34_LVA                       Latvia       1992      2016
-#> 11 PIL_34_VCT     Saint Vincent/Grenadines       1997      2017
+#>        Stock            country first_year last_year
+#> 1 CAP_27_NOR             Norway       1950      2024
+#> 2 CAP_27_ISL            Iceland       1963      2023
+#> 3 CAP_27_SUN Un. Sov. Soc. Rep.       1950      1991
+#> 4 CAP_27_RUS Russian Federation       1992      2024
+#> 5 CAP_27_FRO      Faroe Islands       1975      2024
+#> 6 CAP_27_GRL          Greenland       1974      2024
 # }
 ```

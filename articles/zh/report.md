@@ -30,7 +30,7 @@ be completed”）。使用前请核对自动生成的文字。
 
 report <- fao_report(27, file = "FAO27_report_zh.docx", lang = "zh")
 report
-#> FAO report: /tmp/RtmpYp92ZH/faofishingreport_site_1ddfa636ed00d/FAO27_report_zh.docx
+#> FAO report: /tmp/RtmpxsioVC/faofishingreport_site_1dc69489affc5/FAO27_report_zh.docx
 #> Sections: total, species, countries, groups, status, quality, diversity, fleets
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -212,7 +212,7 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 | \[10\] Shannon C E. A mathematical theory of communication\[J\]. Bell System Technical Journal, 1948, 27(3): 379-423. DOI: 10.1002/j.1538-7305.1948.tb01338.x. |
 | \[11\] Rhoades S A. The Herfindahl-Hirschman index\[J\]. Federal Reserve Bulletin, 1993, 79(3): 188-189. |
 | \[12\] R Core Team. R: A language and environment for statistical computing\[CP/OL\]. Vienna: R Foundation for Statistical Computing, 2026\[2026-10-12\]. <https://www.R-project.org/>. |
-| \[13\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.9.0\[CP/OL\]. 2026\[2026-10-12\]. <https://linbojun99.github.io/faofishingreport/>. |
+| \[13\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 1.0.0\[CP/OL\]. 2026\[2026-10-12\]. <https://linbojun99.github.io/faofishingreport/>. |
 | \[14\] Garibaldi L. The FAO global capture production database: a six-decade effort to catch the trend\[J\]. Marine Policy, 2012, 36(3): 760-768. DOI: 10.1016/j.marpol.2011.10.024. |
 
 ## 🧾 参数
@@ -290,7 +290,7 @@ CMSY++资源评估](https://linbojun99.github.io/faofishingreport/articles/zh/cm
 short <- fao_report(27, file = "FAO27_short.docx", lang = "zh", quality = FALSE, diversity = FALSE,
                     fleets = FALSE, pelagic = TRUE, status_smooth = TRUE)
 short
-#> FAO report: /tmp/RtmpYp92ZH/faofishingreport_site_1ddfa636ed00d/FAO27_short.docx
+#> FAO report: /tmp/RtmpxsioVC/faofishingreport_site_1dc69489affc5/FAO27_short.docx
 #> Sections: total, species, countries, groups, status, pelagic
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -335,7 +335,7 @@ show_table(data.frame(reference = short_word$text[short_word$style_name == "FAO 
 | \[10\] Caddy J F. Toward a comparative evaluation of human impacts on fishery ecosystems of enclosed and semi‐enclosed seas\[J\]. Reviews in Fisheries Science, 1993, 1(1): 57-95. DOI: 10.1080/10641269309388535. |
 | \[11\] de Leiva Moreno J I, Agostini V N, Caddy J F, et al. Is the pelagic-demersal ratio from fishery landings a useful proxy for nutrient availability? A preliminary data exploration for the semi-enclosed seas around Europe\[J\]. ICES Journal of Marine Science, 2000, 57(4): 1091-1102. DOI: 10.1006/jmsc.2000.0705. |
 | \[12\] R Core Team. R: A language and environment for statistical computing\[CP/OL\]. Vienna: R Foundation for Statistical Computing, 2026\[2026-10-12\]. <https://www.R-project.org/>. |
-| \[13\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.9.0\[CP/OL\]. 2026\[2026-10-12\]. <https://linbojun99.github.io/faofishingreport/>. |
+| \[13\] Lin H. faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 1.0.0\[CP/OL\]. 2026\[2026-10-12\]. <https://linbojun99.github.io/faofishingreport/>. |
 | \[14\] Hondorp D W, Breitburg D L, Davias L A. Eutrophication and Fisheries: Separating the Effects of Nitrogen Loads and Hypoxia on the Pelagic-to-Demersal Ratio and other Measures of Landings Composition\[J\]. Marine and Coastal Fisheries, 2010, 2(1): 339-361. DOI: 10.1577/C09-020.1. |
 
 分析方法段落描述的是各项分析的默认设置，例如资源开发状态图的纳入标准和突变点检测中15%的最小分段长度。修改这类设置（`status_smooth = TRUE`、`status_min_catch = 10000`、`species_h_value = 0.2`等）后，结果会随之改变，但需要自己在1.2
@@ -370,7 +370,7 @@ show_table(data.frame(reference = short_word$text[short_word$style_name == "FAO 
 
 fao_report(27, species_h = 0.2)
 #> Error:
-#> ! fao_report(): species_h would set h, which is not an argument of fishing_area_species(). Its arguments: rank_range, plot, timeseries_analysis, line_width, point_size, point_alpha, point_shape, line_alpha, axis_text_size, axis_title_size, strip_text_size, axis_text_face, axis_title_face, strip_text_face, smooth_method, smooth_linetype, line_linewidth, text_hjust, text_vjust, text_size, text_color, facet_ncol, h_value, ZH
+#> ! fao_report(): species_h would set h, which is not an argument of fishing_area_species(). Its arguments: rank_range, plot, timeseries_analysis, line_width, point_size, point_alpha, point_shape, line_alpha, axis_text_size, axis_title_size, strip_text_size, axis_text_face, axis_title_face, strip_text_face, smooth_method, smooth_linetype, line_linewidth, text_hjust, text_vjust, text_size, text_color, facet_ncol, h_value, ZH, plot_show
 fao_report(27, speceis_h_value = 0.2)
 #> Error:
 #> ! Unknown argument of fao_report(): speceis_h_value. Settings of an analysis start with its section: total_, species_, countries_, groups_, status_, quality_, diversity_, fleets_, shocks_, collapse_, synchrony_, pelagic_, mtc_, distant_, cmsy_
@@ -715,7 +715,7 @@ Fisheries* 14(3): 293–311.
 [doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
 
 Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture
-Production statistics. R package version 0.9.0.
+Production statistics. R package version 1.0.0.
 <https://linbojun99.github.io/faofishingreport/>
 
 Mann, H.B. (1945). Nonparametric tests against trend. *Econometrica*

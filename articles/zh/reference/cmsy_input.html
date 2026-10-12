@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="../../../index.html">faofishingreport</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -144,15 +144,15 @@ fishing areas).
 </dd>
 <dt><code>species</code></dt>
 <dd>
-要保留的物种（可选），可以用FAO英文或中文名称、中英文名称合写（与<code>lang = "both"</code>时显示的形式相同）、学名或FAO三字母代码，例如<code>c("European pilchard(=Sardine)", "Sardinella aurita", "BOG")</code>，也可以用中文名称。默认为NULL，即所有物种。
+要保留的物种（可选），可以用FAO英文或中文名称、中英文名称合写（与<code>lang = "both"</code>时显示的形式相同）、学名或FAO三字母代码，例如<code>c("Atlantic herring", "Mallotus villosus", "PRA")</code>，也可以用中文名称。默认为NULL，即所有物种。
 <details class="fao-en"><summary>
 English
 </summary>
 Optional species to keep, by English or Chinese FAO name, both together
 (as shown with <code>lang = "both"</code>), scientific name or FAO
 3-alpha code, e.g.
-<code>c("European pilchard(=Sardine)", "Sardinella aurita", "BOG")</code>
-or Chinese names. Default is NULL, all species.
+<code>c("Atlantic herring", "Mallotus villosus", "PRA")</code> or
+Chinese names. Default is NULL, all species.
 </details>
 </dd>
 <dt><code>by</code></dt>
@@ -342,29 +342,29 @@ assessments: the CMSY++ method. Acta Ichthyologica et Piscatoria 53:
 <h2 id="示例">示例<a class="anchor" aria-label="anchor" href="#%E7%A4%BA%E4%BE%8B"></a>
 </h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">FAO34</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Eastern Central"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">FAO27</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/fishing_area_data.html">fishing_area_data</a></span><span class="op">(</span><span class="st">"Atlantic, Northeast"</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># All species of the area that CMSY++ can assess with catch only</span></span>
-<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_input.html">cmsy_input</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_input.html">cmsy_input</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">input</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">stocks</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Stock"</span>, <span class="st">"species_en"</span>, <span class="st">"first_year"</span>, <span class="st">"Resilience"</span>, <span class="st">"r.low"</span>, <span class="st">"r.hi"</span>, <span class="st">"r_source"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">input</span><span class="op">$</span><span class="va">excluded</span><span class="op">$</span><span class="va">reason</span><span class="op">)</span>                      <span class="co"># why the others are left out</span></span>
 <span></span>
 <span><span class="co"># Some species only, by English name, scientific name or FAO 3-alpha code</span></span>
-<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_input.html">cmsy_input</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"European pilchard(=Sardine)"</span>, <span class="st">"Sardinella aurita"</span>, <span class="st">"GRB"</span><span class="op">)</span>,</span>
+<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_input.html">cmsy_input</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Atlantic herring"</span>, <span class="st">"Mallotus villosus"</span>, <span class="st">"PRA"</span><span class="op">)</span>,</span>
 <span>                    table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Expert B/k priors (user guide Tables 1 and 3): sardine thought to be depleted in the last year</span></span>
-<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_input.html">cmsy_input</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, species <span class="op">=</span> <span class="st">"PIL"</span>, table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>                    priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"Sardina pilchardus"</span>, endb.low <span class="op">=</span> <span class="fl">0.2</span>, endb.hi <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co"># Expert B/k priors (user guide Tables 1 and 3): capelin thought to be depleted in the last year</span></span>
+<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_input.html">cmsy_input</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, species <span class="op">=</span> <span class="st">"CAP"</span>, table <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>                    priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>species <span class="op">=</span> <span class="st">"Mallotus villosus"</span>, endb.low <span class="op">=</span> <span class="fl">0.2</span>, endb.hi <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">input</span><span class="op">$</span><span class="va">id</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Stock"</span>, <span class="st">"endb.low"</span>, <span class="st">"endb.hi"</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="co"># A start year chosen by the user, and a resilience for species without a FishBase prior</span></span>
-<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_input.html">cmsy_input</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, table <span class="op">=</span> <span class="cn">FALSE</span>, default_resilience <span class="op">=</span> <span class="st">"Medium"</span>,</span>
-<span>                    priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>alpha3 <span class="op">=</span> <span class="st">"PIL"</span>, StartYear <span class="op">=</span> <span class="fl">1973</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">input</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_input.html">cmsy_input</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, table <span class="op">=</span> <span class="cn">FALSE</span>, default_resilience <span class="op">=</span> <span class="st">"Medium"</span>,</span>
+<span>                    priors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>alpha3 <span class="op">=</span> <span class="st">"CAP"</span>, StartYear <span class="op">=</span> <span class="fl">1980</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># One stock per country instead of one per area</span></span>
-<span><span class="va">by_country</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_input.html">cmsy_input</a></span><span class="op">(</span><span class="va">FAO34</span><span class="op">$</span><span class="va">area_data</span>, species <span class="op">=</span> <span class="st">"PIL"</span>, by <span class="op">=</span> <span class="st">"country"</span>, table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">by_country</span> <span class="op">&lt;-</span> <span class="fu"><a href="../../../reference/cmsy_input.html">cmsy_input</a></span><span class="op">(</span><span class="va">FAO27</span><span class="op">$</span><span class="va">area_data</span>, species <span class="op">=</span> <span class="st">"CAP"</span>, by <span class="op">=</span> <span class="st">"country"</span>, table <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">by_country</span><span class="op">$</span><span class="va">stocks</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Stock"</span>, <span class="st">"country"</span>, <span class="st">"first_year"</span>, <span class="st">"last_year"</span><span class="op">)</span><span class="op">]</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

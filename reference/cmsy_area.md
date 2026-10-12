@@ -31,6 +31,7 @@ cmsy_area(
   annotations = getOption("faofishingreport.cmsy_annotations", FALSE),
   lang = NULL,
   pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show"),
   silent = fao_setting("silent"),
   ...
 )
@@ -42,7 +43,7 @@ cmsy_area(
 
   FAO major fishing area name(s), as in
   [`fishing_area_data()`](https://linbojun99.github.io/faofishingreport/reference/fishing_area_data.md)
-  (e.g. "Atlantic, Eastern Central"), or FAO catch data such as
+  (e.g. "Atlantic, Northeast"), or FAO catch data such as
   `fishing_area_data()$area_data`.
 
 - top:
@@ -131,6 +132,14 @@ cmsy_area(
   FALSE, which can be changed for all functions with
   `fao_settings(pptx = TRUE)`.
 
+- plot_show:
+
+  A logical value. If TRUE, each chart is also drawn in the plot window
+  (e.g. the Plots pane of RStudio) as it is saved, to look at it at
+  once. Default is FALSE, which can be changed for all functions with
+  `fao_settings(plot_show = TRUE)`. The charts are saved as files
+  (`plot = TRUE`) either way.
+
 - silent:
 
   A logical value. If FALSE (default), a progress bar shows how many
@@ -212,20 +221,20 @@ tiers and status classes).
 if (FALSE) { # \dontrun{
 cmsy_setup()                     # once: JAGS and the R packages CMSY++ needs
 
-# The ten species with the largest catch of the last ten years in FAO area 34, in Chinese
-area34 <- cmsy_area("Atlantic, Eastern Central", top = 10, lang = "zh")
-area34$summary[, c("Stock", "species_name", "B_Bmsy", "F_Fmsy", "status")]
-area34$dir                       # folder with input/, runs/, figures/ and tables/
+# The ten species with the largest catch of the last ten years in FAO area 27, in Chinese
+area27 <- cmsy_area("Atlantic, Northeast", top = 10, lang = "zh")
+area27$summary[, c("Stock", "species_name", "B_Bmsy", "F_Fmsy", "status")]
+area27$dir                       # folder with input/, runs/, figures/ and tables/
 
 # Chosen species (scientific name, FAO code, ...), all annotations, five status classes
-cmsy_area("Atlantic, Eastern Central", species = c("Brachydeuterus auritus", "PIL"),
+cmsy_area("Atlantic, Northeast", species = c("Mallotus villosus", "PRA"),
           annotations = TRUE, classes = "palomares")
 
 # Species without a FishBase prior get a resilience (passed on to cmsy_input())
-cmsy_area("Atlantic, Eastern Central", top = 20, default_resilience = "Medium")
+cmsy_area("Atlantic, Northeast", top = 20, default_resilience = "Medium")
 
 # Several areas, quietly, with longer MCMC chains (see cmsy_defaults())
-cmsy_area(c("Atlantic, Eastern Central", "Pacific, Northwest"), top = 5, silent = TRUE,
+cmsy_area(c("Atlantic, Northeast", "Atlantic, Northwest"), top = 5, silent = TRUE,
           settings = list(n.iter = 100000, n.burnin = 50000))
 } # }
 ```

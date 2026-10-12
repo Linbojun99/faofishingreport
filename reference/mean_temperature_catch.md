@@ -28,6 +28,7 @@ mean_temperature_catch(
   table = TRUE,
   lang = NULL,
   pptx = getOption("faofishingreport.pptx", FALSE),
+  plot_show = fao_setting("plot_show"),
   label = NULL,
   data_dir = fao_data_dir()
 )
@@ -120,6 +121,14 @@ mean_temperature_catch(
   A logical value. If TRUE, charts are also saved as editable PowerPoint
   files in `figures/pptx/summary/`. Default is FALSE, which can be
   changed for all functions with `fao_settings(pptx = TRUE)`.
+
+- plot_show:
+
+  A logical value. If TRUE, each chart is also drawn in the plot window
+  (e.g. the Plots pane of RStudio) as it is saved, to look at it at
+  once. Default is FALSE, which can be changed for all functions with
+  `fao_settings(plot_show = TRUE)`. The charts are saved as files
+  (`plot = TRUE`) either way.
 
 - label:
 
@@ -396,27 +405,27 @@ Marine Species. <https://www.marinespecies.org>
 
 ``` r
 if (FALSE) { # \dontrun{
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-mtc <- mean_temperature_catch(FAO34$area_data, lang = "both")
+FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+mtc <- mean_temperature_catch(FAO27$area_data, lang = "both")
 mtc$trend
 # The items with the largest catch: check their match and preferred temperature with the links
 head(mtc$species[, c("species_name", "match_type", "temp_pref_mean", "catch_pct", "used", "url")], 20)
 
 # After checking tables/Atlantic__Eastern_Central_mtc_species.csv (column `checked`, and
 # corrected values with their source in `note`), run again with the checked table
-mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern_Central_mtc_species.csv")
+mean_temperature_catch(FAO27$area_data, match = "tables/Atlantic__Northeast_mtc_species.csv")
 
 # Other SST data: your own NetCDF file (or folder), or a product downloaded once
-mean_temperature_catch(FAO34$area_data, sst = "D:/data/HadISST_sst.nc", label = "FAO34_hadisst")
+mean_temperature_catch(FAO27$area_data, sst = "D:/data/HadISST_sst.nc", label = "FAO27_hadisst")
 download_sst_data("cobe2")
-mean_temperature_catch(FAO34$area_data, sst = "cobe2", label = "FAO34_cobe2")
+mean_temperature_catch(FAO27$area_data, sst = "cobe2", label = "FAO27_cobe2")
 
 # The GFCM divisions of the Mediterranean and Black Sea
 mean_temperature_catch(load_fao_divisions("GFCM"), by = "division")
 
 # The period studied by Cheung et al. (2013)
-mean_temperature_catch(subset(FAO34$area_data, Year >= 1970 & Year <= 2006),
-                       label = "FAO34_1970_2006")
+mean_temperature_catch(subset(FAO27$area_data, Year >= 1970 & Year <= 2006),
+                       label = "FAO27_1970_2006")
 
 # All FAO major marine fishing areas, one chart panel per area
 marine <- subset(load_fao_data(), FAO.major.fishing.area..Name. %in% fao_area_sst()$area_en)

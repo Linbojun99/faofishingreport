@@ -119,25 +119,25 @@ cmsy_priors("Gadus morhua")
 #> 1 https://data.source.coop/cboettig/fishbase/fb/v26.06/parquet/estimate.parquet
 #>                                      rule_url
 #> 1 https://oceanrep.geomar.de/id/eprint/52147/
-cmsy_priors(c("COD", "European pilchard(=Sardine)"), lang = "both")
-#>                         species_name alpha3                  species_en
-#> 1              大西洋鳕 Atlantic cod    COD                Atlantic cod
-#> 2 沙丁鱼 European pilchard(=Sardine)    PIL European pilchard(=Sardine)
-#>   species_zh    scientific_name major_en database SpecCode       matched_name
-#> 1   大西洋鳕       Gadus morhua   PISCES FishBase       69       Gadus morhua
-#> 2     沙丁鱼 Sardina pilchardus   PISCES FishBase     1350 Sardina pilchardus
-#>   match_type match_note resilience resilience_note prior_r prior_r_lcl
-#> 1      exact       <NA>     Medium            <NA>   0.509       0.336
-#> 2      exact       <NA>     Medium            <NA>   0.628       0.415
-#>   prior_r_ucl prior_r_n                        prior_r_note
-#> 1       0.764        66 Based on 66 full stock assessments.
-#> 2       0.942        26 Based on 26 full stock assessments.
-#>                                    url        release r_low r_high
-#> 1   https://www.fishbase.se/summary/69 FishBase 26.06 0.336  0.764
-#> 2 https://www.fishbase.se/summary/1350 FishBase 26.06 0.415  0.942
+cmsy_priors(c("COD", "Atlantic herring"), lang = "both")
+#>                species_name alpha3       species_en species_zh scientific_name
+#> 1     大西洋鳕 Atlantic cod    COD     Atlantic cod   大西洋鳕    Gadus morhua
+#> 2 大西洋鲱 Atlantic herring    HER Atlantic herring   大西洋鲱 Clupea harengus
+#>   major_en database SpecCode    matched_name match_type match_note resilience
+#> 1   PISCES FishBase       69    Gadus morhua      exact       <NA>     Medium
+#> 2   PISCES FishBase       24 Clupea harengus      exact       <NA>     Medium
+#>                            resilience_note prior_r prior_r_lcl prior_r_ucl
+#> 1                                     <NA>   0.509       0.336       0.764
+#> 2 other stocks of the species: Medium, Low   0.436       0.288       0.654
+#>   prior_r_n                        prior_r_note
+#> 1        66 Based on 66 full stock assessments.
+#> 2        53 Based on 53 full stock assessments.
+#>                                  url        release r_low r_high
+#> 1 https://www.fishbase.se/summary/69 FishBase 26.06 0.336  0.764
+#> 2 https://www.fishbase.se/summary/24 FishBase 26.06 0.288  0.654
 #>                                                         r_source
 #> 1 FishBase prior r, 95% CL (Based on 66 full stock assessments.)
-#> 2 FishBase prior r, 95% CL (Based on 26 full stock assessments.)
+#> 2 FishBase prior r, 95% CL (Based on 53 full stock assessments.)
 #>                                                                        data_url
 #> 1 https://data.source.coop/cboettig/fishbase/fb/v26.06/parquet/estimate.parquet
 #> 2 https://data.source.coop/cboettig/fishbase/fb/v26.06/parquet/estimate.parquet

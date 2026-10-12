@@ -34,7 +34,7 @@ Chinese reports). Check the generated text before you use it.
 
 report <- fao_report(27, file = "FAO27_report_en.docx", lang = "en")
 report
-#> FAO report: /tmp/RtmpWkWDU5/faofishingreport_site_1db8556600a6d/FAO27_report_en.docx
+#> FAO report: /tmp/Rtmpc8yMXJ/faofishingreport_site_1d9f36f413ace/FAO27_report_en.docx
 #> Sections: total, species, countries, groups, status, quality, diversity, fleets
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -247,7 +247,7 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 | Garibaldi, L. (2012). The FAO global capture production database: a six-decade effort to catch the trend. Marine Policy, 36(3), 760–768. <https://doi.org/10.1016/j.marpol.2011.10.024> |
 | Kendall, M. G. (1975). Rank correlation methods (4th ed.). Charles Griffin. |
 | Kleisner, K., Zeller, D., Froese, R., & Pauly, D. (2013). Using global catch data for inferences on the world’s marine fisheries. Fish and Fisheries, 14(3), 293–311. <https://doi.org/10.1111/j.1467-2979.2012.00469.x> |
-| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.9.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
+| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 1.0.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
 | Mann, H. B. (1945). Nonparametric tests against trend. Econometrica, 13(3), 245–259. <https://doi.org/10.2307/1907187> |
 | R Core Team. (2026). R: A language and environment for statistical computing \[Computer software\]. R Foundation for Statistical Computing. <https://www.R-project.org/> |
 | Rhoades, S. A. (1993). The Herfindahl-Hirschman index. Federal Reserve Bulletin, 79(3), 188–189. |
@@ -345,7 +345,7 @@ and stock status plots with smoothed catches:
 short <- fao_report(27, file = "FAO27_short.docx", lang = "en", quality = FALSE, diversity = FALSE,
                     fleets = FALSE, pelagic = TRUE, status_smooth = TRUE)
 short
-#> FAO report: /tmp/RtmpWkWDU5/faofishingreport_site_1db8556600a6d/FAO27_short.docx
+#> FAO report: /tmp/Rtmpc8yMXJ/faofishingreport_site_1d9f36f413ace/FAO27_short.docx
 #> Sections: total, species, countries, groups, status, pelagic
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
@@ -388,7 +388,7 @@ show_table(data.frame(reference = short_word$text[short_word$style_name == "FAO 
 | Hondorp, D. W., Breitburg, D. L., & Davias, L. A. (2010). Eutrophication and Fisheries: Separating the Effects of Nitrogen Loads and Hypoxia on the Pelagic-to-Demersal Ratio and other Measures of Landings Composition. Marine and Coastal Fisheries, 2(1), 339–361. <https://doi.org/10.1577/C09-020.1> |
 | Kendall, M. G. (1975). Rank correlation methods (4th ed.). Charles Griffin. |
 | Kleisner, K., Zeller, D., Froese, R., & Pauly, D. (2013). Using global catch data for inferences on the world’s marine fisheries. Fish and Fisheries, 14(3), 293–311. <https://doi.org/10.1111/j.1467-2979.2012.00469.x> |
-| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 0.9.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
+| Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture Production statistics. R package version 1.0.0 \[Computer software\]. <https://linbojun99.github.io/faofishingreport/> |
 | Mann, H. B. (1945). Nonparametric tests against trend. Econometrica, 13(3), 245–259. <https://doi.org/10.2307/1907187> |
 | R Core Team. (2026). R: A language and environment for statistical computing \[Computer software\]. R Foundation for Statistical Computing. <https://www.R-project.org/> |
 | Yue, S., & Wang, C. Y. (2004). The Mann-Kendall test modified by effective sample size to detect trend in serially correlated hydrological series. Water Resources Management, 18(3), 201–218. <https://doi.org/10.1023/B:WARM.0000043140.61082.60> |
@@ -443,7 +443,7 @@ stops before any analysis is run, and the error lists what is allowed:
 
 fao_report(27, species_h = 0.2)
 #> Error:
-#> ! fao_report(): species_h would set h, which is not an argument of fishing_area_species(). Its arguments: rank_range, plot, timeseries_analysis, line_width, point_size, point_alpha, point_shape, line_alpha, axis_text_size, axis_title_size, strip_text_size, axis_text_face, axis_title_face, strip_text_face, smooth_method, smooth_linetype, line_linewidth, text_hjust, text_vjust, text_size, text_color, facet_ncol, h_value, ZH
+#> ! fao_report(): species_h would set h, which is not an argument of fishing_area_species(). Its arguments: rank_range, plot, timeseries_analysis, line_width, point_size, point_alpha, point_shape, line_alpha, axis_text_size, axis_title_size, strip_text_size, axis_text_face, axis_title_face, strip_text_face, smooth_method, smooth_linetype, line_linewidth, text_hjust, text_vjust, text_size, text_color, facet_ncol, h_value, ZH, plot_show
 fao_report(27, speceis_h_value = 0.2)
 #> Error:
 #> ! Unknown argument of fao_report(): speceis_h_value. Settings of an analysis start with its section: total_, species_, countries_, groups_, status_, quality_, diversity_, fleets_, shocks_, collapse_, synchrony_, pelagic_, mtc_, distant_, cmsy_
@@ -863,7 +863,7 @@ Fisheries* 14(3): 293–311.
 [doi:10.1111/j.1467-2979.2012.00469.x](https://doi.org/10.1111/j.1467-2979.2012.00469.x)
 
 Lin, H. (2026). faofishingreport: Analyse and report FAO Global Capture
-Production statistics. R package version 0.9.0.
+Production statistics. R package version 1.0.0.
 <https://linbojun99.github.io/faofishingreport/>
 
 Mann, H.B. (1945). Nonparametric tests against trend. *Econometrica*
