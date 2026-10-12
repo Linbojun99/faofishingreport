@@ -150,7 +150,8 @@ test_that("the Mann-Kendall test is corrected for autocorrelation, and peak_tren
 })
 
 test_that("decade means divide by the years of the data, whatever items are chosen", {
-  data <- data.frame(Year = c(2009, 2000:2009), Production = c(1000, rep(50, 10)),
+  # B: 70 t a year, 0.07 thousand t (not on a rounding boundary, which differs between platforms)
+  data <- data.frame(Year = c(2009, 2000:2009), Production = c(1000, rep(70, 10)),
                      ASFIS.species..Name. = c("A", rep("B", 10)), stringsAsFactors = FALSE)
   one <- list(species_table = data.frame(name_en = "A"), species_names = list(plain = "A"))
   two <- list(species_table = data.frame(name_en = c("A", "B")), species_names = list(plain = c("A", "B")))

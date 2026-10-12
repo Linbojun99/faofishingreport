@@ -125,7 +125,11 @@ fao_lang <- function(lang = NULL, ZH = FALSE) {
 # text is marked as UTF-8 instead of being converted to the native encoding, which fails for
 # Chinese text in a locale that is not UTF-8 (e.g. "C" on some Linux servers)
 fao_read_csv_utf8 <- function(file, ...) {
-  x <- utils::read.csv(file, encoding = "UTF-8", check.names = FALSE, ...)
+  # in such a locale R notes that the text is kept in UTF-8, which is what is wanted
+  x <- withCallingHandlers(utils::read.csv(file, encoding = "UTF-8", check.names = FALSE, ...),
+                           warning = function(w) {
+                             if (grepl("not representable in native encoding", conditionMessage(w))) invokeRestart("muffleWarning")
+                           })
   names(x)[1] <- sub("^\xef\xbb\xbf", "", names(x)[1], useBytes = TRUE)
   Encoding(names(x)) <- "UTF-8"
   x
