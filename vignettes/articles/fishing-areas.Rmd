@@ -1,6 +1,7 @@
 ---
 title: "🌊 Fishing area analysis"
 description: >
+  fao_areas() and fishing_area_map(): the FAO major fishing areas and their subareas;
   fishing_area_data(), fishing_area_species() and fishing_area_country(): total catch,
   main species and main countries of an FAO fishing area, with all options.
 ---
@@ -13,29 +14,83 @@ source("_setup.R")
 data_source()
 ```
 
-The three fishing area functions describe one FAO major fishing area. The examples use the
-**Eastern Central Atlantic (area 34)**; the last section shows the same analysis for the
-**Northwest Pacific (area 61)**.
+`fao_areas()` and `fishing_area_map()` show the FAO major fishing areas and their subareas; the
+three other fishing area functions describe one area. The examples use the **Northeast Atlantic
+(area 27)**; the last section shows the same analysis for the **Northwest Pacific (area 61)**.
 
 ## 🗺️ The FAO major fishing areas
 
 The FAO major fishing areas for statistical purposes are defined by the Coordinating Working
-Party on Fishery Statistics (CWP): marine areas, and the inland waters of each continent. Their
-catch in the last year of the data:
+Party on Fishery Statistics (CWP): 19 marine areas, and the inland waters of each continent.
+`fao_areas()` lists them with their catch in the last year of the data and the link to the
+official FAO map of each area, and saves a world map of the marine areas labelled with their
+codes:
 
-```{r}
-data <- load_fao_data()
-areas <- aggregate(Production ~ FAO.major.fishing.area..Name., data = subset(data, Year == max(Year)), FUN = sum)
-names(areas) <- c("Fishing area", "Catch in the last year (t)")
-show_table(areas[order(-areas[[2]]), ], n = 30, digits = 0)
+```{r, figures = TRUE}
+areas <- fao_areas()
 ```
 
-Use these names (e.g. `"Pacific, Northwest"`) in `fishing_area_data()`.
+```{r}
+show_table(areas[order(-areas$catch_last_year), c("area_code", "name_en", "type", "ocean", "catch_last_year", "share_pct")],
+           n = 30, digits = 1)
+```
+
+Use these names (e.g. `"Pacific, Northwest"`) or codes in the other functions. The official FAO
+maps (column `fao_map`) are the maps of the
+[FAO fishing area maps](https://www.fao.org/fishery/docs/maps/Default.htm) page; the package
+links to them.
+
+## 🧭 `fishing_area_map()`: an area and its subareas
+
+Large areas are divided into subareas, divisions and subdivisions; in the Northeast Atlantic
+they are the ICES areas, from 27.1 (Barents Sea) to 27.14 (East Greenland). `fishing_area_map()`
+maps one marine area with these units, labelled with their codes, from the boundaries bundled
+with the package (FAO 2024). When the
+[ggOceanMaps](https://github.com/MikkoVihtakari/ggOceanMaps) package (Vihtakari 2026) is
+installed, the map is drawn on its bathymetric base map, with the depth of the ETOPO 2022
+relief model (NOAA NCEI 2022) bundled with ggOceanMaps; areas reaching beyond 60° of latitude,
+such as area 27, are drawn in a polar stereographic projection. Without ggOceanMaps, the land
+of Natural Earth is drawn in a Lambert azimuthal equal-area projection centred on the area.
+
+```{r, figures = "subarea_map"}
+ne_atlantic <- fishing_area_map(27)
+```
+
+```{r}
+show_table(ne_atlantic$units, n = 20)
+ne_atlantic$fao_map      # the official FAO map of the area
+```
+
+The sources of the map are in `ne_atlantic$sources`, to cite with it:
+
+```{r}
+show_table(ne_atlantic$sources)
+```
+
+The divisions, here without depth:
+
+```{r, figures = "division_map"}
+fishing_area_map(27, level = "division", bathymetry = FALSE)
+```
+
+All arguments of `fishing_area_map()`:
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `area` | FAO major marine fishing area: code (e.g. `27`) or English name | |
+| `level` | Units drawn inside the area: `"subarea"`, `"division"`, `"subdivision"` or `"none"` (outline only) | `"subarea"` |
+| `bathymetry` | Show the depth (ggOceanMaps only) | `TRUE` |
+| `labels` | Label the units with their codes | `TRUE` |
+| `engine` | `"auto"` (ggOceanMaps when installed, else `"sf"`), `"ggOceanMaps"` or `"sf"` | `"auto"` |
+| `plot` | Save the map in `figures/png/area/` | `TRUE` |
+| `table` | Save the table of units in `tables/` | `TRUE` |
+| `lang` | Language of the map text: `"en"`, `"zh"` or `"both"` | `NULL`: the language of `fao_settings()` |
+| `pptx` | Also save the map as an editable PowerPoint file | `FALSE`, or `pptx` of `fao_settings()` |
 
 ## 1️⃣ `fishing_area_data()`: catch of the area
 
 ```{r, figures = TRUE}
-FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+FAO27 <- fishing_area_data("Atlantic, Northeast")
 ```
 
 It saves three charts in `figures/png/`:
@@ -55,14 +110,14 @@ and returns a list:
 | `act_world_map` | The map data, an sf object with the total catch of each country (`NULL` with `plot = FALSE`) |
 
 ```{r}
-FAO34$coefs_data
+FAO27$coefs_data
 ```
 
 ### Options
 
 ```{r, figures = TRUE}
 fishing_area_data(
-  "Atlantic, Eastern Central",
+  "Atlantic, Northeast",
   timeseries_analysis = FALSE,          # no breakpoints
   area_color1 = "#9ecae1",              # fill of the catch area
   area_color2 = "#08519c",              # its outline
@@ -107,7 +162,7 @@ All arguments of `fishing_area_data()`:
 ## 2️⃣ `fishing_area_species()`: main species
 
 ```{r, figures = TRUE}
-species <- fishing_area_species(FAO34$area_data, rank_range = c(1, 10))
+species <- fishing_area_species(FAO27$area_data, rank_range = c(1, 10))
 ```
 
 | File | Chart |
@@ -146,7 +201,7 @@ show_table(read.csv("tables/species_ranked_table.csv", fileEncoding = "UTF-8-BOM
   species with too short a series are skipped with a message.
 
 ```{r, figures = TRUE}
-fishing_area_species(FAO34$area_data, rank_range = c(11, 20), h_value = 5, lang = "both")
+fishing_area_species(FAO27$area_data, rank_range = c(11, 20), h_value = 5, lang = "both")
 ```
 
 All arguments of `fishing_area_species()`. "Time series chart" is `area_species.png`, "panel
@@ -182,7 +237,7 @@ sizes and two columns, and only the `text_*` arguments change it.
 ## 3️⃣ `fishing_area_country()`: main countries
 
 ```{r, figures = TRUE}
-countries <- fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
+countries <- fishing_area_country(FAO27$area_data, rank_range = c(1, 10))
 ```
 
 It works like `fishing_area_species()`, by country:
@@ -279,6 +334,14 @@ FAO (`r sub("[.].*", "", release_info$release)`). FishStat: Global capture produ
 In: FishStatJ. <https://www.fao.org/fishery/statistics/software/fishstatj/en>.
 Licence: CC-BY-4.0. Release file: <`r release_info$url`>
 
+FAO. Fishing area maps. In: FAO Fisheries and Aquaculture Division [online]. Rome.
+<https://www.fao.org/fishery/docs/maps/Default.htm>
+
+FAO (2024). FAO Major Fishing Areas for Statistical Purposes. In: FAO Fisheries and Aquaculture
+Division [online]. Licence: CC-BY 4.0.
+<https://www.fao.org/fishery/geonetwork?uuid=ac02a460-da52-11dc-9d70-0017f293bd28>
+(the area boundaries of the maps, bundled as `inst/extdata/FAO_AREAS_CWP.shp`)
+
 FAO (2026). *Fishery and Aquaculture Statistics – Yearbook 2024*. FAO Yearbook of Fishery and
 Aquaculture Statistics. Rome: FAO.
 [doi:10.4060/ce1217en](https://doi.org/10.4060/ce1217en)
@@ -289,9 +352,16 @@ Massicotte, P. and South, A. *rnaturalearth: World Map Data from Natural Earth*.
 Natural Earth. Admin 0 – Details, map units, 1:50m (the country outlines of the maps).
 <https://www.naturalearthdata.com/downloads/50m-cultural-vectors/50m-admin-0-details/>
 
+NOAA National Centers for Environmental Information (2022). ETOPO 2022 15 Arc-Second Global
+Relief Model. [doi:10.25921/fd45-gt74](https://doi.org/10.25921/fd45-gt74)
+
 Pebesma, E. (2018). Simple features for R: standardized support for spatial vector data.
 *The R Journal* 10(1): 439–446.
 [doi:10.32614/RJ-2018-009](https://doi.org/10.32614/RJ-2018-009)
+
+Vihtakari, M. (2026). *ggOceanMaps: Plot Data on Oceanographic Maps using 'ggplot2'*. R package
+version 3.0.0. [doi:10.32614/CRAN.package.ggOceanMaps](https://doi.org/10.32614/CRAN.package.ggOceanMaps).
+GitHub: <https://github.com/MikkoVihtakari/ggOceanMaps>
 
 Wickham, H. (2016). *ggplot2: Elegant Graphics for Data Analysis*. New York: Springer.
 [doi:10.1007/978-3-319-24277-4](https://doi.org/10.1007/978-3-319-24277-4)

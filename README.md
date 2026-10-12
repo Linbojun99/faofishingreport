@@ -17,6 +17,46 @@
 statistics into charts, maps and tables for reports, by fishing area, country and species,
 in English, Chinese or both.
 
+## 🌍 The FAO major fishing areas
+
+FAO reports catches by **major fishing areas for statistical purposes**, defined by the
+Coordinating Working Party on Fishery Statistics (CWP): **19 marine areas**, with two-digit codes
+from 18 to 88, and the **inland waters** of each continent (01 Africa, 02 North America,
+03 South America, 04 Asia, 05 Europe, 06 Oceania, 07 the former USSR area and 08 Antarctica).
+Large areas are divided into subareas, divisions and subdivisions.
+
+![The 19 FAO major marine fishing areas, labelled with their codes](man/figures/readme-fao-areas.png)
+
+| Code | Area | Where | FAO map |
+|---|---|---|---|
+| **18** | Arctic Sea | Arctic Ocean, including Hudson Bay | [map](https://www.fao.org/fishery/docs/maps/fig_h2_18_0.gif) |
+| **21** | Atlantic, Northwest | West Greenland, eastern Canada and the US east coast to about 35°N (Cape Hatteras) | [map](https://www.fao.org/fishery/docs/maps/fig_h2_21_0.gif) |
+| **27** | Atlantic, Northeast | From the Barents Sea and East Greenland to the Strait of Gibraltar, with the North Sea and the Baltic Sea | [map](https://www.fao.org/fishery/docs/maps/fig_h2_27_0.gif) |
+| **31** | Atlantic, Western Central | Gulf of Mexico, Caribbean Sea and the western Atlantic from about 35°N to northern Brazil | [map](https://www.fao.org/fishery/docs/maps/fig_h2_31_0.gif) |
+| **34** | Atlantic, Eastern Central | West Africa from the Strait of Gibraltar to the Congo River, with the Canary Islands | [map](https://www.fao.org/fishery/docs/maps/fig_h2_34_0.gif) |
+| **37** | Mediterranean and Black Sea | Mediterranean Sea, Sea of Marmara, Black Sea and Sea of Azov | [map](https://www.fao.org/fishery/docs/maps/fig_h2_37_0.gif) |
+| **41** | Atlantic, Southwest | Brazil, Uruguay, Argentina and the Falkland Islands (Malvinas) | [map](https://www.fao.org/fishery/docs/maps/fig_h2_41_0.gif) |
+| **47** | Atlantic, Southeast | Southwest Africa from the Congo River to South Africa (Angola, Namibia) | [map](https://www.fao.org/fishery/docs/maps/fig_h2_47_0.gif) |
+| **48** | Atlantic, Antarctic | Atlantic sector of the Southern Ocean (South Georgia, Antarctic Peninsula) | [map](https://www.fao.org/fishery/docs/maps/fig_h5_48_0.gif) |
+| **51** | Indian Ocean, Western | East Africa, Mozambique Channel, Red Sea, Persian Gulf, Arabian Sea and western India | [map](https://www.fao.org/fishery/docs/maps/fig_h3_51_0.gif) |
+| **57** | Indian Ocean, Eastern | Bay of Bengal, Andaman Sea, south of Indonesia, and western and southern Australia | [map](https://www.fao.org/fishery/docs/maps/fig_h3_57_0.gif) |
+| **58** | Indian Ocean, Antarctic | Indian Ocean sector of the Southern Ocean (Kerguelen) | [map](https://www.fao.org/fishery/docs/maps/fig_h5_58_0.gif) |
+| **61** | Pacific, Northwest | China, Korea, Japan and the Russian Far East: northern South China Sea, East China and Yellow Seas, Sea of Japan, Sea of Okhotsk and the western Bering Sea | [map](https://www.fao.org/fishery/docs/maps/fig_h4_61_0.gif) |
+| **67** | Pacific, Northeast | Eastern Bering Sea, Gulf of Alaska and the coasts of Canada and the United States to 40°N | [map](https://www.fao.org/fishery/docs/maps/fig_h4_67_0.gif) |
+| **71** | Pacific, Western Central | Southern South China Sea, Gulf of Thailand, Indonesia, the Philippines, Papua New Guinea, Arafura Sea and the western Pacific islands | [map](https://www.fao.org/fishery/docs/maps/fig_h4_71_0.gif) |
+| **77** | Pacific, Eastern Central | From California (south of 40°N) to Panama, and the central Pacific with Hawaii | [map](https://www.fao.org/fishery/docs/maps/fig_h4_77_0.gif) |
+| **81** | Pacific, Southwest | Tasman Sea, New Zealand and the southwestern Pacific | [map](https://www.fao.org/fishery/docs/maps/fig_h4_81_0.gif) |
+| **87** | Pacific, Southeast | Ecuador, Peru and Chile | [map](https://www.fao.org/fishery/docs/maps/fig_h4_87_0.gif) |
+| **88** | Pacific, Antarctic | Pacific sector of the Southern Ocean (Ross Sea) | [map](https://www.fao.org/fishery/docs/maps/fig_h5_88_0.gif) |
+
+The maps are the official FAO maps of each area
+([FAO fishing area maps](https://www.fao.org/fishery/docs/maps/Default.htm)). `fao_areas()`
+gives this list with the catch of each area, and `fishing_area_map()` maps one area with its
+subareas, on the bathymetric base map of [ggOceanMaps](https://github.com/MikkoVihtakari/ggOceanMaps)
+when it is installed. The examples below use the **Northeast Atlantic (area 27)**:
+
+![FAO area 27, Northeast Atlantic, and its subareas 27.1 to 27.14](man/figures/readme-area27.png)
+
 ## ✨ Features
 
 - 💾 **Always the latest data**: check for and download new FAO releases with one command, and
@@ -69,26 +109,30 @@ library(faofishingreport)
 check_fao_update()
 download_fao_data()
 
-# FAO major fishing area 34, Eastern Central Atlantic
-FAO34 <- fishing_area_data("Atlantic, Eastern Central")
-fishing_area_species(FAO34$area_data, rank_range = c(1, 10))
-fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
+# All FAO major fishing areas, and area 27 (Northeast Atlantic) with its subareas
+fao_areas()
+fishing_area_map(27)
 
-# Who catches European pilchard, what Morocco catches
-species_country(FAO34$area_data, "European pilchard(=Sardine)", lang = "both")
-country_species(FAO34$area_data, "Morocco")
+# FAO major fishing area 27, Northeast Atlantic
+FAO27 <- fishing_area_data("Atlantic, Northeast")
+fishing_area_species(FAO27$area_data, rank_range = c(1, 10))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 10))
+
+# Who catches Atlantic cod, what Norway catches
+species_country(FAO27$area_data, "Atlantic cod", lang = "both")
+country_species(FAO27$area_data, "Norway")
 
 # Summary analyses and analyses from the literature
-stock_status(FAO34$area_data)
-catch_shocks(FAO34$area_data)
-mean_temperature_catch(FAO34$area_data, version = "builtin")
+stock_status(FAO27$area_data)
+catch_shocks(FAO27$area_data)
+mean_temperature_catch(FAO27$area_data, version = "builtin")
 
 # CMSY++ for the ten main species (run cmsy_setup() once before)
-cmsy_area("Atlantic, Eastern Central", top = 10)
+cmsy_area("Atlantic, Northeast", top = 10)
 
 # An assessment report of the area, in Chinese, with CMSY++ and catch shocks,
 # as Word and PDF (LaTeX)
-report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE, format = c("docx", "pdf"))
+report <- fao_report(27, lang = "zh", cmsy = TRUE, shocks = TRUE, format = c("docx", "pdf"))
 ```
 
 Charts are saved in `figures/png/` (and, if you want, editable PowerPoint in `figures/pptx/`),
@@ -98,11 +142,11 @@ tables in `tables/`.
 
 | Total catch and breakpoints | Stock status plot |
 |---|---|
-| ![Total catch of FAO area 34 with breakpoints](man/figures/readme-area-trend.png) | ![Stock status plot of FAO area 34](man/figures/readme-stock-status.png) |
+| ![Total catch of FAO area 27 with breakpoints](man/figures/readme-area-trend.png) | ![Stock status plot of FAO area 27](man/figures/readme-stock-status.png) |
 | **Bilingual charts** | **Robinson projection, Pacific-centred** |
 | ![Bilingual chart of the main countries](man/figures/readme-bilingual.png) | ![Pacific-centred Robinson map of FAO areas](man/figures/readme-area-map.png) |
 | **CMSY++ Kobe plot of the ten main species** | **Mean temperature of the catch and sea surface temperature** |
-| ![CMSY++ Kobe plot of the main species of FAO area 34](man/figures/readme-cmsy-kobe.png) | ![Mean temperature of the catch of FAO area 34](man/figures/readme-mtc.png) |
+| ![CMSY++ Kobe plot of the main species of FAO area 27](man/figures/readme-cmsy-kobe.png) | ![Mean temperature of the catch of FAO area 27](man/figures/readme-mtc.png) |
 
 ## 🔧 Function reference
 
@@ -120,6 +164,8 @@ tables in `tables/`.
 
 | Function | Description |
 |---|---|
+| `fao_areas()` | All FAO major fishing areas: code, name, ocean, catch and link to the official FAO map, with a world map |
+| `fishing_area_map()` | Map of one area with its subareas, divisions or subdivisions (bathymetry with ggOceanMaps) |
 | `fishing_area_data()` | Catch of one FAO fishing area: trend, breakpoints, share of the world marine catch, map |
 | `fishing_area_species()` | Main species of an area, their catch and breakpoints |
 | `fishing_area_country()` | Main countries of an area, their catch and breakpoints |

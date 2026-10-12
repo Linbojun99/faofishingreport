@@ -1,7 +1,7 @@
 ---
 title: "🌊 渔区分析"
 description: >
-  fishing_area_data()、fishing_area_species()和fishing_area_country()：某个FAO渔区的总产量、主要物种和主要捕捞国家，以及全部选项。
+  fao_areas()和fishing_area_map()：FAO主要渔区及其分区；fishing_area_data()、fishing_area_species()和fishing_area_country()：某个FAO渔区的总产量、主要物种和主要捕捞国家，以及全部选项。
 ---
 
 ```{r setup, include = FALSE}
@@ -16,25 +16,66 @@ fao_settings(lang = "zh")   # 本文所有图表使用中文
 data_source("zh")
 ```
 
-三个渔区函数用于描述单个FAO主要渔区。示例使用**中东大西洋（34区）**，最后一节将同样的分析应用于**西北太平洋（61区）**。
+`fao_areas()`和`fishing_area_map()`展示FAO主要渔区及其分区，其余三个渔区函数用于描述单个渔区。示例使用**东北大西洋（27区）**，最后一节将同样的分析应用于**西北太平洋（61区）**。
 
 ## 🗺️ FAO主要渔区
 
-用于统计的FAO主要渔区由渔业统计协调工作组（CWP）划定，包括各海洋渔区和各大洲的内陆水域。各渔区最近一年的产量：
+用于统计的FAO主要渔区由渔业统计协调工作组（CWP）划定，包括19个海洋渔区和各大洲的内陆水域。`fao_areas()`列出各渔区数据最后一年的产量和FAO官方地图的链接，并保存一张标有渔区代码的海洋渔区世界地图：
 
-```{r}
-data <- load_fao_data()
-areas <- aggregate(Production ~ FAO.major.fishing.area..Name., data = subset(data, Year == max(Year)), FUN = sum)
-names(areas) <- c("Fishing area", "Catch in the last year (t)")
-show_table(areas[order(-areas[[2]]), ], n = 30, digits = 0)
+```{r, figures = TRUE}
+areas <- fao_areas()
 ```
 
-在`fishing_area_data()`中使用表中的名称（如`"Pacific, Northwest"`）。
+```{r}
+show_table(areas[order(-areas$catch_last_year), c("area_code", "name", "type", "ocean", "catch_last_year", "share_pct")],
+           n = 30, digits = 1)
+```
+
+在其他函数中使用表中的英文名称（如`"Pacific, Northwest"`）或代码。FAO官方地图（`fao_map`列）来自[FAO渔区地图](https://www.fao.org/fishery/docs/maps/Default.htm)页面，本包只提供链接。
+
+## 🧭 `fishing_area_map()`：渔区及其分区
+
+较大的渔区又分为亚区（subarea）、区（division）和分区（subdivision）；东北大西洋的分区就是ICES统计区，从27.1（巴伦支海）到27.14（格陵兰东部）。`fishing_area_map()`根据本包自带的边界（FAO 2024）绘制一个海洋渔区及其分区，并标出代码。安装了[ggOceanMaps](https://github.com/MikkoVihtakari/ggOceanMaps)包（Vihtakari 2026）时，地图画在它的海底地形底图上，水深取自ggOceanMaps自带的ETOPO 2022地形模型（NOAA NCEI 2022）；延伸到纬度60°以外的渔区（如27区）采用极地立体投影。未安装ggOceanMaps时，以渔区为中心的兰伯特方位等积投影绘制Natural Earth的陆地。
+
+```{r, figures = "subarea_map"}
+ne_atlantic <- fishing_area_map(27)
+```
+
+```{r}
+show_table(ne_atlantic$units, n = 20)
+ne_atlantic$fao_map      # 该渔区的FAO官方地图
+```
+
+地图的来源保存在`ne_atlantic$sources`中，使用地图时一并引用：
+
+```{r}
+show_table(ne_atlantic$sources)
+```
+
+各区（division），这里不显示水深：
+
+```{r, figures = "division_map"}
+fishing_area_map(27, level = "division", bathymetry = FALSE)
+```
+
+`fishing_area_map()`的全部参数：
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `area` | FAO主要海洋渔区：代码（如`27`）或英文名称 | |
+| `level` | 渔区内绘制的单元：`"subarea"`（亚区）、`"division"`（区）、`"subdivision"`（分区）或`"none"`（只画边界） | `"subarea"` |
+| `bathymetry` | 显示水深（仅限ggOceanMaps） | `TRUE` |
+| `labels` | 标出各单元的代码 | `TRUE` |
+| `engine` | `"auto"`（已安装ggOceanMaps时用它，否则用`"sf"`）、`"ggOceanMaps"`或`"sf"` | `"auto"` |
+| `plot` | 把地图保存在`figures/png/area/` | `TRUE` |
+| `table` | 把单元表保存在`tables/` | `TRUE` |
+| `lang` | 地图文字的语言：`"en"`、`"zh"`或`"both"` | `NULL`：`fao_settings()`的语言 |
+| `pptx` | 同时把地图保存为可编辑的PowerPoint文件 | `FALSE`，或`fao_settings()`的`pptx` |
 
 ## 1️⃣ `fishing_area_data()`：渔区产量
 
 ```{r, figures = TRUE}
-FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+FAO27 <- fishing_area_data("Atlantic, Northeast")
 ```
 
 该函数在`figures/png/`中保存三张图：
@@ -54,14 +95,14 @@ FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 | `act_world_map` | 地图数据，即带有各国总产量的sf对象（`plot = FALSE`时为`NULL`） |
 
 ```{r}
-FAO34$coefs_data
+FAO27$coefs_data
 ```
 
 ### 选项
 
 ```{r, figures = TRUE}
 fishing_area_data(
-  "Atlantic, Eastern Central",
+  "Atlantic, Northeast",
   timeseries_analysis = FALSE,          # 不做突变点分析
   area_color1 = "#9ecae1",              # 产量面积图的填充色
   area_color2 = "#08519c",              # 面积图的轮廓线颜色
@@ -106,7 +147,7 @@ fishing_area_data(
 ## 2️⃣ `fishing_area_species()`：主要物种
 
 ```{r, figures = TRUE}
-species <- fishing_area_species(FAO34$area_data, rank_range = c(1, 10))
+species <- fishing_area_species(FAO27$area_data, rank_range = c(1, 10))
 ```
 
 | 文件 | 图表 |
@@ -140,7 +181,7 @@ show_table(read.csv("tables/species_ranked_table.csv", fileEncoding = "UTF-8-BOM
 - **`h_value`**是相邻突变点之间时段的最短长度，可以是占整个序列的比例（默认`0.15`），也可以是年数（如`5`）。取值越大，突变点越少；序列过短的物种会被跳过，并给出提示信息。
 
 ```{r, figures = TRUE}
-fishing_area_species(FAO34$area_data, rank_range = c(11, 20), h_value = 5, lang = "both")
+fishing_area_species(FAO27$area_data, rank_range = c(11, 20), h_value = 5, lang = "both")
 ```
 
 `fishing_area_species()`的全部参数。表中的“时间序列图”指`area_species.png`，“分面图”指`area_species_wrap.png`；带突变点的分面图使用固定的线宽、字号和两列布局，只有`text_*`参数能改变它。
@@ -174,7 +215,7 @@ fishing_area_species(FAO34$area_data, rank_range = c(11, 20), h_value = 5, lang 
 ## 3️⃣ `fishing_area_country()`：主要国家
 
 ```{r, figures = TRUE}
-countries <- fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
+countries <- fishing_area_country(FAO27$area_data, rank_range = c(1, 10))
 ```
 
 它的用法与`fishing_area_species()`相同，只是按国家统计：
@@ -263,6 +304,14 @@ FAO (`r sub("[.].*", "", release_info$release)`). FishStat: Global capture produ
 In: FishStatJ. <https://www.fao.org/fishery/statistics/software/fishstatj/en>.
 Licence: CC-BY-4.0. Release file: <`r release_info$url`>
 
+FAO. Fishing area maps. In: FAO Fisheries and Aquaculture Division [online]. Rome.
+<https://www.fao.org/fishery/docs/maps/Default.htm>
+
+FAO (2024). FAO Major Fishing Areas for Statistical Purposes. In: FAO Fisheries and Aquaculture
+Division [online]. Licence: CC-BY 4.0.
+<https://www.fao.org/fishery/geonetwork?uuid=ac02a460-da52-11dc-9d70-0017f293bd28>
+（地图的渔区边界，随本包提供：`inst/extdata/FAO_AREAS_CWP.shp`）
+
 FAO (2026). *Fishery and Aquaculture Statistics – Yearbook 2024*. FAO Yearbook of Fishery and
 Aquaculture Statistics. Rome: FAO.
 [doi:10.4060/ce1217en](https://doi.org/10.4060/ce1217en)
@@ -273,9 +322,16 @@ Massicotte, P. and South, A. *rnaturalearth: World Map Data from Natural Earth*.
 Natural Earth. Admin 0 – Details, map units, 1:50m (the country outlines of the maps).
 <https://www.naturalearthdata.com/downloads/50m-cultural-vectors/50m-admin-0-details/>
 
+NOAA National Centers for Environmental Information (2022). ETOPO 2022 15 Arc-Second Global
+Relief Model. [doi:10.25921/fd45-gt74](https://doi.org/10.25921/fd45-gt74)
+
 Pebesma, E. (2018). Simple features for R: standardized support for spatial vector data.
 *The R Journal* 10(1): 439–446.
 [doi:10.32614/RJ-2018-009](https://doi.org/10.32614/RJ-2018-009)
+
+Vihtakari, M. (2026). *ggOceanMaps: Plot Data on Oceanographic Maps using 'ggplot2'*. R package
+version 3.0.0. [doi:10.32614/CRAN.package.ggOceanMaps](https://doi.org/10.32614/CRAN.package.ggOceanMaps).
+GitHub: <https://github.com/MikkoVihtakari/ggOceanMaps>
 
 Wickham, H. (2016). *ggplot2: Elegant Graphics for Data Analysis*. New York: Springer.
 [doi:10.1007/978-3-319-24277-4](https://doi.org/10.1007/978-3-319-24277-4)

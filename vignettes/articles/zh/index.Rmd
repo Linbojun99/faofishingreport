@@ -16,6 +16,38 @@ description: >
 
 **faofishingreport** 把 [FAO 全球捕捞产量统计](https://www.fao.org/fishery/collection/capture/en)（Global Capture Production）按渔区、国家和物种整理成报告用的图表、地图和表格，图表可以是中文、英文或中英双语。
 
+## 🌍 FAO 主要渔区
+
+FAO 按**统计用主要渔区**（由渔业统计协调工作组 CWP 划定）汇总渔获量：共有 **19 个海洋渔区**，代码为 18 到 88 的两位数；另有各大洲的**内陆水域**（01 非洲、02 北美洲、03 南美洲、04 亚洲、05 欧洲、06 大洋洲、07 前苏联地区和 08 南极洲）。较大的渔区又分为亚区、区和分区。
+
+![标有代码的 19 个 FAO 主要海洋渔区](../../reference/figures/readme-fao-areas-zh.png)
+
+| 代码 | 渔区 | 范围 | FAO 地图 |
+|---|---|---|---|
+| **18** | 北冰洋 | 北冰洋，包括哈德孙湾 | [地图](https://www.fao.org/fishery/docs/maps/fig_h2_18_0.gif) |
+| **21** | 西北大西洋 | 格陵兰西部、加拿大东部和美国东海岸，向南到北纬约35°（哈特拉斯角） | [地图](https://www.fao.org/fishery/docs/maps/fig_h2_21_0.gif) |
+| **27** | 东北大西洋 | 从巴伦支海和格陵兰东部到直布罗陀海峡，包括北海和波罗的海 | [地图](https://www.fao.org/fishery/docs/maps/fig_h2_27_0.gif) |
+| **31** | 西部中大西洋 | 墨西哥湾、加勒比海，以及北纬约35°到巴西北部的西大西洋 | [地图](https://www.fao.org/fishery/docs/maps/fig_h2_31_0.gif) |
+| **34** | 中东大西洋 | 从直布罗陀海峡到刚果河口的西非海域，包括加那利群岛 | [地图](https://www.fao.org/fishery/docs/maps/fig_h2_34_0.gif) |
+| **37** | 地中海和黑海 | 地中海、马尔马拉海、黑海和亚速海 | [地图](https://www.fao.org/fishery/docs/maps/fig_h2_37_0.gif) |
+| **41** | 西南大西洋 | 巴西、乌拉圭、阿根廷和福克兰群岛（马尔维纳斯群岛） | [地图](https://www.fao.org/fishery/docs/maps/fig_h2_41_0.gif) |
+| **47** | 东南大西洋 | 从刚果河口到南非的非洲西南海域（安哥拉、纳米比亚） | [地图](https://www.fao.org/fishery/docs/maps/fig_h2_47_0.gif) |
+| **48** | 南极大西洋 | 南大洋的大西洋扇区（南乔治亚岛、南极半岛） | [地图](https://www.fao.org/fishery/docs/maps/fig_h5_48_0.gif) |
+| **51** | 西印度洋 | 东非、莫桑比克海峡、红海、波斯湾、阿拉伯海和印度西部 | [地图](https://www.fao.org/fishery/docs/maps/fig_h3_51_0.gif) |
+| **57** | 东印度洋 | 孟加拉湾、安达曼海、印度尼西亚以南，以及澳大利亚西部和南部 | [地图](https://www.fao.org/fishery/docs/maps/fig_h3_57_0.gif) |
+| **58** | 南极印度洋 | 南大洋的印度洋扇区（凯尔盖朗群岛） | [地图](https://www.fao.org/fishery/docs/maps/fig_h5_58_0.gif) |
+| **61** | 西北太平洋 | 中国、朝鲜半岛、日本和俄罗斯远东：南海北部、东海和黄海、日本海、鄂霍次克海和白令海西部 | [地图](https://www.fao.org/fishery/docs/maps/fig_h4_61_0.gif) |
+| **67** | 东北太平洋 | 白令海东部、阿拉斯加湾，以及加拿大和美国西海岸到北纬40° | [地图](https://www.fao.org/fishery/docs/maps/fig_h4_67_0.gif) |
+| **71** | 西部中太平洋 | 南海南部、泰国湾、印度尼西亚、菲律宾、巴布亚新几内亚、阿拉弗拉海和西太平洋岛屿 | [地图](https://www.fao.org/fishery/docs/maps/fig_h4_71_0.gif) |
+| **77** | 中东太平洋 | 从加利福尼亚（北纬40°以南）到巴拿马，以及包括夏威夷的中太平洋 | [地图](https://www.fao.org/fishery/docs/maps/fig_h4_77_0.gif) |
+| **81** | 西南太平洋 | 塔斯曼海、新西兰和西南太平洋 | [地图](https://www.fao.org/fishery/docs/maps/fig_h4_81_0.gif) |
+| **87** | 东南太平洋 | 厄瓜多尔、秘鲁和智利 | [地图](https://www.fao.org/fishery/docs/maps/fig_h4_87_0.gif) |
+| **88** | 南极太平洋 | 南大洋的太平洋扇区（罗斯海） | [地图](https://www.fao.org/fishery/docs/maps/fig_h5_88_0.gif) |
+
+表中的地图是 FAO 各渔区的官方地图（[FAO 渔区地图](https://www.fao.org/fishery/docs/maps/Default.htm)）。`fao_areas()` 给出这份列表和各渔区的渔获量，`fishing_area_map()` 绘制单个渔区及其亚区；安装了 [ggOceanMaps](https://github.com/MikkoVihtakari/ggOceanMaps) 时，地图画在它的海底地形底图上。下面的示例以**东北大西洋（27 区）**为例：
+
+![FAO 27 区（东北大西洋）及其亚区 27.1 至 27.14](../../reference/figures/readme-area27-zh.png)
+
 ## ✨ 主要功能
 
 - 💾 **随时用上最新数据**：一行命令检查并下载 FAO 发布的新版本数据，并可比较两个版本之间的修订。
@@ -51,25 +83,29 @@ fao_settings(lang = "zh")        # 所有图表使用中文
 check_fao_update()
 download_fao_data()
 
-# FAO 34 渔区：中东大西洋
-FAO34 <- fishing_area_data("Atlantic, Eastern Central")
-fishing_area_species(FAO34$area_data, rank_range = c(1, 10))
-fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
+# 全部 FAO 主要渔区，以及 27 区（东北大西洋）及其亚区
+fao_areas()
+fishing_area_map(27)
 
-# 沙丁鱼由哪些国家捕捞；摩洛哥主要捕什么
-species_country(FAO34$area_data, "European pilchard(=Sardine)")
-country_species(FAO34$area_data, "Morocco")
+# FAO 27 渔区：东北大西洋
+FAO27 <- fishing_area_data("Atlantic, Northeast")
+fishing_area_species(FAO27$area_data, rank_range = c(1, 10))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 10))
+
+# 鳕鱼由哪些国家捕捞；挪威主要捕什么
+species_country(FAO27$area_data, "Atlantic cod")
+country_species(FAO27$area_data, "Norway")
 
 # 汇总分析与文献方法分析
-stock_status(FAO34$area_data)
-catch_shocks(FAO34$area_data)
-mean_temperature_catch(FAO34$area_data, version = "builtin")
+stock_status(FAO27$area_data)
+catch_shocks(FAO27$area_data)
+mean_temperature_catch(FAO27$area_data, version = "builtin")
 
 # 前 10 个主要物种的 CMSY++ 评估（先运行一次 cmsy_setup()）
-cmsy_area("Atlantic, Eastern Central", top = 10)
+cmsy_area("Atlantic, Northeast", top = 10)
 
 # 一键生成中文评估报告，包含 CMSY++ 和渔获骤变，输出 Word 和 PDF（LaTeX）
-report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE, format = c("docx", "pdf"))
+report <- fao_report(27, lang = "zh", cmsy = TRUE, shocks = TRUE, format = c("docx", "pdf"))
 ```
 
 图表保存在工作目录的 `figures/png/`（需要时也可以同时输出可编辑的 PowerPoint 到 `figures/pptx/`），表格保存在 `tables/`。
@@ -78,11 +114,11 @@ report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE, format = c("do
 
 | 总产量与突变点 | 资源状态图 |
 |---|---|
-| ![FAO 34 渔区总产量与突变点](../../reference/figures/readme-area-trend.png) | ![FAO 34 渔区资源状态图](../../reference/figures/readme-stock-status.png) |
+| ![FAO 27 渔区总产量与突变点](../../reference/figures/readme-area-trend.png) | ![FAO 27 渔区资源状态图](../../reference/figures/readme-stock-status.png) |
 | **中英双语图表** | **Robinson 投影、太平洋居中** |
 | ![中英双语图表](../../reference/figures/readme-bilingual.png) | ![Robinson 投影、太平洋居中的渔区地图](../../reference/figures/readme-area-map.png) |
 | **前 10 个主要物种的 CMSY++ Kobe 图** | **渔获平均温度与海表温度** |
-| ![FAO 34 渔区主要物种的 CMSY++ Kobe 图](../../reference/figures/readme-cmsy-kobe.png) | ![FAO 34 渔区渔获平均温度](../../reference/figures/readme-mtc.png) |
+| ![FAO 27 渔区主要物种的 CMSY++ Kobe 图](../../reference/figures/readme-cmsy-kobe.png) | ![FAO 27 渔区渔获平均温度](../../reference/figures/readme-mtc.png) |
 
 ## 🔧 函数一览
 
@@ -100,6 +136,8 @@ report <- fao_report(34, lang = "zh", cmsy = TRUE, shocks = TRUE, format = c("do
 
 | 函数 | 用途 |
 |---|---|
+| `fao_areas()` | 全部 FAO 主要渔区：代码、名称、大洋、渔获量和 FAO 官方地图链接，以及世界地图 |
+| `fishing_area_map()` | 单个渔区及其亚区、区或分区的地图（安装 ggOceanMaps 时显示水深） |
 | `fishing_area_data()` | 某个 FAO 渔区的产量：趋势、突变点、占全球海洋捕捞产量的比例、地图 |
 | `fishing_area_species()` | 渔区内的主要物种及其产量变化和突变点 |
 | `fishing_area_country()` | 渔区内的主要捕捞国家及其产量变化和突变点 |
