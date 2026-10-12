@@ -1,0 +1,42 @@
+{
+  "topic": "fishing_area_map",
+  "rd_md5": "6a40da34e0c58880ed45aacdfcf50f50",
+  "stale": false,
+  "en": {
+    "title": "Map of an FAO Major Fishing Area and Its Subareas",
+    "description": "This function maps one FAO major marine fishing area with its subareas, divisions or\nsubdivisions, labelled with their codes (e.g. 27.4, the North Sea), from the boundaries\nbundled with the package (`inst/extdata/FAO_AREAS_CWP.shp`, FAO, CC BY 4.0). When the\nggOceanMaps package (Vihtakari 2026, <https://github.com/MikkoVihtakari/ggOceanMaps>) is\ninstalled, the map is drawn on its bathymetric base map: polar stereographic for areas reaching\nbeyond 60 degrees of latitude (e.g. area 27), else in longitude and latitude, with the depth\nfrom the low-resolution ETOPO 2022 relief model bundled with ggOceanMaps (no download needed).\nWithout ggOceanMaps, the land of Natural Earth is drawn in a Lambert azimuthal equal-area\nprojection centred on the area, without depth.",
+    "details": "The official FAO map of the area is linked in the result (`fao_map`); see `fao_areas()`.",
+    "value": "Invisibly, a list with `map` (the ggplot object), `units` (one row per unit: `code`,\n`level`, `name_en`), `engine`, `fao_map` (link to the official FAO map of the area) and\n`sources` (the boundaries, base map and depth data used, to cite with the map).",
+    "arguments": {
+      "area": "The FAO major marine fishing area: its code (e.g. 27) or English name (e.g.\n\"Atlantic, Northeast\").",
+      "level": "The units drawn inside the area: \"subarea\" (default), \"division\",\n\"subdivision\" or \"none\" (the outline of the area only). Areas without units at the level\nasked for are drawn with their outline only.",
+      "bathymetry": "A logical value. If TRUE (default), the depth is shown (ggOceanMaps only).",
+      "labels": "A logical value. If TRUE (default), the units are labelled with their codes.",
+      "engine": "How the map is drawn: \"auto\" (default, ggOceanMaps when installed, else \"sf\"),\n\"ggOceanMaps\" or \"sf\".",
+      "plot": "A logical value. If TRUE (default), the map is saved in `figures/png/area/`.",
+      "table": "A logical value. If TRUE (default), the table of units is saved in `tables/`.",
+      "lang": "The language of the map text and names: \"en\" (English), \"zh\" (Chinese) or \"both\"\n(Chinese and English). Default is NULL, which uses the language set with\n`fao_settings()` (\"en\" unless changed).",
+      "pptx": "A logical value. If TRUE, the map is also saved as an editable PowerPoint file in\n`figures/pptx/area/`. Default is the value set with `fao_settings()` (FALSE unless changed)."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "FAO主要渔区及其分区地图",
+    "description": "该函数绘制一个FAO主要海洋渔区及其亚区（subarea）、区（division）或分区（subdivision），并标出其代码（例如27.4为北海），边界来自本包自带的渔区图层（inst/extdata/FAO_AREAS_CWP.shp，FAO，CC BY 4.0）。安装了ggOceanMaps包（Vihtakari 2026，<https://github.com/MikkoVihtakari/ggOceanMaps>）时，地图画在它的海底地形底图上：延伸到纬度60度以外的渔区（例如27区）采用极地立体投影，其他渔区采用经纬度坐标；水深取自ggOceanMaps自带的低分辨率ETOPO 2022地形模型（无需下载）。未安装ggOceanMaps时，以渔区为中心的兰伯特方位等积投影绘制Natural Earth的陆地，不显示水深。",
+    "details": "该渔区的FAO官方地图链接在返回结果的`fao_map`中；见`fao_areas()`。",
+    "value": "以不可见方式返回一个列表，包含`map`（ggplot对象）、`units`（每个单元一行：`code`、`level`、`name_en`）、`engine`（绘图方式）、`fao_map`（该渔区FAO官方地图的链接）和`sources`（所用的边界、底图和水深数据，引用地图时一并引用）。",
+    "arguments": {
+      "area": "FAO主要海洋渔区：代码（例如27）或英文名称（例如\"Atlantic, Northeast\"）。",
+      "level": "渔区内绘制的单元：\"subarea\"（亚区，默认）、\"division\"（区）、\"subdivision\"（分区）或\"none\"（只画渔区边界）。没有该级单元的渔区只画其边界。",
+      "bathymetry": "逻辑值。为TRUE（默认）时显示水深（仅限ggOceanMaps）。",
+      "labels": "逻辑值。为TRUE（默认）时，在各单元上标出其代码。",
+      "engine": "绘图方式：\"auto\"（默认，已安装ggOceanMaps时用它，否则用\"sf\"）、\"ggOceanMaps\"或\"sf\"。",
+      "plot": "逻辑值。为TRUE（默认）时，地图保存在figures/png/area/。",
+      "table": "逻辑值。为TRUE（默认）时，单元表保存在tables/。",
+      "lang": "图表文字和名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL，即使用`fao_settings()`设置的语言（未更改时为\"en\"）。",
+      "pptx": "逻辑值。为TRUE时，地图还另存为可编辑的PowerPoint文件，保存在figures/pptx/area/。默认为`fao_settings()`中的设置（未更改时为FALSE）。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

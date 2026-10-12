@@ -100,8 +100,10 @@ reference:
   - fao_data_info
   - fao_data_dir
 - title: "🌊 Fishing areas"
-  desc: Total catch, main species and main countries of an FAO fishing area.
+  desc: The FAO major fishing areas and their subareas; total catch, main species and main countries of an area.
   contents:
+  - fao_areas
+  - fishing_area_map
   - fishing_area_data
   - fishing_area_species
   - fishing_area_country

@@ -131,3 +131,6 @@ cpf_headcount,Catch per fisher (tonnes),人均渔获（吨）
 cpf_fte,Catch per full-time equivalent fisher (tonnes),每全时当量渔民渔获（吨）
 cpf_note_headcount,Fishers counted as people: part-time and occasional fishers count as one,渔民按人数计：兼职和临时渔民也按一人计
 cpf_note_fte,"Full-time equivalents: part time 60/95, occasional 15/95, unknown 1 (Scherrer et al. 2024)",全时当量：兼职 60/95、临时 15/95、未知按 1（Scherrer et al. 2024）
+ocean,Ocean,大洋
+fao_areas_source,Boundaries: FAO Major Fishing Areas for Statistical Purposes (CC BY 4.0),边界：FAO 主要渔区（CC BY 4.0）
+depth_m,Depth (m),水深（米）

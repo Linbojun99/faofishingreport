@@ -1,0 +1,34 @@
+{
+  "topic": "fao_areas",
+  "rd_md5": "39789988801fcf7e96904f3806478e7b",
+  "stale": false,
+  "en": {
+    "title": "FAO Major Fishing Areas",
+    "description": "This function lists the FAO major fishing areas for statistical purposes, defined by the\nCoordinating Working Party on Fishery Statistics (CWP): the 19 marine areas and the inland\nwaters of each continent. For each area it gives its code, name, ocean, catch in the last year\nof the data and the link to its official FAO map. With `plot = TRUE`, a world map of the marine\nareas labelled with their codes is saved as `figures/png/area/fao_major_areas.png`.",
+    "details": "The official maps are the GIF images of the FAO fishing area maps page\n(<https://www.fao.org/fishery/docs/maps/Default.htm>); the package links to them and does not\ncopy them. The world map is drawn from the area boundaries bundled with the package\n(`inst/extdata/FAO_AREAS_CWP.shp`, FAO, CC BY 4.0), in the projection and central longitude\nset with `fao_settings()`. `fishing_area_map()` maps one area with its subareas.",
+    "value": "Invisibly, a data frame with one row per area: `area_code`, `name_en`, `name` (in the\nchosen language), `type` (\"marine\" or \"inland\"), `ocean`, `catch_last_year` (tonnes),\n`share_pct` (percentage of the world catch of the year, marine and inland) and\n`fao_map` (link to the official FAO map). The map is in the attribute \"plot\".",
+    "arguments": {
+      "data": "FAO catch data as returned by `load_fao_data()`, used for the catch of the last\nyear. Default is NULL, the latest release (`load_fao_data()`).",
+      "plot": "A logical value. If TRUE (default), the world map is saved in `figures/png/area/`.",
+      "table": "A logical value. If TRUE (default), the table is saved in `tables/`.",
+      "lang": "The language of the map text and names: \"en\" (English), \"zh\" (Chinese) or \"both\"\n(Chinese and English). Default is NULL, which uses the language set with\n`fao_settings()` (\"en\" unless changed).",
+      "pptx": "A logical value. If TRUE, the map is also saved as an editable PowerPoint file in\n`figures/pptx/area/`. Default is the value set with `fao_settings()` (FALSE unless changed)."
+    },
+    "sections": {}
+  },
+  "zh": {
+    "title": "FAO主要渔区",
+    "description": "该函数列出由渔业统计协调工作组（CWP）划定、用于统计的FAO主要渔区：19个海洋渔区和各大洲的内陆水域。每个渔区给出代码、名称、所属大洋、数据最后一年的渔获量，以及FAO官方地图的链接。`plot = TRUE`时，把标有渔区代码的海洋渔区世界地图保存为figures/png/area/fao_major_areas.png。",
+    "details": "官方地图是FAO渔区地图页面（<https://www.fao.org/fishery/docs/maps/Default.htm>）上的GIF图片；本包只提供链接，不复制这些图片。世界地图根据本包自带的渔区边界（inst/extdata/FAO_AREAS_CWP.shp，FAO，CC BY 4.0）绘制，投影和中心经度按`fao_settings()`的设置。单个渔区及其分区的地图见`fishing_area_map()`。",
+    "value": "以不可见方式返回一个数据框，每个渔区一行：`area_code`、`name_en`、`name`（所选语言的名称）、`type`（\"marine\"海洋或\"inland\"内陆）、`ocean`（所属大洋）、`catch_last_year`（最后一年渔获量，吨）、`share_pct`（占当年全球渔获量的百分比，包括海洋和内陆）和`fao_map`（FAO官方地图的链接）。地图保存在属性\"plot\"中。",
+    "arguments": {
+      "data": "`load_fao_data()`返回的FAO渔获数据，用于计算最后一年的渔获量。默认为NULL，即最新版本（`load_fao_data()`）。",
+      "plot": "逻辑值。为TRUE（默认）时，世界地图保存在figures/png/area/。",
+      "table": "逻辑值。为TRUE（默认）时，表格保存在tables/。",
+      "lang": "图表文字和名称的语言：\"en\"（英文）、\"zh\"（中文）或\"both\"（中英双语）。默认为NULL，即使用`fao_settings()`设置的语言（未更改时为\"en\"）。",
+      "pptx": "逻辑值。为TRUE时，地图还另存为可编辑的PowerPoint文件，保存在figures/pptx/area/。默认为`fao_settings()`中的设置（未更改时为FALSE）。"
+    },
+    "sections": {},
+    "section_titles": {}
+  }
+}

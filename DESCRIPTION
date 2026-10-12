@@ -49,6 +49,7 @@ Imports:
     neuralnet,
     patchwork
 Suggests:
+    ggOceanMaps,
     R2jags,
     rjags,
     testthat (>= 3.0.0),

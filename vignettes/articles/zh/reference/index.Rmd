@@ -21,6 +21,8 @@ description: "faofishingreport全部函数的中文说明"
 
 | 函数 | 说明 |
 |---|---|
+| [`fao_areas()`](fao_areas.html) | FAO主要渔区 |
+| [`fishing_area_map()`](fishing_area_map.html) | FAO主要渔区及其分区地图 |
 | [`fishing_area_data()`](fishing_area_data.html) | 提取指定渔区的数据并绘图（可选） |
 | [`fishing_area_species()`](fishing_area_species.html) | 渔区主要物种分析 |
 | [`fishing_area_country()`](fishing_area_country.html) | 渔区主要国家分析 |

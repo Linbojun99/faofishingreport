@@ -34,5 +34,7 @@ utils::globalVariables(c(
   # collapse_analysis()
   "n_collapsed", "n_collapses", "offset", "pct", "pct_collapsed", "rel", "type", "what",
   # catch_synchrony()
-  "col", "cv", "item", "measure", "r", "row", "total"
+  "col", "cv", "item", "measure", "r", "row", "total",
+  # fao_areas(), fishing_area_map()
+  "code", "ocean", "X", "Y"
 ))
