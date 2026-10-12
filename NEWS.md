@@ -15,6 +15,19 @@
   centred on the area. The result lists the boundaries, base map and depth data used, to cite
   with the map.
 
+* `cmsy_mcmc()` shows the MCMC settings of each CMSY++ run (chains, iterations, burn-in,
+  thinning) and whether it converged: for r, k, MSY, B/k, B/Bmsy and F/Fmsy, the posterior
+  summary, Rhat (Gelman and Rubin 1992) and the effective sample size (coda), with the stocks that
+  did not converge (Rhat above 1.1) or have too few effective draws (below 400) reported apart,
+  and a chart of the trace and density of each chain (also the new "mcmc" chart of
+  `cmsy_plot()`). The colours of the chains can be chosen (`colors`, `mcmc_colors`). `cmsy_run()`
+  keeps the draws of each chain for it; the CMSY++ model is not changed. With the settings of
+  CMSY++16.R (2 chains of 60,000 iterations, thinned by 10), the effective sample size of r and k
+  is often only a few hundred; longer and more chains raise it.
+* The Word report gives the MCMC settings, the largest Rhat and the smallest effective sample
+  size of the CMSY++ runs, and names the stocks that did not converge or have too few effective
+  draws.
+
 ## Bug fixes
 
 * The tables bundled with the package (chart labels, Chinese names, ISSCAAP groups, SST) and the

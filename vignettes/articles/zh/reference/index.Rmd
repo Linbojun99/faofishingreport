@@ -91,6 +91,7 @@ description: "faofishingreport全部函数的中文说明"
 | [`cmsy_defaults()`](cmsy_defaults.html) | CMSY++设置及其默认值 |
 | [`cmsy_run()`](cmsy_run.html) | 用FAO渔获数据运行CMSY++ |
 | [`cmsy_plot()`](cmsy_plot.html) | CMSY++结果图表 |
+| [`cmsy_mcmc()`](cmsy_mcmc.html) | CMSY++运行的MCMC设置与收敛诊断 |
 | [`cmsy_forecast()`](cmsy_forecast.html) | 不同捕捞情景下的CMSY++预测 |
 | [`cmsy_compare()`](cmsy_compare.html) | 比较多次CMSY++运行结果，或与其他评估比较 |
 | [`cmsy_tables()`](cmsy_tables.html) | 报告用的CMSY++先验参数表和结果表 |

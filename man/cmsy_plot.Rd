@@ -12,7 +12,8 @@ cmsy_plot(
   annotations = getOption("faofishingreport.cmsy_annotations", FALSE),
   lang = NULL,
   pptx = getOption("faofishingreport.pptx", FALSE),
-  silent = fao_setting("silent")
+  silent = fao_setting("silent"),
+  mcmc_colors = NULL
 )
 }
 \arguments{
@@ -41,6 +42,9 @@ changed for all functions with \code{fao_settings(pptx = TRUE)}.}
 \item{silent}{A logical value. If FALSE (default), a progress bar shows how many stocks have
 been drawn. If TRUE, nothing is printed. The default can be changed for the session
 with \code{fao_settings(silent = TRUE)}.}
+
+\item{mcmc_colors}{Colours of the chains in the "mcmc" chart: NULL (default) for the Okabe-Ito
+colours, a palette name or a vector of colours (see \code{\link{cmsy_mcmc}()}).}
 }
 \value{
 Invisibly, a named list of the ggplot objects.
@@ -73,7 +77,10 @@ CMSY++ user guide (Froese et al. 2021), from the results saved by the run:
   \item{prior_posterior}{prior and posterior densities of r, k, MSY and B/k in the first,
     intermediate and last years, with the prior-posterior variance ratio PPVR (Figure 4);}
   \item{retrospective}{B/Bmsy and F/Fmsy when the last one, two or three years are left out,
-    with Mohn's rho (Figure 5; needs \code{cmsy_run(plots = "retrospective")}).}
+    with Mohn's rho (Figure 5; needs \code{cmsy_run(plots = "retrospective")});}
+  \item{mcmc}{the draws of each MCMC chain (trace) and their densities for r, k, MSY and the
+    last-year B/k, with Rhat and the effective sample size (see \code{\link{cmsy_mcmc}()}; not
+    for runs of earlier versions of the package).}
 }
 For several stocks together:
 \describe{

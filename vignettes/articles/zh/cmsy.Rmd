@@ -417,6 +417,54 @@ show_png("area27_status_time.png")
 show_png("area27_map.png")
 ```
 
+## 🔁 MCMC：设置与收敛诊断 {#mcmc}
+
+```{r, eval = FALSE}
+mcmc <- cmsy_mcmc(result)
+mcmc$settings        # 每个种群的链数、迭代次数、预烧、抽稀和保留的抽样数
+mcmc$diagnostics     # 每个参数的后验统计量、Rhat和有效样本量
+cmsy_mcmc(result, colors = c("grey30", "#D7191C"))   # 更换各条链的颜色
+```
+
+CMSY++用JAGS以马尔可夫链蒙特卡罗（MCMC）方法从后验分布中抽样。`cmsy_run()`保存r、k、B/k、B/Bmsy和F/Fmsy每条链的抽样（MSY按`CMSY++16.R`的算法由r和k计算），`cmsy_mcmc()`据此做诊断。**Rhat**（Gelman和Rubin，1992）比较链间方差和链内方差，不超过1.1时视为收敛（Gelman等，2013）。**有效样本量**（`n_eff`，用coda计算；Plummer等，2006）是自相关的抽样相当于多少个独立抽样，低于400（Vehtari等，2021）时，95%区间不够精确。未收敛的种群和有效样本量不足的种群分开报告。图中按保留顺序画出每条链的抽样（轨迹：混合良好的链互相重叠、没有趋势）及其密度（各链应当一致）。
+
+下表是两个示例种群分别按`CMSY++16.R`的设置（2条链，每条迭代60,000次，前30,000次作为预烧舍弃，之后每10次保留1次）和用4条链、每条迭代300,000次（预烧150,000次，每50次保留1次；`_long`各列）运行的结果：
+
+```{r}
+mc <- rbind(cbind(stock = "PRA_27", read.csv(file.path(fig_dir, "green_mcmc.csv"), check.names = FALSE)),
+            cbind(stock = "CAP_27", read.csv(file.path(fig_dir, "overfished_mcmc.csv"), check.names = FALSE)))
+mc <- mc[mc$parameter != "deviance", ]
+show_table(mc[, c("stock", "label", "median", "rhat", "n_eff", "median_long", "rhat_long", "n_eff_long")], n = 20, digits = 3)
+rk <- mc[mc$parameter %in% c("r", "k", "msy"), ]
+```
+
+按默认设置，各条链已经收敛（Rhat最大为`r sprintf("%.2f", max(mc$rhat))`），但r、k和MSY的有效样本量只有`r round(min(rk$n_eff))`至`r round(max(rk$n_eff))`：r和k的相邻抽样高度相关。用更长的链时，有效样本量升至`r round(min(rk$n_eff_long))`至`r round(max(rk$n_eff_long))`，而中位数几乎不变（Northern prawn最后一年的B/Bmsy分别为`r sprintf("%.2f", green$B_Bmsy)`和`r sprintf("%.2f", green$B_Bmsy_long)`，毛鳞鱼分别为`r sprintf("%.2f", over$B_Bmsy)`和`r sprintf("%.2f", over$B_Bmsy_long)`），运行时间约为原来的`r round(green$long_seconds / green$default_seconds)`倍。要写进报告的结果，建议用更长、更多的链运行CMSY++，并检查收敛情况：
+
+```{r, eval = FALSE}
+result <- cmsy_run(input, seed = 1, auto_start = TRUE,
+                   settings = list(n.chains = 4, n.iter = 300000, n.burnin = 150000, n.thin = 50))
+cmsy_mcmc(result)
+```
+
+两个示例种群（默认设置）各条链的轨迹和密度，先是Northern prawn，后是毛鳞鱼：
+
+```{r, echo = FALSE}
+show_png("green_mcmc.png")
+show_png("overfished_mcmc.png")
+```
+
+| 参数 | 含义 | 默认值 |
+|---|---|---|
+| `result` | `cmsy_run()`或`cmsy_area()`的结果 | 必填 |
+| `stocks` | 要检查的种群（见[通用参数](#common-arguments)） | `NULL`：所有运行过的种群 |
+| `rhat_max` | 视为收敛的最大Rhat | `1.1` |
+| `n_eff_min` | 视为足够的最小有效样本量（所有链合计） | `400` |
+| `plot`、`table` | 保存图figures/png/cmsy/<种群>/mcmc.png，以及表tables/cmsy/mcmc_settings.csv和mcmc_diagnostics.csv | `TRUE` |
+| `colors` | 各条链的颜色：`NULL`（Okabe-Ito配色）、调色板名称（如`"npg"`、`"Set1"`、`"viridis"`）或每条链一个颜色 | `NULL` |
+| `lang`、`pptx`、`silent` | 见[通用参数](#common-arguments) | |
+
+这张图也是`cmsy_plot()`的`"mcmc"`图（颜色用`mcmc_colors`设置）。本包早期版本的运行结果没有保存抽样，需要重新运行CMSY++才能检查。链收敛并不说明先验或模型适合该种群。
+
 ## 🔮 第七步：捕捞情景预测
 
 ```{r, eval = FALSE}
@@ -600,6 +648,13 @@ Touloumis, K., Demirel, N., Vianna, G.M.S., Scarcella, G., Schijns, R., Liang, C
 assessments: the CMSY++ method. *Acta Ichthyologica et Piscatoria* 53: 173–189.
 [doi:10.3897/aiep.53.105910](https://doi.org/10.3897/aiep.53.105910)
 
+Gelman, A., Carlin, J.B., Stern, H.S., Dunson, D.B., Vehtari, A. and Rubin, D.B. (2013).
+*Bayesian Data Analysis*, 3rd edition. Boca Raton: CRC Press.
+[doi:10.1201/b16018](https://doi.org/10.1201/b16018)
+
+Gelman, A. and Rubin, D.B. (1992). Inference from iterative simulation using multiple sequences.
+*Statistical Science* 7(4): 457–472. [doi:10.1214/ss/1177011136](https://doi.org/10.1214/ss/1177011136)
+
 Kell, L.T., Sharma, R. and Winker, H. (2022). Artefact and artifice: evaluation of the skill of
 catch-only methods for classifying stock status. *Frontiers in Marine Science* 9: 762203.
 [doi:10.3389/fmars.2022.762203](https://doi.org/10.3389/fmars.2022.762203)
@@ -626,8 +681,16 @@ Computing (DSC 2003)*, Vienna, 1–10.
 <https://www.r-project.org/conferences/DSC-2003/Proceedings/Plummer.pdf>; JAGS:
 <https://mcmc-jags.sourceforge.io/>
 
+Plummer, M., Best, N., Cowles, K. and Vines, K. (2006). CODA: convergence diagnosis and output
+analysis for MCMC. *R News* 6(1): 7–11. <https://journal.r-project.org/articles/RN-2006-002/>
+
 Plummer, M. (2025). rjags: Bayesian Graphical Models using MCMC. R package version 4-17.
 [doi:10.32614/CRAN.package.rjags](https://doi.org/10.32614/CRAN.package.rjags)
 
 Su, Y. and Yajima, M. (2024). R2jags: Using R to Run 'JAGS'. R package version 0.8-9.
 [doi:10.32614/CRAN.package.R2jags](https://doi.org/10.32614/CRAN.package.R2jags)
+
+Vehtari, A., Gelman, A., Simpson, D., Carpenter, B. and Bürkner, P.-C. (2021).
+Rank-normalization, folding, and localization: an improved Rhat for assessing convergence of MCMC.
+*Bayesian Analysis* 16(2): 667–718. [doi:10.1214/20-BA1221](https://doi.org/10.1214/20-BA1221)
+

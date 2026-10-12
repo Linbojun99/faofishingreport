@@ -38,6 +38,10 @@ for (kind in names(examples)) {
   detail_1950 <- cmsy_run(input, stocks = stock, seed = 1, table = FALSE, plots = "analysis",
                           out_dir = paste0("cmsy_1950_", kind))
   forecast_catch <- signif(detail$summary$MSY, 1)   # MSY of the summary is in tonnes
+  # MCMC with longer and more chains than the defaults of CMSY++16.R, to compare the diagnostics
+  long_settings <- list(n.chains = 4, n.iter = 300000, n.burnin = 150000, n.thin = 50)
+  detail_long <- cmsy_run(input, stocks = stock, seed = 1, auto_start = TRUE, table = FALSE, plots = "analysis",
+                          out_dir = paste0("cmsy_long_", kind), settings = long_settings)
   for (lang in c("en", "zh")) {
     dir <- file.path(out, lang)
     if (kind == "green") {
@@ -53,6 +57,14 @@ for (kind in names(examples)) {
               file.path(dir, paste0(kind, "_", stock_files, ".png")), overwrite = TRUE)
     file.copy(file.path("figures", "png", "cmsy", "compare", paste0(stock, ".png")),
               file.path(dir, paste0(kind, "_compare.png")), overwrite = TRUE)
+    mcmc <- cmsy_mcmc(detail, lang = lang, table = FALSE, silent = TRUE)
+    file.copy(file.path("figures", "png", "cmsy", stock, "mcmc.png"), file.path(dir, paste0(kind, "_mcmc.png")), overwrite = TRUE)
+    mcmc_long <- cmsy_mcmc(detail_long, lang = lang, plot = FALSE, table = FALSE, silent = TRUE)
+    keep <- c("parameter", "label", "median", "lcl", "ucl", "rhat", "n_eff", "converged", "enough_draws")
+    both <- merge(mcmc$diagnostics[, keep], mcmc_long$diagnostics[, c("parameter", "median", "rhat", "n_eff")],
+                  by = "parameter", suffixes = c("", "_long"), sort = FALSE)
+    both <- both[match(intersect(cmsy_mcmc_parameters, both$parameter), both$parameter), ]
+    fao_write_csv(both, file.path(dir, paste0(kind, "_mcmc.csv")))
     tables <- cmsy_tables(detail, lang = lang, table = FALSE)
     fao_write_csv(tables$priors, file.path(dir, paste0(kind, "_priors_table.csv")))
     fao_write_csv(tables$results, file.path(dir, paste0(kind, "_results_table.csv")))
@@ -69,7 +81,9 @@ for (kind in names(examples)) {
     rank = match(stock, top), first_year = s$first_year, B_Bmsy = s$B_Bmsy, B_Bmsy_lcl = s$B_Bmsy_lcl,
     B_Bmsy_ucl = s$B_Bmsy_ucl, F_Fmsy = s$F_Fmsy, p_green = s$p_green, p_red = s$p_red,
     p_overfished = s$p_overfished, MSY_t = s$MSY, forecast_catch_t = forecast_catch,
-    B_Bmsy_1950 = detail_1950$summary$B_Bmsy, first_year_1950 = detail_1950$summary$first_year
+    B_Bmsy_1950 = detail_1950$summary$B_Bmsy, first_year_1950 = detail_1950$summary$first_year,
+    B_Bmsy_long = detail_long$summary$B_Bmsy, long_seconds = detail_long$summary$seconds,
+    default_seconds = detail$summary$seconds
   )
 }
 top_table <- all$summary[, c("Stock", "species_en", "scientific_name", "first_year", "B_Bmsy", "B_Bmsy_lcl", "B_Bmsy_ucl",

@@ -162,6 +162,7 @@ reference:
   - cmsy_defaults
   - cmsy_run
   - cmsy_plot
+  - cmsy_mcmc
   - cmsy_forecast
   - cmsy_compare
   - cmsy_tables

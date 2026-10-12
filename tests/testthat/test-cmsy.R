@@ -171,6 +171,12 @@ test_that("cmsy_run() runs the bundled CMSY++ code", {
   expect_equal(quick$settings$used[quick$settings$setting == "n.iter"], "6000")
   expect_match(quick$sources$version[quick$sources$component == "CMSY++ settings"], "n.iter = 6000")
   expect_length(quick$details$PIL_34$r, 2 * (6000 - 3000) / 10)
+  # the draws of each chain are kept for cmsy_mcmc(), with the settings of the run
+  expect_equal(dim(quick$details$PIL_34$mcmc$draws)[1:2], c((6000 - 3000) / 10, 2))
+  expect_equal(unname(quick$details$PIL_34$mcmc$settings["n.iter"]), 6000)
+  diagnostics <- cmsy_mcmc(quick, plot = FALSE, table = FALSE, silent = TRUE)$diagnostics
+  expect_true(all(c("r", "k", "msy", "bk_last") %in% diagnostics$parameter))
+  expect_equal(diagnostics$median[diagnostics$parameter == "msy"], quick$summary$MSY, tolerance = 0.05)
   expect_equal(result$summary$run_status, "ok")
   expect_true(result$summary$status %in% c("maximally sustainably fished", "overfished"))
   expect_true(file.exists(file.path(result$summary$folder, "PIL_34_AN.jpg")))
@@ -493,4 +499,77 @@ test_that("the report says when results are completed runs with unchecked B/k pr
   s$end_bk_prior_source[2] <- "CMSY++ neural network"
   expect_equal(fao_report_cmsy_priors(s, c(TRUE, TRUE), "en")$unchecked, c(TRUE, TRUE))
   expect_equal(fao_report_cmsy_priors(s, c(FALSE, TRUE), "en")$unchecked, c(FALSE, TRUE))
+})
+
+test_that("cmsy_mcmc() gives Rhat and effective sample sizes, and tells convergence from too few draws", {
+  set.seed(1)
+  n <- 1000
+  ar1 <- function(rho, mean) as.numeric(stats::arima.sim(list(ar = rho), n)) * 0.01 + mean
+  make <- function(shift, rho) {
+    draws <- array(NA_real_, dim = c(n, 2, 4), dimnames = list(NULL, NULL, c("r", "k", "bk_last", "msy")))
+    draws[, 1, "r"] <- ar1(rho, 0.5)
+    draws[, 2, "r"] <- ar1(rho, 0.5 + shift)
+    draws[, , "k"] <- 1e6 + stats::rnorm(2 * n, 0, 1e4)
+    draws[, , "bk_last"] <- stats::rbeta(2 * n, 20, 20)
+    draws[, , "msy"] <- draws[, , "r"] * draws[, , "k"] / 4
+    list(settings = c(n.chains = 2, n.iter = 20000, n.burnin = 10000, n.thin = 10), draws = draws)
+  }
+  summary <- data.frame(Stock = c("GOOD", "STUCK"), species_en = "Atlantic cod", run_status = "ok", stringsAsFactors = FALSE)
+  result <- structure(list(summary = summary, details = list(GOOD = list(mcmc = make(0, 0.2)), STUCK = list(mcmc = make(0.2, 0.99)))),
+                      class = "cmsy_result")
+  out <- cmsy_mcmc(result, plot = FALSE, table = FALSE, silent = TRUE)
+  expect_equal(out$settings$n_kept, c(n, n))
+  expect_equal(out$settings$n_draws, c(2 * n, 2 * n))
+  good <- out$diagnostics[out$diagnostics$Stock == "GOOD" & out$diagnostics$parameter == "r", ]
+  stuck <- out$diagnostics[out$diagnostics$Stock == "STUCK" & out$diagnostics$parameter == "r", ]
+  expect_lt(good$rhat, 1.05)
+  expect_true(good$converged && good$enough_draws)
+  expect_gt(stuck$rhat, 1.1)
+  expect_false(stuck$converged)
+  expect_lt(stuck$n_eff, 400)
+  expect_message(cmsy_mcmc(result, plot = FALSE, table = FALSE, silent = FALSE), "not converged \\(Rhat > 1.1\\): STUCK")
+  # results of earlier versions have no draws
+  old <- result
+  old$details <- list(GOOD = list(), STUCK = list())
+  expect_error(cmsy_mcmc(old, plot = FALSE, table = FALSE), "earlier version")
+  skip_if_not_installed("patchwork")
+  expect_s3_class(cmsy_chart_mcmc(result$details$GOOD, "zh", character(0)), "patchwork")
+})
+
+test_that("the MCMC draws saved by the run are read with k in tonnes and MSY added", {
+  draws <- array(c(rep(0.4, 6), rep(1000, 6), rep(0.5, 6), rep(0.3, 6), rep(-10, 6)), dim = c(3, 2, 5),
+                 dimnames = list(NULL, NULL, c("r", "k", "P[1]", "P[40]", "deviance")))
+  out <- cmsy_read_mcmc(list(settings = c(n.chains = 2, n.iter = 60000, n.burnin = 30000, n.thin = 10), draws = draws))
+  expect_equal(dimnames(out$draws)[[3]], c("r", "k", "bk_first", "bk_last", "deviance", "msy"))
+  expect_equal(unname(out$draws[1, 1, "k"]), 1e6)
+  expect_equal(unname(out$draws[1, 1, "msy"]), 0.4 * 1e6 / 4)
+  expect_null(cmsy_read_mcmc(NULL))
+})
+
+test_that("the report gives the MCMC settings and names the stocks that did not converge", {
+  set.seed(2)
+  n <- 1000
+  chains <- function(shift, rho) {
+    draws <- array(NA_real_, dim = c(n, 2, 4), dimnames = list(NULL, NULL, c("r", "k", "bk_last", "msy")))
+    for (j in 1:2) draws[, j, "r"] <- as.numeric(stats::arima.sim(list(ar = rho), n)) * 0.01 + 0.5 + (j - 1) * shift
+    draws[, , "k"] <- 1e6 + stats::rnorm(2 * n, 0, 1e4)
+    draws[, , "bk_last"] <- stats::rbeta(2 * n, 20, 20)
+    draws[, , "msy"] <- draws[, , "r"] * draws[, , "k"] / 4
+    list(settings = c(n.chains = 2, n.iter = 60000, n.burnin = 30000, n.thin = 10), draws = draws)
+  }
+  summary <- data.frame(Stock = c("COD_27", "HER_27"), species_en = c("Atlantic cod", "Atlantic herring"),
+                        run_status = "ok", stringsAsFactors = FALSE)
+  result <- structure(list(summary = summary, details = list(COD_27 = list(mcmc = chains(0, 0.2)),
+                                                             HER_27 = list(mcmc = chains(0.2, 0.99)))),
+                      class = "cmsy_result")
+  names <- fao_report_species_names(summary$species_en, "en", fao_group_table()$species)
+  text <- fao_report_cmsy_mcmc(result, names, "en")
+  expect_match(text, "2 chains of 60,000 iterations \\(30,000 discarded as burn-in, keeping one draw in 10\\)")
+  expect_match(text, "The chains of Atlantic herring had not converged")
+  expect_false(grepl("Atlantic cod had not", text))
+  zh <- fao_report_cmsy_mcmc(result, fao_report_species_names(summary$species_en, "zh", fao_group_table()$species), "zh")
+  expect_match(zh, "60000")
+  # results of earlier versions have no draws: no sentence
+  result$details <- list(COD_27 = list(), HER_27 = list())
+  expect_equal(fao_report_cmsy_mcmc(result, names, "en"), "")
 })

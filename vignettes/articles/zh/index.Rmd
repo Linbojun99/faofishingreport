@@ -206,6 +206,7 @@ report <- fao_report(27, lang = "zh", cmsy = TRUE, shocks = TRUE, format = c("do
 | `cmsy_defaults()` | CMSY++ 设置及其默认值 |
 | `cmsy_run()` | 运行 CMSY++ |
 | `cmsy_plot()` | CMSY++ 结果图表 |
+| `cmsy_mcmc()` | MCMC 设置与收敛诊断：Rhat、有效样本量、各条链的轨迹和密度 |
 | `cmsy_forecast()` | 不同捕捞情景下的预测 |
 | `cmsy_compare()` | 比较多次 CMSY++ 运行结果 |
 | `cmsy_tables()` | 报告用的先验参数表和结果表 |

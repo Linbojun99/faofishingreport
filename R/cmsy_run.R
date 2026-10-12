@@ -418,7 +418,16 @@ cmsy_extra_saver <- function() {
     catch_pred = three("ct.jags", "lcl.ct.jags", "ucl.ct.jags"),
     MSY = c(v("MSY"), v("lcl.MSY"), v("ucl.MSY")), Bmsy = c(v("Bmsy"), v("lcl.Bmsy"), v("ucl.Bmsy")),
     Fmsy = c(v("Fmsy"), v("lcl.Fmsy"), v("ucl.Fmsy")),
-    kobe = data.frame(B_Bmsy = column(v("all.BBmsy.cmsy"), nyr), F_Fmsy = column(v("all.FFmsy.cmsy"), nyr))
+    kobe = data.frame(B_Bmsy = column(v("all.BBmsy.cmsy"), nyr), F_Fmsy = column(v("all.FFmsy.cmsy"), nyr)),
+    # MCMC of the main analysis, as JAGS returned it: the settings of the run and the draws of each
+    # chain of the main parameters, for the convergence diagnostics of cmsy_mcmc()
+    mcmc = tryCatch({
+      bo <- v("jags_cmsy")$BUGSoutput
+      keep <- intersect(c("r", "k", "P[1]", paste0("P[", nyr, "]"), paste0("BBmsy[", nyr, "]"),
+                          paste0("FFmsy[", nyr, "]"), "deviance"), dimnames(bo$sims.array)[[3]])
+      list(settings = c(n.chains = bo$n.chains, n.iter = bo$n.iter, n.burnin = bo$n.burnin, n.thin = bo$n.thin),
+           draws = bo$sims.array[, , keep, drop = FALSE])
+    }, error = function(e) NULL)
   ), "cmsy_extra.rds")
 }
 
@@ -562,7 +571,8 @@ cmsy_read_stock <- function(dir, stock, run) {
     prior_r = x$prior.r, prior_k = kt(x$prior.k), prior_msy = kt(x$prior.msy), prior_logn = x$prior_logn,
     bk_beta = x$bk_beta,
     startbio = x$startbio, intbio = x$intbio, int_year = x$int.yr, endbio = x$endbio, expert = x$expert,
-    retrospective = if (file.exists(retro_file)) readRDS(retro_file) else NULL
+    retrospective = if (file.exists(retro_file)) readRDS(retro_file) else NULL,
+    mcmc = cmsy_read_mcmc(x$mcmc)
   )
   list(summary = summary, series = series, kobe = kobe, details = details, log = log)
 }
@@ -623,3 +633,27 @@ cmsy_stop_process <- function(dir) {
 
 # Stocks with results of the main analysis (completed runs, and runs in which a later step failed)
 cmsy_has_results <- function(status) status %in% c("ok", "partial")
+
+# The MCMC of a stock as saved by the run: settings, and the draws by chain of r, k (in tonnes, as in
+# the summary), MSY (r k / 4, as CMSY++16.R computes it), B/k in the first and last years, B/Bmsy
+# and F/Fmsy in the last year and the deviance. NULL for runs of earlier versions of the package
+cmsy_read_mcmc <- function(mcmc) {
+  if (is.null(mcmc) || is.null(mcmc$draws)) return(NULL)
+  draws <- mcmc$draws
+  names <- dimnames(draws)[[3]]
+  rename <- c(r = "r", k = "k", deviance = "deviance")
+  rename[grep("^P\\[1\\]$", names, value = TRUE)] <- "bk_first"
+  last <- setdiff(grep("^P\\[", names, value = TRUE), "P[1]")
+  rename[last] <- "bk_last"
+  rename[grep("^BBmsy\\[", names, value = TRUE)] <- "b_bmsy_last"
+  rename[grep("^FFmsy\\[", names, value = TRUE)] <- "f_fmsy_last"
+  dimnames(draws)[[3]] <- unname(rename[names])
+  if ("k" %in% dimnames(draws)[[3]]) draws[, , "k"] <- 1000 * draws[, , "k"]
+  if (all(c("r", "k") %in% dimnames(draws)[[3]])) {
+    msy <- draws[, , "r", drop = FALSE] * draws[, , "k", drop = FALSE] / 4
+    dimnames(msy)[[3]] <- "msy"
+    draws <- array(c(draws, msy), dim = c(dim(draws)[1:2], dim(draws)[3] + 1),
+                   dimnames = list(NULL, NULL, c(dimnames(draws)[[3]], "msy")))
+  }
+  list(settings = mcmc$settings, draws = draws)
+}

@@ -111,6 +111,7 @@ fao_report_cmsy_values <- function(result, lang) {
   c(counts, tables, list(
     has_cmsy = TRUE, cmsy_top = nrow(s) + nrow(result$input$excluded),
     cmsy_priors_text = priors$text,
+    cmsy_mcmc_text = fao_report_cmsy_mcmc(result, names, lang),
     cmsy_unchecked = if (any(priors$unchecked)) text("cmsy_unchecked") else "",
     partial_note = if (any(partial)) text("cmsy_partial", list = list_text(names$plain[partial])) else "",
     not_assessed = if (length(missing) > 0) text("cmsy_not_assessed", list = list_text(missing)) else "",
@@ -258,4 +259,26 @@ fao_report_cmsy_priors <- function(s, ok, lang) {
                                                     n_nn_stocks = stocks(n_nn)))
   }
   list(text = text, unchecked = unchecked)
+}
+
+# The sentence of the methods on the MCMC: settings, the largest Rhat and smallest effective sample
+# size of r, k, MSY and the last-year B/k, and the stocks that had not converged or had too few
+# effective draws (cmsy_mcmc()). Empty for results of earlier versions, which have no draws
+fao_report_cmsy_mcmc <- function(result, names, lang) {
+  mcmc <- tryCatch(cmsy_mcmc(result, plot = FALSE, table = FALSE, silent = TRUE), error = function(e) NULL)
+  if (is.null(mcmc)) return("")
+  d <- mcmc$diagnostics[mcmc$diagnostics$parameter %in% c("r", "k", "msy", "bk_last"), ]
+  set <- mcmc$settings[1, ]
+  number <- function(x) format(x, big.mark = if (lang == "zh") "" else ",", scientific = FALSE, trim = TRUE)
+  species <- function(stocks) {
+    fao_report_list(unique(names$plain[match(stocks, result$summary$Stock)]), lang)
+  }
+  not_converged <- unique(d$Stock[!d$converged])
+  few <- setdiff(unique(d$Stock[!d$enough_draws]), not_converged)
+  fao_report_text("cmsy_mcmc", lang, list(
+    chains = set$n_chains, iter = number(set$n_iter), burnin = number(set$n_burnin), thin = set$n_thin,
+    rhat = sprintf("%.2f", max(d$rhat, na.rm = TRUE)), neff = number(round(min(d$n_eff, na.rm = TRUE))),
+    mcmc_rhat = if (length(not_converged) > 0) fao_report_text("cmsy_mcmc_rhat", lang, list(list = species(not_converged))) else "",
+    mcmc_neff = if (length(few) > 0) fao_report_text("cmsy_mcmc_neff", lang, list(list = species(few))) else ""
+  ))
 }

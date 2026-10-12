@@ -2,7 +2,7 @@
 # the CMSY++ user guide redrawn from the saved results, and summaries of several stocks.
 
 cmsy_stock_charts <- c("analysis", "catch", "rk", "biomass", "b_bmsy", "exploitation", "equilibrium",
-                       "management", "kobe", "prior_posterior", "retrospective")
+                       "management", "kobe", "prior_posterior", "retrospective", "mcmc")
 cmsy_summary_charts <- c("overview", "kobe_all", "status", "status_time", "histogram", "b_bmsy_all",
                          "trend", "aggregate", "map")
 cmsy_annotation_types <- c("title", "subtitle", "caption", "legend", "labels")
@@ -36,7 +36,10 @@ cmsy_annotation_types <- c("title", "subtitle", "caption", "legend", "labels")
 #'   \item{prior_posterior}{prior and posterior densities of r, k, MSY and B/k in the first,
 #'     intermediate and last years, with the prior-posterior variance ratio PPVR (Figure 4);}
 #'   \item{retrospective}{B/Bmsy and F/Fmsy when the last one, two or three years are left out,
-#'     with Mohn's rho (Figure 5; needs \code{cmsy_run(plots = "retrospective")}).}
+#'     with Mohn's rho (Figure 5; needs \code{cmsy_run(plots = "retrospective")});}
+#'   \item{mcmc}{the draws of each MCMC chain (trace) and their densities for r, k, MSY and the
+#'     last-year B/k, with Rhat and the effective sample size (see \code{\link{cmsy_mcmc}()}; not
+#'     for runs of earlier versions of the package).}
 #' }
 #' For several stocks together:
 #' \describe{
@@ -76,6 +79,8 @@ cmsy_annotation_types <- c("title", "subtitle", "caption", "legend", "labels")
 #'        figures/pptx/cmsy/<stock>/ and figures/pptx/cmsy/summary/. Default is FALSE, which can be
 #'        changed for all functions with \code{fao_settings(pptx = TRUE)}.
 #' @param classes The status classes: "fao" (default, two classes) or "palomares" (five classes).
+#' @param mcmc_colors Colours of the chains in the "mcmc" chart: NULL (default) for the Okabe-Ito
+#'        colours, a palette name or a vector of colours (see \code{\link{cmsy_mcmc}()}).
 #' @param annotations The text added to the axis titles and labels: FALSE (default) none, TRUE
 #'        all, or any of "title", "subtitle", "caption", "legend" and "labels" (text inside the
 #'        chart). The default can be changed for the session with
@@ -128,9 +133,10 @@ cmsy_annotation_types <- c("title", "subtitle", "caption", "legend", "labels")
 #' }
 cmsy_plot <- function(result, stocks = NULL, charts = c(cmsy_stock_charts, cmsy_summary_charts),
                       classes = c("fao", "palomares"), annotations = getOption("faofishingreport.cmsy_annotations", FALSE), lang = NULL,
-                      pptx = getOption("faofishingreport.pptx", FALSE), silent = fao_setting("silent")) {
+                      pptx = getOption("faofishingreport.pptx", FALSE), silent = fao_setting("silent"), mcmc_colors = NULL) {
   if (!inherits(result, "cmsy_result")) stop("`result` must be the result of cmsy_run().", call. = FALSE)
   charts <- match.arg(charts, c(cmsy_stock_charts, cmsy_summary_charts), several.ok = TRUE)
+  cmsy_chain_colors(mcmc_colors, 2)
   classes <- match.arg(classes)
   if (any(charts %in% c("analysis", "management")) && !requireNamespace("patchwork", quietly = TRUE) && !silent) {
     message("The \"analysis\" chart needs the patchwork package (install.packages(\"patchwork\")); ",
@@ -171,7 +177,8 @@ cmsy_plot <- function(result, stocks = NULL, charts = c(cmsy_stock_charts, cmsy_
                   kobe = cmsy_chart_kobe(s, series, result$kobe[result$kobe$Stock == s$Stock, ], lang, ann,
                                          int_year = d$int_year),
                   prior_posterior = cmsy_chart_pp(s, d, lang, ann),
-                  retrospective = cmsy_chart_retro(d, lang, ann))
+                  retrospective = cmsy_chart_retro(d, lang, ann),
+                  mcmc = cmsy_chart_mcmc(d, lang, ann, colors = mcmc_colors))
       if (is.null(p)) next
       subtitle <- cmsy_subtitle(s, lang)
       p <- cmsy_finish(p, ann, paste0(title, "\n", cmsy_label(paste0("chart_", chart), lang)), subtitle, caption)
@@ -242,7 +249,7 @@ cmsy_finish <- function(p, ann, title, subtitle, caption) {
 }
 
 cmsy_chart_size <- function(chart) {
-  switch(chart, analysis = c(15, 9.5), management = c(12, 9), prior_posterior = c(12, 7.5), retrospective = c(12, 5),
+  switch(chart, analysis = c(15, 9.5), management = c(12, 9), mcmc = c(12, 9), prior_posterior = c(12, 7.5), retrospective = c(12, 5),
          status_time = c(10, 8), histogram = c(9, 6), b_bmsy_all = c(14, 10), aggregate = c(10, 8), map = c(12, 7),
          kobe = c(8, 7), kobe_all = c(9, 8), rk = c(8, 7), status = c(10, 5), trend = c(10, 8), c(10, 6))
 }
@@ -889,6 +896,23 @@ cmsy_label <- function(key, lang, ...) {
     chart_kobe = c("Kobe plot", "Kobe \u56fe"),
     chart_prior_posterior = c("Prior and posterior distributions", "\u5148\u9a8c\u4e0e\u540e\u9a8c\u5206\u5e03"),
     chart_retrospective = c("Retrospective analysis", "\u56de\u987e\u6027\u5206\u6790"),
+    mcmc_r = c("Intrinsic growth rate r", "\u5185\u7980\u589e\u957f\u7387 r"),
+    mcmc_k = c("Carrying capacity k (t)", "\u73af\u5883\u5bb9\u7eb3\u91cf k\uff08\u5428\uff09"),
+    mcmc_msy = c("MSY (t)", "MSY\uff08\u5428\uff09"),
+    mcmc_bk_first = c("B/k in the first year", "\u7b2c\u4e00\u5e74\u7684 B/k"),
+    mcmc_bk_last = c("B/k in the last year", "\u6700\u540e\u4e00\u5e74\u7684 B/k"),
+    mcmc_b_bmsy_last = c("B/Bmsy in the last year", "\u6700\u540e\u4e00\u5e74\u7684 B/Bmsy"),
+    mcmc_f_fmsy_last = c("F/Fmsy in the last year", "\u6700\u540e\u4e00\u5e74\u7684 F/Fmsy"),
+    mcmc_deviance = c("Deviance", "\u504f\u5dee\uff08deviance\uff09"),
+    mcmc_short_r = c("r", "r"),
+    mcmc_short_k = c("k (thousand t)", "k\uff08\u5343\u5428\uff09"),
+    mcmc_short_msy = c("MSY (thousand t)", "MSY\uff08\u5343\u5428\uff09"),
+    mcmc_short_bk_last = c("B/k, last year", "\u6700\u540e\u4e00\u5e74 B/k"),
+    mcmc_chain = c("Chain", "\u94fe"),
+    mcmc_draw = c("Kept draw (after burn-in and thinning)", "\u4fdd\u7559\u7684\u62bd\u6837\uff08\u53bb\u6389\u9884\u70e7\u5e76\u62bd\u7a00\u540e\uff09"),
+    mcmc_value = c("Value", "\u53d6\u503c"),
+    mcmc_density = c("Density", "\u5bc6\u5ea6"),
+    chart_mcmc = c("MCMC trace and density of each chain", "\u5404\u6761\u94fe\u7684 MCMC \u8f68\u8ff9\u4e0e\u5bc6\u5ea6"),
     chart_overview = c("Relative stock size of the stocks in the last year", "\u5404\u79cd\u7fa4\u6700\u540e\u4e00\u5e74\u7684\u76f8\u5bf9\u751f\u7269\u91cf"),
     chart_kobe_all = c("Kobe plot of the stocks in the last year", "\u5404\u79cd\u7fa4\u6700\u540e\u4e00\u5e74\u7684 Kobe \u56fe"),
     chart_status = c("Status of the stocks", "\u79cd\u7fa4\u72b6\u6001"),

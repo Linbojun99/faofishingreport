@@ -455,6 +455,54 @@ show_png("area27_status_time.png")
 show_png("area27_map.png")
 ```
 
+## 🔁 MCMC: settings and convergence {#mcmc}
+
+```{r, eval = FALSE}
+mcmc <- cmsy_mcmc(result)
+mcmc$settings        # chains, iterations, burn-in, thinning and draws kept of each stock
+mcmc$diagnostics     # posterior summary, Rhat and effective sample size of each parameter
+cmsy_mcmc(result, colors = c("grey30", "#D7191C"))   # other colours for the chains
+```
+
+CMSY++ samples the posterior with JAGS by Markov chain Monte Carlo (MCMC). `cmsy_run()` keeps the draws of each chain of r, k, B/k, B/Bmsy and F/Fmsy (MSY is computed from r and k, as in `CMSY++16.R`), and `cmsy_mcmc()` checks them. **Rhat** (Gelman and Rubin 1992) compares the variance between chains with the variance within them; at most 1.1 the chains are taken as converged (Gelman et al. 2013). The **effective sample size** (`n_eff`, computed with coda; Plummer et al. 2006) is the number of independent draws that the autocorrelated draws are worth; below 400 (Vehtari et al. 2021) the 95% limits are imprecise. Stocks that did not converge and stocks with too few effective draws are reported apart. The chart shows the draws of each chain in the order they were kept (trace: chains that mix well overlap with no trend) and their densities (which should agree).
+
+The two example stocks, with the settings of `CMSY++16.R` (2 chains of 60,000 iterations, the first 30,000 discarded as burn-in, one draw in 10 kept) and with 4 chains of 300,000 iterations (150,000 burn-in, one draw in 50 kept; columns `_long`):
+
+```{r}
+mc <- rbind(cbind(stock = "PRA_27", read.csv(file.path(fig_dir, "green_mcmc.csv"), check.names = FALSE)),
+            cbind(stock = "CAP_27", read.csv(file.path(fig_dir, "overfished_mcmc.csv"), check.names = FALSE)))
+mc <- mc[mc$parameter != "deviance", ]
+show_table(mc[, c("stock", "label", "median", "rhat", "n_eff", "median_long", "rhat_long", "n_eff_long")], n = 20, digits = 3)
+rk <- mc[mc$parameter %in% c("r", "k", "msy"), ]
+```
+
+With the default settings the chains converged (Rhat at most `r sprintf("%.2f", max(mc$rhat))`), but the effective sample size of r, k and MSY was only `r round(min(rk$n_eff))` to `r round(max(rk$n_eff))`: successive draws of r and k are strongly correlated. With the longer chains it rose to `r round(min(rk$n_eff_long))` to `r round(max(rk$n_eff_long))`, while the medians hardly changed (last-year B/Bmsy of northern prawn `r sprintf("%.2f", green$B_Bmsy)` and `r sprintf("%.2f", green$B_Bmsy_long)`, of capelin `r sprintf("%.2f", over$B_Bmsy)` and `r sprintf("%.2f", over$B_Bmsy_long)`), at about `r round(green$long_seconds / green$default_seconds)` times the run time. For results to report, run CMSY++ with longer and more chains and check them:
+
+```{r, eval = FALSE}
+result <- cmsy_run(input, seed = 1, auto_start = TRUE,
+                   settings = list(n.chains = 4, n.iter = 300000, n.burnin = 150000, n.thin = 50))
+cmsy_mcmc(result)
+```
+
+Trace and density of each chain, northern prawn and capelin (default settings):
+
+```{r, echo = FALSE}
+show_png("green_mcmc.png")
+show_png("overfished_mcmc.png")
+```
+
+| Argument | Meaning | Default |
+|---|---|---|
+| `result` | The result of `cmsy_run()` or `cmsy_area()` | required |
+| `stocks` | Stocks to check (see [Common arguments](#common-arguments)) | `NULL`: all stocks that ran |
+| `rhat_max` | Largest Rhat taken as converged | `1.1` |
+| `n_eff_min` | Smallest effective sample size (all chains together) taken as enough | `400` |
+| `plot`, `table` | Save the chart `figures/png/cmsy/<stock>/mcmc.png` and the tables `tables/cmsy/mcmc_settings.csv` and `mcmc_diagnostics.csv` | `TRUE` |
+| `colors` | Colours of the chains: `NULL` (Okabe-Ito colours), a palette name (e.g. `"npg"`, `"Set1"`, `"viridis"`) or one colour per chain | `NULL` |
+| `lang`, `pptx`, `silent` | See [Common arguments](#common-arguments) | |
+
+The same chart is the `"mcmc"` chart of `cmsy_plot()` (colours with `mcmc_colors`). Results of earlier versions of the package have no draws: run CMSY++ again to check them. Converged chains do not mean that the priors or the model fit the stock.
+
 ## 🔮 Step 7: projections under fishing scenarios
 
 ```{r, eval = FALSE}
@@ -638,6 +686,13 @@ Touloumis, K., Demirel, N., Vianna, G.M.S., Scarcella, G., Schijns, R., Liang, C
 assessments: the CMSY++ method. *Acta Ichthyologica et Piscatoria* 53: 173–189.
 [doi:10.3897/aiep.53.105910](https://doi.org/10.3897/aiep.53.105910)
 
+Gelman, A., Carlin, J.B., Stern, H.S., Dunson, D.B., Vehtari, A. and Rubin, D.B. (2013).
+*Bayesian Data Analysis*, 3rd edition. Boca Raton: CRC Press.
+[doi:10.1201/b16018](https://doi.org/10.1201/b16018)
+
+Gelman, A. and Rubin, D.B. (1992). Inference from iterative simulation using multiple sequences.
+*Statistical Science* 7(4): 457–472. [doi:10.1214/ss/1177011136](https://doi.org/10.1214/ss/1177011136)
+
 Kell, L.T., Sharma, R. and Winker, H. (2022). Artefact and artifice: evaluation of the skill of
 catch-only methods for classifying stock status. *Frontiers in Marine Science* 9: 762203.
 [doi:10.3389/fmars.2022.762203](https://doi.org/10.3389/fmars.2022.762203)
@@ -664,8 +719,16 @@ Computing (DSC 2003)*, Vienna, 1–10.
 <https://www.r-project.org/conferences/DSC-2003/Proceedings/Plummer.pdf>; JAGS:
 <https://mcmc-jags.sourceforge.io/>
 
+Plummer, M., Best, N., Cowles, K. and Vines, K. (2006). CODA: convergence diagnosis and output
+analysis for MCMC. *R News* 6(1): 7–11. <https://journal.r-project.org/articles/RN-2006-002/>
+
 Plummer, M. (2025). rjags: Bayesian Graphical Models using MCMC. R package version 4-17.
 [doi:10.32614/CRAN.package.rjags](https://doi.org/10.32614/CRAN.package.rjags)
 
 Su, Y. and Yajima, M. (2024). R2jags: Using R to Run 'JAGS'. R package version 0.8-9.
 [doi:10.32614/CRAN.package.R2jags](https://doi.org/10.32614/CRAN.package.R2jags)
+
+Vehtari, A., Gelman, A., Simpson, D., Carpenter, B. and Bürkner, P.-C. (2021).
+Rank-normalization, folding, and localization: an improved Rhat for assessing convergence of MCMC.
+*Bayesian Analysis* 16(2): 667–718. [doi:10.1214/20-BA1221](https://doi.org/10.1214/20-BA1221)
+

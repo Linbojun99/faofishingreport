@@ -234,6 +234,7 @@ tables in `tables/`.
 | `cmsy_defaults()` | CMSY++ settings and their defaults |
 | `cmsy_run()` | Run CMSY++ |
 | `cmsy_plot()` | Charts of the CMSY++ results |
+| `cmsy_mcmc()` | MCMC settings and convergence: Rhat, effective sample size, trace and density of each chain |
 | `cmsy_forecast()` | Projections under fishing scenarios |
 | `cmsy_compare()` | Compare CMSY++ runs |
 | `cmsy_tables()` | Tables of priors and results for reports |
