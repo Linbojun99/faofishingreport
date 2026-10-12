@@ -158,7 +158,7 @@ The official FAO map of the area is linked in the result (`fao_map`); see `fao_a
 ## 参考文献
 
 FAO (2024). FAO Major Fishing Areas for Statistical Purposes. In: FAO Fisheries and
-Aquaculture Division online. Licence: CC-BY 4.0.
+Aquaculture Division [online]. Licence: CC-BY 4.0.
 <https://www.fao.org/fishery/geonetwork?uuid=ac02a460-da52-11dc-9d70-0017f293bd28>
 
 NOAA National Centers for Environmental Information (2022). ETOPO 2022 15 Arc-Second Global

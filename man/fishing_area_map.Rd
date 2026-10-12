@@ -73,7 +73,7 @@ fishing_area_map("Atlantic, Northeast", level = "division", bathymetry = FALSE)
 }
 \references{
 FAO (2024). FAO Major Fishing Areas for Statistical Purposes. In: FAO Fisheries and
-Aquaculture Division \link{online}. Licence: CC-BY 4.0.
+Aquaculture Division [online]. Licence: CC-BY 4.0.
 \url{https://www.fao.org/fishery/geonetwork?uuid=ac02a460-da52-11dc-9d70-0017f293bd28}
 
 NOAA National Centers for Environmental Information (2022). ETOPO 2022 15 Arc-Second Global

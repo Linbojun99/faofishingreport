@@ -44,11 +44,11 @@ fao_area_map_files <- c(
 #' Main water areas (FAO major fishing areas). Rome: FAO.
 #' <https://www.fao.org/cwp-on-fishery-statistics/handbook/general-concepts/main-water-areas/en/>
 #'
-#' FAO. Fishing area maps. In: FAO Fisheries and Aquaculture Division [online]. Rome.
+#' FAO. Fishing area maps. In: FAO Fisheries and Aquaculture Division \[online\]. Rome.
 #' <https://www.fao.org/fishery/docs/maps/Default.htm>
 #'
 #' FAO (2024). FAO Major Fishing Areas for Statistical Purposes. In: FAO Fisheries and
-#' Aquaculture Division [online]. Licence: CC-BY 4.0.
+#' Aquaculture Division \[online\]. Licence: CC-BY 4.0.
 #' <https://www.fao.org/fishery/geonetwork?uuid=ac02a460-da52-11dc-9d70-0017f293bd28>
 #' @seealso [fishing_area_map()] for the map of one area and its subareas.
 #' @export
@@ -140,7 +140,7 @@ fao_areas <- function(data = NULL, plot = TRUE, table = TRUE, lang = NULL, pptx 
 #'         `sources` (the boundaries, base map and depth data used, to cite with the map).
 #' @references
 #' FAO (2024). FAO Major Fishing Areas for Statistical Purposes. In: FAO Fisheries and
-#' Aquaculture Division [online]. Licence: CC-BY 4.0.
+#' Aquaculture Division \[online\]. Licence: CC-BY 4.0.
 #' <https://www.fao.org/fishery/geonetwork?uuid=ac02a460-da52-11dc-9d70-0017f293bd28>
 #'
 #' NOAA National Centers for Environmental Information (2022). ETOPO 2022 15 Arc-Second Global
@@ -334,7 +334,7 @@ fao_area_map_sources <- function(engine, bathymetry) {
     c("boundaries", "FAO (2024). FAO Major Fishing Areas for Statistical Purposes. Licence: CC-BY 4.0.",
       "https://www.fao.org/fishery/geonetwork?uuid=ac02a460-da52-11dc-9d70-0017f293bd28")
   )
-  caption <- list(en = "Boundaries: FAO (CC BY 4.0)", zh = "边界：FAO（CC BY 4.0）")
+  caption <- list(en = "Boundaries: FAO (CC BY 4.0)", zh = "\u8fb9\u754c\uff1aFAO\uff08CC BY 4.0\uff09")
   if (engine == "ggOceanMaps") {
     rows <- c(rows, list(
       c("base map", "Vihtakari, M. (2026). ggOceanMaps: Plot Data on Oceanographic Maps using 'ggplot2'. R package version 3.0.0. doi:10.32614/CRAN.package.ggOceanMaps",
@@ -342,18 +342,18 @@ fao_area_map_sources <- function(engine, bathymetry) {
       c("land", "Natural Earth. 1:10m Land and Minor Islands (public domain), as bundled with ggOceanMaps.",
         "https://www.naturalearthdata.com/downloads/10m-physical-vectors/")))
     caption$en <- c(caption$en, "map: ggOceanMaps")
-    caption$zh <- c(caption$zh, "底图：ggOceanMaps")
+    caption$zh <- c(caption$zh, "\u5e95\u56fe\uff1aggOceanMaps")
     if (bathymetry) {
       rows <- c(rows, list(c("depth", "NOAA National Centers for Environmental Information (2022). ETOPO 2022 15 Arc-Second Global Relief Model. doi:10.25921/fd45-gt74",
                              "https://doi.org/10.25921/fd45-gt74")))
       caption$en <- c(caption$en, "depth: NOAA ETOPO 2022")
-      caption$zh <- c(caption$zh, "水深：NOAA ETOPO 2022")
+      caption$zh <- c(caption$zh, "\u6c34\u6df1\uff1aNOAA ETOPO 2022")
     }
   } else {
     rows <- c(rows, list(c("land", "Natural Earth. Admin 0 - Countries, 1:50m (public domain), via the rnaturalearth package.",
                            "https://www.naturalearthdata.com/")))
     caption$en <- c(caption$en, "land: Natural Earth")
-    caption$zh <- c(caption$zh, "陆地：Natural Earth")
+    caption$zh <- c(caption$zh, "\u9646\u5730\uff1aNatural Earth")
   }
   caption$both <- caption$zh
   table <- as.data.frame(do.call(rbind, rows), stringsAsFactors = FALSE)

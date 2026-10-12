@@ -58,11 +58,11 @@ CWP (Coordinating Working Party on Fishery Statistics). \emph{CWP Handbook of Fi
 Main water areas (FAO major fishing areas). Rome: FAO.
 \url{https://www.fao.org/cwp-on-fishery-statistics/handbook/general-concepts/main-water-areas/en/}
 
-FAO. Fishing area maps. In: FAO Fisheries and Aquaculture Division \link{online}. Rome.
+FAO. Fishing area maps. In: FAO Fisheries and Aquaculture Division [online]. Rome.
 \url{https://www.fao.org/fishery/docs/maps/Default.htm}
 
 FAO (2024). FAO Major Fishing Areas for Statistical Purposes. In: FAO Fisheries and
-Aquaculture Division \link{online}. Licence: CC-BY 4.0.
+Aquaculture Division [online]. Licence: CC-BY 4.0.
 \url{https://www.fao.org/fishery/geonetwork?uuid=ac02a460-da52-11dc-9d70-0017f293bd28}
 }
 \seealso{
