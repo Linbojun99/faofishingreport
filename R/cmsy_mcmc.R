@@ -225,8 +225,10 @@ cmsy_chart_mcmc <- function(d, lang, ann, diagnostics = NULL, colors = NULL) {
     ggplot2::scale_colour_manual(values = colors, name = chain_label) +
     ggplot2::labs(x = cmsy_label("mcmc_value", lang), y = cmsy_label("mcmc_density", lang)) +
     fao_theme() + ggplot2::theme(strip.text = ggplot2::element_blank())
-  trace + density + patchwork::plot_layout(widths = c(2, 1), guides = "collect") &
-    ggplot2::theme(legend.position = "bottom")
+  # combined with wrap_plots() and the theme of plot_annotation(), not with `&`, which has no method
+  # for ggplot2 objects in R 4.3
+  patchwork::wrap_plots(trace, density, widths = c(2, 1), guides = "collect") +
+    patchwork::plot_annotation(theme = ggplot2::theme(legend.position = "bottom"))
 }
 
 # Colours of the MCMC chains: the Okabe-Ito colours by default, a palette name or colours given
