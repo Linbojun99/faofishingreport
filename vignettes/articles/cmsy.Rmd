@@ -472,11 +472,16 @@ The two example stocks, with the settings of `CMSY++16.R` (2 chains of 60,000 it
 mc <- rbind(cbind(stock = "PRA_27", read.csv(file.path(fig_dir, "green_mcmc.csv"), check.names = FALSE)),
             cbind(stock = "CAP_27", read.csv(file.path(fig_dir, "overfished_mcmc.csv"), check.names = FALSE)))
 mc <- mc[mc$parameter != "deviance", ]
-show_table(mc[, c("stock", "label", "median", "rhat", "n_eff", "median_long", "rhat_long", "n_eff_long")], n = 20, digits = 3)
 rk <- mc[mc$parameter %in% c("r", "k", "msy"), ]
+shown <- mc[, c("stock", "label", "median", "rhat", "n_eff", "median_long", "rhat_long", "n_eff_long")]
+shown[c("median", "median_long")] <- lapply(shown[c("median", "median_long")], function(x)
+  vapply(signif(x, 3), format, character(1), big.mark = ",", scientific = FALSE))
+shown[c("rhat", "rhat_long")] <- lapply(shown[c("rhat", "rhat_long")], sprintf, fmt = "%.3f")
+shown[c("n_eff", "n_eff_long")] <- lapply(shown[c("n_eff", "n_eff_long")], function(x) format(round(x), big.mark = ","))
+show_table(data.frame(shown, row.names = NULL), n = 20, digits = 3)
 ```
 
-With the default settings the chains converged (Rhat at most `r sprintf("%.2f", max(mc$rhat))`), but the effective sample size of r, k and MSY was only `r round(min(rk$n_eff))` to `r round(max(rk$n_eff))`: successive draws of r and k are strongly correlated. With the longer chains it rose to `r round(min(rk$n_eff_long))` to `r round(max(rk$n_eff_long))`, while the medians hardly changed (last-year B/Bmsy of northern prawn `r sprintf("%.2f", green$B_Bmsy)` and `r sprintf("%.2f", green$B_Bmsy_long)`, of capelin `r sprintf("%.2f", over$B_Bmsy)` and `r sprintf("%.2f", over$B_Bmsy_long)`), and the runs took about five times as long (4 chains instead of 2 run side by side, but each five times longer). For results to report, run CMSY++ with longer and more chains and check them:
+With the default settings the chains converged (Rhat at most `r sprintf("%.2f", max(mc$rhat))`), but the effective sample size of r, k and MSY was only `r round(min(rk$n_eff))` to `r round(max(rk$n_eff))`: successive draws of r and k are strongly correlated. With the longer chains it rose to `r round(min(rk$n_eff_long))` to `r round(max(rk$n_eff_long))`, while the medians hardly changed (last-year B/Bmsy of northern prawn `r sprintf("%.3f", green$B_Bmsy)` and `r sprintf("%.3f", green$B_Bmsy_long)`, of capelin `r sprintf("%.3f", over$B_Bmsy)` and `r sprintf("%.3f", over$B_Bmsy_long)`), and the runs took about five times as long (4 chains instead of 2 run side by side, but each five times longer). For results to report, run CMSY++ with longer and more chains and check them:
 
 ```{r, eval = FALSE}
 result <- cmsy_run(input, seed = 1, auto_start = TRUE,

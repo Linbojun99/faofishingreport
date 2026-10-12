@@ -434,11 +434,16 @@ CMSY++用JAGS以马尔可夫链蒙特卡罗（MCMC）方法从后验分布中抽
 mc <- rbind(cbind(stock = "PRA_27", read.csv(file.path(fig_dir, "green_mcmc.csv"), check.names = FALSE)),
             cbind(stock = "CAP_27", read.csv(file.path(fig_dir, "overfished_mcmc.csv"), check.names = FALSE)))
 mc <- mc[mc$parameter != "deviance", ]
-show_table(mc[, c("stock", "label", "median", "rhat", "n_eff", "median_long", "rhat_long", "n_eff_long")], n = 20, digits = 3)
 rk <- mc[mc$parameter %in% c("r", "k", "msy"), ]
+shown <- mc[, c("stock", "label", "median", "rhat", "n_eff", "median_long", "rhat_long", "n_eff_long")]
+shown[c("median", "median_long")] <- lapply(shown[c("median", "median_long")], function(x)
+  vapply(signif(x, 3), format, character(1), big.mark = ",", scientific = FALSE))
+shown[c("rhat", "rhat_long")] <- lapply(shown[c("rhat", "rhat_long")], sprintf, fmt = "%.3f")
+shown[c("n_eff", "n_eff_long")] <- lapply(shown[c("n_eff", "n_eff_long")], function(x) format(round(x), big.mark = ","))
+show_table(data.frame(shown, row.names = NULL), n = 20, digits = 3)
 ```
 
-按默认设置，各条链已经收敛（Rhat最大为`r sprintf("%.2f", max(mc$rhat))`），但r、k和MSY的有效样本量只有`r round(min(rk$n_eff))`至`r round(max(rk$n_eff))`：r和k的相邻抽样高度相关。用更长的链时，有效样本量升至`r round(min(rk$n_eff_long))`至`r round(max(rk$n_eff_long))`，而中位数几乎不变（Northern prawn最后一年的B/Bmsy分别为`r sprintf("%.2f", green$B_Bmsy)`和`r sprintf("%.2f", green$B_Bmsy_long)`，毛鳞鱼分别为`r sprintf("%.2f", over$B_Bmsy)`和`r sprintf("%.2f", over$B_Bmsy_long)`）；运行时间约为原来的五倍（4条链与2条链一样同时运行，但每条链长五倍）。要写进报告的结果，建议用更长、更多的链运行CMSY++，并检查收敛情况：
+按默认设置，各条链已经收敛（Rhat最大为`r sprintf("%.2f", max(mc$rhat))`），但r、k和MSY的有效样本量只有`r round(min(rk$n_eff))`至`r round(max(rk$n_eff))`：r和k的相邻抽样高度相关。用更长的链时，有效样本量升至`r round(min(rk$n_eff_long))`至`r round(max(rk$n_eff_long))`，而中位数几乎不变（Northern prawn最后一年的B/Bmsy分别为`r sprintf("%.3f", green$B_Bmsy)`和`r sprintf("%.3f", green$B_Bmsy_long)`，毛鳞鱼分别为`r sprintf("%.3f", over$B_Bmsy)`和`r sprintf("%.3f", over$B_Bmsy_long)`）；运行时间约为原来的五倍（4条链与2条链一样同时运行，但每条链长五倍）。要写进报告的结果，建议用更长、更多的链运行CMSY++，并检查收敛情况：
 
 ```{r, eval = FALSE}
 result <- cmsy_run(input, seed = 1, auto_start = TRUE,
