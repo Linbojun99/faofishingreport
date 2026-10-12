@@ -6,7 +6,7 @@ description: >
 
 ```{r setup, include = FALSE}
 source("../_setup.R")
-FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+FAO27 <- suppressMessages(fishing_area_data("Atlantic, Northeast", plot = FALSE))
 # Charts made beforehand by data-raw/cmsy_article_figures.R (JAGS is not available when the site is built)
 fig_dir <- normalizePath(file.path("..", "figures", "cmsy", "zh"))
 show_png <- function(file) {
@@ -35,7 +35,7 @@ CMSY++（Froese et al. 2023）是CMSY（Froese et al. 2017）的后续版本，�
 
 | 参数 | 含义 | 默认值 |
 |---|---|---|
-| `stocks` | 要使用的种群：种群代码（如`"GRB_34"`），或物种的英文名、中文名、学名或FAO三字母代码（该物种的所有种群） | `NULL`：全部种群 |
+| `stocks` | 要使用的种群：种群代码（如`"PRA_27"`），或物种的英文名、中文名、学名或FAO三字母代码（该物种的所有种群） | `NULL`：全部种群 |
 | `table` | 是否保存表格（在`tables/cmsy/`） | `TRUE` |
 | `lang` | 图中文字、名称和表格列名的语言：`"en"`、`"zh"`或`"both"` | `NULL`：使用`fao_settings()`设定的语言（未修改时为`"en"`） |
 | `pptx` | 是否同时把图保存为可编辑的PowerPoint文件（在`figures/pptx/cmsy/`） | `FALSE`；`fao_settings(pptx = TRUE)`可对所有函数生效 |
@@ -47,7 +47,7 @@ CMSY++（Froese et al. 2023）是CMSY（Froese et al. 2017）的后续版本，�
 
 ```{r, eval = FALSE}
 cmsy_setup()                                                     # 第一次使用前：安装JAGS和R包
-area34 <- cmsy_area("Atlantic, Eastern Central", top = 10)
+area27 <- cmsy_area("Atlantic, Northeast", top = 10)
 ```
 
 `cmsy_area()`把下文第四步到第七步以及第九步合成一步：选出某个渔区近`recent_years`年渔获量最大的`top`个物种（也可以用`species`直接指定），依次准备输入、运行CMSY++、画全部图表、做情景预测、写表格，每一步都有进度条。无法评估的主要物种（如没有r先验）会列出原因。`area`可以是多个渔区，每个渔区的结果保存在`out_dir`下各自的文件夹中，并分类存放：
@@ -80,7 +80,7 @@ cmsy_areas/Atlantic__Eastern_Central/
 | `annotations`、`lang`、`pptx`、`silent` | 见[通用参数](#common-arguments) | |
 | `...` | 传给`cmsy_input()`的其他参数，如`priors`、`default_resilience`或`min_years` | |
 
-`cmsy_area()`运行CMSY++时不做回顾性分析，所以不画回顾性分析图（见第五步）。函数返回`cmsy_run()`的结果，另加`input`、`forecast`、`tables`和`dir`（该渔区的文件夹）；多个渔区时返回以渔区命名的列表。在Apple芯片的Mac上，34区前6个物种从输入到表格共用时约1分钟。
+`cmsy_area()`运行CMSY++时不做回顾性分析，所以不画回顾性分析图（见第五步）。函数返回`cmsy_run()`的结果，另加`input`、`forecast`、`tables`和`dir`（该渔区的文件夹）；多个渔区时返回以渔区命名的列表。在Apple芯片的Mac上，27区前10个物种从输入到表格共用时约1分钟。
 
 ## 💻 第一步：检查电脑并自动调整设置
 
@@ -229,7 +229,7 @@ table(!is.na(priors$r_source))
 物种可以用英文名、中文名、中英文名（即`lang = "both"`时显示的形式）、学名或FAO三字母代码给出。`cmsy_priors()`、`cmsy_input(species = )`、`cmsy_run(stocks = )`和`cmsy_plot(stocks = )`都使用同一套规则：先按完整名称匹配（不区分大小写），没有完全匹配时再按名称的一部分匹配；如果匹配到多个物种，会列出候选项，请从中选择更具体的名称或代码。结果用哪种语言显示由`lang`决定，`species_en`和`species_zh`两列则始终同时给出英文名和中文名。
 
 ```{r}
-p <- cmsy_priors(c("COD", "Sardina pilchardus", "European pilchard", "沙丁鱼"), lang = "both")
+p <- cmsy_priors(c("COD", "Clupea harengus", "Atlantic mackerel", "小鳍鳕"), lang = "both")
 show_table(p[, c("species_name", "scientific_name", "alpha3", "r_low", "r_high", "url", "data_url", "rule_url")])
 ```
 
@@ -244,7 +244,7 @@ show_table(p[, c("species_name", "scientific_name", "alpha3", "r_low", "r_high",
 ## 🧾 第四步：把FAO数据转成CMSY++输入文件
 
 ```{r}
-input <- cmsy_input(FAO34$area_data)
+input <- cmsy_input(FAO27$area_data)
 input
 ```
 
@@ -263,12 +263,12 @@ table(input$excluded$reason)
 如果有专家判断，可以用`priors`替换默认值。例如按用户手册表3设置最后一年的B/k先验，或给没有FishBase值的种群指定恢复力：
 
 ```{r, eval = FALSE}
-input <- cmsy_input(FAO34$area_data, priors = data.frame(
-  alpha3   = c("PIL", "SAA"),
+input <- cmsy_input(FAO27$area_data, priors = data.frame(
+  alpha3   = c("HER", "MAC"),
   endb.low = c(0.2, 0.01),
   endb.hi  = c(0.6, 0.4)
 ))
-input <- cmsy_input(FAO34$area_data, default_resilience = "Medium")  # 没有FishBase值的种群统一用"中"
+input <- cmsy_input(FAO27$area_data, default_resilience = "Medium")  # 没有FishBase值的种群统一用"中"
 ```
 
 | 参数 | 含义 | 默认值 |
@@ -287,12 +287,12 @@ input <- cmsy_input(FAO34$area_data, default_resilience = "Medium")  # 没有Fis
 ## ▶️ 第五步：运行CMSY++
 
 ```{r, eval = FALSE}
-result <- cmsy_run(input, stocks = "Brachydeuterus auritus", auto_start = TRUE, seed = 1,
+result <- cmsy_run(input, stocks = "Pandalus borealis", auto_start = TRUE, seed = 1,
                    plots = c("analysis", "management", "kobe", "prior_posterior", "retrospective"))
 result$summary
 ```
 
-每个种群在`cmsy/<渔区>_cmsy/<种群>/`（如`cmsy/Atlantic__Eastern_Central_cmsy/GRB_34/`）下有独立的文件夹，并在单独的R进程中运行。文件夹里保留了CMSY++的全部原始输出：分析图`_AN.jpg`、管理图`_MAN.jpg`、Kobe图`_KOBE.jpg`、`cmsy_output.csv`和运行日志`log.txt`；运行目录中还有修改后的代码、`code_changes.csv`、`settings_used.csv`和`sources.csv`。`parallel`控制同时运行几个种群；运行时有进度条，显示已完成的种群数、已用时间和预计剩余时间（见下文“进度条与silent”）。
+每个种群在`cmsy/<渔区>_cmsy/<种群>/`（如`cmsy/Atlantic__Northeast_cmsy/PRA_27/`）下有独立的文件夹，并在单独的R进程中运行。文件夹里保留了CMSY++的全部原始输出：分析图`_AN.jpg`、管理图`_MAN.jpg`、Kobe图`_KOBE.jpg`、`cmsy_output.csv`和运行日志`log.txt`；运行目录中还有修改后的代码、`code_changes.csv`、`settings_used.csv`和`sources.csv`。`parallel`控制同时运行几个种群；运行时有进度条，显示已完成的种群数、已用时间和预计剩余时间（见下文“进度条与silent”）。
 
 很多FAO序列从1950年开始，那时的渔获量很低。对此CMSY++会提示：起始生物量可能偏低，也可能尚未开发，难以判断。它建议改用渔获量首次达到最大值40%的年份作为起始年。`auto_start = TRUE`就是采用这个建议的起始年（CMSY++自带的`auto.start`选项在`CMSY++16.R`中会报错，本包按同一规则在运行前改写起始年；如果改写后不足10年，则保留原起始年）。用户手册更推荐由用户在`cmsy_input(priors = )`中自己设定`StartYear`或首年B/k先验（`stb.low`、`stb.hi`）。
 
@@ -310,20 +310,32 @@ result$summary
 | `timeout` | 单个种群的最长运行时间（秒），超时的种群记为失败 | `3600` |
 | `table`、`lang`、`silent` | 见[通用参数](#common-arguments)；表格为`tables/cmsy/<渔区>_cmsy_results.csv`、`..._series.csv`和`..._sources.csv` | |
 
-本文以中东大西洋（FAO 34区）2015–2024年渔获量最大的30个种群为例。按CMSY++建议的起始年运行后，结果如下（`p_green`为最后一年处在Kobe图绿区，即B ≥ Bmsy且F ≤ Fmsy的概率）：
+本文以东北大西洋（FAO 27区）2015–2024年渔获量最大的30个种群为例。按CMSY++建议的起始年运行后，结果如下（`p_green`为最后一年处在Kobe图绿区，即B ≥ Bmsy且F ≤ Fmsy的概率）：
 
 ```{r}
-top30 <- read.csv(file.path(fig_dir, "..", "top30_area34.csv"), check.names = FALSE)
+top30 <- read.csv(file.path(fig_dir, "..", "top30_area27.csv"), check.names = FALSE)
 top30$species <- fao_translate(top30$species_en, "species", getOption("faofishingreport.lang", "en"))
 show_table(top30[, c("rank", "Stock", "species", "scientific_name", "first_year", "B_Bmsy", "F_Fmsy", "p_green", "status")],
            n = 30, digits = 2)
+ex <- read.csv(file.path(fig_dir, "..", "example_values.csv"), check.names = FALSE)
+green <- ex[ex$example == "green", ]
+over <- ex[ex$example == "overfished", ]
 ```
 
-其中大眼裸颌鲈（bigeye grunt，*Brachydeuterus auritus*，`GRB_34`，渔获量排第9）状态最清楚：最后一年B/Bmsy为1.42（95%置信区间1.08–1.65），F/Fmsy为0.64，处在绿区的概率为93%。下文都以它为例。它的先验表和结果表由`cmsy_tables()`生成（见第九步）：
+下文详细展示其中两个种群：状态最好的一个和过度捕捞最明显的一个。
+
+- **状态良好：北方长额虾**（*Pandalus borealis*，`PRA_27`，渔获量排第`r green$rank`）：最后一年B/Bmsy为`r sprintf("%.2f", green$B_Bmsy)`（95%置信区间`r sprintf("%.2f", green$B_Bmsy_lcl)`–`r sprintf("%.2f", green$B_Bmsy_ucl)`），F/Fmsy为`r sprintf("%.2f", green$F_Fmsy)`，处在绿区的概率为`r round(100 * green$p_green)`%。
+- **过度捕捞：毛鳞鱼**（*Mallotus villosus*，`CAP_27`，渔获量排第`r over$rank`）：最后一年B/Bmsy为`r sprintf("%.2f", over$B_Bmsy)`（95%置信区间`r sprintf("%.2f", over$B_Bmsy_lcl)`–`r sprintf("%.2f", over$B_Bmsy_ucl)`），F/Fmsy为`r sprintf("%.2f", over$F_Fmsy)`，B/Bmsy低于0.8的概率为`r round(100 * over$p_overfished)`%，处在红区的概率为`r round(100 * over$p_red)`%。
+
+毛鳞鱼寿命短，资源量随补充量大起大落，部分年份曾禁止捕捞；仅基于渔获量的模型会把这种渔获量的下降当作生物量的下降。这些结果是使用神经网络B/k先验完成的CMSY++运行，不是经过核实的资源评估，使用前应与ICES的评估结果比较。
+
+两个种群的先验表和结果表由`cmsy_tables()`生成（见第九步），先是北方长额虾：
 
 ```{r}
-show_table(read.csv(file.path(fig_dir, "priors_table.csv"), check.names = FALSE))
-show_table(read.csv(file.path(fig_dir, "results_table.csv"), check.names = FALSE))
+show_table(read.csv(file.path(fig_dir, "green_priors_table.csv"), check.names = FALSE))
+show_table(read.csv(file.path(fig_dir, "green_results_table.csv"), check.names = FALSE))
+show_table(read.csv(file.path(fig_dir, "overfished_priors_table.csv"), check.names = FALSE))
+show_table(read.csv(file.path(fig_dir, "overfished_results_table.csv"), check.names = FALSE))
 ```
 
 `result$summary`每个种群一行，包括MSY、Bmsy、Fmsy、r、k及其95%置信限，最后一年的B/Bmsy、F/Fmsy、生物量及其置信限，Kobe四个象限的概率，B/Bmsy < 0.8的概率（`p_overfished`），两种状态分级（FAO两级的`status`和Palomares et al. 2018五级的`status_palomares`），所用的全部先验及其来源，以及CMSY++自己的提示（如建议的起始年`suggested_start_year`）。`result$series`是逐年结果，包括渔获量、预测渔获量、B/k、生物量、B/Bmsy、F和F/Fmsy及其95%置信限；`result$kobe`是最后一年的后验抽样；`result$details`保存r、k和B/k的后验抽样、先验参数和回顾性分析结果；`result$settings`是所用的CMSY++设置；`result$changes`是对代码的修改；`result$sources`记录本次运行所用的CMSY++、JAGS、R、各R包、FAO数据和FishBase的版本与链接，可以直接写进报告。
@@ -361,43 +373,48 @@ cmsy_plot(result)
 
 状态默认按FAO（2026）对第3层（数据有限）评估的规定分为两级：B/Bmsy ≥ 0.8为“最大可持续捕捞”，< 0.8为“过度捕捞”。`classes = "palomares"`改用很多CMSY研究采用的Palomares et al. (2018)五级：健康（≥ 1）、轻度过度捕捞（0.8–1）、过度捕捞（0.5–0.8）、严重过度捕捞（0.2–0.5）、崩溃（< 0.2）。
 
-大眼裸颌鲈的CMSY++分析图（默认不加注释）：
+北方长额虾和毛鳞鱼的CMSY++分析图（默认不加注释）：
 
 ```{r, echo = FALSE}
-show_png("grunt_analysis.png")
+show_png("green_analysis.png")
+show_png("overfished_analysis.png")
 ```
 
 管理图：
 
 ```{r, echo = FALSE}
-show_png("grunt_management.png")
+show_png("green_management.png")
+show_png("overfished_management.png")
 ```
 
 Kobe图（`annotations = TRUE`，打开了全部注释）：
 
 ```{r, echo = FALSE}
-show_png("grunt_kobe.png")
+show_png("green_kobe.png")
+show_png("overfished_kobe.png")
 ```
 
 先验与后验分布。PPVR越小，说明数据给先验带来的信息越多：
 
 ```{r, echo = FALSE}
-show_png("grunt_prior_posterior.png")
+show_png("green_prior_posterior.png")
+show_png("overfished_prior_posterior.png")
 ```
 
 回顾性分析：
 
 ```{r, echo = FALSE}
-show_png("grunt_retrospective.png")
+show_png("green_retrospective.png")
+show_png("overfished_retrospective.png")
 ```
 
-34区前30个种群的汇总图（`annotations = "legend"`）：
+27区前30个种群的汇总图（`annotations = "legend"`）：
 
 ```{r, echo = FALSE}
-show_png("area34_overview.png")
-show_png("area34_kobe_all.png")
-show_png("area34_status_time.png")
-show_png("area34_map.png")
+show_png("area27_overview.png")
+show_png("area27_kobe_all.png")
+show_png("area27_status_time.png")
+show_png("area27_map.png")
 ```
 
 ## 🔮 第七步：捕捞情景预测
@@ -424,21 +441,25 @@ projection <- cmsy_forecast(result, catch = 100000)
 
 函数返回`projection`（各种群、情景和年份的B/Bmsy、F/Fmsy和渔获量中位数及95%区间，以及B ≥ Bmsy的概率）和`share`（各情景逐年达到或高于Bmsy的种群比例及95%区间，以及种群数`n_stocks`；从各种群最晚的最后一年开始）。
 
+固定渔获量取接近各种群MSY的值（北方长额虾`r format(green$forecast_catch_t, big.mark = ",")`吨，毛鳞鱼`r format(over$forecast_catch_t, big.mark = ",")`吨），另加各F情景：
+
 ```{r, echo = FALSE}
-show_png("grunt_forecast.png")
+show_png("green_forecast.png")
+show_png("overfished_forecast.png")
 ```
 
 ## 🔍 第八步：比较不同运行或其他评估
 
 ```{r, eval = FALSE}
-result_1950 <- cmsy_run(input, stocks = "GRB_34", seed = 1)        # 从1950年开始
-cmsy_compare(`1950` = result_1950, `CMSY++` = result, stocks = "GRB_34")
+result_1950 <- cmsy_run(input, stocks = "PRA_27", seed = 1)        # 从1950年开始
+cmsy_compare(`1950` = result_1950, `CMSY++` = result, stocks = "PRA_27")
 ```
 
-`cmsy_compare()`把几次运行（例如不同的起始年或先验，即敏感性分析）以及其他评估的结果（`external`，如ICES、JABBA或文献中的B/Bmsy）画在同一张图上，并给出各自最后一年的值。下图中，大眼裸颌鲈从1950年开始运行时，最后一年B/Bmsy为1.14；按CMSY++建议从1978年开始时为1.42，两者都在Bmsy以上：
+`cmsy_compare()`把几次运行（例如不同的起始年或先验，即敏感性分析）以及其他评估的结果（`external`，如ICES、JABBA或文献中的B/Bmsy）画在同一张图上，并给出各自最后一年的值。起始年的影响很大：北方长额虾从1950年开始运行时，最后一年B/Bmsy为`r sprintf("%.2f", green$B_Bmsy_1950)`，低于Bmsy；按CMSY++建议从`r green$first_year`年开始时为`r sprintf("%.2f", green$B_Bmsy)`，高于Bmsy。毛鳞鱼无论从哪一年开始都处于过度捕捞状态（从1950年开始为`r sprintf("%.2f", over$B_Bmsy_1950)`，从`r over$first_year`年开始为`r sprintf("%.2f", over$B_Bmsy)`）：
 
 ```{r, echo = FALSE}
-show_png("grunt_compare.png")
+show_png("green_compare.png")
+show_png("overfished_compare.png")
 ```
 
 | 参数 | 含义 | 默认值 |
@@ -479,7 +500,7 @@ cmsy_defaults(list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000))[c(1, 17, 18),
 ```
 
 ```{r, eval = FALSE}
-result <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE,
+result <- cmsy_run(input, stocks = "PRA_27", seed = 1, auto_start = TRUE,
                    settings = list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000))
 result$settings[result$settings$changed, ]          # 改动的设置
 ```
@@ -495,7 +516,7 @@ result$settings[result$settings$changed, ]          # 改动的设置
 
 同一段代码在三个系统上都能直接运行。`cmsy_system()`自动识别系统，并做相应修改，例如macOS上不调用`windows()`、不使用`antialias = "cleartype"`，修改清单见第一步。JAGS安装程序会按系统和R版本自动选择。每次修改CMSY代码，GitHub Actions上的"CMSY-cross-platform"检验都会在三个系统上用`cmsy_download_jags()`下载并安装匹配的JAGS、真实运行CMSY++、运行全部CMSY测试，并保存各系统的输出，方便核对。
 
-2026年10月的检验结果（每种组合170项测试全部通过；种子相同，`cmsy_area()`运行34区的大眼裸颌鲈GRB_34和沙丁鱼PIL_34）：
+2026年10月的检验结果，用的是当时本文示例渔区34区的两个种群（每种组合170项测试全部通过；种子相同，`cmsy_area()`运行大眼裸颌鲈GRB_34和沙丁鱼PIL_34）：
 
 | 系统 | R | JAGS | rjags | GRB_34 B/Bmsy | GRB_34 F/Fmsy | PIL_34 B/Bmsy | PIL_34 F/Fmsy |
 |---|---|---|---|---|---|---|---|
@@ -516,7 +537,7 @@ JAGS 4.3.x和rjags 4-17相同时，三个系统的结果逐位相同。换成JAG
 `cmsy_run()`、`cmsy_plot()`、`cmsy_forecast()`和`cmsy_area()`运行时会显示进度条，例如：
 
 ```
-CMSY++ [==================            ] 18/30 ( 60%) 00:51 elapsed, 00:34 left GAL_34
+CMSY++ [==================            ] 18/30 ( 60%) 00:51 elapsed, 00:34 left COD_27
 ```
 
 所有会输出信息的CMSY函数都有`silent`参数：`silent = TRUE`时不显示进度条和提示信息（`cmsy_setup()`需要确认时仍会询问）。`fao_settings(silent = TRUE)`可以设定本次会话的默认值。
@@ -526,9 +547,9 @@ CMSY++ [==================            ] 18/30 ( 60%) 00:51 elapsed, 00:34 left G
 `cmsy = TRUE`时，`fao_report()`会用CMSY++评估该渔区的主要物种（见[📝 一键生成评估报告（Word、LaTeX、PDF）](report.html)），并在报告中加入资源评估部分，给出每个物种的结果，以及参考点、先验及其来源的附表。它对报告的`top_n`个主要物种（默认10个）运行`cmsy_area()`，不做情景预测。`cmsy_area()`和`cmsy_input()`的设置以`cmsy_`为前缀传入，例如`cmsy_top = 5`、`cmsy_default_resilience = "Medium"`或`cmsy_settings = list(n.iter = 100000)`。CMSY++的全部结果（运行、图表和表格）保存在报告旁边的`cmsy/`文件夹中，其中的`cmsy_result.rds`可以用来重写报告而不必重新运行CMSY++：`cmsy = readRDS("cmsy/<渔区>/cmsy_result.rds")`，路径从工作目录算起（默认是`reports/cmsy/<渔区>/cmsy_result.rds`）。以前用`cmsy_area()`得到的结果也可以这样传入。
 
 ```{r, eval = FALSE}
-report <- fao_report(34, cmsy = TRUE, cmsy_top = 5)
+report <- fao_report(27, cmsy = TRUE, cmsy_top = 5)
 report$cmsy_reference_points                  # r、k、MSY、B/Bmsy等及其95%置信限
-fao_report(34, cmsy = readRDS("reports/cmsy/Atlantic__Eastern_Central/cmsy_result.rds"))
+fao_report(27, cmsy = readRDS("reports/cmsy/Atlantic__Northeast/cmsy_result.rds"))
 ```
 
 ## 📖 参考文献

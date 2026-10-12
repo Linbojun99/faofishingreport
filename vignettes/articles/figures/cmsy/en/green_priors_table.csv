@@ -1,0 +1,2 @@
+﻿"Stock","Species","Scientific name","Years","r prior","Source of the r prior","k prior (t)","MSY prior (t)","B/k prior, first year","B/k prior, intermediate year","B/k prior, last year","FishBase / SeaLifeBase page"
+"PRA_27","Northern prawn","Pandalus borealis","1980-2024","0.408-0.927","SeaLifeBase prior r, 95% CL (Based on 7 full stock assessments.)","354,482-1,504,879","112,898","0.202-0.608 (neural network)","2013: 0.0857-0.361 (neural network)","0.466-0.837 (neural network)","https://www.sealifebase.se/summary/25892"

@@ -7,7 +7,7 @@ description: >
 
 ```{r setup, include = FALSE}
 source("_setup.R")
-FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+FAO27 <- suppressMessages(fishing_area_data("Atlantic, Northeast", plot = FALSE))
 ```
 
 ```{r data-source, echo = FALSE, results = "asis"}
@@ -79,16 +79,16 @@ current settings invisibly, as a list.
 ## 🌐 Language
 
 Every analysis has a `lang` argument; `fao_settings(lang = ...)` changes the default for all of them.
-`"both"` writes Chinese and English together, e.g. "百万吨 (Million Tonnes)" and "摩洛哥 Morocco".
+`"both"` writes Chinese and English together, e.g. "百万吨 (Million Tonnes)" and "挪威 Norway".
 
 ```{r, figures = "area_country.png"}
 fao_settings(lang = "zh")
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(lang = "both")
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 ```
 
 ```{r, include = FALSE}
@@ -102,12 +102,12 @@ and means `lang = "zh"`.
 
 ```{r, figures = "area_country.png"}
 fao_settings(theme = "classic")
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(theme = "minimal", base_size = 14)
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 ```
 
 Any ggplot2 theme can be used, e.g. `fao_settings(theme = ggplot2::theme_light(base_size = 13))`.
@@ -118,17 +118,17 @@ Any ggplot2 theme can be used, e.g. `fao_settings(theme = ggplot2::theme_light(b
 
 ```{r, figures = "area_country.png"}
 fao_settings(theme = "bw", base_size = 12, palette = "lancet")
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(palette = "Okabe-Ito")        # suitable for colour-blind readers
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(palette = c("#0B2E5B", "#16A6B6", "#F28E2B", "#E15759", "#59A14F", "#B07AA1"))
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 fao_settings(palette = "npg")
 ```
 
@@ -140,36 +140,36 @@ interpolated.
 
 ## 🗺️ Map projections
 
-The same map, the catch of each country in area 34, in each projection:
+The same map, the catch of each country in area 27, in each projection:
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "longlat")      # plain longitude-latitude (default)
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "robinson")
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "equal_earth")
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "mollweide")
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "winkel_tripel")
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "mercator")
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 The named projections and the PROJ projection each one uses (the maps are drawn with sf, which
@@ -200,7 +200,7 @@ fishing_area_data("Pacific, Northwest")
 Fishing area maps show the land without country borders, and the analysed country in red:
 
 ```{r, figures = "fishing_area_map"}
-country_analysis("Morocco")
+country_analysis("Norway")
 ```
 
 Countries are drawn from the Natural Earth map units (1:50m), matched to the FAO countries on
@@ -211,12 +211,12 @@ world maps.
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "robinson", map_center = 0, map_palette = "viridis")
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_palette = "YlOrRd", map_land = "grey85", map_ocean = "#EAF4FB")
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 The `fill_scale` argument of `fishing_area_data()`, `species_country()` and
@@ -260,7 +260,7 @@ package, which finds any installed font by name; PowerPoint files use the same f
 
 ```{r, figures = "area_country.png"}
 fao_settings(grid = TRUE)
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 fao_settings(grid = FALSE)
 ```
 
@@ -270,7 +270,7 @@ it also needs [XQuartz](https://www.xquartz.org).
 ```{r, eval = FALSE}
 fao_settings(dpi = 300)      # smaller PNG files
 fao_settings(pptx = TRUE)    # also editable PowerPoint in figures/pptx/
-fishing_area_species(FAO34$area_data, pptx = TRUE)   # or for one call only
+fishing_area_species(FAO27$area_data, pptx = TRUE)   # or for one call only
 ```
 
 ## ⚙️ Arguments of each function

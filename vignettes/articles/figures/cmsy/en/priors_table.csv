@@ -1,2 +1,0 @@
-﻿"Stock","Species","Scientific name","Years","r prior","Source of the r prior","k prior (t)","MSY prior (t)","B/k prior, first year","B/k prior, intermediate year","B/k prior, last year","FishBase / SeaLifeBase page"
-"GRB_34","Bigeye grunt","Brachydeuterus auritus","1978-2024","0.358-0.813","FishBase prior r, 95% CL (Based on 1 full stock assessment.)","239,371-1,015,903","66,870","0.0972-0.385 (neural network)","2002: 0.0686-0.324 (neural network)","0.427-0.815 (neural network)","https://www.fishbase.se/summary/400"

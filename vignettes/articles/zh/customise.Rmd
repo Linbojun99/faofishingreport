@@ -6,7 +6,7 @@ description: >
 
 ```{r setup, include = FALSE}
 source("../_setup.R")
-FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+FAO27 <- suppressMessages(fishing_area_data("Atlantic, Northeast", plot = FALSE))
 ```
 
 ```{r}
@@ -77,16 +77,16 @@ fao_settings()
 
 ## 🌐 语言
 
-每个分析函数都有`lang`参数；`fao_settings(lang = ...)`会统一修改所有函数的默认语言。`"both"`同时显示中文和英文，例如“百万吨 (Million Tonnes)”和“摩洛哥 Morocco”。
+每个分析函数都有`lang`参数；`fao_settings(lang = ...)`会统一修改所有函数的默认语言。`"both"`同时显示中文和英文，例如“百万吨 (Million Tonnes)”和“挪威 Norway”。
 
 ```{r, figures = "area_country.png"}
 fao_settings(lang = "zh")
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(lang = "both")
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 ```
 
 ```{r, include = FALSE}
@@ -99,12 +99,12 @@ fao_settings(lang = page_lang)
 
 ```{r, figures = "area_country.png"}
 fao_settings(theme = "classic")
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(theme = "minimal", base_size = 14)
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 ```
 
 也可以使用任意ggplot2主题，例如`fao_settings(theme = ggplot2::theme_light(base_size = 13))`。
@@ -115,17 +115,17 @@ fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
 
 ```{r, figures = "area_country.png"}
 fao_settings(theme = "bw", base_size = 12, palette = "lancet")
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(palette = "Okabe-Ito")        # 色盲友好
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 ```
 
 ```{r, figures = "area_country.png"}
 fao_settings(palette = c("#0B2E5B", "#16A6B6", "#F28E2B", "#E15759", "#59A14F", "#B07AA1"))
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 fao_settings(palette = "npg")
 ```
 
@@ -133,36 +133,36 @@ fao_settings(palette = "npg")
 
 ## 🗺️ 地图投影
 
-同一张地图（各国在34区的产量）在各种投影下的效果：
+同一张地图（各国在27区的产量）在各种投影下的效果：
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "longlat")      # 普通经纬度坐标（默认）
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "robinson")
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "equal_earth")
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "mollweide")
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "winkel_tripel")
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "mercator")
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 各种命名投影及其对应的PROJ投影（地图由sf绘制，sf使用PROJ库进行投影）：
@@ -190,7 +190,7 @@ fishing_area_data("Pacific, Northwest")
 渔区地图中的陆地不绘制国界，所分析的国家以红色显示：
 
 ```{r, figures = "fishing_area_map"}
-country_analysis("Morocco")
+country_analysis("Norway")
 ```
 
 国家轮廓来自Natural Earth的1:50m地图单元，通过ISO 3代码与FAO国家匹配；渔区边界来自FAO主要渔区图层，并为世界地图做了简化。
@@ -199,12 +199,12 @@ country_analysis("Morocco")
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_projection = "robinson", map_center = 0, map_palette = "viridis")
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 ```{r, figures = "area_country_map"}
 fao_settings(map_palette = "YlOrRd", map_land = "grey85", map_ocean = "#EAF4FB")
-fishing_area_data("Atlantic, Eastern Central")
+fishing_area_data("Atlantic, Northeast")
 ```
 
 `fishing_area_data()`、`species_country()`和`country_analysis()`的`fill_scale`参数可以在单次调用中覆盖`map_palette`。
@@ -243,7 +243,7 @@ fao_settings(font = "Microsoft YaHei")
 
 ```{r, figures = "area_country.png"}
 fao_settings(grid = TRUE)
-fishing_area_country(FAO34$area_data, rank_range = c(1, 6))
+fishing_area_country(FAO27$area_data, rank_range = c(1, 6))
 fao_settings(grid = FALSE)
 ```
 
@@ -252,7 +252,7 @@ PowerPoint文件由eoffice包生成，它会随faofishingreport一起安装；�
 ```{r, eval = FALSE}
 fao_settings(dpi = 300)      # PNG文件更小
 fao_settings(pptx = TRUE)    # 同时在figures/pptx/中保存可编辑的PowerPoint
-fishing_area_species(FAO34$area_data, pptx = TRUE)   # 或只对单次调用生效
+fishing_area_species(FAO27$area_data, pptx = TRUE)   # 或只对单次调用生效
 ```
 
 ## ⚙️ 各函数的参数

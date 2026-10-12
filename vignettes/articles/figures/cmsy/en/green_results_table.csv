@@ -1,0 +1,2 @@
+﻿"Stock","Species","r (95% CI)","k (t, 95% CI)","MSY (t, 95% CI)","Fmsy (95% CI)","Bmsy (t, 95% CI)","Last-year B/Bmsy (95% CI)","Last-year F/Fmsy (95% CI)","P(green quadrant)","P(red quadrant)","Status (FAO)","Status (Palomares et al. 2018)"
+"PRA_27","Northern prawn","0.502 (0.356-0.615)","985,962 (786,871-1,437,661)","123,757 (110,512-143,108)","0.251 (0.178-0.308)","492,981 (393,435-718,830)","1.39 (1.08-1.63)","0.579 (0.395-0.866)","99%","0%","Maximally sustainably fished","Healthy"

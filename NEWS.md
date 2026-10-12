@@ -1,3 +1,37 @@
+# faofishingreport 0.8.0
+
+## New functions
+
+* `fao_areas()` lists the FAO major fishing areas (the 19 marine areas and the inland waters of
+  each continent) with their code, name, ocean, catch in the last year of the data and the link to
+  the official FAO map of each area (<https://www.fao.org/fishery/docs/maps/Default.htm>), and
+  saves a world map of the marine areas labelled with their codes.
+* `fishing_area_map()` maps one marine area with its subareas, divisions or subdivisions, labelled
+  with their codes, from the boundaries bundled with the package. When the ggOceanMaps package
+  (Vihtakari 2026, <https://github.com/MikkoVihtakari/ggOceanMaps>, now in Suggests) is installed,
+  the map is drawn on its bathymetric base map, with the depth of the ETOPO 2022 relief model
+  bundled with ggOceanMaps (polar stereographic for areas reaching beyond 60° of latitude);
+  without it, the land of Natural Earth is drawn in a Lambert azimuthal equal-area projection
+  centred on the area. The result lists the boundaries, base map and depth data used, to cite
+  with the map.
+
+## Documentation
+
+* The home pages start with an introduction to the FAO major fishing areas: the 19 marine areas
+  with their code, name, extent and official FAO map, and the inland areas.
+* The examples of the home pages and of all articles use the Northeast Atlantic (FAO area 27)
+  instead of the Eastern Central Atlantic (area 34): Atlantic cod and Norway are the example
+  species and country, and the CMSY++ article shows the 30 main stocks of area 27 with a healthy
+  and an overfished stock in detail. Facts about area 34 used to explain a rule (the coastal
+  countries through overseas territories, the share of estimated catch) are kept and say so.
+* The fishing area article describes `fao_areas()` and `fishing_area_map()`, with the references
+  of ggOceanMaps, ETOPO 2022 and the FAO fishing area maps.
+
+## Website
+
+* Headings are in the deep blue of the logo and the body text near-black, so that headings stand
+  apart from the content.
+
 # faofishingreport 0.7.0
 
 This version corrects errors found in a review of the code and of the statistics. Some results change: see "Changed results".

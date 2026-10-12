@@ -2,7 +2,7 @@
 title: "🚀 Get started"
 description: >
   Install faofishingreport, update the FAO data, produce the first charts for the
-  Eastern Central Atlantic (FAO area 34) and write a Word report in one call.
+  Northeast Atlantic (FAO area 27) and write a Word report in one call.
 ---
 
 ```{r setup, include = FALSE}
@@ -15,7 +15,7 @@ data_source()
 
 **faofishingreport** turns the FAO Global Capture Production statistics into charts, maps
 and tables for reports. This page walks through a complete first analysis of the
-**Eastern Central Atlantic (FAO major fishing area 34)**; every chart below was produced by
+**Northeast Atlantic (FAO major fishing area 27)**; every chart below was produced by
 the code shown above it.
 
 A typical workflow:
@@ -102,25 +102,25 @@ Each analysis saves its charts and tables in the **current working folder**:
 So start by choosing a folder for the report:
 
 ```{r, eval = FALSE}
-setwd("D:/reports/FAO34")   # any folder
+setwd("D:/reports/FAO27")   # any folder
 ```
 
-## 🌊 First analysis: FAO area 34
+## 🌊 First analysis: FAO area 27
 
 `fishing_area_data()` extracts the catch of one FAO major fishing area and draws its total catch
 with the breakpoints of the mean catch, its share of the world catch of all marine areas, and a
 world map of the countries fishing there.
 
 ```{r, figures = TRUE}
-FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+FAO27 <- fishing_area_data("Atlantic, Northeast")
 ```
 
 The result is a list with the catch records of the area (`area_data`), the periods between
-breakpoints (`coefs_data`) and the map data (`act_world_map`). `FAO34$area_data` is the input of
+breakpoints (`coefs_data`) and the map data (`act_world_map`). `FAO27$area_data` is the input of
 most other functions:
 
 ```{r}
-show_table(FAO34$area_data, n = 5)
+show_table(FAO27$area_data, n = 5)
 ```
 
 Any other area works the same way. The names of the FAO major fishing areas are:
@@ -132,17 +132,17 @@ sort(unique(data$FAO.major.fishing.area..Name.))
 
 ## 🐟 Main species and countries
 
-The ten species with the largest catch in area 34, their catch over time and the breakpoints of
+The ten species with the largest catch in area 27, their catch over time and the breakpoints of
 their mean catch:
 
 ```{r, figures = TRUE}
-species <- fishing_area_species(FAO34$area_data, rank_range = c(1, 10))
+species <- fishing_area_species(FAO27$area_data, rank_range = c(1, 10))
 ```
 
 The same for the countries:
 
 ```{r, figures = TRUE}
-countries <- fishing_area_country(FAO34$area_data, rank_range = c(1, 10))
+countries <- fishing_area_country(FAO27$area_data, rank_range = c(1, 10))
 ```
 
 ## 🌐 Chinese and bilingual charts
@@ -151,7 +151,7 @@ Every analysis has a `lang` argument: `"en"` (English), `"zh"` (Chinese) or `"bo
 Country, species and area names use the official FAO Chinese names.
 
 ```{r, figures = "country_ranked_wrap"}
-species_country(FAO34$area_data, species_name = "European pilchard(=Sardine)", lang = "both")
+species_country(FAO27$area_data, species_name = "Atlantic cod", lang = "both")
 ```
 
 To use Chinese everywhere, set it once with `fao_settings(lang = "zh")`.
@@ -162,7 +162,7 @@ To use Chinese everywhere, set it once with `fao_settings(lang = "zh")`.
 plots, Kleisner et al. 2013):
 
 ```{r, figures = TRUE}
-status <- stock_status(FAO34$area_data)
+status <- stock_status(FAO27$area_data)
 ```
 
 ## 📝 A Word report in one call
@@ -172,7 +172,7 @@ data sources and methods, results with charts and tables, conclusions, reference
 tables. The area can be given by its name or its code:
 
 ```{r, eval = FALSE}
-fao_report(34, lang = "en")   # writes reports/FAO34_report_en.docx in the working folder
+fao_report(27, lang = "en")   # writes reports/FAO27_report_en.docx in the working folder
 ```
 
 By default the report has the total catch and its stages, the main species and countries, the

@@ -7,18 +7,18 @@ description: >
 
 ```{r setup, include = FALSE}
 source("_setup.R")
-FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+FAO27 <- suppressMessages(fishing_area_data("Atlantic, Northeast", plot = FALSE))
 ```
 
 ```{r data-source, echo = FALSE, results = "asis"}
 data_source()
 ```
 
-These functions take the fishing area data of `fishing_area_data()` (here area 34) and look at
+These functions take the fishing area data of `fishing_area_data()` (here area 27) and look at
 one species or one country. `country_analysis()` looks at a country in all FAO areas.
 
 ```{r, eval = FALSE}
-FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+FAO27 <- fishing_area_data("Atlantic, Northeast")
 ```
 
 ## 1️⃣ `species_country()`: who catches a species
@@ -26,16 +26,16 @@ FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 Names must match the FAO species names exactly; the main species of an area are a good start:
 
 ```{r}
-top <- aggregate(Production ~ ASFIS.species..Name., data = FAO34$area_data, FUN = sum)
+top <- aggregate(Production ~ ASFIS.species..Name., data = FAO27$area_data, FUN = sum)
 head(top[order(-top$Production), "ASFIS.species..Name."], 10)
 ```
 
 ```{r, figures = TRUE}
-sardine <- species_country(FAO34$area_data, species_name = "European pilchard(=Sardine)")
+cod <- species_country(FAO27$area_data, species_name = "Atlantic cod")
 ```
 
 In the file names, `<species>` is the species name with spaces and punctuation replaced by `_`
-(e.g. `European_pilchard__Sardine_`):
+(e.g. `Atlantic_cod`):
 
 | File | Chart |
 |---|---|
@@ -49,13 +49,13 @@ The table `tables/<species>_country_ranked_table.csv` has the average catch per 
 in the last five years and the share of each country in the last year:
 
 ```{r}
-table <- read.csv("tables/European_pilchard__Sardine__country_ranked_table.csv",
+table <- read.csv("tables/Atlantic_cod_country_ranked_table.csv",
                   fileEncoding = "UTF-8-BOM", check.names = FALSE)
 show_table(table, n = 10, digits = 0)
 ```
 
 With `timeseries_analysis = TRUE` the function returns a list of two data frames: the catch of
-the selected countries by year (`sardine[[1]]`) and their breakpoints (`sardine[[2]]`: start
+the selected countries by year (`cod[[1]]`) and their breakpoints (`cod[[2]]`: start
 year, end year and mean catch of each period); with `timeseries_analysis = FALSE`, only the
 first.
 
@@ -91,13 +91,13 @@ are accepted but do not change them. The map arguments do.
 Tuna series are short in some countries; a larger `h_value` gives clearer breakpoints:
 
 ```{r, figures = "wrap"}
-species_country(FAO34$area_data, species_name = "Skipjack tuna", h_value = 5, lang = "zh")
+species_country(FAO27$area_data, species_name = "Atlantic bluefin tuna", h_value = 5, lang = "zh")
 ```
 
 ## 2️⃣ `country_species()`: what a country catches in the area
 
 ```{r, figures = TRUE}
-morocco <- country_species(FAO34$area_data, country_name = "Morocco")
+norway <- country_species(FAO27$area_data, country_name = "Norway")
 ```
 
 In the file names, `<country>` is the country name with spaces and punctuation replaced by `_`:
@@ -116,7 +116,7 @@ It returns the catch of the selected species by year.
 year with catch), useful when they overlap the lines:
 
 ```{r, figures = "wrap"}
-country_species(FAO34$area_data, country_name = "Spain", h_value = 5,
+country_species(FAO27$area_data, country_name = "Spain", h_value = 5,
                 time_analysis_text_displacement = 6, lang = "both")
 ```
 
@@ -140,7 +140,7 @@ country_species(FAO34$area_data, country_name = "Spain", h_value = 5,
 only:
 
 ```{r, figures = TRUE}
-morocco_global <- country_analysis(country_name = "Morocco")
+norway_global <- country_analysis(country_name = "Norway")
 ```
 
 Besides the species charts (as in `country_species()`, file names `<country>analysis_...`), it
@@ -158,8 +158,8 @@ saves:
 It returns the data behind the charts:
 
 ```{r}
-names(morocco_global)
-show_table(morocco_global$country_species_area_total, n = 8, digits = 1)
+names(norway_global)
+show_table(norway_global$country_species_area_total, n = 8, digits = 1)
 ```
 
 | Element | Content |

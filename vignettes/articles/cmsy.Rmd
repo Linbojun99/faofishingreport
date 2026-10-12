@@ -9,7 +9,7 @@ description: >
 
 ```{r setup, include = FALSE}
 source("_setup.R")
-FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+FAO27 <- suppressMessages(fishing_area_data("Atlantic, Northeast", plot = FALSE))
 # Charts made beforehand by data-raw/cmsy_article_figures.R (JAGS is not available when the site is built)
 fig_dir <- normalizePath(file.path("figures", "cmsy", "en"))
 show_png <- function(file) {
@@ -41,7 +41,7 @@ function below list its other arguments.
 
 | Argument | Meaning | Default |
 |---|---|---|
-| `stocks` | Stocks to use: `Stock` identifiers (e.g. `"GRB_34"`) or species, by English or Chinese FAO name, scientific name or FAO 3-alpha code (all stocks of the species) | `NULL`: all stocks |
+| `stocks` | Stocks to use: `Stock` identifiers (e.g. `"PRA_27"`) or species, by English or Chinese FAO name, scientific name or FAO 3-alpha code (all stocks of the species) | `NULL`: all stocks |
 | `table` | Save the tables (in `tables/cmsy/`) | `TRUE` |
 | `lang` | Language of the chart text, names and table columns: `"en"`, `"zh"` or `"both"` | `NULL`: the language of `fao_settings()` (`"en"` unless changed) |
 | `pptx` | Also save the charts as editable PowerPoint files (in `figures/pptx/cmsy/`) | `FALSE`; `fao_settings(pptx = TRUE)` changes it for all functions |
@@ -53,7 +53,7 @@ function below list its other arguments.
 
 ```{r, eval = FALSE}
 cmsy_setup()                                                     # once: JAGS and the R packages
-area34 <- cmsy_area("Atlantic, Eastern Central", top = 10)
+area27 <- cmsy_area("Atlantic, Northeast", top = 10)
 ```
 
 `cmsy_area()` does Steps 4 to 7 and Step 9 below in one call: it takes the `top` species with the
@@ -94,7 +94,7 @@ cmsy_areas/Atlantic__Eastern_Central/
 `cmsy_area()` runs CMSY++ without the retrospective analysis, so its retrospective chart is
 skipped (see Step 5). It returns the result of `cmsy_run()` with `input`, `forecast`, `tables` and
 `dir` (the folder of the area); for several areas, a list of these named by area. On a Mac with
-Apple silicon, the six main species of area 34 take about a minute from input to tables.
+Apple silicon, the ten main species of area 27 take about a minute from input to tables.
 
 ## 💻 Step 1: check the computer and adapt the settings
 
@@ -258,7 +258,7 @@ table(!is.na(priors$r_source))
 Species can be named by English or Chinese FAO name, both together (as shown with `lang = "both"`), scientific name or FAO 3-alpha code, in `cmsy_priors()`, `cmsy_input(species = )`, `cmsy_run(stocks = )` and `cmsy_plot(stocks = )`: full names are matched first (ignoring case), then parts of names; if several species match, they are listed so a more precise name or code can be given. `lang` sets the language of the results; `species_en` and `species_zh` always give both names.
 
 ```{r}
-p <- cmsy_priors(c("COD", "Sardina pilchardus", "European pilchard", "沙丁鱼"), lang = "both")
+p <- cmsy_priors(c("COD", "Clupea harengus", "Atlantic mackerel", "小鳍鳕"), lang = "both")
 show_table(p[, c("species_name", "scientific_name", "alpha3", "r_low", "r_high", "url", "data_url", "rule_url")])
 ```
 
@@ -273,7 +273,7 @@ Every row links to its sources: `url`, the FishBase or SeaLifeBase page of the s
 ## 🧾 Step 4: FAO data to CMSY++ input files
 
 ```{r}
-input <- cmsy_input(FAO34$area_data)
+input <- cmsy_input(FAO27$area_data)
 input
 ```
 
@@ -292,12 +292,12 @@ table(input$excluded$reason)
 Expert priors replace the defaults, e.g. a B/k prior for the last year as in Table 3 of the user guide, or a resilience for species without a FishBase value:
 
 ```{r, eval = FALSE}
-input <- cmsy_input(FAO34$area_data, priors = data.frame(
-  alpha3   = c("PIL", "SAA"),
+input <- cmsy_input(FAO27$area_data, priors = data.frame(
+  alpha3   = c("HER", "MAC"),
   endb.low = c(0.2, 0.01),
   endb.hi  = c(0.6, 0.4)
 ))
-input <- cmsy_input(FAO34$area_data, default_resilience = "Medium")  # stocks without a FishBase value
+input <- cmsy_input(FAO27$area_data, default_resilience = "Medium")  # stocks without a FishBase value
 ```
 
 | Argument | Meaning | Default |
@@ -316,12 +316,12 @@ input <- cmsy_input(FAO34$area_data, default_resilience = "Medium")  # stocks wi
 ## ▶️ Step 5: run CMSY++
 
 ```{r, eval = FALSE}
-result <- cmsy_run(input, stocks = "Brachydeuterus auritus", auto_start = TRUE, seed = 1,
+result <- cmsy_run(input, stocks = "Pandalus borealis", auto_start = TRUE, seed = 1,
                    plots = c("analysis", "management", "kobe", "prior_posterior", "retrospective"))
 result$summary
 ```
 
-Each stock runs in its own folder, `cmsy/<area>_cmsy/<stock>/` (e.g. `cmsy/Atlantic__Eastern_Central_cmsy/GRB_34/`), and R process; the folders keep CMSY++'s own output (`_AN.jpg`, `_MAN.jpg`, `_KOBE.jpg`, `cmsy_output.csv`, `log.txt`), and the folder of the run has the changed code, `code_changes.csv`, `settings_used.csv` and `sources.csv`. `parallel` sets how many stocks run at the same time, and a progress bar shows the stocks finished, the elapsed and the remaining time (see "Progress bars and silent" below).
+Each stock runs in its own folder, `cmsy/<area>_cmsy/<stock>/` (e.g. `cmsy/Atlantic__Northeast_cmsy/PRA_27/`), and R process; the folders keep CMSY++'s own output (`_AN.jpg`, `_MAN.jpg`, `_KOBE.jpg`, `cmsy_output.csv`, `log.txt`), and the folder of the run has the changed code, `code_changes.csv`, `settings_used.csv` and `sources.csv`. `parallel` sets how many stocks run at the same time, and a progress bar shows the stocks finished, the elapsed and the remaining time (see "Progress bars and silent" below).
 
 Many FAO series start in 1950 with low catches, which CMSY++ flags as ambiguous (depleted or unexploited) and for which it suggests a start year: the first year with 40% of the maximum catch. `auto_start = TRUE` uses that year (CMSY++'s own `auto.start` stops with an error in `CMSY++16.R`, so the same rule is applied to the start year before the run, and not used if fewer than ten years would remain). The user guide prefers setting `StartYear` or the start B/k prior (`stb.low`, `stb.hi`) yourself in `cmsy_input(priors = )`.
 
@@ -339,20 +339,41 @@ Many FAO series start in 1950 with low catches, which CMSY++ flags as ambiguous 
 | `timeout` | Maximum time for one stock (seconds); a stock still running after it is reported as failed | `3600` |
 | `table`, `lang`, `silent` | See [Common arguments](#common-arguments); the tables are `tables/cmsy/<area>_cmsy_results.csv`, `..._series.csv` and `..._sources.csv` | |
 
-The example is the 30 stocks with the largest catch in 2015–2024 in FAO area 34 (Eastern Central Atlantic), run with the start years suggested by CMSY++ (`p_green`: probability of the green Kobe quadrant, B ≥ Bmsy and F ≤ Fmsy, in the last year):
+The example is the 30 stocks with the largest catch in 2015–2024 in FAO area 27 (Northeast Atlantic), run with the start years suggested by CMSY++ (`p_green`: probability of the green Kobe quadrant, B ≥ Bmsy and F ≤ Fmsy, in the last year):
 
 ```{r}
-top30 <- read.csv(file.path(fig_dir, "..", "top30_area34.csv"), check.names = FALSE)
+top30 <- read.csv(file.path(fig_dir, "..", "top30_area27.csv"), check.names = FALSE)
 top30$species <- fao_translate(top30$species_en, "species", getOption("faofishingreport.lang", "en"))
 show_table(top30[, c("rank", "Stock", "species", "scientific_name", "first_year", "B_Bmsy", "F_Fmsy", "p_green", "status")],
            n = 30, digits = 2)
+ex <- read.csv(file.path(fig_dir, "..", "example_values.csv"), check.names = FALSE)
+green <- ex[ex$example == "green", ]
+over <- ex[ex$example == "overfished", ]
 ```
 
-Bigeye grunt (*Brachydeuterus auritus*, `GRB_34`, ninth by catch) is the clearest healthy stock: last-year B/Bmsy 1.42 (95% CI 1.08–1.65), F/Fmsy 0.64, a 93% probability of the green quadrant. It is the example below. Its priors and results tables, from `cmsy_tables()` (Step 9):
+Two stocks are shown in detail below: the healthiest and the most clearly overfished.
+
+- **Healthy: northern prawn** (*Pandalus borealis*, `PRA_27`, `r green$rank`th by catch): last-year
+  B/Bmsy `r sprintf("%.2f", green$B_Bmsy)` (95% CI `r sprintf("%.2f", green$B_Bmsy_lcl)`–`r sprintf("%.2f", green$B_Bmsy_ucl)`),
+  F/Fmsy `r sprintf("%.2f", green$F_Fmsy)`, a `r round(100 * green$p_green)`% probability of the
+  green quadrant.
+- **Overfished: capelin** (*Mallotus villosus*, `CAP_27`, `r over$rank`th by catch): last-year
+  B/Bmsy `r sprintf("%.2f", over$B_Bmsy)` (95% CI `r sprintf("%.2f", over$B_Bmsy_lcl)`–`r sprintf("%.2f", over$B_Bmsy_ucl)`),
+  F/Fmsy `r sprintf("%.2f", over$F_Fmsy)`, a `r round(100 * over$p_overfished)`% probability that
+  B/Bmsy is below 0.8 and `r round(100 * over$p_red)`% of the red quadrant.
+
+Capelin is a short-lived fish whose stocks rise and fall with recruitment, and fisheries on it
+have been closed in some years; a catch-only model reads such falls in catch as falls in biomass.
+These are completed CMSY++ runs with the B/k priors of the neural network, not validated stock
+assessments; compare them with the assessments of ICES before using them.
+
+Their priors and results tables, from `cmsy_tables()` (Step 9), northern prawn first:
 
 ```{r}
-show_table(read.csv(file.path(fig_dir, "priors_table.csv"), check.names = FALSE))
-show_table(read.csv(file.path(fig_dir, "results_table.csv"), check.names = FALSE))
+show_table(read.csv(file.path(fig_dir, "green_priors_table.csv"), check.names = FALSE))
+show_table(read.csv(file.path(fig_dir, "green_results_table.csv"), check.names = FALSE))
+show_table(read.csv(file.path(fig_dir, "overfished_priors_table.csv"), check.names = FALSE))
+show_table(read.csv(file.path(fig_dir, "overfished_results_table.csv"), check.names = FALSE))
 ```
 
 `result$summary` has one row per stock: MSY, Bmsy, Fmsy, r and k with their 95% limits, the last-year B/Bmsy, F/Fmsy and biomass with their limits, the probability of each Kobe quadrant and of B/Bmsy below 0.8 (`p_overfished`), the status in two schemes (`status`, FAO; `status_palomares`, Palomares et al. 2018), all priors with their sources and CMSY++'s own notes (such as `suggested_start_year`). `result$series` gives catch, predicted catch, B/k, biomass, B/Bmsy, F and F/Fmsy by year with 95% limits; `result$kobe` the last-year draws; `result$details` the posterior draws of r, k and B/k, the prior parameters and the retrospective runs; `result$settings` the CMSY++ settings used; `result$changes` the changes to the code; and `result$sources` the versions and links of CMSY++, JAGS, R, the R packages, the FAO data and FishBase used.
@@ -390,43 +411,48 @@ Based on a survey of the charts of 54 CMSY application papers, `cmsy_plot()` dra
 
 Status follows FAO (2026) for Tier 3 (data-limited) assessments by default: maximally sustainably fished (B/Bmsy ≥ 0.8) or overfished. `classes = "palomares"` uses the five classes of Palomares et al. (2018), common in CMSY studies: healthy (≥ 1), slightly overfished (0.8–1), overfished (0.5–0.8), grossly overfished (0.2–0.5), collapsed (< 0.2).
 
-The CMSY++ analysis chart of bigeye grunt (no annotations, the default):
+The CMSY++ analysis chart (no annotations, the default), northern prawn and capelin:
 
 ```{r, echo = FALSE}
-show_png("grunt_analysis.png")
+show_png("green_analysis.png")
+show_png("overfished_analysis.png")
 ```
 
-Management chart:
+Management charts:
 
 ```{r, echo = FALSE}
-show_png("grunt_management.png")
+show_png("green_management.png")
+show_png("overfished_management.png")
 ```
 
-Kobe plot with `annotations = TRUE`:
+Kobe plots with `annotations = TRUE`:
 
 ```{r, echo = FALSE}
-show_png("grunt_kobe.png")
+show_png("green_kobe.png")
+show_png("overfished_kobe.png")
 ```
 
 Prior and posterior distributions; the smaller the PPVR, the more the data added to the prior:
 
 ```{r, echo = FALSE}
-show_png("grunt_prior_posterior.png")
+show_png("green_prior_posterior.png")
+show_png("overfished_prior_posterior.png")
 ```
 
-Retrospective analysis:
+Retrospective analyses:
 
 ```{r, echo = FALSE}
-show_png("grunt_retrospective.png")
+show_png("green_retrospective.png")
+show_png("overfished_retrospective.png")
 ```
 
-Summaries of the 30 stocks of area 34 (`annotations = "legend"`):
+Summaries of the 30 stocks of area 27 (`annotations = "legend"`):
 
 ```{r, echo = FALSE}
-show_png("area34_overview.png")
-show_png("area34_kobe_all.png")
-show_png("area34_status_time.png")
-show_png("area34_map.png")
+show_png("area27_overview.png")
+show_png("area27_kobe_all.png")
+show_png("area27_status_time.png")
+show_png("area27_map.png")
 ```
 
 ## 🔮 Step 7: projections under fishing scenarios
@@ -453,21 +479,25 @@ projection <- cmsy_forecast(result, catch = 100000)
 
 It returns `projection` (by stock, scenario and year: median B/Bmsy, F/Fmsy and catch with 95% limits, and the probability that B is at least Bmsy) and `share` (by scenario and year: share of stocks at or above Bmsy, with 95% limits, and the number of stocks `n_stocks`; from the latest last year of the stocks on).
 
+With constant catches near the MSY of each stock (`r format(green$forecast_catch_t, big.mark = ",")` t for northern prawn, `r format(over$forecast_catch_t, big.mark = ",")` t for capelin) and the F scenarios:
+
 ```{r, echo = FALSE}
-show_png("grunt_forecast.png")
+show_png("green_forecast.png")
+show_png("overfished_forecast.png")
 ```
 
 ## 🔍 Step 8: compare runs or other assessments
 
 ```{r, eval = FALSE}
-result_1950 <- cmsy_run(input, stocks = "GRB_34", seed = 1)        # starting in 1950
-cmsy_compare(`1950` = result_1950, `CMSY++` = result, stocks = "GRB_34")
+result_1950 <- cmsy_run(input, stocks = "PRA_27", seed = 1)        # starting in 1950
+cmsy_compare(`1950` = result_1950, `CMSY++` = result, stocks = "PRA_27")
 ```
 
-`cmsy_compare()` draws several runs (e.g. different start years or priors, a sensitivity analysis) and other estimates (`external`, e.g. B/Bmsy from ICES, JABBA or a paper) together and lists their last-year values. Started in 1950, bigeye grunt has a last-year B/Bmsy of 1.14; started in 1978 as CMSY++ suggests, 1.42; both are above Bmsy:
+`cmsy_compare()` draws several runs (e.g. different start years or priors, a sensitivity analysis) and other estimates (`external`, e.g. B/Bmsy from ICES, JABBA or a paper) together and lists their last-year values. The start year matters. Started in 1950, northern prawn has a last-year B/Bmsy of `r sprintf("%.2f", green$B_Bmsy_1950)`, below Bmsy; started in `r green$first_year` as CMSY++ suggests, `r sprintf("%.2f", green$B_Bmsy)`, above it. Capelin is overfished from either start year (`r sprintf("%.2f", over$B_Bmsy_1950)` from 1950, `r sprintf("%.2f", over$B_Bmsy)` from `r over$first_year`):
 
 ```{r, echo = FALSE}
-show_png("grunt_compare.png")
+show_png("green_compare.png")
+show_png("overfished_compare.png")
 ```
 
 | Argument | Meaning | Default |
@@ -508,7 +538,7 @@ cmsy_defaults(list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000))[c(1, 17, 18),
 ```
 
 ```{r, eval = FALSE}
-result <- cmsy_run(input, stocks = "GRB_34", seed = 1, auto_start = TRUE,
+result <- cmsy_run(input, stocks = "PRA_27", seed = 1, auto_start = TRUE,
                    settings = list(CV.C = 0.2, n.iter = 100000, n.burnin = 50000))
 result$settings[result$settings$changed, ]          # the changed settings
 ```
@@ -524,7 +554,7 @@ The settings used are saved in `settings_used.csv` of the run folder and recorde
 
 The same code runs on all three systems: `cmsy_system()` detects the system and makes the changes it needs (on macOS, no `windows()` and no `antialias = "cleartype"`; see Step 1), and the JAGS installer is chosen for the system and R version. Each change to the CMSY code is checked by the GitHub Actions workflow "CMSY-cross-platform" on Windows, macOS and Linux: it downloads and installs the matching JAGS with `cmsy_download_jags()`, runs CMSY++ for real, runs all CMSY tests and keeps the output of each system.
 
-Results of the check in October 2026 (all 170 tests pass for each combination; same seed; `cmsy_area()` on bigeye grunt GRB_34 and sardine PIL_34 of area 34):
+Results of the check in October 2026, made on two stocks of area 34, the example area of this article at the time (all 170 tests pass for each combination; same seed; `cmsy_area()` on bigeye grunt GRB_34 and sardine PIL_34):
 
 | System | R | JAGS | rjags | GRB_34 B/Bmsy | GRB_34 F/Fmsy | PIL_34 B/Bmsy | PIL_34 F/Fmsy |
 |---|---|---|---|---|---|---|---|
@@ -545,7 +575,7 @@ With the same JAGS 4.3.x and rjags 4-17, the results are identical on all three 
 `cmsy_run()`, `cmsy_plot()`, `cmsy_forecast()` and `cmsy_area()` show progress bars such as
 
 ```
-CMSY++ [==================            ] 18/30 ( 60%) 00:51 elapsed, 00:34 left GAL_34
+CMSY++ [==================            ] 18/30 ( 60%) 00:51 elapsed, 00:34 left COD_27
 ```
 
 All CMSY functions that print have a `silent` argument: with `silent = TRUE` they print no progress bars or messages (`cmsy_setup()` still asks before installing). `fao_settings(silent = TRUE)` sets the session default.
@@ -555,9 +585,9 @@ All CMSY functions that print have a `silent` argument: with `silent = TRUE` the
 `fao_report()` assesses the main species of the area with CMSY++ when `cmsy = TRUE` (see [📝 Assessment report: Word, LaTeX and PDF](report.html)), and adds a part on the assessment with the results of every species and appendix tables of the reference points, the priors and their sources. It runs `cmsy_area()` on the `top_n` main species of the report (10 by default), without projections. The settings of `cmsy_area()` and `cmsy_input()` are given with the prefix `cmsy_`, e.g. `cmsy_top = 5`, `cmsy_default_resilience = "Medium"` or `cmsy_settings = list(n.iter = 100000)`. All CMSY++ results (runs, charts and tables) are kept in the folder `cmsy/` next to the report, with `cmsy_result.rds`, so the report can be written again without running CMSY++: `cmsy = readRDS("cmsy/<area>/cmsy_result.rds")`, with the path from the working directory (by default `reports/cmsy/<area>/cmsy_result.rds`). The result of an earlier `cmsy_area()` run can be given in the same way.
 
 ```{r, eval = FALSE}
-report <- fao_report(34, cmsy = TRUE, cmsy_top = 5)
+report <- fao_report(27, cmsy = TRUE, cmsy_top = 5)
 report$cmsy_reference_points                  # r, k, MSY, B/Bmsy, ... with 95% limits
-fao_report(34, cmsy = readRDS("reports/cmsy/Atlantic__Eastern_Central/cmsy_result.rds"))
+fao_report(27, cmsy = readRDS("reports/cmsy/Atlantic__Northeast/cmsy_result.rds"))
 ```
 
 ## 📖 References

@@ -1,0 +1,2 @@
+﻿"种群","物种","学名","年份","r 先验","r 先验来源","k 先验（吨）","MSY 先验（吨）","首年 B/k 先验","中间年 B/k 先验","末年 B/k 先验","FishBase / SeaLifeBase 页面"
+"CAP_27","毛鳞鱼","Mallotus villosus","1970-2024","0.412-0.937","FishBase prior r, 95% CL (Based on 5 full stock assessments.)","7,217,484-30,658,265","2,322,843","0.156-0.509 (神经网络)","2019: 0.0239-0.23 (神经网络)","0.0372-0.258 (神经网络)","https://www.fishbase.se/summary/252"

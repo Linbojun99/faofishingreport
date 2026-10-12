@@ -6,7 +6,7 @@ description: >
 
 ```{r setup, include = FALSE}
 source("../_setup.R")
-FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+FAO27 <- suppressMessages(fishing_area_data("Atlantic, Northeast", plot = FALSE))
 ```
 
 ```{r}
@@ -20,7 +20,7 @@ data_source("zh")
 与[📈 类群结构、资源状态与趋势](status-trends.html)中的分析一样，这些函数适用于任何产量数据：可以是`fishing_area_data()`得到的某个渔区，也可以是`load_fao_data()`的任意子集。图表保存在`figures/png/summary/`，表格保存在`tables/`，文件名以渔区名称（或`label`的值）开头；函数以不可见的方式返回结果。
 
 ```{r, eval = FALSE}
-FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+FAO27 <- fishing_area_data("Atlantic, Northeast")
 ```
 
 ## ⚙️ 通用参数 {#common-arguments}
@@ -44,7 +44,7 @@ FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 - 根据FAO的分类编码，**鉴定到种**、属、科，或只归到目及以上类群（如"Marine fishes nei"）的产量占比。
 
 ```{r, figures = TRUE}
-quality <- data_quality(FAO34$area_data)
+quality <- data_quality(FAO27$area_data)
 ```
 
 最近几年估算占比偏高，通常是因为FAO还没有收到各国的上报数据；这些数值往往会在下一版数据中修订（Garibaldi 2012）。国家表针对最近五年产量最大的几个国家，列出这几年其产量中有多少是估算的、有多少鉴定到种：
@@ -77,7 +77,7 @@ FAO统计的是各国上报的产量（没有上报时由FAO估算）。产量�
 | 前N名占比 | `top5_species_pct`、`top5_countries_pct` | 产量最大的`top_n`个物种条目或国家所占的比例（%；列名随`top_n`变化） |
 
 ```{r, figures = TRUE}
-diversity <- diversity_concentration(FAO34$area_data, top_n = 5)
+diversity <- diversity_concentration(FAO27$area_data, top_n = 5)
 ```
 
 ```{r}
@@ -102,11 +102,11 @@ show_table(subset(diversity, Year %in% c(1970, 1990, 2010, max(Year))), digits =
 `country_group_summary()`依据FAO国家列表，按国家分组汇总产量：**世界银行收入分组**、**大洲**或**地区**。它保存各分组产量图和占比图，以及与`species_group_composition()`相同格式的按年代汇总表。
 
 ```{r, figures = TRUE}
-income <- country_group_summary(FAO34$area_data, group = "income")
+income <- country_group_summary(FAO27$area_data, group = "income")
 ```
 
 ```{r, figures = TRUE}
-country_group_summary(FAO34$area_data, group = "region", top_n = 6, lang = "zh")
+country_group_summary(FAO27$area_data, group = "region", top_n = 6, lang = "zh")
 ```
 
 | 参数 | 含义 | 默认值 |
@@ -121,10 +121,10 @@ country_group_summary(FAO34$area_data, group = "region", top_n = 6, lang = "zh")
 
 `coastal_distant()`把产量分为与该渔区**接壤**的沿岸国和来自其他地区的**远洋**捕捞船队两部分，并列出主要的远洋捕捞国。
 
-若一个国家的陆地（包括海外领土，取自Natural Earth的地图单元）位于FAO渔区边界（CWP手册中的FAO主要渔区）20 km以内，即视为该渔区的沿岸国。苏联等已不存在的国家采用其继承国的海岸线。例如在34区，西班牙和葡萄牙分别因加那利群岛和马德拉群岛而被算作沿岸国。以"Other nei"上报的产量显示为“未知”。
+若一个国家的陆地（包括海外领土，取自Natural Earth的地图单元）位于FAO渔区边界（CWP手册中的FAO主要渔区）20 km以内，即视为该渔区的沿岸国。苏联等已不存在的国家采用其继承国的海岸线。例如在34区（中东大西洋），西班牙和葡萄牙分别因加那利群岛和马德拉群岛而被算作沿岸国。以"Other nei"上报的产量显示为“未知”。
 
 ```{r, figures = TRUE}
-fleets <- coastal_distant(FAO34$area_data)
+fleets <- coastal_distant(FAO27$area_data)
 ```
 
 ```{r}
@@ -143,7 +143,7 @@ show_table(fleets$table, digits = 0)
 `fao_report()`会把数据质量、多样性与集中度、沿岸国与远洋捕捞国写进某个渔区的Word报告（见[📝 一键生成评估报告（Word、LaTeX、PDF）](report.html)）：它们是报告的`quality`、`diversity`和`fleets`三个章节，默认都会写入。各函数的设置以章节名为前缀传入（`data_quality()`用`quality_`，`diversity_concentration()`用`diversity_`，`coastal_distant()`用`fleets_`），设为`FALSE`即可去掉某个章节：
 
 ```{r, eval = FALSE}
-fao_report(34, diversity_top_n = 3, fleets = FALSE)
+fao_report(27, diversity_top_n = 3, fleets = FALSE)
 ```
 
 `country_group_summary()`不在报告中。

@@ -9,7 +9,7 @@ description: >
 
 ```{r setup, include = FALSE}
 source("_setup.R")
-FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+FAO27 <- suppressMessages(fishing_area_data("Atlantic, Northeast", plot = FALSE))
 ```
 
 ```{r data-source, echo = FALSE, results = "asis"}
@@ -27,13 +27,13 @@ those studies. The full references are at the end of the page.
 - `distant_water_profile()` takes a country and follows its catch in all FAO areas.
 - `compare_releases()` takes two releases of the FAO data.
 
-The examples use the Eastern Central Atlantic (FAO area 34). The charts are saved in
+The examples use the Northeast Atlantic (FAO area 27). The charts are saved in
 `figures/png/summary/` and the tables in `tables/`. The pelagic/demersal ratio,
 `pelagic_demersal()`, belongs to the same group of analyses and is described in
 [📈 Composition, stock status and trends](status-trends.html).
 
 ```{r, eval = FALSE}
-FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+FAO27 <- fishing_area_data("Atlantic, Northeast")
 ```
 
 The five functions share these arguments:
@@ -54,13 +54,13 @@ They return their results invisibly: assign them (`x <- catch_shocks(...)`) to u
 [📝 Assessment report: Word, LaTeX and PDF](report.html)). They are switched off by default:
 
 ```{r, eval = FALSE}
-fao_report(34, shocks = TRUE, collapse = TRUE, synchrony = TRUE, distant = TRUE)
+fao_report(27, shocks = TRUE, collapse = TRUE, synchrony = TRUE, distant = TRUE)
 ```
 
 The settings of each function are given with the name of its section as prefix:
 
 ```{r, eval = FALSE}
-fao_report(34, shocks = TRUE, collapse = TRUE, synchrony = TRUE, distant = TRUE,
+fao_report(27, shocks = TRUE, collapse = TRUE, synchrony = TRUE, distant = TRUE,
            shocks_method = "gephart2017",   # catch_shocks(method = "gephart2017")
            collapse_method = "worm2006",    # collapse_analysis(method = "worm2006")
            collapse_seed = 2,               # seed of the random series of the null model
@@ -133,7 +133,7 @@ counted as a shock.
 ### Example
 
 ```{r, figures = TRUE}
-shocks <- catch_shocks(FAO34$area_data)
+shocks <- catch_shocks(FAO27$area_data)
 ```
 
 The first chart is the shock frequency of each year. The second shows the `top_n` series with
@@ -158,7 +158,7 @@ show_table(data.frame(head(shocks$by_year[order(-shocks$by_year$shock_frequency_
 show_table(data.frame(subset(shocks$by_group, grouping == "continent"), row.names = NULL))
 ```
 
-**Reading the results.** In area 34, `r nrow(shocks$series)` country series have catch in at
+**Reading the results.** In area 27, `r nrow(shocks$series)` country series have catch in at
 least 20 years, and `r nrow(shocks$shocks)` shocks were found in
 `r sum(shocks$series$n_shocks > 0)` of them. The shock frequency is at most
 `r round(max(shocks$by_year$shock_frequency_pct), 1)`% in any year: shocks are rare events in any
@@ -174,7 +174,7 @@ The method of Gephart et al. (2017). The file names do not include the method, s
 the charts of this call from replacing those of the first one:
 
 ```{r, figures = "_shocks[.]png$"}
-gephart <- catch_shocks(FAO34$area_data, method = "gephart2017", label = "FAO34 gephart2017")
+gephart <- catch_shocks(FAO27$area_data, method = "gephart2017", label = "FAO27 gephart2017")
 ```
 
 ```{r}
@@ -191,7 +191,7 @@ With `by = "species"`, a series is the catch of one species item in the area, al
 together, and the shock rate is also given by ISSCAAP species group:
 
 ```{r, figures = "_by_species_group"}
-species_shocks <- catch_shocks(FAO34$area_data, by = "species", label = "FAO34 species")
+species_shocks <- catch_shocks(FAO27$area_data, by = "species", label = "FAO27 species")
 ```
 
 ```{r}
@@ -288,7 +288,7 @@ uses `set.seed(1)` so that the numbers in the text match the tables at every bui
 
 ```{r, figures = TRUE}
 set.seed(1)   # fixes the random series of the null model
-collapses <- collapse_analysis(FAO34$area_data)
+collapses <- collapse_analysis(FAO27$area_data)
 ```
 
 The first chart is the number of collapses in each year, by type of decline. The second is the
@@ -311,7 +311,7 @@ groups <- subset(collapses$by_group, grouping == "species_group" & n_series >= 3
 show_table(data.frame(groups[, c("group_name", "n_series", "n_collapsed", "pct_collapsed")], row.names = NULL), digits = 1)
 ```
 
-**Reading the results.** In area 34, `r s$n[1]` of the `r s$n_series[1]` series
+**Reading the results.** In area 27, `r s$n[1]` of the `r s$n_series[1]` series
 (`r round(s$pct_of_series[1], 1)`%) collapsed by the definition of Mullon et al. (2005), against
 `r round(s$null_pct_of_series[1], 1)`% in random series with no trend. The difference, not the
 share itself, is what points to real collapses. Of the collapses,
@@ -326,7 +326,7 @@ The definition of Worm et al. (2006), with the same seed:
 
 ```{r, figures = "worm2006[.]png$"}
 set.seed(1)
-worm <- collapse_analysis(FAO34$area_data, method = "worm2006")
+worm <- collapse_analysis(FAO27$area_data, method = "worm2006")
 ```
 
 The solid lines are the data and the dashed lines the random series of the null model: in red
@@ -337,7 +337,7 @@ show_table(data.frame(worm$summary, row.names = NULL), digits = 1)
 show_table(data.frame(subset(worm$by_year, Year %in% c(1960, 1980, 2000, max(Year))), row.names = NULL), digits = 1)
 ```
 
-By the last year, `r round(worm$summary$pct_of_series[2], 1)`% of the fisheries of area 34 had
+By the last year, `r round(worm$summary$pct_of_series[2], 1)`% of the fisheries of area 27 had
 collapsed at least once, but random series with no trend give
 `r round(worm$summary$null_pct_of_series[2], 1)`%: in this area the rising cumulative share comes
 from the definition, which is the point made by Wilberg and Miller (2007). The share collapsed in
@@ -418,7 +418,7 @@ function uses the simpler correlation-based measures above.
 ### Example
 
 ```{r, figures = TRUE}
-sync <- catch_synchrony(FAO34$area_data)
+sync <- catch_synchrony(FAO27$area_data)
 ```
 
 The first chart is the synchrony and the portfolio effect in each 20-year window, plotted at the
@@ -444,7 +444,7 @@ show_table(sync$series[, c("series", "mean_tonnes", "sd_tonnes", "cv", "sd_share
 show_table(data.frame(subset(sync$windows, first_year %% 10 == 0), row.names = NULL), digits = 2)
 ```
 
-**Reading the results.** The `r sync$summary$n_series` species series of area 34 have a synchrony
+**Reading the results.** The `r sync$summary$n_series` species series of area 27 have a synchrony
 of `r sprintf("%.2f", sync$summary$synchrony_phi)`, far from 1: their fluctuations largely
 compensate each other. The CV of the total catch, `r sprintf("%.2f", sync$summary$cv_total)`, is
 `r sprintf("%.2f", sqrt(sync$summary$synchrony_phi))` ($\sqrt{\varphi}$) times what it would be if
@@ -465,11 +465,11 @@ and fell to `r sprintf("%.2f", tail(sync$windows$synchrony_phi, 1))` in
 Without detrending, and by country instead of species:
 
 ```{r, figures = "synchrony_species[.]png$"}
-none <- catch_synchrony(FAO34$area_data, detrend = "none", label = "FAO34 no detrending")
+none <- catch_synchrony(FAO27$area_data, detrend = "none", label = "FAO27 no detrending")
 ```
 
 ```{r, figures = "synchrony_country[.]png$"}
-countries <- catch_synchrony(FAO34$area_data, by = "country")
+countries <- catch_synchrony(FAO27$area_data, by = "country")
 ```
 
 ```{r}
@@ -561,9 +561,9 @@ show_table(china$areas[, c("area", "adjacent", "first_year", "last_year", "peak_
 
 `share_of_distant_pct` is the share of each distant-water area in all the distant-water catch of
 the country over the whole period. China borders only the Northwest Pacific (area 61). It
-reported its first catch in area 34 in `r china$areas$first_year[china$areas$area_en == "Atlantic, Eastern Central"]`,
-and area 34 makes up
-`r round(china$areas$share_of_distant_pct[china$areas$area_en == "Atlantic, Eastern Central"], 1)`%
+reported its first catch in area 27 in `r china$areas$first_year[china$areas$area_en == "Atlantic, Northeast"]`,
+and area 27 makes up
+`r round(china$areas$share_of_distant_pct[china$areas$area_en == "Atlantic, Northeast"], 1)`%
 of its distant-water catch.
 
 ::: callout-note
@@ -588,29 +588,29 @@ show_table(spain$areas[, c("area", "adjacent", "first_year", "last_year", "peak_
 ```
 
 Spain borders three FAO areas: the Northeast Atlantic, the Mediterranean and Black Sea, and the
-Eastern Central Atlantic, because of the Canary Islands. Its catch in area 34 is therefore not
+Eastern Central Atlantic, because of the Canary Islands. Its catch in area 27 is therefore not
 distant-water catch, and `share_of_distant_pct` is empty for it.
 
-How much of the distant-water catch of several countries comes from area 34, over the whole period
+How much of the distant-water catch of several countries comes from area 27, over the whole period
 (`share_of_distant_pct`) and over the last five years (`recent_share_pct`), with the
 distant-water share of their marine catch in the last year (`distant_pct_latest`):
 
 ```{r}
-others <- c("Russian Federation", "Netherlands (Kingdom of the)", "Japan", "Korea, Republic of")
+others <- c("Japan", "Bulgaria", "Romania", "Korea, Republic of")
 profiles <- c(list(China = china, Spain = spain),
               sapply(others, distant_water_profile, plot = FALSE, table = FALSE, simplify = FALSE))
-area34 <- do.call(rbind, lapply(names(profiles), function(country) {
+area27 <- do.call(rbind, lapply(names(profiles), function(country) {
   areas <- profiles[[country]]$areas
-  here <- areas$area_en == "Atlantic, Eastern Central"
+  here <- areas$area_en == "Atlantic, Northeast"
   recent <- 100 * areas$last_5_years_tonnes / sum(areas$last_5_years_tonnes[!areas$adjacent])
   data.frame(country = fao_translate(country, "country", lang = NULL),
              distant_pct_latest = tail(profiles[[country]]$yearly$distant_pct, 1),
-             area34_adjacent = areas$adjacent[here],
-             area34_first_year = areas$first_year[here],
+             area27_adjacent = areas$adjacent[here],
+             area27_first_year = areas$first_year[here],
              share_of_distant_pct = areas$share_of_distant_pct[here],
              recent_share_pct = ifelse(areas$adjacent[here], NA, recent[here]))
 }))
-show_table(area34, digits = 1)
+show_table(area27, digits = 1)
 ```
 
 ### Arguments and results
@@ -676,7 +676,7 @@ invisible(download_fao_data("2025.1.0", quiet = TRUE))
 ```
 
 ```{r, figures = TRUE}
-releases <- compare_releases("2025.1.0", "2026.1.0", area_name = "Atlantic, Eastern Central")
+releases <- compare_releases("2025.1.0", "2026.1.0", area_name = "Atlantic, Northeast")
 ```
 
 The first chart is the total catch of each year in the two releases. The second is the revision of
@@ -701,13 +701,13 @@ show_table(data.frame(records[, c("country_name", "species_name", "Year", "tonne
 ```
 
 **Reading the results.** Between the two releases, `r sum(releases$records$change == "revised")`
-records of area 34 were revised, `r sum(releases$records$change == "added")` added and
+records of area 27 were revised, `r sum(releases$records$change == "added")` added and
 `r sum(releases$records$change == "removed")` removed. Most of them concern the last ten years
 covered by the older release (`r sum(tail(releases$by_year$n_revised, 10))` of the revised
-records), and the largest revisions are in the last two years. The total catch of
-`r tail(releases$by_year$Year, 1)` went down by
-`r round(-tail(releases$by_year$change_tonnes, 1) / 1000)` thousand tonnes
-(`r round(-tail(releases$by_year$change_pct, 1), 1)`%). The
+records), and the largest revision is that of the last year: the total catch of
+`r tail(releases$by_year$Year, 1)` went `r if (tail(releases$by_year$change_tonnes, 1) < 0) "down" else "up"` by
+`r round(abs(tail(releases$by_year$change_tonnes, 1)) / 1000)` thousand tonnes
+(`r round(abs(tail(releases$by_year$change_pct, 1)), 1)`%). The
 `r format(sum(releases$records$change == "reclassified"), big.mark = ",")` reclassified records
 are catches moved from one species item to another, which leave the totals unchanged.
 
@@ -716,21 +716,20 @@ are catches moved from one species item to another, which leave the totals uncha
 One country, ignoring changes of 100 t or less:
 
 ```{r, figures = "_by_year[.]png$"}
-mauritania <- compare_releases("2025.1.0", "2026.1.0", area_name = "Atlantic, Eastern Central",
-                               country_name = "Mauritania", tolerance = 100)
+iceland <- compare_releases("2025.1.0", "2026.1.0", area_name = "Atlantic, Northeast",
+                            country_name = "Iceland", tolerance = 100)
 ```
 
 ```{r}
-revised <- subset(mauritania$by_year, n_revised + n_added + n_removed > 0)
+revised <- subset(iceland$by_year, n_revised + n_added + n_removed > 0)
 show_table(data.frame(revised[, c("Year", "old_tonnes", "new_tonnes", "change_tonnes", "change_pct",
                                   "n_revised", "n_added", "n_removed", "n_status_changed")], row.names = NULL),
            digits = 1)
 ```
 
-For Mauritania, the revisions up to `r max(revised$Year[abs(revised$change_tonnes) < 1])` moved
-catch between species items and left the yearly totals unchanged; the revisions of the last two
-years lowered the totals by `r sprintf("%.1f", -revised$change_pct[nrow(revised) - 1])`% and
-`r sprintf("%.1f", -revised$change_pct[nrow(revised)])`%. Without `area_name` and `country_name` the
+For Iceland, only the catch of `r paste(revised$Year, collapse = ", ")` changed by more than 100 t,
+which `r if (revised$change_tonnes[1] < 0) "lowered" else "raised"` its total by
+`r sprintf("%.1f", abs(revised$change_pct[1]))`%. Without `area_name` and `country_name` the
 whole data set is compared; without `old` and `new` the newest release on the computer is
 compared with the one before it.
 

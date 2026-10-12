@@ -1,0 +1,2 @@
+﻿"种群","物种","学名","年份","r 先验","r 先验来源","k 先验（吨）","MSY 先验（吨）","首年 B/k 先验","中间年 B/k 先验","末年 B/k 先验","FishBase / SeaLifeBase 页面"
+"PRA_27","Northern prawn","Pandalus borealis","1980-2024","0.408-0.927","SeaLifeBase prior r, 95% CL (Based on 7 full stock assessments.)","354,482-1,504,879","112,898","0.202-0.608 (神经网络)","2013: 0.0857-0.361 (神经网络)","0.466-0.837 (神经网络)","https://www.sealifebase.se/summary/25892"

@@ -21,13 +21,13 @@ temperature of the sea, through the **mean temperature of the catch** (MTC).
 says which SST data it uses:
 
 ```{r, message = TRUE}
-sst34 <- fao_area_sst("34")
-head(sst34[, c("area_en", "year", "sst_mean", "sst_p10", "sst_p90", "sst_min_month", "sst_max_month")])
+sst27 <- fao_area_sst("27")
+head(sst27[, c("area_en", "year", "sst_mean", "sst_p10", "sst_p90", "sst_min_month", "sst_max_month")])
 ```
 
 | Argument | Meaning | Default |
 |---|---|---|
-| `area` | FAO area codes (e.g. `"34"`) or names as in the FAO data (e.g. `"Atlantic, Eastern Central"`) | `NULL`: all 19 areas |
+| `area` | FAO area codes (e.g. `"27"`) or names as in the FAO data (e.g. `"Atlantic, Northeast"`) | `NULL`: all 19 areas |
 | `sst` | The SST data: `"ersst5"` (built in), the name of a product downloaded with `download_sst_data()`, or the path of a NetCDF file or of a folder of NetCDF files | the `sst` setting of `fao_settings()`, `"ersst5"` unless changed |
 | `variable` | Name of the SST variable in your NetCDF files | `NULL`: found from its name |
 | `data_dir` | Folder where downloaded data and computed tables are kept | `fao_data_dir()` |
@@ -50,7 +50,7 @@ The package comes with one SST product, to keep it small:
 |---|---|
 | Provider | NOAA National Centers for Environmental Information |
 | Grid | 2° x 2° (about 220 km), monthly |
-| Years in the package | `r paste(range(suppressMessages(fao_area_sst("34"))$year), collapse = "–")` |
+| Years in the package | `r paste(range(suppressMessages(fao_area_sst("27"))$year), collapse = "–")` |
 | Observations | In situ only: ships and buoys (ICOADS), Argo floats from 1999 |
 | Sea ice | About -1.8 °C under ice |
 | Licence | NOAA data: may be used and redistributed for free |
@@ -66,9 +66,9 @@ Any other gridded SST can be used by giving the **path of its NetCDF file, or of
 NetCDF files**, either for one call or once for the session:
 
 ```{r, eval = FALSE}
-fao_area_sst("34", sst = "D:/data/HadISST_sst.nc")       # one call
+fao_area_sst("27", sst = "D:/data/HadISST_sst.nc")       # one call
 fao_settings(sst = "D:/data/HadISST_sst.nc")             # all functions, for the session
-mean_temperature_catch(FAO34$area_data)                  # now uses this file
+mean_temperature_catch(FAO27$area_data)                  # now uses this file
 fao_settings(sst = "ersst5")                             # back to the built-in SST
 ```
 
@@ -102,7 +102,7 @@ table. It is then used by its name, e.g. `sst = "hadisst1"`:
 
 ```{r, eval = FALSE}
 download_sst_data("hadisst1")                 # about 240 MB; run again to resume
-fao_area_sst("34", sst = "hadisst1")
+fao_area_sst("27", sst = "hadisst1")
 ```
 
 | Argument | Meaning | Default |
@@ -154,8 +154,8 @@ sums are over the items that have a preferred temperature. A rising MTC means th
 warmer waters make up a larger part of the catch.
 
 ```{r, eval = FALSE}
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-mtc <- mean_temperature_catch(FAO34$area_data)
+FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+mtc <- mean_temperature_catch(FAO27$area_data)
 mtc$trend      # slopes (°C per decade), Mann-Kendall test, correlation with SST
 ```
 
@@ -230,7 +230,7 @@ the results are used:
 4. Run the function again with the checked table:
 
 ```{r, eval = FALSE}
-mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern_Central_mtc_species.csv")
+mtc <- mean_temperature_catch(FAO27$area_data, match = "tables/Atlantic__Northeast_mtc_species.csv")
 ```
 
 Until every item used has been checked, the function says how much of the catch has been checked,
@@ -286,7 +286,7 @@ of `mean_temperature_catch()` are given with the prefix `mtc_`, e.g. `mtc_sst = 
 returned as `report$mtc_species` for checking:
 
 ```{r, eval = FALSE}
-report <- fao_report(34, mtc = TRUE, mtc_min_coverage = 60)
+report <- fao_report(27, mtc = TRUE, mtc_min_coverage = 60)
 report$mtc_species
 ```
 

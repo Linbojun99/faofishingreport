@@ -8,7 +8,7 @@ description: >
 
 ```{r setup, include = FALSE}
 source("_setup.R")
-FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+FAO27 <- suppressMessages(fishing_area_data("Atlantic, Northeast", plot = FALSE))
 ```
 
 ```{r data-source, echo = FALSE, results = "asis"}
@@ -231,14 +231,14 @@ or WoRMS pages, so that the match can be checked. Items that no rule matches are
 marked as failed, with links for searching the name online.
 
 ```{r, message = TRUE}
-fb34 <- fishbase_match(FAO34$area_data, version = "builtin", corrections = FALSE)
+fb27 <- fishbase_match(FAO27$area_data, version = "builtin", corrections = FALSE)
 ```
 
 `corrections = FALSE` leaves out any corrections saved on this computer, so the example gives
 the same result everywhere. The items are sorted by catch, so the first rows cover most of it:
 
 ```{r}
-main <- head(fb34, 15)
+main <- head(fb27, 15)
 main$page <- ifelse(is.na(main$url), "", paste0("[open](", main$url, ")"))
 show_table(main[, c("species_name", "fao_scientific_name", "catch_pct", "match_type", "database",
                     "temp_pref_mean", "trophic_level", "page")], n = 15)
@@ -321,17 +321,17 @@ the total catch of all years in the data:
 
 ```{r}
 # Share of the catch (%) by kind of match
-round(sort(tapply(fb34$catch_pct, fb34$match_type, sum), decreasing = TRUE), 1)
+round(sort(tapply(fb27$catch_pct, fb27$match_type, sum), decreasing = TRUE), 1)
 
 # Share of the catch (%) of species-level items with a preferred temperature
 species_level <- c("exact", "synonym", "WoRMS valid name (exact)", "WoRMS valid name (synonym)")
-round(sum(fb34$catch_pct[fb34$match_type %in% species_level & !is.na(fb34$temp_pref_mean)]), 1)
+round(sum(fb27$catch_pct[fb27$match_type %in% species_level & !is.na(fb27$temp_pref_mean)]), 1)
 ```
 
-In area 34, matched items make up `r round(sum(fb34$catch_pct[fb34$status == "matched"]))`% of
-the catch, but much of it comes from genus and family items, which have a trophic level only.
-Species-level items with a preferred temperature make up
-`r round(sum(fb34$catch_pct[fb34$match_type %in% species_level & !is.na(fb34$temp_pref_mean)]))`%,
+In area 27, matched items make up `r round(sum(fb27$catch_pct[fb27$status == "matched"]))`% of
+the catch. Genus and family items have a trophic level only; species-level items with a
+preferred temperature make up
+`r round(sum(fb27$catch_pct[fb27$match_type %in% species_level & !is.na(fb27$temp_pref_mean)]))`%,
 and this is the part of the catch that the mean temperature of the catch can use. The coverage
 also changes from year to year; `mean_temperature_catch()` shows it for each year (see
 [below](#mtc)).
@@ -343,7 +343,7 @@ agree between databases: FAO ASFIS names change slowly, FishBase, SeaLifeBase an
 different classifications, and synonyms and misspellings are common (Grenié et al. 2023). Before
 using the values:
 
-1. Open the table saved in `tables/` (here `tables/Atlantic__Eastern_Central_fishbase_match.csv`).
+1. Open the table saved in `tables/` (here `tables/Atlantic__Northeast_fishbase_match.csv`).
    The items are sorted by catch, so the first rows matter most.
 2. For each item, open `url` (the record used), `search_url` and `worms_url`, and read
    `match_note` and `rule_source`. Check that the record is the FAO item, and that its values are
@@ -372,14 +372,14 @@ match of the item "Frigate tuna". Whether such a value fits an item has to be ju
 note says where it comes from:
 
 ```{r, message = TRUE}
-fri <- fb34[fb34$alpha3 == "FRI", ]
+fri <- fb27[fb27$alpha3 == "FRI", ]
 fix <- data.frame(alpha3 = "FRZ", species_en = "Frigate and bullet tunas",
                   trophic_level = fri$trophic_level, temp_pref_mean = fri$temp_pref_mean,
                   note = paste("Values of Auxis thazard,", fri$source, "SpecCode", fri$SpecCode))
 write.csv(fix, "my_corrections.csv", row.names = FALSE)
 
-fb34_fixed <- fishbase_match(FAO34$area_data, version = "builtin", corrections = "my_corrections.csv")
-show_table(fb34_fixed[fb34_fixed$alpha3 == "FRZ", c("species_name", "status", "match_type", "trophic_level",
+fb27_fixed <- fishbase_match(FAO27$area_data, version = "builtin", corrections = "my_corrections.csv")
+show_table(fb27_fixed[fb27_fixed$alpha3 == "FRZ", c("species_name", "status", "match_type", "trophic_level",
                                                     "temp_pref_mean", "rule_source")])
 ```
 
@@ -391,7 +391,7 @@ the values themselves:
 fix <- data.frame(alpha3 = "FRZ", database = "FishBase", SpecCode = 94,
                   note = "Record of Auxis thazard; give your source here")
 write.csv(fix, "my_corrections.csv", row.names = FALSE)
-fishbase_match(FAO34$area_data, version = "26.06", corrections = "my_corrections.csv")
+fishbase_match(FAO27$area_data, version = "26.06", corrections = "my_corrections.csv")
 ```
 
 `mean_temperature_catch()`, and `fao_report()` through it, run `fishbase_match()` with the
@@ -433,7 +433,7 @@ Here the corrected table of the example above is given with `match =`, so the fr
 tunas are now used:
 
 ```{r, figures = TRUE}
-mtc <- mean_temperature_catch(FAO34$area_data, match = fb34_fixed)
+mtc <- mean_temperature_catch(FAO27$area_data, match = fb27_fixed)
 ```
 
 ```{r}
@@ -449,9 +449,9 @@ matches. Without `match =`, the default `version = "latest"` downloads the table
 first time (about 23 MB):
 
 ```{r, eval = FALSE}
-mtc <- mean_temperature_catch(FAO34$area_data)                         # newest FishBase release
-mtc <- mean_temperature_catch(FAO34$area_data, version = "builtin")    # built-in table, no download
-mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern_Central_fishbase_match.csv")
+mtc <- mean_temperature_catch(FAO27$area_data)                         # newest FishBase release
+mtc <- mean_temperature_catch(FAO27$area_data, version = "builtin")    # built-in table, no download
+mtc <- mean_temperature_catch(FAO27$area_data, match = "tables/Atlantic__Northeast_fishbase_match.csv")
 ```
 
 The article [🌡️ Sea temperature and catch temperature](sst-mtc.html) explains the SST data, the
@@ -465,8 +465,8 @@ the resilience (table `stocks`) and the prior r (table `estimate`) of the specie
 the FAO capture statistics in FishBase or SeaLifeBase 26.06. It works offline:
 
 ```{r}
-p34 <- cmsy_priors(c("PIL", "SAA", "VMA", "BOA"))
-show_table(p34[, c("species_name", "matched_name", "match_type", "resilience", "prior_r",
+p27 <- cmsy_priors(c("HER", "WHB", "MAC", "COD"))
+show_table(p27[, c("species_name", "matched_name", "match_type", "resilience", "prior_r",
                    "r_low", "r_high", "r_source")], digits = 3)
 ```
 
@@ -484,16 +484,16 @@ change it; priors of your own are given with `priors =` in `cmsy_input()`. See
 ## 📝 In the Word report
 
 The Word report of an area can include a section on the mean temperature of the catch
-(`fao_report(34, mtc = TRUE)`). It uses the built-in FishBase table by default
+(`fao_report(27, mtc = TRUE)`). It uses the built-in FishBase table by default
 (`mtc_version = "builtin"`), so writing the report downloads nothing; give another release with
 `mtc_version`, e.g. `mtc_version = "latest"`. The table of species used, with their FishBase
 matches, is returned as `report$mtc_species`, and the report cites the FishBase release used. See
 [📝 Word report](report.html).
 
 ```{r, eval = FALSE}
-report <- fao_report(34, mtc = TRUE)
+report <- fao_report(27, mtc = TRUE)
 head(report$mtc_species[, c("species_name", "match_type", "temp_pref_mean", "used", "url")])
-fao_report(34, mtc = TRUE, mtc_version = "latest")    # newest FishBase release
+fao_report(27, mtc = TRUE, mtc_version = "latest")    # newest FishBase release
 ```
 
 ## 📖 References

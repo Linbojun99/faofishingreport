@@ -6,7 +6,7 @@ description: >
 
 ```{r setup, include = FALSE}
 source("../_setup.R")
-FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+FAO27 <- suppressMessages(fishing_area_data("Atlantic, Northeast", plot = FALSE))
 ```
 
 ```{r}
@@ -20,7 +20,7 @@ data_source("zh")
 汇总分析适用于任何产量数据：可以是`fishing_area_data()`得到的某个渔区，也可以是`load_fao_data()`的任意子集（见[💾 FAO数据](data.html)）。图表保存在`figures/png/summary/`，表格保存在`tables/`，文件名以渔区名称（或`label`的值）开头。每个函数还会以不可见的方式返回结果，可以赋值给变量后在R中继续使用。
 
 ```{r, eval = FALSE}
-FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+FAO27 <- fishing_area_data("Atlantic, Northeast")
 ```
 
 ## ⚙️ 通用参数 {#common-arguments}
@@ -41,7 +41,7 @@ FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 `species_group_composition()`按**ISSCAAP物种类群**（FAO将物种划分为约50个类群的分类体系，如"Herrings, sardines, anchovies"）或按**大类**（鱼类、甲壳类、软体动物……）汇总产量。FAO没有给出这些类群的中文名，本包使用的中文名是非官方译名。
 
 ```{r, figures = TRUE}
-groups <- species_group_composition(FAO34$area_data)
+groups <- species_group_composition(FAO27$area_data)
 ```
 
 第一幅图显示各类群的产量，第二幅图显示各类群在每年总产量中的占比。产量最大的`top_n`个类群单独显示，其余合并为一类。表格列出各类群每个年代的年均产量、最近五年每年的产量，以及最后一年的占比（吨和%）：
@@ -51,7 +51,7 @@ show_table(groups$table, digits = 0)
 ```
 
 ```{r, figures = TRUE}
-species_group_composition(FAO34$area_data, group = "major", lang = "zh")
+species_group_composition(FAO27$area_data, group = "major", lang = "zh")
 ```
 
 | 参数 | 含义 | 默认值 |
@@ -75,7 +75,7 @@ species_group_composition(FAO34$area_data, group = "major", lang = "zh")
 | 恢复中(Rebuilding) | 崩溃之后，产量回升至峰值的10%至50%之间 |
 
 ```{r, figures = TRUE}
-status <- stock_status(FAO34$area_data)
+status <- stock_status(FAO27$area_data)
 ```
 
 第一幅图是处于各状态的**种群**数量占比，第二幅图是各状态的**产量**占比。这里的“种群”指数据中的一个物种条目（所有国家合计），最后一次报告产量之后的年份按零产量计。只有符合纳入标准的序列才会参与分类：
@@ -98,7 +98,7 @@ table(status$stocks$status_last_year)
 
 ```{r, figures = TRUE}
 # 平滑后的产量，更严格的纳入标准
-stock_status(FAO34$area_data, smooth = TRUE, min_catch = 10000, label = "FAO34 smoothed")
+stock_status(FAO27$area_data, smooth = TRUE, min_catch = 10000, label = "FAO27 smoothed")
 ```
 
 输出：图`<label>_stock_status_stocks.png`和`<label>_stock_status_catch.png`，表格`<label>_stock_status.csv`（各状态逐年的种群数和产量）和`<label>_stock_status_stocks.csv`；函数返回`yearly`、`stocks`和`status`（每个种群每年的状态）。
@@ -116,7 +116,7 @@ stock_status(FAO34$area_data, smooth = TRUE, min_catch = 10000, label = "FAO34 s
 - **多条序列**：在十条或更多序列中，总有一些序列偶然显示出趋势。`q_value`按结果中的序列数（不含总产量）校正p值（Benjamini and Hochberg 1995）。`p_value` < 0.05的趋势应视为探索性的结果，`q_value` < 0.05的才作为显著趋势；[📝 评估报告](report.html)对主要种类和主要国家就是这样处理的。
 
 ```{r, figures = TRUE}
-species_trend <- peak_trend(FAO34$area_data, by = "species", top_n = 10)
+species_trend <- peak_trend(FAO27$area_data, by = "species", top_n = 10)
 ```
 
 ```{r}
@@ -124,7 +124,7 @@ show_table(species_trend[, c("name", "peak_year", "pct_of_peak", "growth_pct_per
 ```
 
 ```{r, figures = TRUE}
-peak_trend(FAO34$area_data, by = "country", top_n = 15, recent_years = 20, lang = "zh")
+peak_trend(FAO27$area_data, by = "country", top_n = 15, recent_years = 20, lang = "zh")
 ```
 
 | 参数 | 含义 | 默认值 |
@@ -161,7 +161,7 @@ show_table(overview[, c("name", "peak_year", "peak_tonnes", "last_year_tonnes", 
 `regime_shift()`对主要物种（所有物种条目，包括nei类群）的产量序列做突变点分析，并统计每一年有多少个物种的平均产量发生变化。每个序列在平均值发生变化处分段（`strucchange::breakpoints()`，Bai and Perron 2003；Zeileis et al. 2002，2003），突变点个数按BIC选择；突变点的年份是新时段的第一年。许多物种在同一年发生变化，可能意味着整个生态系统发生了生态系统转变(regime shift)，也可能源于管理或数据上报方式的改变。
 
 ```{r, figures = TRUE}
-shifts <- regime_shift(FAO34$area_data, top_n = 20)
+shifts <- regime_shift(FAO27$area_data, top_n = 20)
 ```
 
 ```{r}
@@ -182,7 +182,7 @@ head(shifts$yearly[order(-shifts$yearly$n_species), ], 5)
 `pelagic_demersal()`计算每个FAO海洋渔区中上层鱼渔获量与底层鱼渔获量之比（P/D），按年和按年代给出。Caddy (1993)提出，营养盐增加有利于以浮游生物为食、寿命短的中上层鱼，而不利于底层鱼；de Leiva Moreno et al. (2000)用P/D作为欧洲周边海域营养水平的替代指标。每个年代的P/D是该年代各年P/D的平均值（与Hondorp et al. 2010相同），并给出最低值和最高值。
 
 ```{r, figures = "pelagic_demersal_ratio"}
-pd <- pelagic_demersal(FAO34$area_data)
+pd <- pelagic_demersal(FAO27$area_data)
 ```
 
 ```{r}
@@ -201,7 +201,7 @@ FAO数据中每个物种都有一个ISSCAAP类群，所以函数按类群划分�
 show_table(fao_pd_groups(), n = 15)
 ```
 
-也可以用`pelagic = ...`和`demersal = ...`指定自己的类群。已发表的研究是逐个物种划分的，不是按ISSCAAP类群，所以它们的数值只能粗略对比：de Leiva Moreno et al. (2000)中，贫营养海域低于1，中营养海域约1至3.5，富营养海域约6至20。除了营养盐，捕捞和市场（底层鱼需求更高；Caddy et al. 1998）、缺氧（Hondorp et al. 2010）、小型中上层鱼本身的自然波动以及报告方式都会改变P/D，详见`?pelagic_demersal`。34区上升流海域的小型中上层鱼产量很高，所以P/D一直较高。
+也可以用`pelagic = ...`和`demersal = ...`指定自己的类群。已发表的研究是逐个物种划分的，不是按ISSCAAP类群，所以它们的数值只能粗略对比：de Leiva Moreno et al. (2000)中，贫营养海域低于1，中营养海域约1至3.5，富营养海域约6至20。除了营养盐，捕捞和市场（底层鱼需求更高；Caddy et al. 1998）、缺氧（Hondorp et al. 2010）、小型中上层鱼本身的自然波动以及报告方式都会改变P/D，详见`?pelagic_demersal`。27区的P/D一直低于1（各年代在`r sprintf("%.2f", min(pd$decades$pd_mean))`至`r sprintf("%.2f", max(pd$decades$pd_mean))`之间），尽管中上层鱼是该渔区的主要渔获：小鳍鳕（蓝鳕，一种中上层的鳕类）被归入鳕、无须鳕、黑线鳕类，按这一定义算作底层鱼，而大西洋鲭属于“其他中上层鱼类”，不计入。这说明分组方式对P/D影响很大。
 
 | 参数 | 含义 | 默认值 |
 |---|---|---|
@@ -227,7 +227,7 @@ pelagic_demersal(load_fao_divisions("GFCM"), by = "division")
 `fao_report()`可以把这些分析写进某个渔区的Word报告（见[📝 一键生成评估报告（Word、LaTeX、PDF）](report.html)）。ISSCAAP类群（`groups = TRUE`）和资源状态图（`status = TRUE`）默认就是报告的章节；中上层鱼/底层鱼渔获比用`pelagic = TRUE`加入。各函数的设置以章节名为前缀传入，例如`status_smooth = TRUE`就是`stock_status()`的`smooth = TRUE`：
 
 ```{r, eval = FALSE}
-fao_report(34, pelagic = TRUE, status_smooth = TRUE, pelagic_definition = "grainger_garcia")
+fao_report(27, pelagic = TRUE, status_smooth = TRUE, pelagic_definition = "grainger_garcia")
 ```
 
 报告中主要物种表和主要国家表的趋势由`peak_trend()`计算；`area_overview()`和`regime_shift()`不在报告中。

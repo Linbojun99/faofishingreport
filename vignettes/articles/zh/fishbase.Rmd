@@ -6,7 +6,7 @@ description: >
 
 ```{r setup, include = FALSE}
 source("../_setup.R")
-FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+FAO27 <- suppressMessages(fishing_area_data("Atlantic, Northeast", plot = FALSE))
 ```
 
 ```{r}
@@ -179,13 +179,13 @@ slb_species <- fishbase_table("species", server = "sealifebase", version = "26.0
 `fishbase_match()`逐个处理数据中的FAO物种条目，按FAO物种名录中的学名在FishBase或SeaLifeBase中查找，返回匹配到的记录及其营养级、偏好温度、栖息类型、最大体长和对捕捞的脆弱性。每一行都给出所用的规则及其出处，并附有FishBase、SeaLifeBase或WoRMS页面的链接，便于核对。没有任何规则能匹配的条目不填数值，标为匹配失败，并附上在网上搜索该名称的链接。
 
 ```{r, message = TRUE}
-fb34 <- fishbase_match(FAO34$area_data, version = "builtin", corrections = FALSE)
+fb27 <- fishbase_match(FAO27$area_data, version = "builtin", corrections = FALSE)
 ```
 
 `corrections = FALSE`表示不使用本机保存的任何更正，这样示例在每台电脑上的结果都相同。条目按渔获量排序，前面几行就占了大部分渔获：
 
 ```{r}
-main <- head(fb34, 15)
+main <- head(fb27, 15)
 main$page <- ifelse(is.na(main$url), "", paste0("[open](", main$url, ")"))
 show_table(main[, c("species_name", "fao_scientific_name", "catch_pct", "match_type", "database",
                     "temp_pref_mean", "trophic_level", "page")], n = 15)
@@ -250,20 +250,20 @@ show_table(main[, c("species_name", "fao_scientific_name", "catch_pct", "match_t
 
 ```{r}
 # 各匹配方式的渔获占比（%）
-round(sort(tapply(fb34$catch_pct, fb34$match_type, sum), decreasing = TRUE), 1)
+round(sort(tapply(fb27$catch_pct, fb27$match_type, sum), decreasing = TRUE), 1)
 
 # 有偏好温度的种一级条目的渔获占比（%）
 species_level <- c("exact", "synonym", "WoRMS valid name (exact)", "WoRMS valid name (synonym)")
-round(sum(fb34$catch_pct[fb34$match_type %in% species_level & !is.na(fb34$temp_pref_mean)]), 1)
+round(sum(fb27$catch_pct[fb27$match_type %in% species_level & !is.na(fb27$temp_pref_mean)]), 1)
 ```
 
-在34区，已匹配条目占渔获量的`r round(sum(fb34$catch_pct[fb34$status == "matched"]))`%，但其中很大一部分来自属和科一级的条目，它们只有营养级。有偏好温度的种一级条目占`r round(sum(fb34$catch_pct[fb34$match_type %in% species_level & !is.na(fb34$temp_pref_mean)]))`%，渔获平均温度能用到的就是这部分渔获。覆盖率每年也不相同，`mean_temperature_catch()`会给出逐年的覆盖率（见[下文](#mtc)）。
+在27区，已匹配条目占渔获量的`r round(sum(fb27$catch_pct[fb27$status == "matched"]))`%。属和科一级的条目只有营养级；有偏好温度的种一级条目占`r round(sum(fb27$catch_pct[fb27$match_type %in% species_level & !is.na(fb27$temp_pref_mean)]))`%，渔获平均温度能用到的就是这部分渔获。覆盖率每年也不相同，`mean_temperature_catch()`会给出逐年的覆盖率（见[下文](#mtc)）。
 
 ### 核对和更正匹配结果 {#corrections}
 
 匹配是自动完成的，本包不做核对。不同数据库之间的名称并不总是一致：FAO的ASFIS名称更新缓慢，FishBase、SeaLifeBase和WoRMS采用不同的分类体系，异名和拼写错误也很常见（Grenié等2023）。使用这些数值之前：
 
-1. 打开保存在`tables/`中的表（这里是`tables/Atlantic__Eastern_Central_fishbase_match.csv`）。条目按渔获量排序，越靠前越重要。
+1. 打开保存在`tables/`中的表（这里是`tables/Atlantic__Northeast_fishbase_match.csv`）。条目按渔获量排序，越靠前越重要。
 2. 对每个条目，打开`url`（所用的记录）、`search_url`和`worms_url`，并阅读`match_note`和`rule_source`。核对记录是否就是这个FAO条目，数值对该渔区的种群是否合理。
 3. 在`checked`列写上核对人或日期。错误或缺失的数值写进更正文件，并注明出处。
 
@@ -282,14 +282,14 @@ round(sum(fb34$catch_pct[fb34$match_type %in% species_level & !is.na(fb34$temp_p
 举个例子：条目“Frigate and bullet tunas”（FRZ）包含两个物种（*Auxis thazard*和*A. rochei*），没有规则能匹配它。下面把其中第一个物种*Auxis thazard*的数值（取自条目“Frigate tuna”的匹配结果）赋给它。这样的数值是否适合这个条目，需要你自己判断；`note`写明了数值的来源：
 
 ```{r, message = TRUE}
-fri <- fb34[fb34$alpha3 == "FRI", ]
+fri <- fb27[fb27$alpha3 == "FRI", ]
 fix <- data.frame(alpha3 = "FRZ", species_en = "Frigate and bullet tunas",
                   trophic_level = fri$trophic_level, temp_pref_mean = fri$temp_pref_mean,
                   note = paste("Values of Auxis thazard,", fri$source, "SpecCode", fri$SpecCode))
 write.csv(fix, "my_corrections.csv", row.names = FALSE)
 
-fb34_fixed <- fishbase_match(FAO34$area_data, version = "builtin", corrections = "my_corrections.csv")
-show_table(fb34_fixed[fb34_fixed$alpha3 == "FRZ", c("species_name", "status", "match_type", "trophic_level",
+fb27_fixed <- fishbase_match(FAO27$area_data, version = "builtin", corrections = "my_corrections.csv")
+show_table(fb27_fixed[fb27_fixed$alpha3 == "FRZ", c("species_name", "status", "match_type", "trophic_level",
                                                     "temp_pref_mean", "rule_source")])
 ```
 
@@ -299,7 +299,7 @@ show_table(fb34_fixed[fb34_fixed$alpha3 == "FRZ", c("species_name", "status", "m
 fix <- data.frame(alpha3 = "FRZ", database = "FishBase", SpecCode = 94,
                   note = "Record of Auxis thazard; give your source here")
 write.csv(fix, "my_corrections.csv", row.names = FALSE)
-fishbase_match(FAO34$area_data, version = "26.06", corrections = "my_corrections.csv")
+fishbase_match(FAO27$area_data, version = "26.06", corrections = "my_corrections.csv")
 ```
 
 `mean_temperature_catch()`（以及通过它运行的`fao_report()`）调用`fishbase_match()`时使用默认的更正文件。因此，要用于它们的更正应写进`data_dir`中`fishbase`文件夹里的`corrections.csv`（可以用电子表格软件添加行），或者写进核对过的匹配表，再用`match =`传入（在`fao_report()`中为`mtc_match =`）。
@@ -326,7 +326,7 @@ show_table(src[src$type == "data", c("item", "description", "source", "link")])
 下面用`match =`传入上例更正后的表，所以条目“Frigate and bullet tunas”现在也参与计算：
 
 ```{r, figures = TRUE}
-mtc <- mean_temperature_catch(FAO34$area_data, match = fb34_fixed)
+mtc <- mean_temperature_catch(FAO27$area_data, match = fb27_fixed)
 ```
 
 ```{r}
@@ -337,9 +337,9 @@ show_table(mtc$species[mtc$species$used, c("species_name", "match_type", "temp_p
 `match =`可以是数据框，也可以是CSV文件的路径：`fishbase_match()`保存的表，或者此前运行`mean_temperature_catch()`得到的物种表，核对之后传入。在`checked`列有标记的条目算作已核对；在参与计算的条目全部核对之前，函数会提示已核对的渔获占比，图注也会写明这些数值是自动初配结果。不给`match =`时，默认的`version = "latest"`会在第一次运行时下载所需的表（约23 MB）：
 
 ```{r, eval = FALSE}
-mtc <- mean_temperature_catch(FAO34$area_data)                         # FishBase 最新版本
-mtc <- mean_temperature_catch(FAO34$area_data, version = "builtin")    # 内置表，不下载
-mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern_Central_fishbase_match.csv")
+mtc <- mean_temperature_catch(FAO27$area_data)                         # FishBase 最新版本
+mtc <- mean_temperature_catch(FAO27$area_data, version = "builtin")    # 内置表，不下载
+mtc <- mean_temperature_catch(FAO27$area_data, match = "tables/Atlantic__Northeast_fishbase_match.csv")
 ```
 
 海表温度数据、趋势分析以及偏好温度的局限性，见[🌡️ 海表温度与渔获平均温度](sst-mtc.html)。
@@ -349,8 +349,8 @@ mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern
 CMSY++需要每个种群内禀增长率r的先验范围。`cmsy_priors()`查询另一张内置表（`inst/extdata/cmsy_priors.csv`，由`data-raw/cmsy_priors.R`生成），表中是FAO捕捞统计中种一级条目在FishBase或SeaLifeBase 26.06版中的恢复力（`stocks`表）和先验r（`estimate`表）。它可以离线使用：
 
 ```{r}
-p34 <- cmsy_priors(c("PIL", "SAA", "VMA", "BOA"))
-show_table(p34[, c("species_name", "matched_name", "match_type", "resilience", "prior_r",
+p27 <- cmsy_priors(c("HER", "WHB", "MAC", "COD"))
+show_table(p27[, c("species_name", "matched_name", "match_type", "resilience", "prior_r",
                    "r_low", "r_high", "r_source")], digits = 3)
 ```
 
@@ -358,12 +358,12 @@ r的范围按照CMSY++用户手册（Froese等2021）确定：物种在FishBase�
 
 ## 📝 用于Word报告
 
-渔区的Word报告可以包含渔获平均温度一节（`fao_report(34, mtc = TRUE)`）。它默认使用内置的FishBase表（`mtc_version = "builtin"`），所以生成报告时不下载任何数据；要用其他版本，请设置`mtc_version`，如`mtc_version = "latest"`。参与计算的物种及其FishBase匹配结果以`report$mtc_species`返回，报告中也会引用所用的FishBase版本。详见[📝 Word报告](report.html)。
+渔区的Word报告可以包含渔获平均温度一节（`fao_report(27, mtc = TRUE)`）。它默认使用内置的FishBase表（`mtc_version = "builtin"`），所以生成报告时不下载任何数据；要用其他版本，请设置`mtc_version`，如`mtc_version = "latest"`。参与计算的物种及其FishBase匹配结果以`report$mtc_species`返回，报告中也会引用所用的FishBase版本。详见[📝 Word报告](report.html)。
 
 ```{r, eval = FALSE}
-report <- fao_report(34, mtc = TRUE)
+report <- fao_report(27, mtc = TRUE)
 head(report$mtc_species[, c("species_name", "match_type", "temp_pref_mean", "used", "url")])
-fao_report(34, mtc = TRUE, mtc_version = "latest")    # FishBase 最新版本
+fao_report(27, mtc = TRUE, mtc_version = "latest")    # FishBase 最新版本
 ```
 
 ## 📖 参考文献

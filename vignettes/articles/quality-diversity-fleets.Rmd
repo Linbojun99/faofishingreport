@@ -7,7 +7,7 @@ description: >
 
 ```{r setup, include = FALSE}
 source("_setup.R")
-FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+FAO27 <- suppressMessages(fishing_area_data("Atlantic, Northeast", plot = FALSE))
 ```
 
 ```{r data-source, echo = FALSE, results = "asis"}
@@ -21,7 +21,7 @@ with the name of the area at the start of the file names (or `label`), and they 
 results invisibly.
 
 ```{r, eval = FALSE}
-FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+FAO27 <- fishing_area_data("Atlantic, Northeast")
 ```
 
 ## ⚙️ Common arguments {#common-arguments}
@@ -48,7 +48,7 @@ All four functions have these arguments; the tables of each function list only i
   group such as "Marine fishes nei", from the FAO taxonomic codes.
 
 ```{r, figures = TRUE}
-quality <- data_quality(FAO34$area_data)
+quality <- data_quality(FAO27$area_data)
 ```
 
 A large estimated share in the latest years usually means that FAO has not yet received the
@@ -90,7 +90,7 @@ how complete they are.
 | Top-N share | `top5_species_pct`, `top5_countries_pct` | Share (%) of the `top_n` largest species items or countries (the column names follow `top_n`) |
 
 ```{r, figures = TRUE}
-diversity <- diversity_concentration(FAO34$area_data, top_n = 5)
+diversity <- diversity_concentration(FAO27$area_data, top_n = 5)
 ```
 
 ```{r}
@@ -124,11 +124,11 @@ change when countries split, e.g. the USSR in 1991.
 group and one of its share, and a table by decade like that of `species_group_composition()`.
 
 ```{r, figures = TRUE}
-income <- country_group_summary(FAO34$area_data, group = "income")
+income <- country_group_summary(FAO27$area_data, group = "income")
 ```
 
 ```{r, figures = TRUE}
-country_group_summary(FAO34$area_data, group = "region", top_n = 6, lang = "zh")
+country_group_summary(FAO27$area_data, group = "region", top_n = 6, lang = "zh")
 ```
 
 | Argument | Meaning | Default |
@@ -148,11 +148,11 @@ table `<label>_country_income.csv`; the function returns `yearly` and `table`.
 A country is coastal to an area if its land (including overseas territories, from the Natural
 Earth map units) lies within 20 km of the FAO area boundary (the FAO major fishing areas of the
 CWP handbook). Former countries such as the USSR take the coastline of their successor states.
-In area 34, for example, Spain and Portugal count as coastal because of the Canary Islands and
-Madeira. Catch reported as "Other nei" is shown as unknown.
+In area 34 (Eastern Central Atlantic), for example, Spain and Portugal count as coastal because
+of the Canary Islands and Madeira. Catch reported as "Other nei" is shown as unknown.
 
 ```{r, figures = TRUE}
-fleets <- coastal_distant(FAO34$area_data)
+fleets <- coastal_distant(FAO27$area_data)
 ```
 
 ```{r}
@@ -181,7 +181,7 @@ given with the section name as prefix (`quality_` for `data_quality()`, `diversi
 `FALSE`:
 
 ```{r, eval = FALSE}
-fao_report(34, diversity_top_n = 3, fleets = FALSE)
+fao_report(27, diversity_top_n = 3, fleets = FALSE)
 ```
 
 `country_group_summary()` is not part of the report.

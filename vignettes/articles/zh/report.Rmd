@@ -19,9 +19,9 @@ data_source("zh")
 `fao_report()`一次调用即可为一个FAO主要渔区生成中文或英文的Word评估报告。它对该渔区运行本包的各项分析，把结果填入文字模板，插入带编号题注的图表，并列出正文引用的参考文献。
 
 ```{r, eval = FALSE}
-fao_report(34)                                                  # 语言取自fao_settings()
-fao_report("Atlantic, Eastern Central", lang = "zh", author = "Hongyu Lin")
-fao_report(34, lang = "en", font = "Times New Roman", citation = "fao")
+fao_report(27)                                                  # 语言取自fao_settings()
+fao_report("Atlantic, Northeast", lang = "zh", author = "Hongyu Lin")
+fao_report(27, lang = "en", font = "Times New Roman", citation = "fao")
 ```
 
 ::: callout-note
@@ -31,11 +31,11 @@ fao_report(34, lang = "en", font = "Times New Roman", citation = "fao")
 ## 🚀 第一份报告
 
 ```{r}
-report <- fao_report(34, file = "FAO34_report_zh.docx", lang = "zh")
+report <- fao_report(27, file = "FAO27_report_zh.docx", lang = "zh")
 report
 ```
 
-渔区可以用代码（`34`）或英文名称（`"Atlantic, Eastern Central"`）指定。运行约需半分钟，期间以消息显示进度（本页未显示）：先是各项分析，然后是写入的文件。不指定`file`时，报告保存为工作目录下的`reports/FAO34_report_zh.docx`；本页的工作目录是一个临时文件夹。
+渔区可以用代码（`27`）或英文名称（`"Atlantic, Northeast"`）指定。运行约需半分钟，期间以消息显示进度（本页未显示）：先是各项分析，然后是写入的文件。不指定`file`时，报告保存为工作目录下的`reports/FAO27_report_zh.docx`；本页的工作目录是一个临时文件夹。
 
 各项分析在另一个临时文件夹中运行，图表分辨率为300 dpi，不生成PowerPoint文件。图表只插入Word文件，不会在你的文件夹中留下图表文件；如需保留图表，请直接运行相应的分析函数（见[🌊 渔区分析](fishing-areas.html)）。
 
@@ -113,12 +113,12 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 
 | 参数 | 默认值 | 含义 |
 |---|---|---|
-| `area` | （必填） | FAO主要渔区：代码（如`34`）或英文名称（如`"Atlantic, Eastern Central"`）。渔区不存在时报错，并列出所有海洋渔区。 |
+| `area` | （必填） | FAO主要渔区：代码（如`27`）或英文名称（如`"Atlantic, Northeast"`）。渔区不存在时报错，并列出所有海洋渔区。 |
 | `...` | | 各项分析的设置，以章节名为前缀命名，如`species_h_value = 0.2`（见[⚙️ 分析的设置](#settings)） |
 | `file` | `reports/FAO<code>_report_<lang>.docx` | 要写入的文件，所在文件夹不存在时会自动创建；其他格式使用相同的文件名，扩展名为`.tex`和`.pdf` |
 | `format` | `"docx"` | `"docx"`、`"latex"`和`"pdf"`中的一个或多个（见[🖨️ Word、LaTeX和PDF](#formats)） |
 | `lang` | `NULL`：采用`fao_settings()`中的语言 | `"zh"`（中文）或`"en"`（英文）；`"both"`生成中文报告 |
-| `title` | 根据渔区生成 | 如“FAO 34渔区（中东大西洋）海洋捕捞产量评估” |
+| `title` | 根据渔区生成 | 如“FAO 27渔区（东北大西洋）海洋捕捞产量评估” |
 | `report_no` | `1` | 报告编号：“报告一”（中文数字，最大到99；英文报告为“Report 1”），同时是图表编号的第一个数字（图1-1、表1-1） |
 | `author` | `NULL`：“作者” | 封面、标题下方和文件属性中的作者 |
 | `affiliation` | `NULL`：不显示 | 封面上的单位 |
@@ -172,7 +172,7 @@ show_table(data.frame(reference = word$text[word$style_name == "FAO Reference"])
 关闭三个章节，开启中上层鱼类与底层鱼类渔获比，并在资源开发状态图中使用平滑后的渔获量：
 
 ```{r}
-short <- fao_report(34, file = "FAO34_short.docx", lang = "zh", quality = FALSE, diversity = FALSE,
+short <- fao_report(27, file = "FAO27_short.docx", lang = "zh", quality = FALSE, diversity = FALSE,
                     fleets = FALSE, pelagic = TRUE, status_smooth = TRUE)
 short
 short_word <- officer::docx_summary(officer::read_docx(short$file))
@@ -215,8 +215,8 @@ show_table(data.frame(reference = short_word$text[short_word$style_name == "FAO 
 设置必须有名称，以章节名开头，并且是该章节函数的参数，否则`fao_report()`会在运行任何分析之前停止，报错信息列出可以使用的名称：
 
 ```{r, error = TRUE}
-fao_report(34, species_h = 0.2)
-fao_report(34, speceis_h_value = 0.2)
+fao_report(27, species_h = 0.2)
+fao_report(27, speceis_h_value = 0.2)
 ```
 
 ## 📐 格式 {#format}
@@ -250,17 +250,17 @@ fao_report(34, speceis_h_value = 0.2)
 `format`决定输出哪些文件：`"docx"`（默认）、`"latex"`和`"pdf"`，可以选一个或多个。各项分析只运行一次，各种格式的文字、图表、表格、图表标题和参考文献完全相同。
 
 ```{r, eval = FALSE}
-fao_report(34, lang = "zh", format = c("docx", "pdf"))      # Word和PDF
-fao_report(34, lang = "en", format = "latex")                # 只输出LaTeX源文件
-report <- fao_report(34, format = c("docx", "latex", "pdf"))
+fao_report(27, lang = "zh", format = c("docx", "pdf"))      # Word和PDF
+fao_report(27, lang = "en", format = "latex")                # 只输出LaTeX源文件
+report <- fao_report(27, format = c("docx", "latex", "pdf"))
 report$file                                                  # 按docx、latex、pdf命名的文件路径
 ```
 
-| `format` | 输出的文件（以`fao_report(34, lang = "zh")`为例） | 说明 |
+| `format` | 输出的文件（以`fao_report(27, lang = "zh")`为例） | 说明 |
 |---|---|---|
-| `"docx"` | `reports/FAO34_report_zh.docx` | 本文介绍的Word文件 |
-| `"latex"` | `reports/FAO34_report_zh.tex`和文件夹`reports/FAO34_report_zh_figures/` | 同一份报告的XeLaTeX源文件，图片为PNG文件。中文报告使用`ctexart`文档类，英文报告使用`article`文档类。 |
-| `"pdf"` | `reports/FAO34_report_zh.pdf`（以及`.tex`） | 用XeLaTeX编译的PDF，带有各级标题的书签 |
+| `"docx"` | `reports/FAO27_report_zh.docx` | 本文介绍的Word文件 |
+| `"latex"` | `reports/FAO27_report_zh.tex`和文件夹`reports/FAO27_report_zh_figures/` | 同一份报告的XeLaTeX源文件，图片为PNG文件。中文报告使用`ctexart`文档类，英文报告使用`article`文档类。 |
+| `"pdf"` | `reports/FAO27_report_zh.pdf`（以及`.tex`） | 用XeLaTeX编译的PDF，带有各级标题的书签 |
 
 LaTeX版本沿用Word文件的格式（见[📐 格式](#format)）：A4纸张和相同的页边距，相同的字体和字号，1.5倍行距，三线表（booktabs，单倍行距，列宽按内容确定，可以跨页），带编号的图表标题，封面不编页码，标题页从第1页开始。字体取自本机已安装的字体：
 
@@ -287,7 +287,7 @@ tinytex::tinytex_root()        # 安装位置
 TinyTeX在macOS上安装到`~/Library/TinyTeX`，在Windows上安装到`%APPDATA%/TinyTeX`，在Linux上安装到`~/.TinyTeX`，不需要管理员权限。安装后请重启R。不需要手动安装任何LaTeX宏包：第一次生成PDF报告时会自动安装所需的宏包（中文用的ctex和xeCJK，以及booktabs、longtable、needspace、xurl等），只在第一次需要几分钟。
 
 ```{r, eval = FALSE}
-fao_report(34, lang = "zh", format = "pdf")   # 第一次运行时还会安装LaTeX宏包
+fao_report(27, lang = "zh", format = "pdf")   # 第一次运行时还会安装LaTeX宏包
 ```
 
 | 情况 | 怎么做 |
@@ -295,7 +295,7 @@ fao_report(34, lang = "zh", format = "pdf")   # 第一次运行时还会安装La
 | 电脑上没有LaTeX | `install.packages("tinytex")`，然后`tinytex::install_tinytex()` |
 | TinyTeX安装时间较早，宏包装不上，或提示"Local TeX Live (2024) is older than remote repository" | `tinytex::reinstall_tinytex()`：重新安装最新版TinyTeX，并装回原有的宏包 |
 | 使用其他TeX发行版（MacTeX、TeX Live、MiKTeX） | 只要`xelatex`在系统路径中即可使用；缺少的宏包用其自带的管理工具安装（如`tlmgr install ctex`） |
-| 修改了`.tex`文件 | 重新编译：`tinytex::xelatex("reports/FAO34_report_zh.tex")` |
+| 修改了`.tex`文件 | 重新编译：`tinytex::xelatex("reports/FAO27_report_zh.tex")` |
 | 只需要LaTeX源文件 | `format = "latex"`不需要安装LaTeX |
 
 没有安装tinytex包时，本包调用系统路径中的`xelatex`（为生成书签编译两次）。
@@ -326,22 +326,22 @@ GB/T 7714中方括号内的字母是文献类型标识：[J]期刊、[M]专著�
 
 ```{r, eval = FALSE}
 cmsy_setup()                          # 只需运行一次：安装JAGS和CMSY++所需的R包
-report <- fao_report(34, lang = "zh", cmsy = TRUE)
+report <- fao_report(27, lang = "zh", cmsy = TRUE)
 report
-#> FAO report: .../reports/FAO34_report_zh.docx
+#> FAO report: .../reports/FAO27_report_zh.docx
 #> Sections: total, species, countries, groups, status, quality, diversity, fleets, cmsy
 #>   $main_species           main species of the last five years (10 rows)
 #>   $main_countries         main fishing countries of the last five years (10 rows)
 #>   $cmsy_reference_points  CMSY++ biological reference points with 95% confidence limits (10 rows)
 #>   $cmsy_priors            CMSY++ priors, their sources and links (10 rows)
-#>   $cmsy                   CMSY++ result (folder .../reports/cmsy/Atlantic__Eastern_Central)
+#>   $cmsy                   CMSY++ result (folder .../reports/cmsy/Atlantic__Northeast)
 #>   $analyses               results of the analyses: total, species, ..., fleets, cmsy
 
 View(report$cmsy_reference_points)    # r、k、MSY、Fmsy、Bmsy、B/Bmsy和F/Fmsy及其95%置信区间
 View(report$cmsy_priors)              # 先验参数、来源和链接
 
 # 表格中列出15个主要种类和国家，评估其中5个物种，MCMC链更长
-fao_report(34, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5,
+fao_report(27, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5,
            cmsy_settings = list(n.iter = 100000))
 ```
 
@@ -350,8 +350,8 @@ fao_report(34, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5,
 ```
 3 主要渔获种类资源评估（CMSY++）
     3.1 评估概况
-    3.2 沙丁鱼（Sardina pilchardus）
-    3.3 金色小沙丁鱼（Sardinella aurita）
+    3.2 大西洋鲱（Clupea harengus）
+    3.3 小鳍鳕（Micromesistius poutassou）
     ...
     3.12 小结
 ```
@@ -360,14 +360,14 @@ fao_report(34, lang = "zh", top_n = 15, cmsy = TRUE, cmsy_top = 5,
 - **每个物种一个小节**：r、k和MSY及其95%置信区间，最后一年的B/Bmsy和F/Fmsy，渔获量占MSY的百分比，资源状态，位于Kobe图四个区的概率，该物种的CMSY++结果图，以及一条灰色备注，提示与其他评估结果比较并讨论先验设置。
 - **小结**；附件中还有**附表3**生物学参考点（r、k、MSY、Fmsy、Bmsy、B/Bmsy、F/Fmsy）及其95%置信区间，**附表4**先验参数（恢复力、r和k的范围、首年、中间年份和末年的B/k先验），**附表5**先验参数的来源（r先验来源、B/k先验来源、物种在FishBase或SeaLifeBase中的页面），其后列出FishBase数据、CMSY++代码与用户指南以及FAO数据的链接。
 
-CMSY++的全部结果（输入文件、运行结果、图和表）保存在报告旁边的`cmsy/`文件夹中，如`reports/cmsy/Atlantic__Eastern_Central/`，其中有`cmsy_result.rds`。如需重新生成报告（例如改变章节或修改模板之后），把这个结果传给`cmsy`即可，不必再运行CMSY++，此时`cmsy_`设置不再起作用。`cmsy_area()`的结果也可以同样传入：
+CMSY++的全部结果（输入文件、运行结果、图和表）保存在报告旁边的`cmsy/`文件夹中，如`reports/cmsy/Atlantic__Northeast/`，其中有`cmsy_result.rds`。如需重新生成报告（例如改变章节或修改模板之后），把这个结果传给`cmsy`即可，不必再运行CMSY++，此时`cmsy_`设置不再起作用。`cmsy_area()`的结果也可以同样传入：
 
 ```{r, eval = FALSE}
-cmsy34 <- readRDS(file.path("reports", "cmsy", "Atlantic__Eastern_Central", "cmsy_result.rds"))
-fao_report(34, lang = "zh", cmsy = cmsy34, pelagic = TRUE)
+cmsy27 <- readRDS(file.path("reports", "cmsy", "Atlantic__Northeast", "cmsy_result.rds"))
+fao_report(27, lang = "zh", cmsy = cmsy27, pelagic = TRUE)
 
-area34 <- cmsy_area("Atlantic, Eastern Central", top = 10)
-fao_report(34, lang = "zh", cmsy = area34)
+area27 <- cmsy_area("Atlantic, Northeast", top = 10)
+fao_report(27, lang = "zh", cmsy = area27)
 ```
 
 CMSY++部分的图来自那次运行，语言与运行时相同。方法、设置和局限性见[📉 CMSY++资源评估](cmsy.html)：FAO数据只有渔获量，评估结果仅供参考。

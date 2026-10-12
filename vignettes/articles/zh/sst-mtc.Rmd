@@ -19,13 +19,13 @@ FAO捕捞统计每个渔区每年只有一个数，没有渔区内部的空间�
 `fao_area_sst()`返回19个FAO主要海洋渔区的逐年SST。每次调用都会说明用的是哪一套SST数据：
 
 ```{r, message = TRUE}
-sst34 <- fao_area_sst("34")
-head(sst34[, c("area_en", "year", "sst_mean", "sst_p10", "sst_p90", "sst_min_month", "sst_max_month")])
+sst27 <- fao_area_sst("27")
+head(sst27[, c("area_en", "year", "sst_mean", "sst_p10", "sst_p90", "sst_min_month", "sst_max_month")])
 ```
 
 | 参数 | 含义 | 默认值 |
 |---|---|---|
-| `area` | FAO渔区代码（如`"34"`）或FAO数据中的渔区名称（如`"Atlantic, Eastern Central"`） | `NULL`：全部19个渔区 |
+| `area` | FAO渔区代码（如`"27"`）或FAO数据中的渔区名称（如`"Atlantic, Northeast"`） | `NULL`：全部19个渔区 |
 | `sst` | SST数据：`"ersst5"`（内置）、用`download_sst_data()`下载的产品名，或NetCDF文件（或存放NetCDF文件的文件夹）的路径 | `fao_settings()`中的`sst`设置，未修改时为`"ersst5"` |
 | `variable` | 自己的NetCDF文件中SST变量的名称 | `NULL`：按变量名自动识别 |
 | `data_dir` | 存放下载数据和计算结果的文件夹 | `fao_data_dir()` |
@@ -48,7 +48,7 @@ head(sst34[, c("area_en", "year", "sst_mean", "sst_p10", "sst_p90", "sst_min_mon
 |---|---|
 | 提供方 | 美国国家海洋和大气管理局国家环境信息中心（NOAA NCEI） |
 | 网格 | 2° × 2°（约220 km），逐月 |
-| 包内年份 | `r paste(range(suppressMessages(fao_area_sst("34"))$year), collapse = "–")` |
+| 包内年份 | `r paste(range(suppressMessages(fao_area_sst("27"))$year), collapse = "–")` |
 | 观测来源 | 仅现场观测：船舶和浮标（ICOADS），1999年起含Argo浮标 |
 | 海冰 | 冰下约-1.8 °C |
 | 许可 | NOAA数据，可免费使用和再分发 |
@@ -61,9 +61,9 @@ ERSST v5是常用SST产品中最小的。它不用卫星资料，整个时段前
 其他网格化的SST数据，只要给出**NetCDF文件的路径，或者存放NetCDF文件的文件夹路径**，就可以使用。可以只用于一次调用，也可以对整个会话生效：
 
 ```{r, eval = FALSE}
-fao_area_sst("34", sst = "D:/data/HadISST_sst.nc")       # 只用于这一次调用
+fao_area_sst("27", sst = "D:/data/HadISST_sst.nc")       # 只用于这一次调用
 fao_settings(sst = "D:/data/HadISST_sst.nc")             # 本次会话的所有函数都用这个文件
-mean_temperature_catch(FAO34$area_data)                  # 现在使用这个文件
+mean_temperature_catch(FAO27$area_data)                  # 现在使用这个文件
 fao_settings(sst = "ersst5")                             # 换回内置的SST
 ```
 
@@ -87,7 +87,7 @@ knitr::kable(fao_sst_products()[, c("product", "name", "grid", "first_year", "da
 
 ```{r, eval = FALSE}
 download_sst_data("hadisst1")                 # 约240 MB；中断后重新运行会接着下载
-fao_area_sst("34", sst = "hadisst1")
+fao_area_sst("27", sst = "hadisst1")
 ```
 
 | 参数 | 含义 | 默认值 |
@@ -124,8 +124,8 @@ $$MTC_t = \frac{\sum_i T_i C_{i,t}}{\sum_i C_{i,t}}$$
 其中$T_i$是物种$i$的偏好温度，$C_{i,t}$是它在第$t$年的渔获量；两个求和都只包括有偏好温度的条目。MTC上升，说明喜暖物种在渔获中所占的比例变大。
 
 ```{r, eval = FALSE}
-FAO34 <- fishing_area_data("Atlantic, Eastern Central", plot = FALSE)
-mtc <- mean_temperature_catch(FAO34$area_data)
+FAO27 <- fishing_area_data("Atlantic, Northeast", plot = FALSE)
+mtc <- mean_temperature_catch(FAO27$area_data)
 mtc$trend      # 斜率（°C/十年）、Mann-Kendall检验、与SST的相关
 ```
 
@@ -172,7 +172,7 @@ mtc_divisions <- mean_temperature_catch(med, by = "division")
 4.用核对后的表重新运行：
 
 ```{r, eval = FALSE}
-mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern_Central_mtc_species.csv")
+mtc <- mean_temperature_catch(FAO27$area_data, match = "tables/Atlantic__Northeast_mtc_species.csv")
 ```
 
 在所有参与计算的条目都核对完之前，函数会提示已核对的渔获占比，图注也会写明“偏好温度为自动初配结果，尚未全部经用户核对”。
@@ -199,7 +199,7 @@ mtc <- mean_temperature_catch(FAO34$area_data, match = "tables/Atlantic__Eastern
 `fao_report()`用`mtc = TRUE`加入渔获平均温度一节（见[📝 一键生成评估报告（Word、LaTeX、PDF）](report.html)）。报告使用包内置的FishBase数据（`mtc_version = "builtin"`），不需要下载，在任何电脑上得到的数值都相同；`mtc_version = "latest"`则改用最新的FishBase版本。`mean_temperature_catch()`的其他设置以`mtc_`为前缀传入，例如`mtc_sst = "hadisst1"`或`mtc_match = "<核对过的物种表>"`。报告用到的物种及其匹配和链接以`report$mtc_species`返回，方便核对：
 
 ```{r, eval = FALSE}
-report <- fao_report(34, mtc = TRUE, mtc_min_coverage = 60)
+report <- fao_report(27, mtc = TRUE, mtc_min_coverage = 60)
 report$mtc_species
 ```
 

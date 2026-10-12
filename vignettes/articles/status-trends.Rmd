@@ -8,7 +8,7 @@ description: >
 
 ```{r setup, include = FALSE}
 source("_setup.R")
-FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+FAO27 <- suppressMessages(fishing_area_data("Atlantic, Northeast", plot = FALSE))
 ```
 
 ```{r data-source, echo = FALSE, results = "asis"}
@@ -22,7 +22,7 @@ file names (or `label`). Each function also returns its results invisibly, so th
 and used in R.
 
 ```{r, eval = FALSE}
-FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+FAO27 <- fishing_area_data("Atlantic, Northeast")
 ```
 
 ## ⚙️ Common arguments {#common-arguments}
@@ -47,7 +47,7 @@ classification of species into about 50 groups, such as "Herrings, sardines, anc
 the Chinese names used are unofficial translations.
 
 ```{r, figures = TRUE}
-groups <- species_group_composition(FAO34$area_data)
+groups <- species_group_composition(FAO27$area_data)
 ```
 
 The first chart shows the catch of each group, the second its share of the yearly catch. The
@@ -60,7 +60,7 @@ show_table(groups$table, digits = 0)
 ```
 
 ```{r, figures = TRUE}
-species_group_composition(FAO34$area_data, group = "major", lang = "zh")
+species_group_composition(FAO27$area_data, group = "major", lang = "zh")
 ```
 
 | Argument | Meaning | Default |
@@ -86,7 +86,7 @@ the **peak catch** of the series (Kleisner et al. 2013):
 | Rebuilding | after a collapse, catch back between 10% and 50% of the peak |
 
 ```{r, figures = TRUE}
-status <- stock_status(FAO34$area_data)
+status <- stock_status(FAO27$area_data)
 ```
 
 The first chart is the share of **stocks** in each status, the second the share of the **catch**.
@@ -111,7 +111,7 @@ table(status$stocks$status_last_year)
 
 ```{r, figures = TRUE}
 # Smoothed catches, stricter inclusion
-stock_status(FAO34$area_data, smooth = TRUE, min_catch = 10000, label = "FAO34 smoothed")
+stock_status(FAO27$area_data, smooth = TRUE, min_catch = 10000, label = "FAO27 smoothed")
 ```
 
 Output: `<label>_stock_status_stocks.png` and `<label>_stock_status_catch.png`, and the tables
@@ -147,7 +147,7 @@ trend over the last `recent_years` years:
   `q_value` < 0.05; [📝 the report](report.html) does this for its main species and countries.
 
 ```{r, figures = TRUE}
-species_trend <- peak_trend(FAO34$area_data, by = "species", top_n = 10)
+species_trend <- peak_trend(FAO27$area_data, by = "species", top_n = 10)
 ```
 
 ```{r}
@@ -155,7 +155,7 @@ show_table(species_trend[, c("name", "peak_year", "pct_of_peak", "growth_pct_per
 ```
 
 ```{r, figures = TRUE}
-peak_trend(FAO34$area_data, by = "country", top_n = 15, recent_years = 20, lang = "zh")
+peak_trend(FAO27$area_data, by = "country", top_n = 15, recent_years = 20, lang = "zh")
 ```
 
 | Argument | Meaning | Default |
@@ -201,7 +201,7 @@ breakpoint is the first year of the new period. Years when many species change t
 to an ecosystem-wide regime shift, or to changes in management or reporting.
 
 ```{r, figures = TRUE}
-shifts <- regime_shift(FAO34$area_data, top_n = 20)
+shifts <- regime_shift(FAO27$area_data, top_n = 20)
 ```
 
 ```{r}
@@ -230,7 +230,7 @@ et al. (2000) used P/D as a proxy for the nutrient level of the seas around Euro
 decade is the mean of its yearly ratios (as Hondorp et al. 2010), with the lowest and the highest.
 
 ```{r, figures = "pelagic_demersal_ratio"}
-pd <- pelagic_demersal(FAO34$area_data)
+pd <- pelagic_demersal(FAO27$area_data)
 ```
 
 ```{r}
@@ -256,8 +256,12 @@ classed each species rather than ISSCAAP groups, so their values (below 1 in oli
 about 1 to 3.5 in mesotrophic and about 6 to 20 in eutrophic seas, in de Leiva Moreno et al.
 2000) are only roughly comparable. P/D also changes with fishing and markets (demersal fishes
 are in higher demand; Caddy et al. 1998), hypoxia (Hondorp et al. 2010), the natural variability
-of small pelagics and reporting; see `?pelagic_demersal`. In area 34, the large catch of small
-pelagics in upwelling waters keeps P/D high.
+of small pelagics and reporting; see `?pelagic_demersal`. In area 27, P/D stays below 1 (by
+decade, between `r sprintf("%.2f", min(pd$decades$pd_mean))` and
+`r sprintf("%.2f", max(pd$decades$pd_mean))`) although pelagic species are among the main catches:
+blue whiting, a pelagic gadoid, is counted with the cods, hakes and haddocks, and Atlantic
+mackerel (miscellaneous pelagic fishes) is not counted by this definition, which shows how much
+the grouping matters.
 
 | Argument | Meaning | Default |
 |---|---|---|
@@ -295,7 +299,7 @@ status plots (`status = TRUE`) are sections by default; the pelagic/demersal rat
 `status_smooth = TRUE` is `smooth = TRUE` of `stock_status()`:
 
 ```{r, eval = FALSE}
-fao_report(34, pelagic = TRUE, status_smooth = TRUE, pelagic_definition = "grainger_garcia")
+fao_report(27, pelagic = TRUE, status_smooth = TRUE, pelagic_definition = "grainger_garcia")
 ```
 
 `peak_trend()` gives the trends in the tables of the main species and countries of the report;

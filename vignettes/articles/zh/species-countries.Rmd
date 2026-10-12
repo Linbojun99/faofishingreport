@@ -6,7 +6,7 @@ description: >
 
 ```{r setup, include = FALSE}
 source("../_setup.R")
-FAO34 <- suppressMessages(fishing_area_data("Atlantic, Eastern Central", plot = FALSE))
+FAO27 <- suppressMessages(fishing_area_data("Atlantic, Northeast", plot = FALSE))
 ```
 
 ```{r}
@@ -17,10 +17,10 @@ fao_settings(lang = "zh")   # 本文所有图表使用中文
 data_source("zh")
 ```
 
-这些函数以`fishing_area_data()`返回的渔区数据（这里是34渔区）为输入，聚焦于单个物种或单个国家。`country_analysis()`则分析一个国家在全部FAO渔区的捕捞情况。
+这些函数以`fishing_area_data()`返回的渔区数据（这里是27渔区）为输入，聚焦于单个物种或单个国家。`country_analysis()`则分析一个国家在全部FAO渔区的捕捞情况。
 
 ```{r, eval = FALSE}
-FAO34 <- fishing_area_data("Atlantic, Eastern Central")
+FAO27 <- fishing_area_data("Atlantic, Northeast")
 ```
 
 ## 1️⃣ `species_country()`：某个物种由哪些国家捕捞
@@ -28,15 +28,15 @@ FAO34 <- fishing_area_data("Atlantic, Eastern Central")
 物种名必须与FAO物种名称完全一致；不妨先看看该渔区的主要物种：
 
 ```{r}
-top <- aggregate(Production ~ ASFIS.species..Name., data = FAO34$area_data, FUN = sum)
+top <- aggregate(Production ~ ASFIS.species..Name., data = FAO27$area_data, FUN = sum)
 head(top[order(-top$Production), "ASFIS.species..Name."], 10)
 ```
 
 ```{r, figures = TRUE}
-sardine <- species_country(FAO34$area_data, species_name = "European pilchard(=Sardine)")
+cod <- species_country(FAO27$area_data, species_name = "Atlantic cod")
 ```
 
-文件名中的`<species>`是把物种名中的空格和标点替换为`_`后的名称（如`European_pilchard__Sardine_`）：
+文件名中的`<species>`是把物种名中的空格和标点替换为`_`后的名称（如`Atlantic_cod`）：
 
 | 文件 | 图表 |
 |---|---|
@@ -49,12 +49,12 @@ sardine <- species_country(FAO34$area_data, species_name = "European pilchard(=S
 表格`tables/<species>_country_ranked_table.csv`列出每个国家各年代的平均产量、最近五年的产量，以及最后一年的占比：
 
 ```{r}
-table <- read.csv("tables/European_pilchard__Sardine__country_ranked_table.csv",
+table <- read.csv("tables/Atlantic_cod_country_ranked_table.csv",
                   fileEncoding = "UTF-8-BOM", check.names = FALSE)
 show_table(table, n = 10, digits = 0)
 ```
 
-设置`timeseries_analysis = TRUE`时，函数返回一个包含两个数据框的列表：所选国家逐年的产量（`sardine[[1]]`）和它们的突变点（`sardine[[2]]`：每个时段的起始年、结束年和平均产量）；设置`timeseries_analysis = FALSE`时只返回前者。
+设置`timeseries_analysis = TRUE`时，函数返回一个包含两个数据框的列表：所选国家逐年的产量（`cod[[1]]`）和它们的突变点（`cod[[2]]`：每个时段的起始年、结束年和平均产量）；设置`timeseries_analysis = FALSE`时只返回前者。
 
 ### 参数
 
@@ -86,13 +86,13 @@ show_table(table, n = 10, digits = 0)
 有些国家的金枪鱼产量序列较短；把`h_value`设大一些，突变点会更清晰：
 
 ```{r, figures = "wrap"}
-species_country(FAO34$area_data, species_name = "Skipjack tuna", h_value = 5, lang = "zh")
+species_country(FAO27$area_data, species_name = "Atlantic bluefin tuna", h_value = 5, lang = "zh")
 ```
 
 ## 2️⃣ `country_species()`：某个国家在渔区内捕什么
 
 ```{r, figures = TRUE}
-morocco <- country_species(FAO34$area_data, country_name = "Morocco")
+norway <- country_species(FAO27$area_data, country_name = "Norway")
 ```
 
 文件名中的`<country>`是把国家名中的空格和标点替换为`_`后的名称：
@@ -110,7 +110,7 @@ morocco <- country_species(FAO34$area_data, country_name = "Morocco")
 `time_analysis_text_displacement`用来移动分面图中占比标签的位置（以首次出现产量后的年数计），当标签与曲线重叠时很有用：
 
 ```{r, figures = "wrap"}
-country_species(FAO34$area_data, country_name = "Spain", h_value = 5,
+country_species(FAO27$area_data, country_name = "Spain", h_value = 5,
                 time_analysis_text_displacement = 6, lang = "both")
 ```
 
@@ -133,7 +133,7 @@ country_species(FAO34$area_data, country_name = "Spain", h_value = 5,
 `country_analysis()`使用一个国家在**全部**FAO渔区的产量，因此只需提供国家名：
 
 ```{r, figures = TRUE}
-morocco_global <- country_analysis(country_name = "Morocco")
+norway_global <- country_analysis(country_name = "Norway")
 ```
 
 除了物种相关的图表（与`country_species()`相同，文件名为`<country>analysis_...`），它还会保存：
@@ -150,8 +150,8 @@ morocco_global <- country_analysis(country_name = "Morocco")
 函数返回绘图所用的数据：
 
 ```{r}
-names(morocco_global)
-show_table(morocco_global$country_species_area_total, n = 8, digits = 1)
+names(norway_global)
+show_table(norway_global$country_species_area_total, n = 8, digits = 1)
 ```
 
 | 元素 | 内容 |
