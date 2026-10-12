@@ -15,6 +15,13 @@
   centred on the area. The result lists the boundaries, base map and depth data used, to cite
   with the map.
 
+## Bug fixes
+
+* The tables bundled with the package (chart labels, Chinese names, ISSCAAP groups, SST) and the
+  CSV files written by the package are read as UTF-8 in any locale. In a locale that is not UTF-8
+  (e.g. "C" on some Linux servers) the Chinese text could not be read, so every chart stopped with
+  "Unknown chart label".
+
 ## Documentation
 
 * The home pages start with an introduction to the FAO major fishing areas: the 19 marine areas

@@ -160,8 +160,8 @@ fao_trade_status <- function(status, trade = TRUE) {
 
 # The ISSCAAP groups (built by data-raw/build_isscaap_production.R from the FAO list)
 fao_isscaap_groups <- function() {
-  groups <- utils::read.csv(system.file("extdata", "isscaap_groups.csv", package = "faofishingreport"),
-                            stringsAsFactors = FALSE)
+  groups <- fao_read_csv_utf8(system.file("extdata", "isscaap_groups.csv", package = "faofishingreport"),
+                              stringsAsFactors = FALSE)
   zh <- fao_extdata_csv("group_names_zh.csv")
   groups$isscaap_zh <- zh$name_zh[match(paste("isscaap", groups$isscaap_en), paste(zh$type, zh$name_en))]
   groups
@@ -207,7 +207,7 @@ fao_isscaap_groups <- function() {
 #' fao_capture_groups(years = 1976:1990)      # shrimps were then mostly caught
 #' fao_capture_groups(min_capture_pct = 80)
 fao_capture_groups <- function(min_capture_pct = 90, years = NULL) {
-  production <- utils::read.csv(system.file("extdata", "isscaap_production.csv", package = "faofishingreport"))
+  production <- fao_read_csv_utf8(system.file("extdata", "isscaap_production.csv", package = "faofishingreport"))
   covered <- range(production$year)
   if (!is.null(years)) {
     production <- production[production$year %in% years, ]

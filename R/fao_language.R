@@ -121,13 +121,21 @@ fao_lang <- function(lang = NULL, ZH = FALSE) {
 # Session cache for tables read from inst/extdata
 .fao_cache <- new.env(parent = emptyenv())
 
+# Reads a UTF-8 CSV file (with or without the byte order mark that Excel writes) in any locale: the
+# text is marked as UTF-8 instead of being converted to the native encoding, which fails for
+# Chinese text in a locale that is not UTF-8 (e.g. "C" on some Linux servers)
+fao_read_csv_utf8 <- function(file, ...) {
+  x <- utils::read.csv(file, encoding = "UTF-8", check.names = FALSE, ...)
+  names(x)[1] <- sub("^\xef\xbb\xbf", "", names(x)[1], useBytes = TRUE)
+  Encoding(names(x)) <- "UTF-8"
+  x
+}
+
 # Reads a UTF-8 CSV file bundled with the package, once per session
 fao_extdata_csv <- function(file) {
   if (is.null(.fao_cache[[file]])) {
-    .fao_cache[[file]] <- utils::read.csv(
-      system.file("extdata", file, package = "faofishingreport"),
-      fileEncoding = "UTF-8", colClasses = "character", check.names = FALSE
-    )
+    .fao_cache[[file]] <- fao_read_csv_utf8(system.file("extdata", file, package = "faofishingreport"),
+                                            colClasses = "character")
   }
   .fao_cache[[file]]
 }
@@ -185,8 +193,8 @@ fao_name_table <- function(data_dir = fao_data_dir()) {
 
 fao_fishbase_names_zh <- function() {
   if (is.null(.fao_cache$fishbase_names_zh)) {
-    x <- utils::read.csv(system.file("extdata", "species_names_zh_fishbase.csv", package = "faofishingreport"),
-                         fileEncoding = "UTF-8-BOM", stringsAsFactors = FALSE)
+    x <- fao_read_csv_utf8(system.file("extdata", "species_names_zh_fishbase.csv", package = "faofishingreport"),
+                           stringsAsFactors = FALSE)
     .fao_cache$fishbase_names_zh <- data.frame(type = "species", name_en = x$name_en, name_zh = x$name_zh,
                                               stringsAsFactors = FALSE)
   }

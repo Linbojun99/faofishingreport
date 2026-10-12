@@ -490,7 +490,7 @@ fb_worms_lookup <- function(names, data_dir) {
   cache_file <- file.path(data_dir, "fishbase", "worms_lookup.csv")
   columns <- c("name", "result", "status", "valid_name", "worms_url", "note", "lookup_date")
   cache <- if (file.exists(cache_file)) {
-    utils::read.csv(cache_file, colClasses = "character", fileEncoding = "UTF-8-BOM")[columns]
+    fao_read_csv_utf8(cache_file, colClasses = "character")[columns]
   } else {
     as.data.frame(stats::setNames(rep(list(character(0)), length(columns)), columns))
   }
@@ -567,7 +567,7 @@ fb_apply_corrections <- function(result, file, dbs, is_default) {
     message("To correct a match, add a row to ", file, " (see ?fishbase_match).")
     return(result)
   }
-  corr <- utils::read.csv(file, colClasses = "character", fileEncoding = "UTF-8-BOM", check.names = FALSE)
+  corr <- fao_read_csv_utf8(file, colClasses = "character")
   if (!"alpha3" %in% names(corr)) stop("The corrections file needs an alpha3 column: ", file, call. = FALSE)
   corr[setdiff(columns, names(corr))] <- ""
   corr[is.na(corr)] <- ""

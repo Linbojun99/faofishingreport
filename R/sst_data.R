@@ -479,8 +479,8 @@ fao_sst_raw_file <- function(raw_dir, product, year) file.path(raw_dir, paste0(p
 fao_sst_read_table <- function(file) {
   key <- paste("sst", file, file.mtime(file))
   if (is.null(.fao_cache[[key]])) {
-    .fao_cache[[key]] <- utils::read.csv(file, fileEncoding = "UTF-8-BOM", stringsAsFactors = FALSE,
-                                         colClasses = c(area_code = "character", year = "integer"))
+    .fao_cache[[key]] <- fao_read_csv_utf8(file, stringsAsFactors = FALSE,
+                                           colClasses = c(area_code = "character", year = "integer"))
   }
   .fao_cache[[key]]
 }

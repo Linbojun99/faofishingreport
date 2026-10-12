@@ -379,7 +379,7 @@ fao_mtc_yearly <- function(x, years) {
 fao_mtc_match_table <- function(match) {
   if (is.character(match) && length(match) == 1) {
     if (!file.exists(match)) stop("Match table not found: ", match, call. = FALSE)
-    match <- utils::read.csv(match, colClasses = "character", fileEncoding = "UTF-8-BOM", check.names = FALSE)
+    match <- fao_read_csv_utf8(match, colClasses = "character")
   }
   if (!is.data.frame(match)) stop("match must be a data frame or the path of a CSV file.", call. = FALSE)
   needed <- setdiff(c("species_en", "match_type", "temp_pref_mean"), names(match))

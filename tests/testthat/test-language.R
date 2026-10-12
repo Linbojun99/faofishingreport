@@ -38,3 +38,13 @@ test_that("species without an FAO Chinese name get their FishBase name", {
   expect_equal(anyDuplicated(fao_name_table()[c("type", "name_en")]), 0)
   expect_gt(nrow(official), 0)
 })
+
+test_that("UTF-8 CSV files are read with their Chinese text in any locale", {
+  file <- withr::local_tempfile(fileext = ".csv")
+  writeBin(c(as.raw(c(0xef, 0xbb, 0xbf)), charToRaw(enc2utf8("key,zh\ndepth,水深\n"))), file)
+  withr::local_locale(c(LC_CTYPE = "C"))
+  x <- fao_read_csv_utf8(file, colClasses = "character")
+  expect_equal(names(x), c("key", "zh"))
+  expect_equal(x$zh, "水深")
+  expect_equal(Encoding(x$zh), "UTF-8")
+})

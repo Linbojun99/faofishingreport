@@ -3,6 +3,6 @@ bibentry(
   title = "{faofishingreport}: Analyse and Report FAO Global Capture Production Statistics",
   author = person("Hongyu", "Lin"),
   year = "2026",
-  note = "R package version 0.7.0",
+  note = "R package version 0.8.0",
   url = "https://linbojun99.github.io/faofishingreport/"
 )
